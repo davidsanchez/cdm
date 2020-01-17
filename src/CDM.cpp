@@ -939,7 +939,18 @@ std::string CDM::getImage()
 	sprintf(exec,"scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
 	//sprintf(exec,"rsync -vh %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
 	cout << "Command is: " << exec << endl;
-	system(exec);
+	int scp_result = system(exec);
+	cout << "Output of scp is: " <<  scp_result << endl;
+
+	if(scp_result==0)
+	{
+		std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
+	}
+	else
+	{
+		cout << "There was a problem while copying the image!"<< endl;
+		remoteImagePath = "Error";
+	}
 
 	return remoteImagePath;
 
