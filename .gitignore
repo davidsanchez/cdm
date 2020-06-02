@@ -43,3 +43,6 @@ src/version.txt
 
 # Archives
 *.tar.gz
+
+# VSCode workspace
+*.code-workspace

@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../../Programs_new/CDM_cpy_v2"
 		}
 	]
 }
