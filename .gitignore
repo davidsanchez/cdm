@@ -34,3 +34,12 @@
 # Added by user
 src/build/*
 src/version.txt
+
+# Images
+*.png
+*.tiff
+*.bmp
+*.fits
+
+# Archives
+*.tar.gz
