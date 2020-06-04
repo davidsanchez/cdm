@@ -9,14 +9,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <ctime>
+#include <iomanip> // Used for setprecision
+#include <cmath>
+#include <unistd.h> // TODO: why is this used?
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/opencv.hpp>
-#include <opencv2/video/video.hpp>
-
+#include "pluginsBase.h"	//TODO: move this to .h file? Was in .cpp before
 #include "lappThread.h" // needed for MOS
-#include <ueye.h>       // Camera library (IDS)
+
 
 class DataAccessClientOPCUA;
 class PluginsBase;
@@ -94,20 +94,12 @@ public:
     int get(std::string chaine, int commandStringAck, std::vector<boost::any> *tabValue);
     int set(std::string chaine, int commandStringAck, std::vector<boost::any> tabValue);
 
-    
-
-    /* OLD methods and attributes
-    double get_RA() { return CDM::RA; }
-    double get_DEC() { return CDM::DEC; }
-    double get_Azimuth() { return CDM::azimuth; }
-    double get_Zenith() { return CDM::zenith; }
-    double get_exposure() { return CDM::exposure; }
-    double get_OffsetAzimuth() { return CDM::offset_azimuth; }
-    double get_OffsetZenith() { return CDM::offset_zenith; }
-    std::string get_StarName() { return CDM::StarName; }
-    std::string writeImage(cv::Mat image); */
 
 private:
+
+    string element_opcua_cdm_image = "MOS_Server.CDM.Image.Image_v";
+
+    // Example of 2 methods
     // int userMethodStartAll(std::string argument);
     // int userMethodStopAll();
 
@@ -116,54 +108,6 @@ private:
     DataAccessClientOPCUA *m_clientOpcUaRef = NULL;
     // declare a  new method
     int connectOpcUa(std::string url);
-
-    /* OLD stuff, was commented
-    // IDS camera stuff. TODO: remove?
-    VmbErrorType    err         = VmbErrorSuccess;
-    char *          pCameraID   = NULL; // The ID of the camera to use
-    const char *    pFileName   = NULL; // The filename for the bitmap to save bool
-    bPrintHelp  = false;    // Output help?
-    int i;  //Counter for some iteration
-    char *pParameter;   // The command line parameter
-    */
-
-    /* OLD methods and attributes
-    HIDS hCam = 1;
-    uint pixelClock = 216;
-    double framerate = 1;
-    double exposure = 999; // 0.03;
-    uint formatID = 36;
-    char *pMem = NULL;
-    int memID = 0;
-    int camera_ready = 0;
-
-    // INT colorMode = IS_CM_MONO8; //CHANGED:MONO8
-    // INT colorMode = IS_CM_SENSOR_RAW8;
-    int colorMode = IS_CM_SENSOR_RAW16;
-    int bitdepth = 16;
-
-    std::string StarName = "None";
-    std::string imagePath = "/home/lstoperator/CDM/images/";
-    std::string fitsPath = "/home/lstoperator/CDM/fits/";
-    std::string remoteImagePathPrefix = "/fefs/home/lapp/CDM_Images/";
-    // std::string remoteImagePath = "None";
-
-    double zenith = 0;
-    double azimuth = 0;
-    double RA = 0;
-    double DEC = 0;
-    double offset_azimuth = 0;
-    double offset_zenith = 0;
-
-    std::string getImage();
-    int setPixelClock(uint setPixelClock);
-    int setFramerate(double setFramerate);
-    int setExposure(double setExposure);
-    int setStarName(std::string starname);
-
-    int setOffsetAzimuth(double offset_azimuth);
-    int setOffsetZenith(double offset_zenith);
-    */
 
 };
 #endif //  CDM_H_

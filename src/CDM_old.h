@@ -127,7 +127,7 @@ private:
     char *pParameter;   // The command line parameter
     */
 
-    /* OLD methods and attributes
+
     HIDS hCam = 1;
     uint pixelClock = 216;
     double framerate = 1;
@@ -163,7 +163,7 @@ private:
 
     int setOffsetAzimuth(double offset_azimuth);
     int setOffsetZenith(double offset_zenith);
-    */
+    
 
 };
 #endif //  CDM_H_

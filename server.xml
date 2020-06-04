@@ -1,426 +1,138 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <OPCUA xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://lappweb.in2p3.fr/~panazol/xsd/v2_0_0/dict_device.xsd">
-	<Name>MOS_Server</Name>
+	<Name>CDM_SG_Server</Name>
+	<!-- <Attribut>
+		<Name>AName</Name>
+		<Value>AValue</Value>
+	</Attribut> -->
+
 	<SimpleDevice>
 		<Name>CDM</Name>
+		<!-- <Attribut>
+		<Name>AName</Name>
+		<Value>AValue</Value>
+		</Attribut> -->
 		<Plugins>
-			<!-- <Location>/MOS//plugins/libsqueletonPlugin_for_synchroneMethodCall.so</Location> -->
 			<Location>plugins/libCDM.so</Location>
 			<Name>CDM_plugin</Name>
 		</Plugins>
 
 		<Instruction_set>
 			<Instruction>
-				<Name>getImage</Name>
-				<Cmd>getImage</Cmd>
+				<Name>first_test</Name> <!-- This is the mnemonic that Method uses in DeviceInstruction -->
+				 <Cmd>first_test</Cmd>  <!-- This command is sent to C++ program-->
 			</Instruction>
-
-			<Instruction>
-			<Name>getImagePath</Name>
-				<Cmd>getImagePath</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>getExposure</Name>
-				<Cmd>getExposure</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>setExposure</Name>
-				<Cmd>setExposure</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>getPixelClock</Name>
-				<Cmd>getPixelClock</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>setPixelClock</Name>
-				<Cmd>setPixelClock</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>getFPS</Name>
-				<Cmd>getFPS</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>setFPS</Name>
-				<Cmd>setFPS</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>getStarName</Name>
-				<Cmd>getStarName</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>setStarName</Name>
-				<Cmd>setStarName</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>getRA</Name>
-				<Cmd>getRA</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>getDEC</Name>
-				<Cmd>getDEC</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>getAzimuth</Name>
-				<Cmd>getAzimuth</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>getZenith</Name>
-				<Cmd>getZenith</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>getOffsetAzimuth</Name>
-				<Cmd>getOffsetAzimuth</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>setOffsetAzimuth</Name>
-				<Cmd>setOffsetAzimuth</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>getOffsetZenith</Name>
-				<Cmd>getOffsetZenith</Cmd>
-			</Instruction>
-
-			<Instruction>
-				<Name>setOffsetZenith</Name>
-				<Cmd>setOffsetZenith</Cmd>
-			</Instruction>
-			
 		</Instruction_set>
+		
+		<!-- 
+		<FSM>
+			<NameFSM>Start</NameFSM>
+			
+		</FSM> -->
 
-		<!--
-		<Method>
-			<Name>Open</Name>
-			<Argument>
-					<Name>Val_Retour</Name>
-					<Type>string</Type>
-					<Access>Output</Access>
-				</Argument>
-			<Argument>
-					<Name>ParamIn_String</Name>
-					<Type>string</Type>
-					<Access>Input</Access>
-				</Argument>
-			<Argument>
-					<Name>ParamIn_bool</Name>
-					<Type>bool</Type>
-					<Access>Input</Access>
-				</Argument>
-			<Argument>
-					<Name>ParamIn_int16</Name>
-					<Type>int16</Type>
-					<Access>Input</Access>
-				</Argument>
-			<DeviceInstruction>
-				<Value>Openshutters</Value>
-			</DeviceInstruction>
-			<Event>
-				<Message>open the shutters</Message>
-			</Event>
-		</Method>
-
-		<Method>
-			<Name>Close</Name>
-			<DeviceInstruction>
-				<Value>Closeshutters</Value>
-			</DeviceInstruction>
-			<Event>
-				<Message>close the shutters</Message>
-			</Event>
-		</Method>
--->
-		<!-- -->
-		<SimpleDatapoint>
-			<Name>Image</Name>
-			<Type>byteString</Type>
-			<!--  <MonitoringRate>10</MonitoringRate> -->
-			<Historizing>1</Historizing>
-			<Method>
-				<Name>get</Name>
-				<DeviceInstruction>
-					<Value>getImage</Value>
-				</DeviceInstruction>
-			</Method>
-		</SimpleDatapoint>
+		<CompoundDatapoint>
+			<Name>Compound_datapoint</Name>
+			<SimpleDatapoint>
+				<Name>Simple_datapoints</Name>
+				<Type>string</Type>
+				<Multiplicity>3</Multiplicity>
+				<StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+			</SimpleDatapoint>
+		</CompoundDatapoint>
 
 		<SimpleDatapoint>
-			<Name>ImagePath</Name>
+			<!-- <AccesLevel>1</AccesLevel> -->
+			<Name>SimpleDatapoint</Name>
 			<Type>string</Type>
-			<Historizing>1</Historizing>
-			<!--  <MonitoringRate>1</MonitoringRate> 
+			<!-- 
+			<ArraySize>3</ArraySize>
+			<ElementArray></ElementArray>
+			<Description></Description>
+			<DefaultValue></DefaultValue> 
+			<MonitoringRate>10</MonitoringRate>		
+			<Historizing>1</Historizing> 
+			-->
 			<Method>
 				<Name>get</Name>
-				<DeviceInstruction>
-					<Value>getImagePath</Value>
-				</DeviceInstruction>
-			</Method>-->
-		</SimpleDatapoint>
-
-
-		<SimpleDatapoint>
-			<Name>PixelClock</Name>
-			<Type>float</Type>
-			<MonitoringRate>1</MonitoringRate>
-			<Historizing>1</Historizing>
-			<Method>
-				<Name>get</Name>
+				<Sequence> <!-- You can chain multiple sequences to execute multiple commands-->
+					<NodeId>1</NodeId>
+					<MethodId>2</MethodId>
+					<ServerId>3</ServerId>
+				</Sequence>
 				<Argument>
-					<Name>value_return</Name>
-					<Type>float</Type>
-					<Access>Output</Access>
-				</Argument>
-				<DeviceInstruction>
-					<Value>getPixelClock</Value>
-				</DeviceInstruction>
-			</Method>
-
-			<Method>
-				<Name>set</Name>
-				<Argument>
-					<Name>value_input</Name>
-					<Type>float</Type>
-					<Access>Input</Access>
-				</Argument>
-				<DeviceInstruction>
-					<Value>setPixelClock</Value>
-				</DeviceInstruction>
-			</Method>
-		</SimpleDatapoint>
-
-		<SimpleDatapoint>
-			<Name>FPS</Name>
-			<Type>float</Type>
-			<MonitoringRate>1</MonitoringRate>
-			<Historizing>1</Historizing>
-			<Method>
-				<Name>get</Name>
-				<Argument>
-					<Name>value_return</Name>
-					<Type>float</Type>
-					<Access>Output</Access>
-				</Argument>
-				<DeviceInstruction>
-					<Value>getFPS</Value>
-				</DeviceInstruction>
-			</Method>
-			<Method>
-				<Name>set</Name>
-				<Argument>
-					<Name>value_input</Name>
-					<Type>float</Type>
-					<Access>Input</Access>
-				</Argument>
-				<DeviceInstruction>
-					<Value>setFPS</Value>
-				</DeviceInstruction>
-			</Method>
-		</SimpleDatapoint>
-
-		<SimpleDatapoint>
-			<Name>Exposure</Name>
-			<Type>float</Type>
-			<MonitoringRate>1</MonitoringRate>
-			<Historizing>1</Historizing>
-			<Method>
-				<Name>get</Name>
-				<Argument>
-					<Name>value_return</Name>
-					<Type>float</Type>
-					<Access>Output</Access>
-				</Argument>
-				<DeviceInstruction>
-					<Value>getExposure</Value>
-				</DeviceInstruction>
-			</Method>
-
-			<Method>
-				<Name>set</Name>
-				<Argument>
-					<Name>value_input</Name>
-					<Type>float</Type>
-					<Access>Input</Access>
-				</Argument>
-				<DeviceInstruction>
-					<Value>setExposure</Value>
-				</DeviceInstruction>
-			</Method>
-		</SimpleDatapoint>
-
-		<SimpleDatapoint>
-			<Name>StarName</Name>
-			<Type>string</Type>
-			<MonitoringRate>1</MonitoringRate>
-			<Historizing>1</Historizing>
-			<Method>
-				<Name>get</Name>
-				<Argument>
-					<Name>value_return</Name>
-					<Type>string</Type>
-					<Access>Output</Access>
-				</Argument>
-				<DeviceInstruction>
-					<Value>getStarName</Value>
-				</DeviceInstruction>
-			</Method>
-
-			<Method>
-				<Name>set</Name>
-				<Argument>
-					<Name>value_input</Name>
+					<Name>myName</Name>
 					<Type>string</Type>
 					<Access>Input</Access>
-				</Argument>
+					<DefaultValue>1</DefaultValue>
+					<Range>
+						<Min>1</Min>
+						<Max>10</Max>
+					</Range>
+					<Description>myDescription</Description>
+				</Argument> 
 				<DeviceInstruction>
-					<Value>setStarName</Value>
-				</DeviceInstruction>
-			</Method>
-		</SimpleDatapoint>
-
-		<SimpleDatapoint>
-			<Name>RA</Name>
-			<Type>float</Type>
-			<MonitoringRate>1</MonitoringRate>
-			<Historizing>1</Historizing>
-			<Method>
-				<Name>get</Name>
-				<Argument>
-					<Name>value_return</Name>
-					<Type>float</Type>
-					<Access>Output</Access>
-				</Argument>
-				<DeviceInstruction>
-					<Value>getRA</Value>
-				</DeviceInstruction>
-			</Method>
-		</SimpleDatapoint>
-
-		<SimpleDatapoint>
-			<Name>DEC</Name>
-			<Type>float</Type>
-			<MonitoringRate>1</MonitoringRate>
-			<Historizing>1</Historizing>
-			<Method>
-				<Name>get</Name>
-				<Argument>
-					<Name>value_return</Name>
-					<Type>float</Type>
-					<Access>Output</Access>
-				</Argument>
-				<DeviceInstruction>
-					<Value>getDEC</Value>
-				</DeviceInstruction>
-			</Method>
-		</SimpleDatapoint>
-
-		<SimpleDatapoint>
-			<Name>Azimuth</Name>
-			<Type>float</Type>
-			<MonitoringRate>1</MonitoringRate>
-			<Historizing>1</Historizing>
-			<Method>
-				<Name>get</Name>
-				<Argument>
-					<Name>value_return</Name>
-					<Type>float</Type>
-					<Access>Output</Access>
-				</Argument>
-				<DeviceInstruction>
-					<Value>getAzimuth</Value>
-				</DeviceInstruction>
-			</Method>
-		</SimpleDatapoint>
-
-		<SimpleDatapoint>
-			<Name>Zenith</Name>
-			<Type>float</Type>
-			<MonitoringRate>1</MonitoringRate>
-			<Historizing>1</Historizing>
-			<Method>
-				<Name>get</Name>
-				<Argument>
-					<Name>value_return</Name>
-					<Type>float</Type>
-					<Access>Output</Access>
-				</Argument>
-				<DeviceInstruction>
-					<Value>getZenith</Value>
-				</DeviceInstruction>
-			</Method>
-		</SimpleDatapoint>
-
-		<SimpleDatapoint>
-			<Name>OffsetAzimuth</Name>
-			<Type>float</Type>
-			<MonitoringRate>1</MonitoringRate>
-			<Historizing>1</Historizing>
-			<Method>
-				<Name>get</Name>
-				<Argument>
-					<Name>value_return</Name>
-					<Type>float</Type>
-					<Access>Output</Access>
-				</Argument>
-				<DeviceInstruction>
-					<Value>getOffsetAzimuth</Value>
-				</DeviceInstruction>
-			</Method>
-
-			<Method>
-				<Name>set</Name>
-				<Argument>
-					<Name>value_input</Name>
-					<Type>float</Type>
-					<Access>Input</Access>
-				</Argument>
-				<DeviceInstruction>
-					<Value>setOffsetAzimuth</Value>
-				</DeviceInstruction>
-			</Method>
-		</SimpleDatapoint>
-
-		<SimpleDatapoint>
-			<Name>OffsetZenith</Name>
-			<Type>float</Type>
-			<MonitoringRate>1</MonitoringRate>
-			<Historizing>1</Historizing>
-			<Method>
-				<Name>get</Name>
-				<Argument>
-					<Name>value_return</Name>
-					<Type>float</Type>
-					<Access>Output</Access>
-				</Argument>
-				<DeviceInstruction>
-					<Value>getOffsetZenith</Value>
-				</DeviceInstruction>
-			</Method>
-
-			<Method>
-				<Name>set</Name>
-				<Argument>
-					<Name>value_input</Name>
-					<Type>float</Type>
-					<Access>Input</Access>
-				</Argument>
-				<DeviceInstruction>
-					<Value>setOffsetZenith</Value>
+					<Value>first_test</Value>
 				</DeviceInstruction>
 			</Method>
 		</SimpleDatapoint>
 
 	</SimpleDevice>
+
+	<SimpleDevice>
+		<Name>SG</Name>
+		<!-- <Plugins>
+			<Location>plugins/libSG.so</Location>
+			<Name>SG_plugin</Name>
+		</Plugins> -->
+
+		<Instruction_set>
+			<Instruction>
+				<Name>first_test</Name>
+				<Cmd>first_test</Cmd>
+			</Instruction>
+		</Instruction_set>
+
+		<SimpleDatapoint>
+			<Name>first_test</Name>
+			<Type>string</Type>
+			<!--  <MonitoringRate>10</MonitoringRate> -->
+			<Historizing>1</Historizing>
+			<Method>
+				<Name>get</Name>
+				<DeviceInstruction>
+					<Value>first_test</Value>
+				</DeviceInstruction>
+			</Method>
+		</SimpleDatapoint>
+
+	</SimpleDevice>
+
+	<SimpleDevice>
+		<Name>Sensor</Name>
+		<!-- <Plugins>
+				<Location>plugins/libSensor.so</Location>
+				<Name>Sensor_plugin</Name>
+			</Plugins> -->
+
+		<Instruction_set>
+			<Instruction>
+				<Name>first_test</Name>
+				<Cmd>first_test</Cmd>
+			</Instruction>
+		</Instruction_set>
+
+		<SimpleDatapoint>
+			<Name>first_test</Name>
+			<Type>string</Type>
+			<!--  <MonitoringRate>10</MonitoringRate> -->
+			<Historizing>1</Historizing>
+			<Method>
+				<Name>get</Name>
+				<DeviceInstruction>
+					<Value>first_test</Value>
+				</DeviceInstruction>
+			</Method>
+		</SimpleDatapoint>
+	</SimpleDevice>
+
 </OPCUA>
