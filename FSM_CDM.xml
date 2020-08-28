@@ -11,31 +11,49 @@
 
 <FSM_Definition>
 	<TransitionFSM>
-		<Name>ConnectCDM</Name>
+		<Name>Connect</Name>
 		<StateCondition>0</StateCondition>
 		<FinalTransition>1</FinalTransition>
 		<AutomaticChangeTransition>true</AutomaticChangeTransition>
 	</TransitionFSM>
 	<TransitionFSM>
-		<Name>StartCDM</Name>
+		<Name>Comment</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>Configure</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>GetImage</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>Start</Name>
 		<StateCondition>1</StateCondition>
 		<FinalTransition>2</FinalTransition>
 		<AutomaticChangeTransition>true</AutomaticChangeTransition>
 	</TransitionFSM>
 	<TransitionFSM>
-		<Name>StopCDM</Name>
+		<Name>Stop</Name>
 		<StateCondition>2</StateCondition>
 		<FinalTransition>1</FinalTransition>
 		<AutomaticChangeTransition>true</AutomaticChangeTransition>
 	</TransitionFSM>
 	<TransitionFSM>
-		<Name>DisconnectCDM</Name>
+		<Name>Disconnect</Name>
 		<StateCondition>1</StateCondition>
 		<FinalTransition>0</FinalTransition>
 		<AutomaticChangeTransition>true</AutomaticChangeTransition>
 	</TransitionFSM>
 	<TransitionFSM>
-		<Name>ErrorCDM</Name>
+		<Name>Error</Name>
 		<StateCondition>0</StateCondition>
 		<StateCondition>1</StateCondition>
 		<StateCondition>2</StateCondition>
@@ -44,7 +62,7 @@
 		<AutomaticChangeTransition>true</AutomaticChangeTransition>
 	</TransitionFSM>
 	<TransitionFSM>
-		<Name>AcknowledgeCDM</Name>
+		<Name>Acknowledge</Name>
 		<StateCondition>3</StateCondition> 
 		<FinalTransition>0</FinalTransition>
 		<AutomaticChangeTransition>true</AutomaticChangeTransition>
