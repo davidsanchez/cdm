@@ -1,0 +1,52 @@
+<!-- __________________________________ -->
+<!-- Author : PANAZOL jean-Luc          -->
+<!-- Date   :                           -->
+<!-- Name   : FSM_CDM.xml                -->
+<!--                                    -->
+<!-- __________________________________ -->
+<!-- Date   :  03/03/2020               -->
+<!-- Add comments                       -->
+<!-- __________________________________ -->
+
+
+<FSM_Definition>
+	<TransitionFSM>
+		<Name>ConnectCDM</Name>
+		<StateCondition>0</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>StartCDM</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>2</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>StopCDM</Name>
+		<StateCondition>2</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>DisconnectCDM</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>0</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>ErrorCDM</Name>
+		<StateCondition>0</StateCondition>
+		<StateCondition>1</StateCondition>
+		<StateCondition>2</StateCondition>
+		<StateCondition>3</StateCondition>
+		<FinalTransition>3</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>AcknowledgeCDM</Name>
+		<StateCondition>3</StateCondition> 
+		<FinalTransition>0</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+</FSM_Definition>
