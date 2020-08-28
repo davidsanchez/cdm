@@ -83,18 +83,18 @@ private:
 class CDM : public PluginsBase
 {
 public:
-    int init(std::string chaine);
+    int init(const std::string& chaine);
     int close();
-    int cmd(std::string chaine, int commandStringAck, std::string *result);
+    int cmd(const std::string& chaine, int commandStringAck, std::string& result);
 
     // new virtual methods appears with the version 3.0 of MOS
     int afterStart();
-    int cmdAsynch(std::string command, int commandStringAck, std::string datapointName, int nameSpace,
-                  std::string *result);
+    int cmdAsynch(const std::string& command, int commandStringAck, const std::string& datapointName, int nameSpace,
+                  std::string& result);
 
     // new virtual methods who replace the setAnay getAny methods  with the version 4.0 of MOS
-    int get(std::string chaine, int commandStringAck, std::vector<boost::any> *tabValue);
-    int set(std::string chaine, int commandStringAck, std::vector<boost::any> tabValue);
+    int get(const std::string& chaine, int commandStringAck, std::vector<boost::any>& tabValue);
+    int set(const std::string& chaine, int commandStringAck, std::vector<boost::any>& tabValue);
 
     int Connect();
 

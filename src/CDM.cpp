@@ -23,7 +23,7 @@ int CDM::Connect()
     // }
 }
 
-int CDM::init(std::string chaine)
+int CDM::init(const std::string& chaine)
 {	// You can overwrite this method if you want but not mandatory because the class pluginsInterfaceImpl already implement it:)
 	// but becarefull, you have to call before doing  your bussiness, call the father method (the father class) ( PluginsInterfaceImpl::init())
 	// This method is automaticaly call by the program "MOS" after "MOS" server is launched but the "MOS" server is not really ready.
@@ -78,11 +78,10 @@ int CDM::afterStart()
 	return ret;
 }
 
-int CDM::cmdAsynch(std::string command, int commandStringAck, std::string datapointName, int nameSpace, std::string *result)
+int CDM::cmdAsynch(const std::string& command, int commandStringAck, const std::string& datapointName, int nameSpace, std::string& result)
 {
 	// not use in this example
 	int ret = 0;
-	*result = "";
 	return ret;
 }
 
@@ -100,11 +99,11 @@ int CDM::close()
 	return ret;
 }
 
-int CDM::cmd(std::string chaine, int commandStringAck, std::string *result)
+int CDM::cmd(const std::string& command, int commandStringAck, std::string& result)
 {
 	int ret = 0;
-	printf("In CMD part: received command with the instruction: %s\n", chaine.c_str());
-	chaine += " ";
+	printf("In CMD part: received command with the instruction: %s\n", command.c_str());
+	std::string chaine = command + " ";
 	std::string subChaine1 = chaine;
 	std::string subChaine2 = chaine;
 	int flag = 1;
@@ -127,7 +126,7 @@ int CDM::cmd(std::string chaine, int commandStringAck, std::string *result)
 			{
 				// userMethodStopAll(); // name of your method who manage this action
 			}
-			if (subChaine1.compare("Connect") == 0)
+			if (subChaine1.compare("ConnectCDM") == 0)
 			{
 				CDM::Connect();
 				cout<<"DZ below Connect" << endl;
@@ -140,13 +139,13 @@ int CDM::cmd(std::string chaine, int commandStringAck, std::string *result)
 	return ret;
 }
 
-int CDM::get(std::string chaine, int commandStringAck, std::vector<boost::any> *tabValue)
+int CDM::get(const std::string& chaine, int commandStringAck, std::vector<boost::any>& tabValue)
 {
 	int ret = 0;
 	return ret;
 }
 
-int CDM::set(std::string chaine, int commandStringAck, std::vector<boost::any> tabValue)
+int CDM::set(const std::string& chaine, int commandStringAck, std::vector<boost::any>& tabValue)
 {
 	int ret = 0;
 	return ret;
