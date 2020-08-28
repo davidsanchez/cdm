@@ -34,6 +34,8 @@
 # Added by user
 src/build/*
 src/version.txt
+*.swp
+build/*
 
 # Images
 *.png

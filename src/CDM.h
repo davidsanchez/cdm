@@ -17,6 +17,8 @@
 #include "pluginsBase.h"	//TODO: move this to .h file? Was in .cpp before
 #include "lappThread.h" // needed for MOS
 
+#include <ueye.h> // IDS camera
+
 
 class DataAccessClientOPCUA;
 class PluginsBase;
@@ -94,20 +96,34 @@ public:
     int get(std::string chaine, int commandStringAck, std::vector<boost::any> *tabValue);
     int set(std::string chaine, int commandStringAck, std::vector<boost::any> tabValue);
 
+    int Connect();
+
+    // Camera stuff
+    HIDS hCam = 0;
+    SENSORINFO sInfo;
+    HWND hWndDisplay = NULL; //DIB mode will be used for display
+    char* pcImageMemory;
+    int DisplayWidth, DisplayHeight;
+    // Need to find out the memory size of the pixel and the colour mode
+    int nColorMode = IS_CM_MONO8; //IS_CM_SENSOR_RAW16;
+    int nBitsPerPixel = 8; //16;
 
 private:
 
-    string element_opcua_cdm_image = "MOS_Server.CDM.Image.Image_v";
+    std::string element_opcua_cdm_image = "MOS_Server.CDM.Image.Image_v";
+
+    //TODO: Move some of the public stuff to private
 
     // Example of 2 methods
     // int userMethodStartAll(std::string argument);
     // int userMethodStopAll();
 
     // TODO: Refactor this. Need more of this for each device (Relay, Drive, Camera...). Template, polymorph or change function?
-    // declare a new attribut
+    // declare a new attribute
     DataAccessClientOPCUA *m_clientOpcUaRef = NULL;
-    // declare a  new method
+    // declare a new method
     int connectOpcUa(std::string url);
+
 
 };
 #endif //  CDM_H_

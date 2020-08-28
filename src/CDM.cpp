@@ -2,6 +2,27 @@
 
 using namespace std;
 
+
+int CDM::Connect()
+{
+	// Starts the driver and establishes the connection to the camera
+    is_InitCamera(&hCam, hWndDisplay);
+
+    // You can query information about the sensor type used in the camera
+    is_GetSensorInfo(hCam, &sInfo);
+
+    // Saving the information about the max. image proportions in variables
+    DisplayWidth = sInfo.nMaxWidth;
+    DisplayHeight = sInfo.nMaxHeight;
+
+	// if (sInfo.nColorMode == IS_COLORMODE_BAYER)
+    // {
+    //     // For color camera models use RGB24 mode
+    //     nColorMode = IS_CM_SENSOR_RAW16;
+    //     nBitsPerPixel = 16;
+    // }
+}
+
 int CDM::init(std::string chaine)
 {	// You can overwrite this method if you want but not mandatory because the class pluginsInterfaceImpl already implement it:)
 	// but becarefull, you have to call before doing  your bussiness, call the father method (the father class) ( PluginsInterfaceImpl::init())
@@ -28,7 +49,7 @@ int CDM::afterStart()
 	ret = PluginsBase::afterStart();
 
 	// Here query the available cameras and get that information. Don't connect yet?
-	
+
 	//TODO: What is this doing exactly? Needed?
 	if (ret != -1) 
 	{
@@ -52,7 +73,6 @@ int CDM::afterStart()
                         it++) {
 			printf("elementControl = %s\n",it->c_str());
  		}*/
-
 	}
 
 	return ret;
@@ -83,7 +103,7 @@ int CDM::close()
 int CDM::cmd(std::string chaine, int commandStringAck, std::string *result)
 {
 	int ret = 0;
-	printf("Plugin : command with the instruction :%s\n", chaine.c_str());
+	printf("In CMD part: received command with the instruction: %s\n", chaine.c_str());
 	chaine += " ";
 	std::string subChaine1 = chaine;
 	std::string subChaine2 = chaine;
@@ -98,7 +118,7 @@ int CDM::cmd(std::string chaine, int commandStringAck, std::string *result)
 		else
 		{
 			subChaine1.erase(pos);		  // find the pair name:value
-			subChaine2.erase(0, pos + 1); // strore the rest of the string (example the arguments of the instrution)
+			subChaine2.erase(0, pos + 1); // store the rest of the string (example the arguments of the instrution)
 			if (subChaine1.compare("startAllDevice") == 0)
 			{
 				// userMethodStartAll(subChaine2); // name of your method who manage this action
@@ -106,6 +126,11 @@ int CDM::cmd(std::string chaine, int commandStringAck, std::string *result)
 			if (subChaine1.compare("stopAllDevice") == 0)
 			{
 				// userMethodStopAll(); // name of your method who manage this action
+			}
+			if (subChaine1.compare("Connect") == 0)
+			{
+				CDM::Connect();
+				cout<<"DZ below Connect" << endl;
 			}
 		}
 	}

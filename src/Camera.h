@@ -10,6 +10,7 @@ class Camera
 
     //int query_cameras();
 
+
 //private:
 
 };
