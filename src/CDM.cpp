@@ -126,7 +126,7 @@ int CDM::cmd(const std::string& command, int commandStringAck, std::string& resu
 			{
 				// userMethodStopAll(); // name of your method who manage this action
 			}
-			if (subChaine1.compare("ConnectCDM") == 0)
+			if (subChaine1.compare("Connect") == 0)
 			{
 				CDM::Connect();
 				cout<<"DZ below Connect" << endl;
