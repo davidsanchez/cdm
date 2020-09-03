@@ -645,7 +645,7 @@
                                 <Config>0</Config>
                         </Info> -->
                                 <Name>pixelClock</Name>
-                                <Type>float</Type>
+                                <Type>int32</Type>
                                 <ArraySize>0</ArraySize>
                                 <Multiplicity>1</Multiplicity>
                                 <StartNumberingMultiplicity>1</StartNumberingMultiplicity>

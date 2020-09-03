@@ -17,7 +17,19 @@
 #include "pluginsBase.h"	//TODO: move this to .h file? Was in .cpp before
 #include "lappThread.h" // needed for MOS
 
+#include <boost/log/core.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <boost/algorithm/string.hpp>
+
+
 #include <ueye.h> // IDS camera
+
+namespace logging = boost::log;
+namespace keywords = boost::log::keywords;
 
 
 class DataAccessClientOPCUA;
@@ -32,7 +44,7 @@ public:
         m_dataAccessClientOPCUA = dataAccessClientOPCUA;
         m_datapointName = datapointName;
         m_nameSpace = nameSpace;
-        m_data = data;
+        m_data_vbyte = data;
 
         m_varType = varType::isVectorByte;
         start(&m_varType);
@@ -50,32 +62,62 @@ public:
         start(&m_varType);
     };
 
+    SetDatapointThread(DataAccessClientOPCUA *dataAccessClientOPCUA, std::string datapointName, int nameSpace,
+                       float data)
+    {
+        m_dataAccessClientOPCUA = dataAccessClientOPCUA;
+        m_datapointName = datapointName;
+        m_nameSpace = nameSpace;
+        m_data_float = data;
+
+        m_varType = varType::isFloat;
+        start(&m_varType);
+    };
+
+    SetDatapointThread(DataAccessClientOPCUA *dataAccessClientOPCUA, std::string datapointName, int nameSpace,
+                       int data)
+    {
+        m_dataAccessClientOPCUA = dataAccessClientOPCUA;
+        m_datapointName = datapointName;
+        m_nameSpace = nameSpace;
+        m_data_int = data;
+
+        m_varType = varType::isInt;
+        start(&m_varType);
+    };
+
     ~SetDatapointThread(){};
     void *run(void *params)
     {
         //  std::string temString = m_datapointName + "._Done";
-
-        // std::cout << "Params: " << *(static_cast<varType*>(params)) << std::endl;
+         //std::cout << "Params: " << *(static_cast<varType*>(params)) << std::endl;
 
         if (*(static_cast<varType *>(params)) == varType::isVectorByte)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data);
-
+            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vbyte);
         else if (*(static_cast<varType *>(params)) == varType::isString)
             m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_str);
+        else if (*(static_cast<varType *>(params)) == varType::isInt)
+            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_int);
+        else if (*(static_cast<varType *>(params)) == varType::isFloat)
+            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_float);
     };
 
 private:
     int m_nameSpace;
     std::string m_datapointName;
-    std::vector<Byte> m_data;
+    std::vector<Byte> m_data_vbyte;
     std::string m_data_str;
+    int m_data_int;
+    float m_data_float;
     DataAccessClientOPCUA *m_dataAccessClientOPCUA;
 
     enum varType
     {
         isNULL = 0,
-        isVectorByte = 1,
-        isString = 2
+        isInt = 1, 
+        isFloat = 2,
+        isString = 3, 
+        isVectorByte = 4
     };
     varType m_varType = varType::isNULL;
 };
@@ -97,16 +139,27 @@ public:
     int set(const std::string& chaine, int commandStringAck, std::vector<boost::any>& tabValue);
 
     int Connect();
+    int Disconnect();
+    std::string Configure(int nPixelClock=216, float exposure=100, double fps=10, float gain=1, float n_images_integrate=1, std::string pixel_format="IS_CM_MONO8");
 
+//private:
     // Camera stuff
-    HIDS hCam = 0;
-    SENSORINFO sInfo;
+    HIDS hCam = (HIDS)0;
+    SENSORINFO sensorinfo;
+    CAMINFO camerainfo;
     HWND hWndDisplay = NULL; //DIB mode will be used for display
-    char* pcImageMemory;
-    int DisplayWidth, DisplayHeight;
+    char *pcImageMemory;
+    int nMemoryId = 0;
+    
     // Need to find out the memory size of the pixel and the colour mode
-    int nColorMode = IS_CM_MONO8; //IS_CM_SENSOR_RAW16;
-    int nBitsPerPixel = 8; //16;
+    int iColorMode = IS_CM_MONO8; //IS_CM_SENSOR_RAW16;
+    int iBitsPerPixel = 8;        //16;
+    int iWidth = 0;  // will be properly initialized with the sensor info struct information
+    int iHeight = 0; // will be properly initialized with the sensor info struct information
+    double dblFrameRateToSet = 10.0; // if set to 0.0 the max possible fps will be set
+    IS_RECT rectAOI;
+    int nRet;
+
 
 private:
 

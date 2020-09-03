@@ -39,6 +39,7 @@ IF (UNIX)
     ADD_DEFINITIONS(-Wall)
 #    ADD_DEFINITIONS(-O2 -g -m64)
     ADD_DEFINITIONS(-O3 -m64 -fPIC -std=c++11)
+    ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
     SET(PLATTFORM_LIBS pthread rt dl)
 ENDIF (UNIX)
 
@@ -48,9 +49,9 @@ add_library(
         SHARED
         /usr/include/ueye.h
         CDM.cpp
-        Camera.cpp
-        ImageAnalysis.cpp
-        ImageFITS.cpp
+        #Camera.cpp
+        #ImageAnalysis.cpp
+        #ImageFITS.cpp
         )
 
 #TARGET_LINK_LIBRARIES(${PROJECT_NAME}  m pthread stdc++)
@@ -58,6 +59,7 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}  PluginBase) # MOS
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  ueye_api) # Camera library
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  opencv_core opencv_highgui opencv_imgproc ) #OpenCV
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  CCfits cfitsio ) # FITS files library
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}  boost_log boost_log_setup ) # Boost log
 
 set_target_properties( PROPERTIES DEBUG_POSTFIX "d")
 

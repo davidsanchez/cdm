@@ -5,6 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${MOS_DIR}/**",
+                "/usr/local/include/**",
                 "/usr/local/include/CCfits",
                 "/usr/include/**",
                 "/usr/include/opencv2/**"

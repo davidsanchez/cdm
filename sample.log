@@ -1,0 +1,7 @@
+[2020-09-03 14:14:02.566476] [0x00007f13702c3880] [trace] A trace severity message
+[2020-09-03 14:14:02.566776] [0x00007f13702c3880] [debug] A debug severity message
+[2020-09-03 14:14:02.566807] [0x00007f13702c3880] [info] An informational severity message
+[2020-09-03 14:14:02.566834] [0x00007f13702c3880] [warning] A warning severity message
+[2020-09-03 14:14:02.566859] [0x00007f13702c3880] [error] An error severity message
+[2020-09-03 14:14:02.566884] [0x00007f13702c3880] [fatal] A fatal severity message
+[2020-09-03 14:14:17.288741] [0x00007f135ee44700] [trace] In Connect
