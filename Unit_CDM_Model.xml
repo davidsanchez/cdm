@@ -221,7 +221,7 @@
                         <NameFSM>Configure</NameFSM>
                         <Argument>
                                 <Name>Input_pixel_clock</Name>
-                                <Type>float</Type>
+                                <Type>int32</Type>
                                 <Access>Input</Access>
                                 <Range>
                                         <Min>1</Min>
@@ -230,7 +230,7 @@
                         </Argument>
                         <Argument>
                                 <Name>Input_exposure</Name>
-                                <Type>float</Type>
+                                <Type>double</Type>
                                 <Access>Input</Access>
                                 <Range>
                                         <Min>1</Min>
@@ -239,7 +239,7 @@
                         </Argument>
                         <Argument>
                                 <Name>Input_FPS</Name>
-                                <Type>float</Type>
+                                <Type>double</Type>
                                 <Access>Input</Access>
                                 <Range>
                                         <Min>1</Min>
@@ -248,11 +248,11 @@
                         </Argument>
                         <Argument>
                                 <Name>Input_gain</Name>
-                                <Type>float</Type>
+                                <Type>int32</Type>
                                 <Access>Input</Access>
                                 <Range>
-                                        <Min>1</Min>
-                                        <Max>6</Max>
+                                        <Min>0</Min>
+                                        <Max>100</Max>
                                 </Range>
                         </Argument>
                         <Argument>
@@ -664,11 +664,11 @@
                                 <Config>0</Config>
                         </Info> -->
                                 <Name>exposure</Name>
-                                <Type>float</Type>
+                                <Type>double</Type>
                                 <ArraySize>0</ArraySize>
                                 <Multiplicity>1</Multiplicity>
                                 <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                                <DefaultValue>100</DefaultValue>
+                                <DefaultValue>50</DefaultValue>
                                 <Description>CDM sensor exposure time</Description>
                                 <Historizing>1</Historizing>
                                 <Method>
@@ -683,7 +683,7 @@
                                 <Config>0</Config>
                         </Info> -->
                                 <Name>gain</Name>
-                                <Type>float</Type>
+                                <Type>int32</Type>
                                 <ArraySize>0</ArraySize>
                                 <Multiplicity>1</Multiplicity>
                                 <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
@@ -702,7 +702,7 @@
                                 <Config>0</Config>
                         </Info> -->
                                 <Name>FPS</Name>
-                                <Type>float</Type>
+                                <Type>double</Type>
                                 <ArraySize>0</ArraySize>
                                 <Multiplicity>1</Multiplicity>
                                 <StartNumberingMultiplicity>1</StartNumberingMultiplicity>

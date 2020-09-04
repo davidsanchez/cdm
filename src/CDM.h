@@ -37,7 +37,7 @@ class PluginsBase;
 class SetDatapointThread : public LAPPThread
 {
 public:
-    // TODO: refactor SetDatapointThread as a template?
+    // TODO: refactor SetDatapointThread as a template instead of overloading?
     SetDatapointThread(DataAccessClientOPCUA *dataAccessClientOPCUA, std::string datapointName, int nameSpace,
                        std::vector<Byte> data)
     {
@@ -75,6 +75,18 @@ public:
     };
 
     SetDatapointThread(DataAccessClientOPCUA *dataAccessClientOPCUA, std::string datapointName, int nameSpace,
+                       double data)
+    {
+        m_dataAccessClientOPCUA = dataAccessClientOPCUA;
+        m_datapointName = datapointName;
+        m_nameSpace = nameSpace;
+        m_data_double = data;
+
+        m_varType = varType::isDouble;
+        start(&m_varType);
+    };
+
+    SetDatapointThread(DataAccessClientOPCUA *dataAccessClientOPCUA, std::string datapointName, int nameSpace,
                        int data)
     {
         m_dataAccessClientOPCUA = dataAccessClientOPCUA;
@@ -100,6 +112,8 @@ public:
             m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_int);
         else if (*(static_cast<varType *>(params)) == varType::isFloat)
             m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_float);
+        else if (*(static_cast<varType *>(params)) == varType::isDouble)
+            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_double);
     };
 
 private:
@@ -109,6 +123,7 @@ private:
     std::string m_data_str;
     int m_data_int;
     float m_data_float;
+    double m_data_double;
     DataAccessClientOPCUA *m_dataAccessClientOPCUA;
 
     enum varType
@@ -116,8 +131,9 @@ private:
         isNULL = 0,
         isInt = 1, 
         isFloat = 2,
-        isString = 3, 
-        isVectorByte = 4
+        isDouble = 3,
+        isString = 4, 
+        isVectorByte = 5
     };
     varType m_varType = varType::isNULL;
 };
@@ -140,7 +156,7 @@ public:
 
     int Connect();
     int Disconnect();
-    std::string Configure(int nPixelClock=216, float exposure=100, double fps=10, float gain=1, float n_images_integrate=1, std::string pixel_format="IS_CM_MONO8");
+    std::string Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, float n_images_integrate=1, std::string pixel_format="IS_CM_MONO8");
 
 //private:
     // Camera stuff

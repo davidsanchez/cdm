@@ -159,18 +159,24 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             {
                 BOOST_LOG_TRIVIAL(trace) << "In Connect"; //TODO: deleteme
 				CDM::Connect();
+				CDM::Configure(); // Sets default parameters
+
+				
+
+
             }
 			if (subChaine1.compare("Disconnect") == 0)
             {
 				CDM::Disconnect();
             }
 			if (subChaine1.compare("Configure") == 0)
-            {
+            {	
+				//TODO: check what will happen if some of the parameters missing. The code below assumes that you received everything!
 				std::vector<std::string> results;
 				boost::split(results, subChaine2, [](char c){return c == ' ';});		
 
 				// TODO:get the returning string value and return it to OPCUA		
-				string config_message = CDM::Configure(stoi(results[0]), stof(results[1]), stod(results[2]), stof(results[3]), stof(results[4]), results[5]);
+				string config_message = CDM::Configure(stoi(results[0]), stod(results[1]), stod(results[2]), stoi(results[3]), stof(results[4]), results[5]);
 
             }
         }
@@ -181,7 +187,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
     return ret;
 }
 
-string CDM::Configure(int nPixelClock, float exposure, double fps, float gain, float n_images_integrate, string pixel_format)
+string CDM::Configure(int nPixelClock, double exposure, double fps, int gain, float n_images_integrate, string pixel_format)
 {
 	// Set pixel clock
     nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_SET, (void *)&nPixelClock, sizeof(nPixelClock));
@@ -197,21 +203,38 @@ string CDM::Configure(int nPixelClock, float exposure, double fps, float gain, f
 	std::cout << "SetFrameRate returned " << nRet << ". New framerate = " << new_fps << std::endl;
 	is_SetFrameRate(hCam, IS_GET_FRAMERATE, &fps);
     std::cout << "Applied framerate " << fps << " fps." << std::endl;
-	SetDatapointThread *m_SetDatapointThread_fps = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.FPS.FPS_v", 2, (float)fps);
+	SetDatapointThread *m_SetDatapointThread_fps = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.FPS.FPS_v", 2, fps);
 
 	// Set exposure
 	double current_exposure;
 	is_Exposure (hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, (void *)&current_exposure, sizeof(current_exposure));
     std::cout << "Current exposure is: " << current_exposure << std::endl;
-    is_Exposure (hCam, IS_EXPOSURE_CMD_SET_EXPOSURE, (void *)&exposure, sizeof(exposure));
+    is_Exposure (hCam, IS_EXPOSURE_CMD_SET_EXPOSURE, (void *)&exposure, sizeof(current_exposure));
     std::cout << "Set exposure is: " << exposure << std::endl;
     is_Exposure (hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, (void *)&current_exposure, sizeof(current_exposure));
     std::cout << "Current exposure is: " << current_exposure << std::endl;
-	SetDatapointThread *m_SetDatapointThread_exposure = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, exposure);
+	SetDatapointThread *m_SetDatapointThread_exposure = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, current_exposure);
+
+	// Set hardware gain
+	is_SetHardwareGain(hCam, gain, 14, 0, 32); // Master, red, green, blue
+	int master_gain = is_SetHardwareGain(hCam, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER); 
+	SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, master_gain);
+	/* 	int master = is_SetHardwareGain(hCam, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER); 
+	int red = is_SetHardwareGain(hCam, IS_GET_RED_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER); 
+	int green = is_SetHardwareGain(hCam, IS_GET_GREEN_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER); 
+	int blue = is_SetHardwareGain(hCam, IS_GET_BLUE_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER); 
+	cout << master << " " << red << " " << green << " " << blue << endl; */
+
+	// Set number of images to integrate
+	// TODO: Implement this. For now it is just 1.
+	SetDatapointThread *m_SetDatapointThread_n_images_integrate = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.numIntegrateImage.numIntegrateImage_v", 2, 1);
+
+	// Set image format
 	
+
 	SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, pixel_format);
 
-	//Call destructor?
+	//Call destructors?
 
 
 
@@ -227,7 +250,9 @@ int CDM::Connect()
         std::cout << "Failed to open camera." << std::endl;
         return 1;
     }
-	
+
+	is_SetErrorReport (hCam, IS_ENABLE_ERR_REP);
+
 	nRet = is_ResetToDefault(hCam); //Resets to default values
 	if (nRet != IS_SUCCESS)
     {
