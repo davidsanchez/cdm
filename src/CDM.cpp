@@ -146,38 +146,66 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
         else
         {
             subChaine1.erase(pos);        // find the pair name:value
-            subChaine2.erase(0, pos + 1); // store the rest of the string (example the arguments of the instrution)
-            if (subChaine1.compare("startAllDevice") == 0)
-            {
-                // userMethodStartAll(subChaine2); // name of your method who manage this action
-            }
-            if (subChaine1.compare("stopAllDevice") == 0)
-            {
-                // userMethodStopAll(); // name of your method who manage this action
-            }
-            if (subChaine1.compare("Connect") == 0)
+            subChaine2.erase(0, pos + 1); // store the rest of the string (example the arguments of the instruction)        
+                       
+			if (subChaine1.compare("Connect") == 0)
             {
                 BOOST_LOG_TRIVIAL(trace) << "In Connect"; //TODO: deleteme
 				CDM::Connect();
 				CDM::Configure(); // Sets default parameters
 
+				/* Standby stuff and tests
+				// Checks if stanby is supported. Return 1 because it is supported.
+				ULONG ulValue = IS_GET_STATUS;
+				ULONG nRetu = is_CameraStatus(hCam, IS_STANDBY_SUPPORTED, ulValue);
+				cout << nRetu << endl;
+				// Check the status of standby. Return 0 because currently not in standby.
+				ulValue = IS_GET_STATUS;
+				nRetu = is_CameraStatus(hCam, IS_STANDBY, ulValue);
+				cout << nRetu << endl;
+				// Activates standby. Returns 0 because command was successfully executed.
+				ulValue = 1;
+				nRetu = is_CameraStatus(hCam, IS_STANDBY, ulValue);
+				cout << nRetu << endl;	
+				// Check the status of standby. Return 1 because currently in standby.
+				ulValue = IS_GET_STATUS;
+				nRetu = is_CameraStatus(hCam, IS_STANDBY, ulValue);
+				cout << nRetu << endl;			
+				// Deactivates standby. Returns 0 because command was successfully executed.
+				ulValue = 0;
+				nRetu = is_CameraStatus(hCam, IS_STANDBY, ulValue);
+				cout << nRetu << endl;
+				// Check the status of standby. Return 0 because currently not in standby.
+				ulValue = IS_GET_STATUS;
+				nRetu = is_CameraStatus(hCam, IS_STANDBY, ulValue);
+				cout << nRetu << endl; */
 				
-
-
             }
+			
 			if (subChaine1.compare("Disconnect") == 0)
             {
 				CDM::Disconnect();
             }
+			
 			if (subChaine1.compare("Configure") == 0)
             {	
-				//TODO: check what will happen if some of the parameters missing. The code below assumes that you received everything!
+				//TODO: check what will happen if some of the parameters missing. The code below assumes that you received everything! Need to implement some safety guard.
 				std::vector<std::string> results;
 				boost::split(results, subChaine2, [](char c){return c == ' ';});		
 
 				// TODO:get the returning string value and return it to OPCUA		
 				string config_message = CDM::Configure(stoi(results[0]), stod(results[1]), stod(results[2]), stoi(results[3]), stof(results[4]), results[5]);
+            }
 
+			if (subChaine1.compare("Comment") == 0)
+            {	
+				// TODO: Make some parsing/safety checks. best inside Comment function.
+				CDM::Comment(subChaine2);
+            }
+
+			if (subChaine1.compare("GetImage") == 0)
+            {	
+				CDM::GetImage();
             }
         }
     }
@@ -185,6 +213,17 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
     //sleep(3);
 
     return ret;
+}
+
+int CDM::GetImage()
+{
+
+}
+
+int CDM::Comment(string comment)
+{
+	this->comment = comment;
+	SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, this->comment);
 }
 
 string CDM::Configure(int nPixelClock, double exposure, double fps, int gain, float n_images_integrate, string pixel_format)
@@ -219,27 +258,30 @@ string CDM::Configure(int nPixelClock, double exposure, double fps, int gain, fl
 	is_SetHardwareGain(hCam, gain, 14, 0, 32); // Master, red, green, blue
 	int master_gain = is_SetHardwareGain(hCam, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER); 
 	SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, master_gain);
-	/* 	int master = is_SetHardwareGain(hCam, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER); 
-	int red = is_SetHardwareGain(hCam, IS_GET_RED_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER); 
-	int green = is_SetHardwareGain(hCam, IS_GET_GREEN_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER); 
-	int blue = is_SetHardwareGain(hCam, IS_GET_BLUE_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER); 
-	cout << master << " " << red << " " << green << " " << blue << endl; */
 
 	// Set number of images to integrate
 	// TODO: Implement this. For now it is just 1.
 	SetDatapointThread *m_SetDatapointThread_n_images_integrate = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.numIntegrateImage.numIntegrateImage_v", 2, 1);
 
-	// Set image format
+	// Set Display Mode
+	nRet = is_SetDisplayMode(hCam, IS_SET_DM_DIB);
+    std::cout << "SetDisplayMode returned " << nRet << std::endl;
+    
+	// Set Color Mode
+	nRet = is_SetColorMode(hCam, pixel_formats.left.at(pixel_format));
+    std::cout << "SetColorMode returned " << nRet << std::endl;
+	nRet = is_SetColorMode(hCam, IS_GET_COLOR_MODE);
+	std::cout << "GetColorMode returned " << pixel_formats.right.at(nRet) << std::endl;
+	SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, pixel_formats.right.at(nRet));
+
+	//TODO: Check if the fps, exposure, pixel clock are still after pixel format setting.
 	
-
-	SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, pixel_format);
-
+	
 	//Call destructors?
 
-
-
-	return "Message";
+	return "Message status"; //TODO: You should return errors here.
 }
+
 
 int CDM::Connect()
 {
@@ -252,6 +294,7 @@ int CDM::Connect()
     }
 
 	is_SetErrorReport (hCam, IS_ENABLE_ERR_REP);
+	insert_pixel_formats();
 
 	nRet = is_ResetToDefault(hCam); //Resets to default values
 	if (nRet != IS_SUCCESS)

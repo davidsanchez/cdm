@@ -3,12 +3,12 @@
 
 #include <cstring>
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <iostream>
 #include <ctime>
 #include <iomanip> // Used for setprecision
 #include <cmath>
@@ -17,6 +17,8 @@
 #include "pluginsBase.h"	//TODO: move this to .h file? Was in .cpp before
 #include "lappThread.h" // needed for MOS
 
+#include <ueye.h> // IDS camera
+
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/trivial.hpp>
@@ -24,9 +26,8 @@
 #include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/bimap.hpp>
 
-
-#include <ueye.h> // IDS camera
 
 namespace logging = boost::log;
 namespace keywords = boost::log::keywords;
@@ -157,6 +158,8 @@ public:
     int Connect();
     int Disconnect();
     std::string Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, float n_images_integrate=1, std::string pixel_format="IS_CM_MONO8");
+    int Comment(std::string comment);
+    int GetImage();
 
 //private:
     // Camera stuff
@@ -175,6 +178,19 @@ public:
     double dblFrameRateToSet = 10.0; // if set to 0.0 the max possible fps will be set
     IS_RECT rectAOI;
     int nRet;
+
+    std::string comment = "";
+
+    typedef boost::bimap< std::string, int > bimap;
+    bimap pixel_formats;
+    
+    void insert_pixel_formats()
+    {
+        pixel_formats.insert({"IS_CM_MONO8", IS_CM_MONO8});
+        pixel_formats.insert({"IS_CM_SENSOR_RAW8", IS_CM_SENSOR_RAW8});
+        pixel_formats.insert({"IS_CM_SENSOR_RAW16", IS_CM_SENSOR_RAW16});
+        
+    }
 
 
 private:
