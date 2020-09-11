@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<OPCUA xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://lappweb.in2p3.fr/~panazol/xsd/v3_0_0/MOS_OPCUA.xsd">
+<!-- <OPCUA xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://lappweb.in2p3.fr/~panazol/xsd/v2_0_0/MOS_OPCUA.xsd"> -->
+<OPCUA xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://lappweb.in2p3.fr/~panazol/xsd/v2_0_0/dict_device.xsd">        
         <!--
  *
  * ***********************************************************
@@ -60,6 +61,10 @@
                         <Instruction>
                                 <Name>GetImage_Instruction</Name>
                                 <Cmd>GetImage</Cmd>
+                        </Instruction>
+                        <Instruction>
+                                <Name>GetMultipleImages_Instruction</Name>
+                                <Cmd>GetMultipleImages</Cmd>
                         </Instruction>
                         <Instruction>
                                 <Name>Start_Instruction</Name>
@@ -255,7 +260,7 @@
                                         <Max>100</Max>
                                 </Range>
                         </Argument>
-                        <Argument>
+                        <!-- <Argument>
                                 <Name>Input_number_of_images_to_integrate</Name>
                                 <Type>float</Type>
                                 <Access>Input</Access>
@@ -263,7 +268,7 @@
                                         <Min>1</Min>
                                         <Max>50</Max>
                                 </Range>
-                        </Argument>
+                        </Argument> -->
                         <Argument>
                                 <Name>Input_pixel_format</Name>
                                 <Type>string</Type>
@@ -311,6 +316,26 @@
                         </Argument>
                         <DeviceInstruction>
                                 <Value>GetImage_Instruction</Value>
+                        </DeviceInstruction>
+                </FSM>
+                <FSM>
+                        <NameFSM>GetMultipleImages</NameFSM>
+                        <Argument>
+                                <Name>N_images</Name>
+                                <Type>int32</Type>
+                                <Access>Input</Access>
+                                <Range>
+                                        <Min>1</Min>
+                                        <Max>500</Max>
+                                </Range>
+                        </Argument>
+                        <Argument>
+                                <Name>Return_value</Name>
+                                <Type>string</Type>
+                                <Access>Output</Access>
+                        </Argument>
+                        <DeviceInstruction>
+                                <Value>GetMultipleImages_Instruction</Value>
                         </DeviceInstruction>
                 </FSM>
                 <FSM>
@@ -608,7 +633,7 @@
                         </Info> -->
                                 <Name>imagePath</Name>
                                 <Type>string</Type>
-                                <ArraySize>0</ArraySize>
+                                <ArraySize>10</ArraySize>
                                 <Multiplicity>1</Multiplicity>
                                 <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
                                 <DefaultValue>0</DefaultValue>

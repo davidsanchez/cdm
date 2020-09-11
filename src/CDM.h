@@ -19,6 +19,11 @@
 
 #include <ueye.h> // IDS camera
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/video/video.hpp>
+#include <opencv2/opencv.hpp>
+
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/trivial.hpp>
@@ -48,6 +53,18 @@ public:
         m_data_vbyte = data;
 
         m_varType = varType::isVectorByte;
+        start(&m_varType);
+    };
+
+    SetDatapointThread(DataAccessClientOPCUA *dataAccessClientOPCUA, std::string datapointName, int nameSpace,
+                       std::vector<std::string> data)
+    {
+        m_dataAccessClientOPCUA = dataAccessClientOPCUA;
+        m_datapointName = datapointName;
+        m_nameSpace = nameSpace;
+        m_data_vstring = data;
+
+        m_varType = varType::isVectorString;
         start(&m_varType);
     };
 
@@ -100,6 +117,7 @@ public:
     };
 
     ~SetDatapointThread(){};
+    
     void *run(void *params)
     {
         //  std::string temString = m_datapointName + "._Done";
@@ -107,6 +125,8 @@ public:
 
         if (*(static_cast<varType *>(params)) == varType::isVectorByte)
             m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vbyte);
+        else if (*(static_cast<varType *>(params)) == varType::isVectorString)
+            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vstring);
         else if (*(static_cast<varType *>(params)) == varType::isString)
             m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_str);
         else if (*(static_cast<varType *>(params)) == varType::isInt)
@@ -120,12 +140,14 @@ public:
 private:
     int m_nameSpace;
     std::string m_datapointName;
-    std::vector<Byte> m_data_vbyte;
-    std::string m_data_str;
+    DataAccessClientOPCUA *m_dataAccessClientOPCUA;
+
     int m_data_int;
     float m_data_float;
     double m_data_double;
-    DataAccessClientOPCUA *m_dataAccessClientOPCUA;
+    std::vector<Byte> m_data_vbyte;
+    std::vector<std::string> m_data_vstring;
+    std::string m_data_str;  
 
     enum varType
     {
@@ -134,7 +156,8 @@ private:
         isFloat = 2,
         isDouble = 3,
         isString = 4, 
-        isVectorByte = 5
+        isVectorByte = 5, 
+        isVectorString = 6
     };
     varType m_varType = varType::isNULL;
 };
@@ -157,9 +180,10 @@ public:
 
     int Connect();
     int Disconnect();
-    std::string Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, float n_images_integrate=1, std::string pixel_format="IS_CM_MONO8");
+    std::string Configure(int nPixelClock=216, double exposure=1000, double fps=1, int gain=0, std::string pixel_format="IS_CM_MONO8");
     int Comment(std::string comment);
     int GetImage();
+    int GetMultipleImages(int n_images);
 
 //private:
     // Camera stuff
@@ -167,8 +191,11 @@ public:
     SENSORINFO sensorinfo;
     CAMINFO camerainfo;
     HWND hWndDisplay = NULL; //DIB mode will be used for display
-    char *pcImageMemory;
+    char *pcImageMemory = NULL;
     int nMemoryId = 0;
+
+    uint formatID = 36;
+
     
     // Need to find out the memory size of the pixel and the colour mode
     int iColorMode = IS_CM_MONO8; //IS_CM_SENSOR_RAW16;

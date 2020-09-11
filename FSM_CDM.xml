@@ -35,6 +35,12 @@
 		<AutomaticChangeTransition>true</AutomaticChangeTransition>
 	</TransitionFSM>
 	<TransitionFSM>
+		<Name>GetMultipleImages</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
 		<Name>Start</Name>
 		<StateCondition>1</StateCondition>
 		<FinalTransition>2</FinalTransition>
