@@ -65,10 +65,20 @@
                         <Instruction>
                                 <Name>GetMultipleImages_Instruction</Name>
                                 <Cmd>GetMultipleImages</Cmd>
+                                <Asynchronous>
+                                        <Enable>true</Enable>
+                                        <TimeOut>5</TimeOut>
+                                        <EndInstruction>endMultipleImages_Instruction</EndInstruction>
+                                </Asynchronous>
                         </Instruction>
                         <Instruction>
                                 <Name>Start_Instruction</Name>
                                 <Cmd>Start</Cmd>
+                                <Asynchronous>
+                                        <Enable>true</Enable>
+                                        <TimeOut>5</TimeOut>
+                                        <EndInstruction>endStart_Instruction</EndInstruction>
+                                </Asynchronous>
                         </Instruction>
                         <Instruction>
                                 <Name>Stop_Instruction</Name>

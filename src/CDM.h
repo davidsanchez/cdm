@@ -16,6 +16,7 @@
 
 #include "pluginsBase.h"	//TODO: move this to .h file? Was in .cpp before
 #include "lappThread.h" // needed for MOS
+#include "test_asynchroneThread.h"
 
 #include <ueye.h> // IDS camera
 
@@ -40,6 +41,7 @@ namespace keywords = boost::log::keywords;
 
 class DataAccessClientOPCUA;
 class PluginsBase;
+class TestAsynchroneThread;
 class SetDatapointThread : public LAPPThread
 {
 public:
@@ -117,7 +119,7 @@ public:
     };
 
     ~SetDatapointThread(){};
-    
+
     void *run(void *params)
     {
         //  std::string temString = m_datapointName + "._Done";
@@ -180,10 +182,12 @@ public:
 
     int Connect();
     int Disconnect();
-    std::string Configure(int nPixelClock=216, double exposure=1000, double fps=1, int gain=0, std::string pixel_format="IS_CM_MONO8");
+    std::string Configure(int nPixelClock=216, double exposure=1, double fps=1, int gain=0, std::string pixel_format="IS_CM_MONO8");
     int Comment(std::string comment);
     int GetImage();
     int GetMultipleImages(int n_images);
+    int Start();
+    int Stop();
 
 //private:
     // Camera stuff
@@ -207,6 +211,7 @@ public:
     int nRet;
 
     std::string comment = "";
+    int m_active=0;
 
     typedef boost::bimap< std::string, int > bimap;
     bimap pixel_formats;
@@ -223,6 +228,7 @@ public:
 private:
 
     std::string element_opcua_cdm_image = "MOS_Server.CDM.Image.Image_v";
+    TestAsynchroneThread* m_testThread;
 
     //TODO: Move some of the public stuff to private
 

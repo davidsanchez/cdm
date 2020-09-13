@@ -8,6 +8,7 @@ else()
     #SET(MOS_PATH "/MOS_v4.0.2/")
     SET(MOS_PATH "/MOS_v5.0.1/")
     #SET(MOS_PATH "/MOS_v7.0.0/")
+    #SET(MOS_PATH "/MOS_test.1.3/")
 endif()
 
 if ( EXISTS ${CMAKE_INSTALL_PREFIX} )
@@ -49,6 +50,7 @@ add_library(
         SHARED
         /usr/include/ueye.h
         CDM.cpp
+        test_asynchroneThread.cpp
         #Camera.cpp
         #ImageAnalysis.cpp
         #ImageFITS.cpp
