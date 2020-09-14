@@ -1,27 +1,10 @@
 #include "CDM.h"
+#include "Camera.h"
 
 using namespace std;
-using namespace cv;
+//using namespace cv;
 
-/* int CDM::Connect()
-{
-	// Starts the driver and establishes the connection to the camera
-    is_InitCamera(&hCam, hWndDisplay);
-
-    // You can query information about the sensor type used in the camera
-    is_GetSensorInfo(hCam, &sInfo);
-
-    // Saving the information about the max. image proportions in variables
-    DisplayWidth = sInfo.nMaxWidth;
-    DisplayHeight = sInfo.nMaxHeight;
-
-	// if (sInfo.nColorMode == IS_COLORMODE_BAYER)
-    // {
-    //     // For color camera models use RGB24 mode
-    //     nColorMode = IS_CM_SENSOR_RAW16;
-    //     nBitsPerPixel = 16;
-    // }
-} */
+Camera camera;
 
 void init_logging()
 {
@@ -117,10 +100,18 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
     {
         m_testThread->cmdCloseShutter(datapointName, nameSpace);
     }
-    //if (command.compare("OpenShutters") == 0)
-    if (command.compare("GetMultipleImages") == 0)
+    if (command.compare("OpenShutters") == 0)
     {
         m_testThread->cmdOpenShutter(datapointName, nameSpace);
+    }
+
+    if (command.compare("GetMultipleImages") == 0)
+    {
+        m_testThread->cmdGetMultipleImages(datapointName, nameSpace);
+
+        std::vector<string> data(5, "mytest");
+        SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, data);
+
     }
 
     if (command.compare("Start") == 0)
@@ -131,19 +122,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
     return ret;
 }
 
-int CDM::close()
-{
-    // here we do nothing
-    int ret = 0;
 
-    //Exit camera for example
-    // ...
-
-    // Close connection
-    m_clientOpcUaRef->disconnect();
-
-    return ret;
-}
 
 int CDM::cmd(const std::string &command, int commandStringAck, std::string &result)
 {
@@ -168,8 +147,8 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             if (subChaine1.compare("Connect") == 0)
             {
                 BOOST_LOG_TRIVIAL(trace) << "In Connect"; //TODO: deleteme
-                CDM::Connect();
-                CDM::Configure(); // Sets default parameters
+                camera.Connect();
+                camera.Configure(); // Sets default parameters
 
                 /* Standby stuff and tests
 				// Checks if stanby is supported. Return 1 because it is supported.
@@ -200,7 +179,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
             if (subChaine1.compare("Disconnect") == 0)
             {
-                CDM::Disconnect();
+                camera.Disconnect();
             }
 
             if (subChaine1.compare("Configure") == 0)
@@ -211,7 +190,11 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
                 // TODO:get the returning string value and return it to OPCUA
                 //Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, std::string pixel_format="IS_CM_MONO8");
-                string config_message = CDM::Configure(stoi(results[0]), stod(results[1]), stod(results[2]), stoi(results[3]), results[4]);
+                string config_message = camera.Configure(stoi(results[0]), stod(results[1]), stod(results[2]), stoi(results[3]), results[4]);
+            
+                //SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, nPixelClock);
+
+                // Put here the rest Datapoint Threads or refactor
             }
 
             if (subChaine1.compare("Comment") == 0)
@@ -222,23 +205,28 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
             if (subChaine1.compare("GetImage") == 0)
             {
-                CDM::GetImage();
+                camera.GetImage();
+
+                int m_nameSpace = 2;
+                string temString = "UnitCameraM.AuxControlCameraM.image.image_v";
+                //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
+                //SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), temString, m_nameSpace, data); //pushes the image to the datapoint
             }
 
             if (subChaine1.compare("GetMultipleImages") == 0)
-            {   
+            {
                 // TODO: Move to async part
                 // CDM::GetMultipleImages(atoi(subChaine2.c_str()));
             }
 
             if (subChaine1.compare("Start") == 0)
-            {   
+            {
                 // TODO: Move to async part
                 //CDM::Start();
             }
 
             if (subChaine1.compare("Stop") == 0)
-            {   
+            {
                 //CDM::Stop();
             }
         }
@@ -249,7 +237,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
     return ret;
 }
 
-int CDM::Start()
+/* int CDM::Start()
 {
     cout << "Start command" << endl;
 
@@ -536,14 +524,14 @@ int CDM::GetImage()
         is_FreeImageMem(hCam, pcImageMemory, nMemoryId);
     pcImageMemory = NULL;
 }
-
+ */
 int CDM::Comment(string comment)
 {
     this->comment = comment;
     SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, this->comment);
 }
 
-string CDM::Configure(int nPixelClock, double exposure, double fps, int gain, string pixel_format)
+/* string CDM::Configure(int nPixelClock, double exposure, double fps, int gain, string pixel_format)
 {
     // Set pixel clock
     nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_SET, (void *)&nPixelClock, sizeof(nPixelClock));
@@ -598,8 +586,9 @@ string CDM::Configure(int nPixelClock, double exposure, double fps, int gain, st
 
     return "Message status"; //TODO: You should return errors here.
 }
+ */
 
-int CDM::Connect()
+/* int CDM::Connect()
 {
     nRet = is_InitCamera(&hCam, NULL);
     std::cout << "InitCamera returned " << nRet << std::endl;
@@ -611,9 +600,6 @@ int CDM::Connect()
 
     is_SetErrorReport(hCam, IS_ENABLE_ERR_REP);
     cout << "Set Error Report result: " << nRet << endl;
-
-    //TODO: put explanation here
-    insert_pixel_formats();
 
     nRet = is_ResetToDefault(hCam); //Resets to default values
     if (nRet != IS_SUCCESS)
@@ -652,6 +638,21 @@ int CDM::Disconnect()
     // Disables the hCam camera handle and releases the data structures and memory areas taken up by the uEye camera
     is_ExitCamera(hCam);
     hCam = NULL;
+}
+ */
+
+int CDM::close()
+{
+    // here we do nothing
+    int ret = 0;
+
+    //Exit camera for example
+    // ...
+
+    // Close connection
+    m_clientOpcUaRef->disconnect();
+
+    return ret;
 }
 
 int CDM::get(const std::string &chaine, int commandStringAck, std::vector<boost::any> &tabValue)

@@ -12,7 +12,8 @@
 
 #include "test_asynchroneThread.h"
 #include "dataAccessClientOPCUA.h"
-#include "CDM.h" //TODO: implement this some other way, split file
+
+extern Camera camera;
 
 TestAsynchroneThread::TestAsynchroneThread(DataAccessClientOPCUA *dataAccessClientOPCUA)
 {
@@ -67,6 +68,16 @@ int TestAsynchroneThread::cmdOpenShutter(std::string datapointName, int nameSpac
 	return ret;
 }
 
+int TestAsynchroneThread::cmdGetMultipleImages(std::string datapointName, int nameSpace)
+{
+	int ret = 0;
+	m_cmdGetMultipleImages = true;
+	m_datapointName = datapointName;
+	m_nameSpace = nameSpace;
+
+	return ret;
+}
+
 int TestAsynchroneThread::cmdStart(std::string datapointName, int nameSpace)
 {
 	int ret = 0;
@@ -79,7 +90,6 @@ int TestAsynchroneThread::cmdStart(std::string datapointName, int nameSpace)
 
 void *TestAsynchroneThread::run(void *params)
 {
-	std::cout << "DZ test async" << std::endl;
 	// this method run all the time after calling the method startRun() -> in your squeletonPlugin_for_asynchroneMethodCall.cpp file )
 	// you can stop with m_stop=true with calling the method stop() (when the program finish)
 	// or make a pause with m_pause=true with calling the methods pause() and resume()
@@ -130,7 +140,7 @@ void *TestAsynchroneThread::run(void *params)
 				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
 
 				// ****************** here put the code for closeShutter who take a long time to execute ***************
-				usleep(9000000);
+
 				std::cout << "In async OpenShutter" << std::endl;
 
 				// you can put the outputs arguments in this place to inform the server
@@ -151,6 +161,37 @@ void *TestAsynchroneThread::run(void *params)
 				m_cmdOpenShutter = 0;
 			}
 
+			if (m_cmdGetMultipleImages == 1)
+			{
+				// inform that the command is in progress
+				temString = m_datapointName + "._InProgressBar";
+				t = 1;
+				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
+
+				// ****************** here put the code for Start who take a long time to execute ***************
+				
+				//usleep(9000000); //TODO: delete me
+				camera.GetMultipleImages(10);
+
+
+				// you can put the outputs arguments in this place to inform the server
+				temString = m_datapointName + "._OutputArguments._Val_Retour";
+				tempValue = "command Open : c'est bon c'est fini : JL ";
+				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, tempValue);
+
+				// inform that the command is done
+				temString = m_datapointName + "._Done";
+				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, true);
+
+				// inform that the command is not in progress
+				temString = m_datapointName + "._InProgressBar";
+				t = 0;
+				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
+
+				// reset the command
+				m_cmdGetMultipleImages = 0;
+			}
+
 			if (m_cmdStart == 1)
 			{
 				// inform that the command is in progress
@@ -159,7 +200,6 @@ void *TestAsynchroneThread::run(void *params)
 				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
 
 				// ****************** here put the code for Start who take a long time to execute ***************
-				//CDM::Start();
 
 				// you can put the outputs arguments in this place to inform the server
 				temString = m_datapointName + "._OutputArguments._Val_Retour";

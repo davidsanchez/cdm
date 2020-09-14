@@ -15,6 +15,7 @@
 
 #include "string"
 #include "lappThread.h"
+#include "Camera.h"
 
 typedef unsigned char Byte;
 
@@ -32,6 +33,7 @@ public:
 	int  startRun();
 	int cmdOpenShutter( std::string datapointName, int nameSpace);
 	int cmdCloseShutter( std::string datapointName, int nameSpace);
+	int cmdGetMultipleImages( std::string datapointName, int nameSpace);
 	int cmdStart( std::string datapointName, int nameSpace);
 private:
 	int m_stop;
@@ -39,6 +41,7 @@ private:
 	int m_command;
 	int m_cmdCloseShutter;
 	int m_cmdOpenShutter;
+	int m_cmdGetMultipleImages;
 	int m_cmdStart;
 	int m_nameSpace;
 	std::string m_datapointName;

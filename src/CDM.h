@@ -18,12 +18,12 @@
 #include "lappThread.h" // needed for MOS
 #include "test_asynchroneThread.h"
 
-#include <ueye.h> // IDS camera
+//#include <ueye.h> // IDS camera
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/video/video.hpp>
-#include <opencv2/opencv.hpp>
+// #include <opencv2/core/core.hpp>
+// #include <opencv2/highgui/highgui.hpp>
+// #include <opencv2/video/video.hpp>
+// #include <opencv2/opencv.hpp>
 
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
@@ -32,7 +32,8 @@
 #include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/bimap.hpp>
+//#include <boost/bimap.hpp>
+//#include <boost/assign.hpp>
 
 
 namespace logging = boost::log;
@@ -180,6 +181,9 @@ public:
     int get(const std::string& chaine, int commandStringAck, std::vector<boost::any>& tabValue);
     int set(const std::string& chaine, int commandStringAck, std::vector<boost::any>& tabValue);
 
+    int Comment(std::string comment);
+    std::string comment = "";
+/* 
     int Connect();
     int Disconnect();
     std::string Configure(int nPixelClock=216, double exposure=1, double fps=1, int gain=0, std::string pixel_format="IS_CM_MONO8");
@@ -210,20 +214,18 @@ public:
     IS_RECT rectAOI;
     int nRet;
 
-    std::string comment = "";
     int m_active=0;
 
     typedef boost::bimap< std::string, int > bimap;
     bimap pixel_formats;
     
-    void insert_pixel_formats()
-    {
-        pixel_formats.insert({"IS_CM_MONO8", IS_CM_MONO8});
-        pixel_formats.insert({"IS_CM_SENSOR_RAW8", IS_CM_SENSOR_RAW8});
-        pixel_formats.insert({"IS_CM_SENSOR_RAW16", IS_CM_SENSOR_RAW16});
-        
-    }
+    typedef boost::bimap< std::string, int > bimap;
+    const bimap pixel_formats = boost::assign::list_of< bimap::relation >
+    ( "IS_CM_MONO8", IS_CM_MONO8 )
+    ( "IS_CM_SENSOR_RAW8", IS_CM_SENSOR_RAW8 )
+    ( "IS_CM_SENSOR_RAW16", IS_CM_SENSOR_RAW16 );
 
+ */
 
 private:
 

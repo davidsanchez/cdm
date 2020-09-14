@@ -1,7 +1,6 @@
-[2020-09-13 20:57:04.273304] [0x00007fb0aafb2880] [trace] A trace severity message
-[2020-09-13 20:57:04.273555] [0x00007fb0aafb2880] [debug] A debug severity message
-[2020-09-13 20:57:04.273579] [0x00007fb0aafb2880] [info] An informational severity message
-[2020-09-13 20:57:04.273611] [0x00007fb0aafb2880] [warning] A warning severity message
-[2020-09-13 20:57:04.273632] [0x00007fb0aafb2880] [error] An error severity message
-[2020-09-13 20:57:04.273646] [0x00007fb0aafb2880] [fatal] A fatal severity message
-[2020-09-13 20:57:49.016825] [0x00007fb099b2a700] [trace] In Connect
+[2020-09-14 01:25:40.376483] [0x00007f86badaf880] [trace] A trace severity message
+[2020-09-14 01:25:40.376765] [0x00007f86badaf880] [debug] A debug severity message
+[2020-09-14 01:25:40.376792] [0x00007f86badaf880] [info] An informational severity message
+[2020-09-14 01:25:40.376816] [0x00007f86badaf880] [warning] A warning severity message
+[2020-09-14 01:25:40.376835] [0x00007f86badaf880] [error] An error severity message
+[2020-09-14 01:25:40.376854] [0x00007f86badaf880] [fatal] A fatal severity message

@@ -51,7 +51,7 @@ add_library(
         /usr/include/ueye.h
         CDM.cpp
         test_asynchroneThread.cpp
-        #Camera.cpp
+        Camera.cpp
         #ImageAnalysis.cpp
         #ImageFITS.cpp
         )
