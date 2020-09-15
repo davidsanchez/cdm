@@ -12,6 +12,7 @@
 
 #include <boost/bimap.hpp>
 #include <boost/assign.hpp>
+#include <boost/any.hpp>
 
 class Camera
 {
@@ -24,8 +25,8 @@ public:
 
     int Connect();
     int Disconnect();
-    std::string Configure(int nPixelClock=216, double exposure=1, double fps=1, int gain=0, std::string pixel_format="IS_CM_MONO8");
-    int GetImage();
+    std::vector<boost::any> Configure(int nPixelClock=216, double exposure=1000, double fps=1, int gain=0, std::string pixel_format="IS_CM_MONO8");
+    std::vector<unsigned char> GetImage();
     int GetMultipleImages(int n_images);
     int Start();
     int Stop();

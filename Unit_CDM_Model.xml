@@ -67,7 +67,7 @@
                                 <Cmd>GetMultipleImages</Cmd>
                                 <Asynchronous>
                                         <Enable>true</Enable>
-                                        <TimeOut>5</TimeOut>
+                                        <TimeOut>2</TimeOut>
                                         <EndInstruction>endMultipleImages_Instruction</EndInstruction>
                                 </Asynchronous>
                         </Instruction>
@@ -181,6 +181,8 @@
                                 <Cmd>TBD</Cmd>
                         </Instruction>
                 </Instruction_set>
+
+
 
                 <!--
   * ************************************
@@ -856,6 +858,9 @@
                         </SimpleDatapoint>
 
                 </CompoundDatapoint>
+
+
+
 
 
         </SimpleDevice>

@@ -182,7 +182,7 @@ public:
     int set(const std::string& chaine, int commandStringAck, std::vector<boost::any>& tabValue);
 
     int Comment(std::string comment);
-    std::string comment = "";
+    std::string comment = "TestingDelete";
 /* 
     int Connect();
     int Disconnect();
@@ -244,6 +244,63 @@ private:
     // declare a new method
     int connectOpcUa(std::string url);
 
+    // declare a  new method
+    int connectOpcUa_Drive(std::string url);
+    int connectOpcUa_Relay(std::string url);
+    int connectOpcUa_ECC(std::string url);
+
+    
+    // declare a new attribute
+    DataAccessClientOPCUA* m_clientOpcUaRef_Drive=NULL;
+    DataAccessClientOPCUA* m_clientOpcUaRef_Relay=NULL;
+    DataAccessClientOPCUA* m_clientOpcUaRef_ECC=NULL;
+
+    std::string StarName = "None";
+    //const std::string imagePath = "/home/lstoperator/CDM/images/";
+    const std::string fitsPath = "/home/lstoperator/CDM/fits/";
+    const std::string remoteImagePathPrefix = "/fefs/home/lapp/CDM_Images/";
+
+    int LED_intensity=0;
+    bool OARL_state=0;
+    double zenith = 0;
+    double azimuth = 0;
+    double offset_azimuth = 0;
+    double offset_zenith = 0;
+    double RA = 0;
+    double DEC = 0;
+
+    double get_RA() { return CDM::RA; }
+    double get_DEC() { return CDM::DEC; }
+    double get_Azimuth() { return CDM::azimuth; }
+    double get_Zenith() { return CDM::zenith; }
+    //double get_exposure() { return CDM::exposure; }
+    double get_OffsetAzimuth() { return CDM::offset_azimuth; }
+    double get_OffsetZenith() { return CDM::offset_zenith; }
+    std::string get_StarName() { return CDM::StarName; }
+    int get_LED_intensity() {return CDM::LED_intensity;}
+    bool get_OARL_state() {return CDM::OARL_state;}
+
+
+    struct Image_header_info
+    {
+        std::string starName;
+        //double exposure;
+        double RA;
+        double DEC;
+        double zenith;
+        double azimuth;
+        //double offset_azimuth;
+        //double offset_zenith;
+        int LED_intensity;
+        bool OARL_state;
+    }image_header_info;
+
+    double acquire_RA();
+    double acquire_DEC();
+    double acquire_Azimuth();
+    double acquire_Zenith();
+    int acquire_LED_intensity();
+    bool acquire_OARL_state();
 
 };
 #endif //  CDM_H_

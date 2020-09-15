@@ -1,10 +1,87 @@
 #include "CDM.h"
 #include "Camera.h"
 
-using namespace std;
-//using namespace cv;
+#include <boost/any.hpp>
 
+using namespace std;
+using namespace cv;
+
+// initialize object of Camera class
 Camera camera;
+
+double CDM::acquire_RA()
+{
+    std::string finalnode = "Drive.DriveControl.RA.RA_v";
+    int nameSpace = 2;
+    //short int element; //(change with the good type of the datapoint float/int/string/.....)
+    float element = 0;
+    if (m_clientOpcUaRef_Drive != NULL)
+        CDM::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
+    cout << "RA is: " << element << endl;
+    RA = element;
+}
+
+double CDM::acquire_DEC()
+{
+    std::string finalnode = "Drive.DriveControl.Dec.Dec_v";
+    int nameSpace = 2;
+    //short int element; //(change with the good type of the datapoint float/int/string/.....)
+    float element = 0;
+    if (m_clientOpcUaRef_Drive != NULL)
+        CDM::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
+    cout << "Dec is: " << element << endl;
+    DEC = element;
+}
+
+double CDM::acquire_Azimuth()
+{
+    std::string finalnode = "Drive.DriveControl.CurrentPosition.azimuth_position.azimuth_position_v";
+    int nameSpace = 2;
+    //short int element; //(change with the good type of the datapoint float/int/string/.....)
+    float element = 0;
+    if (m_clientOpcUaRef_Drive != NULL)
+        CDM::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
+    cout << "Azimuth is: " << element << endl;
+    azimuth = element;
+}
+
+double CDM::acquire_Zenith()
+{
+    std::string finalnode = "Drive.DriveControl.CurrentPosition.elevation_position.elevation_position_v";
+    int nameSpace = 2;
+    //short int element; //(change with the good type of the datapoint float/int/string/.....)
+    float element = 0;
+    if (m_clientOpcUaRef_Drive != NULL)
+        CDM::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
+    cout << "Zenith is: " << element << endl;
+    zenith = element;
+}
+
+int CDM::acquire_LED_intensity()
+{
+    std::string finalnode = "ECC_LST.ECC.Monitoring.LEDPositions.Led_01.Led_01_v";
+    int nameSpace = 2;
+    //short int element; //(change with the good type of the datapoint float/int/string/.....)
+    int element = 0;
+    if(m_clientOpcUaRef_ECC!=NULL)
+        CDM::m_clientOpcUaRef_ECC->getDatapoint(finalnode, nameSpace, element);
+    cout << "LED intensity is: " << element<< endl;
+    LED_intensity = element;
+}
+
+bool CDM::acquire_OARL_state()
+{
+    std::string finalnode = "PLC 400 Server.CPU 414-3 PNDP.DB_IO_Module1_DishCenter.OARL_On";
+    int nameSpace = 7;
+    //short int element; //(change with the good type of the datapoint float/int/string/.....)
+    bool element = 0;
+    if(m_clientOpcUaRef_Relay!=NULL)
+        CDM::m_clientOpcUaRef_Relay->getDatapoint(finalnode, nameSpace, element);
+    cout << "OARL status is: " << element<< endl;
+    OARL_state = element;
+}
+
+
 
 void init_logging()
 {
@@ -86,16 +163,28 @@ int CDM::afterStart()
     m_testThread = new TestAsynchroneThread(getDataAccessClientOPCUARef());
     ret = m_testThread->startRun();
 
+    // Trying to access other OPCUA server
+	//connectOpcUa("opc.tcp://address:port"); // example opc.tcp://lappc-f578l:48080
+	int connection_result_Drive = connectOpcUa_Drive("opc.tcp://10.200.100.105:48010"); //This is Drive OPCUA. Old = opc.tcp://10.1.8.3:48010
+	int connection_result_Relay = connectOpcUa_Relay("opc.tcp://10.1.10.5:4845"); //This is Central Dish Cabinet Relay. Used for toggling SG camera power. Old = opc.tcp://10.1.8.3:48010
+	int connection_result_ECC = connectOpcUa_ECC("opc.tcp://10.1.4.66:4841"); //This is ECC OPCUA.
+
+	cout << "Drive status OPCUA: "<< connection_result_Drive << endl;
+	cout << "Central dish cabinet relay status OPCUA: "<< connection_result_Relay << endl;
+	cout << "ECC status OPCUA: "<< connection_result_ECC << endl;
+	cout << "After start finished!" << endl;
+
     return ret;
 }
 
 int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::string &datapointName, int nameSpace, std::string &result)
 {
+    printf("CDM::cmdAsynch\n");
+    cout << "Async command is: " << command << endl;
     cout << "Datapoint name: " << datapointName << endl;
     // not use in this example
     int ret = 0;
     result = "";
-    printf("CDM::cmdAsynch\n");
     if (command.compare("CloseShutters") == 0)
     {
         m_testThread->cmdCloseShutter(datapointName, nameSpace);
@@ -109,6 +198,13 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
     {
         m_testThread->cmdGetMultipleImages(datapointName, nameSpace);
 
+        acquire_Azimuth();
+        acquire_Zenith();
+        acquire_RA();
+        acquire_DEC();
+        acquire_LED_intensity();
+        acquire_OARL_state();
+
         std::vector<string> data(5, "mytest");
         SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, data);
 
@@ -121,8 +217,6 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
     return ret;
 }
-
-
 
 int CDM::cmd(const std::string &command, int commandStringAck, std::string &result)
 {
@@ -148,7 +242,15 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             {
                 BOOST_LOG_TRIVIAL(trace) << "In Connect"; //TODO: deleteme
                 camera.Connect();
-                camera.Configure(); // Sets default parameters
+                std::vector<boost::any> configure_settings = camera.Configure(); // Sets default parameters
+
+                //Todo: add this part as a function
+                SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, boost::any_cast<int> (configure_settings[0]));
+                SetDatapointThread *m_SetDatapointThread_fps = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.FPS.FPS_v", 2, boost::any_cast<double>(configure_settings[1]));
+                SetDatapointThread *m_SetDatapointThread_exposure = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, boost::any_cast<double> ((configure_settings[2])));
+                SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, boost::any_cast<int> ((configure_settings[3])));
+                SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, boost::any_cast<string> (configure_settings[4]));
+
 
                 /* Standby stuff and tests
 				// Checks if stanby is supported. Return 1 because it is supported.
@@ -190,9 +292,15 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
                 // TODO:get the returning string value and return it to OPCUA
                 //Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, std::string pixel_format="IS_CM_MONO8");
-                string config_message = camera.Configure(stoi(results[0]), stod(results[1]), stod(results[2]), stoi(results[3]), results[4]);
-            
-                //SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, nPixelClock);
+                std::vector<boost::any> configure_settings = camera.Configure(stoi(results[0]), stod(results[1]), stod(results[2]), stoi(results[3]), results[4]);
+
+                //Todo: add this part as a function
+                SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, boost::any_cast<int> (configure_settings[0]));
+                SetDatapointThread *m_SetDatapointThread_fps = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.FPS.FPS_v", 2, boost::any_cast<double>(configure_settings[1]));
+                SetDatapointThread *m_SetDatapointThread_exposure = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, boost::any_cast<double> ((configure_settings[2])));
+                SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, boost::any_cast<int> ((configure_settings[3])));
+                SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, boost::any_cast<string> (configure_settings[4]));
+    
 
                 // Put here the rest Datapoint Threads or refactor
             }
@@ -205,18 +313,30 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
             if (subChaine1.compare("GetImage") == 0)
             {
-                camera.GetImage();
+
+                image_header_info.azimuth = acquire_Azimuth();
+                image_header_info.zenith = acquire_Zenith();
+                image_header_info.RA = acquire_RA();
+                image_header_info.DEC = acquire_DEC();
+                image_header_info.LED_intensity = acquire_LED_intensity();
+                image_header_info.OARL_state = acquire_OARL_state();
+
+                vector<unsigned char> displayImage = camera.GetImage();
 
                 int m_nameSpace = 2;
-                string temString = "UnitCameraM.AuxControlCameraM.image.image_v";
+                string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
                 //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
-                //SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), temString, m_nameSpace, data); //pushes the image to the datapoint
+                SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), temString, m_nameSpace, displayImage); //pushes the image to the datapoint
+
+
+                
             }
 
             if (subChaine1.compare("GetMultipleImages") == 0)
             {
                 // TODO: Move to async part
                 // CDM::GetMultipleImages(atoi(subChaine2.c_str()));
+
             }
 
             if (subChaine1.compare("Start") == 0)
@@ -229,6 +349,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             {
                 //CDM::Stop();
             }
+
         }
     }
     // example here do nothing but wait
@@ -237,409 +358,11 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
     return ret;
 }
 
-/* int CDM::Start()
-{
-    cout << "Start command" << endl;
-
-    int i_images_taken = 0;
-    int n_allocated_memories = 10;
-    char *pcImageMemory_arr[n_allocated_memories];
-    int nMemoryId_arr[n_allocated_memories];
-    for (int i = 0; i < n_allocated_memories; i++)
-    {
-        nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-        std::cout << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
-        is_AddToSequence(hCam, pcImageMemory, nMemoryId);
-
-        pcImageMemory_arr[i] = pcImageMemory;
-        nMemoryId_arr[i] = nMemoryId;
-    }
-    is_InitImageQueue(hCam, 0);
-
-    nRet = is_CaptureVideo(hCam, IS_WAIT);
-    std::cout << "is_CaptureVideo returned " << nRet << std::endl;
-    if(nRet == 0)
-        m_active=1;
-
-    int loop_image_count = 0;
-    int64_t duration_count = 0;
-
-    while (m_active==1)
-    {
-        // Use is_LockSeqBuf when processing image?
-
-        char *pBuffer = NULL;
-        nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
-
-        if (nRet == IS_SUCCESS)
-        {
-            {
-                auto tp_start = std::chrono::high_resolution_clock::now();
-
-                //Mat src = cv::Mat(iHeight, iWidth, CV_8UC3, (uchar *)pBuffer); //DZ , 3*iWidth
-                Mat src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer); //DZ , 3*iWidth
-
-                auto tp_stop = std::chrono::high_resolution_clock::now();
-                auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
-                duration_count += ms.count();
-
-                if (++loop_image_count == 100)
-                {
-                    std::cout << "Duration: " << duration_count / loop_image_count << std::endl;
-                    loop_image_count = 0;
-                    duration_count = 0;
-                }
-            }
-            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
-            i_images_taken++;
-        }
-        else if (nRet == IS_CAPTURE_STATUS)
-        {
-
-            UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
-            INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
-
-            std::cout << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
-            std::cout << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
-            std::cout << "\tApiNoDestMem:    " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_NO_DEST_MEM] << std::endl;
-            std::cout << "\tApiImageLocked:  " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_IMAGE_LOCKED] << std::endl;
-            std::cout << "\tUsbTransferFail: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_USB_TRANSFER_FAILED] << std::endl;
-
-            //	wLinkSpeed_Mb
-            // The camera has the device ID 1
-
-            UINT nDeviceId = 1;
-            IS_DEVICE_INFO deviceInfo;
-            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
-            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
-
-            if (nRet == IS_SUCCESS)
-
-            {
-
-                WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-                std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
-            }
-
-            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
-        }
-        else
-        {
-            std::cout << "is_WaitForNextImage : " << nRet << std::endl;
-            //	wLinkSpeed_Mb
-            // The camera has the device ID 1
-
-            UINT nDeviceId = 1;
-            IS_DEVICE_INFO deviceInfo;
-            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
-            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
-
-            WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-            std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
-        }
-    }
-
-
-}
-
-int CDM::Stop()
-{
-    // Free the OpenCV memory?
-    // Free the allocated memories
-
-    nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
-    cout << "is_StopLiveVideo result: " << nRet << endl;
-
-    nRet = is_ExitImageQueue(hCam);
-    cout << "is_ExitImageQueue: " << nRet << endl;
-
-    nRet = is_ClearSequence(hCam);
-    cout << "is_ClearSequence: " << nRet << endl;
-
-    // TODO: You have to do this
-    // for (int i = 0; i < n_allocated_memories; i++)
-    // {
-    //     nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
-    //     cout << "is_FreeImageMem: " << nRet << endl;
-    // }
-
-}
-
-int CDM::GetMultipleImages(int n_images)
-{
-    int i_images_taken = 0;
-    int n_allocated_memories = 10;
-    char *pcImageMemory_arr[n_allocated_memories];
-    int nMemoryId_arr[n_allocated_memories];
-    for (int i = 0; i < n_allocated_memories; i++)
-    {
-        nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-        std::cout << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
-        ;
-        is_AddToSequence(hCam, pcImageMemory, nMemoryId);
-
-        pcImageMemory_arr[i] = pcImageMemory;
-        nMemoryId_arr[i] = nMemoryId;
-    }
-    is_InitImageQueue(hCam, 0);
-
-    nRet = is_CaptureVideo(hCam, IS_WAIT);
-    std::cout << "is_CaptureVideo returned " << nRet << std::endl;
-
-    int loop_image_count = 0;
-    int64_t duration_count = 0;
-
-    while (i_images_taken < n_images)
-    {
-        // Use is_LockSeqBuf when processing image?
-
-        char *pBuffer = NULL;
-        nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
-
-        if (nRet == IS_SUCCESS)
-        {
-            {
-                auto tp_start = std::chrono::high_resolution_clock::now();
-
-                //Mat src = cv::Mat(iHeight, iWidth, CV_8UC3, (uchar *)pBuffer); //DZ , 3*iWidth
-                Mat src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer); //DZ , 3*iWidth
-
-                auto tp_stop = std::chrono::high_resolution_clock::now();
-                auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
-                duration_count += ms.count();
-
-                if (++loop_image_count == 100)
-                {
-                    std::cout << "Duration: " << duration_count / loop_image_count << std::endl;
-                    loop_image_count = 0;
-                    duration_count = 0;
-                }
-            }
-            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
-            i_images_taken++;
-        }
-        else if (nRet == IS_CAPTURE_STATUS)
-        {
-
-            UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
-            INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
-
-            std::cout << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
-            std::cout << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
-            std::cout << "\tApiNoDestMem:    " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_NO_DEST_MEM] << std::endl;
-            std::cout << "\tApiImageLocked:  " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_IMAGE_LOCKED] << std::endl;
-            std::cout << "\tUsbTransferFail: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_USB_TRANSFER_FAILED] << std::endl;
-
-            //	wLinkSpeed_Mb
-            // The camera has the device ID 1
-
-            UINT nDeviceId = 1;
-            IS_DEVICE_INFO deviceInfo;
-            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
-            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
-
-            if (nRet == IS_SUCCESS)
-
-            {
-
-                WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-                std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
-            }
-
-            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
-        }
-        else
-        {
-            std::cout << "is_WaitForNextImage : " << nRet << std::endl;
-            //	wLinkSpeed_Mb
-            // The camera has the device ID 1
-
-            UINT nDeviceId = 1;
-            IS_DEVICE_INFO deviceInfo;
-            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
-            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
-
-            WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-            std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
-        }
-    }
-
-    // Free the OpenCV memory?
-    // Free the allocated memories
-
-    nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
-    cout << "is_StopLiveVideo result: " << nRet << endl;
-
-    nRet = is_ExitImageQueue(hCam);
-    cout << "is_ExitImageQueue: " << nRet << endl;
-
-    nRet = is_ClearSequence(hCam);
-    cout << "is_ClearSequence: " << nRet << endl;
-
-    for (int i = 0; i < n_allocated_memories; i++)
-    {
-        nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
-        cout << "is_FreeImageMem: " << nRet << endl;
-    }
-
-    std::vector<string> data(5, "mytest");
-    SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, data);
-}
-
-int CDM::GetImage()
-{
-    nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-    printf("Status is_AllocImageMem %d\n", nRet);
-    //Activate memory for storing
-    nRet = is_SetImageMem(hCam, pcImageMemory, nMemoryId);
-    printf("Status is_SetImageMem %d\n", nRet);
-    int nRet = is_FreezeVideo(hCam, IS_WAIT);
-    printf("Status is_FreezeVideo %d\n", nRet);
-
-    // TODO: Add pushing image to a datapoint and making a .fits file
-    // Actually make a function that processes the image when it has been taken.y
-
-    cv::Mat src, dst;
-    if (iBitsPerPixel == 8)
-        src = cv::Mat(3684, 4912, CV_8UC1, (uchar *)pcImageMemory);
-
-    // Transpose + Flip = 90 deg rotation
-    transpose(src, src);
-    flip(src, src, 1);
-
-    vector<int> compression_params;
-    compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
-    compression_params.push_back(0);
-    resize(src, dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
-
-    vector<unsigned char> data;
-    cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
-    int m_nameSpace = 2;
-    string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
-    //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
-    SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), temString, m_nameSpace, data); //pushes the image to the datapoint
-
-    // Free the allocated buffer
-    if (pcImageMemory != NULL)
-        is_FreeImageMem(hCam, pcImageMemory, nMemoryId);
-    pcImageMemory = NULL;
-}
- */
 int CDM::Comment(string comment)
 {
     this->comment = comment;
     SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, this->comment);
 }
-
-/* string CDM::Configure(int nPixelClock, double exposure, double fps, int gain, string pixel_format)
-{
-    // Set pixel clock
-    nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_SET, (void *)&nPixelClock, sizeof(nPixelClock));
-    std::cout << "IS_PIXELCLOCK_CMD_SET returned " << nRet << ". tried to set pixel clock to = " << nPixelClock << std::endl;
-    // Get current pixel clock
-    nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_GET, (void *)&nPixelClock, sizeof(nPixelClock));
-    std::cout << "IS_PIXELCLOCK_CMD_GET returned " << nRet << ". The current pixel clock is = " << nPixelClock << std::endl;
-    SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, nPixelClock);
-
-    // Set frame rate
-    double new_fps;
-    nRet = is_SetFrameRate(hCam, fps, (double *)&new_fps);
-    std::cout << "SetFrameRate returned " << nRet << ". New framerate = " << new_fps << std::endl;
-    is_SetFrameRate(hCam, IS_GET_FRAMERATE, &fps);
-    std::cout << "Applied framerate " << fps << " fps." << std::endl;
-    SetDatapointThread *m_SetDatapointThread_fps = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.FPS.FPS_v", 2, fps);
-
-    // Set exposure
-    double current_exposure;
-    is_Exposure(hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, (void *)&current_exposure, sizeof(current_exposure));
-    std::cout << "Current exposure is: " << current_exposure << std::endl;
-    std::cout << "Value of exposure to be set is : " << exposure << std::endl;
-    is_Exposure(hCam, IS_EXPOSURE_CMD_SET_EXPOSURE, (void *)&exposure, sizeof(current_exposure));
-    std::cout << "Set exposure is: " << exposure << std::endl;
-    is_Exposure(hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, (void *)&current_exposure, sizeof(current_exposure));
-    std::cout << "Current exposure is: " << current_exposure << std::endl;
-    SetDatapointThread *m_SetDatapointThread_exposure = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, current_exposure);
-
-    // Set hardware gain
-    is_SetHardwareGain(hCam, gain, 14, 0, 32); // Master, red, green, blue
-    int master_gain = is_SetHardwareGain(hCam, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER);
-    SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, master_gain);
-
-    // Set Display Mode
-    nRet = is_SetDisplayMode(hCam, IS_SET_DM_DIB);
-    std::cout << "SetDisplayMode returned " << nRet << std::endl;
-
-    // Set Color Mode
-    nRet = is_SetColorMode(hCam, pixel_formats.left.at(pixel_format));
-    std::cout << "SetColorMode returned " << nRet << std::endl;
-    nRet = is_SetColorMode(hCam, IS_GET_COLOR_MODE);
-    std::cout << "GetColorMode returned " << pixel_formats.right.at(nRet) << std::endl;
-    SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, pixel_formats.right.at(nRet));
-
-    // Setting image format
-    nRet = is_ImageFormat(hCam, IMGFRMT_CMD_SET_FORMAT, &formatID, sizeof(formatID));
-    printf("Status ImageFormat %d\n", nRet);
-
-    //TODO: Check if the fps, exposure, pixel clock are still after pixel format setting.
-
-    //Call destructors?
-
-    return "Message status"; //TODO: You should return errors here.
-}
- */
-
-/* int CDM::Connect()
-{
-    nRet = is_InitCamera(&hCam, NULL);
-    std::cout << "InitCamera returned " << nRet << std::endl;
-    if (nRet != IS_SUCCESS)
-    {
-        std::cout << "Failed to open camera." << std::endl;
-        return 1;
-    }
-
-    is_SetErrorReport(hCam, IS_ENABLE_ERR_REP);
-    cout << "Set Error Report result: " << nRet << endl;
-
-    nRet = is_ResetToDefault(hCam); //Resets to default values
-    if (nRet != IS_SUCCESS)
-    {
-        std::cout << "Failed to reset to default values." << std::endl;
-        return 1;
-    }
-
-    nRet = is_GetCameraInfo(hCam, &camerainfo);
-    if (nRet != IS_SUCCESS)
-    {
-        std::cout << "Failed to retrieve camera info." << std::endl;
-    }
-
-    nRet = is_GetSensorInfo(hCam, &sensorinfo);
-    if (nRet != IS_SUCCESS)
-    {
-        std::cout << "Failed to retrieve sensor info." << std::endl;
-    }
-    std::cout << "Sensor model " << sensorinfo.strSensorName << ". Camera serial no " << camerainfo.SerNo << std::endl;
-
-    nRet = is_AOI(hCam, IS_AOI_IMAGE_GET_AOI, (void *)&rectAOI, sizeof(rectAOI));
-    if (nRet != IS_SUCCESS)
-    {
-        std::cout << "Failed to retrieve AOI info." << std::endl;
-    }
-    iWidth = rectAOI.s32Width;
-    iHeight = rectAOI.s32Height;
-    std::cout << "Image size is " << iWidth << "x" << iHeight << std::endl;
-}
-
-int CDM::Disconnect()
-{
-    // You should release the reserved images in memory here. Like OpenCV Mat and IDS images
-
-    // Disables the hCam camera handle and releases the data structures and memory areas taken up by the uEye camera
-    is_ExitCamera(hCam);
-    hCam = NULL;
-}
- */
 
 int CDM::close()
 {
@@ -666,6 +389,126 @@ int CDM::set(const std::string &chaine, int commandStringAck, std::vector<boost:
     int ret = 0;
     return ret;
 }
+
+
+int CDM::connectOpcUa_Drive(std::string url)
+{
+	int ret = 0;
+
+	std::string pluginClass = "ptr_Plugin";
+	DynamicLoader *pluginsLoader;
+
+	std::string pluginFile = API_LIB_PATH;
+	char *pPath;
+	pPath = getenv("MOS_PATH");
+	if (pPath != NULL)
+	{
+		pluginFile = pPath;
+		pluginFile += "/../lib/libDataAccessClientOPCUA.so";
+	}
+
+	pluginsLoader = new DynamicLoader(pluginFile, pluginClass);
+	m_clientOpcUaRef_Drive = pluginsLoader->load();
+	if (m_clientOpcUaRef_Drive == NULL)
+	{
+		ret = 1;
+	}
+	else
+	{
+		int cpt = 0;
+		int flag = 0;
+		do
+		{
+			ret = m_clientOpcUaRef_Drive->connect(url, NULL);
+			//ret = m_clientOpcUaRef_Drive->connect(url);
+			flag = ret;
+			if (cpt == 3)
+				flag = 0;
+			cpt++;
+		} while (flag == -1);
+	}
+	return ret;
+}
+
+int CDM::connectOpcUa_Relay(std::string url)
+{
+	int ret = 0;
+
+	std::string pluginClass = "ptr_Plugin";
+	DynamicLoader *pluginsLoader;
+
+	std::string pluginFile = API_LIB_PATH;
+	char *pPath;
+	pPath = getenv("MOS_PATH");
+	if (pPath != NULL)
+	{
+		pluginFile = pPath;
+		pluginFile += "/../lib/libDataAccessClientOPCUA.so";
+	}
+
+	pluginsLoader = new DynamicLoader(pluginFile, pluginClass);
+	m_clientOpcUaRef_Relay = pluginsLoader->load();
+	if (m_clientOpcUaRef_Relay == NULL)
+	{
+		ret = 1;
+	}
+	else
+	{
+		int cpt = 0;
+		int flag = 0;
+		do
+		{
+			ret = m_clientOpcUaRef_Relay->connect(url, NULL);
+			//ret = m_clientOpcUaRef_Relay->connect(url);
+			flag = ret;
+			if (cpt == 3)
+				flag = 0;
+			cpt++;
+		} while (flag == -1);
+	}
+	return ret;
+}
+
+int CDM::connectOpcUa_ECC(std::string url)
+{
+	int ret = 0;
+
+	std::string pluginClass = "ptr_Plugin";
+	DynamicLoader *pluginsLoader;
+
+	std::string pluginFile = API_LIB_PATH;
+	char *pPath;
+	pPath = getenv("MOS_PATH");
+	if (pPath != NULL)
+	{
+		pluginFile = pPath;
+		pluginFile += "/../lib/libDataAccessClientOPCUA.so";
+	}
+
+	pluginsLoader = new DynamicLoader(pluginFile, pluginClass);
+	m_clientOpcUaRef_ECC = pluginsLoader->load();
+	if (m_clientOpcUaRef_ECC == NULL)
+	{
+		ret = 1;
+	}
+	else
+	{
+		int cpt = 0;
+		int flag = 0;
+		do
+		{
+			ret = m_clientOpcUaRef_ECC->connect(url, NULL);
+			//ret = m_clientOpcUaRef_ECC->connect(url);
+			flag = ret;
+			if (cpt == 3)
+				flag = 0;
+			cpt++;
+		} while (flag == -1);
+	}
+	return ret;
+}
+
+
 
 // Be careful, always need to allow to connect this Plugin with MOS
 extern "C"

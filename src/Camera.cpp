@@ -7,6 +7,7 @@ using namespace std;
 using namespace cv;
 
 
+
 int Camera::Connect()
 {
     nRet = is_InitCamera(&hCam, NULL);
@@ -138,7 +139,6 @@ int Camera::Start()
             if (nRet == IS_SUCCESS)
 
             {
-
                 WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
                 std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
             }
@@ -160,7 +160,6 @@ int Camera::Start()
             std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
         }
     }
-
 
 }
 
@@ -303,9 +302,11 @@ int Camera::GetMultipleImages(int n_images)
         nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
         cout << "is_FreeImageMem: " << nRet << endl;
     }
+
+    cout << "Finished GetMultipleImages" << endl;
 }
 
-int Camera::GetImage()
+vector<unsigned char> Camera::GetImage()
 {
     nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
     printf("Status is_AllocImageMem %d\n", nRet);
@@ -326,15 +327,16 @@ int Camera::GetImage()
     transpose(src, src);
     flip(src, src, 1);
 
-    vector<int> compression_params;
+    std::vector<int> compression_params;
     compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
     compression_params.push_back(0);
     resize(src, dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
 
     vector<unsigned char> data;
     cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
-    int m_nameSpace = 2;
-    string temString = "UnitCameraM.AuxControlCameraM.image.image_v";
+    
+    //int m_nameSpace = 2;
+    //string temString = "UnitCDM.AuxControlCameraM.image.image_v";
     //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
     //SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), temString, m_nameSpace, data); //pushes the image to the datapoint
 
@@ -342,10 +344,14 @@ int Camera::GetImage()
     if (pcImageMemory != NULL)
         is_FreeImageMem(hCam, pcImageMemory, nMemoryId);
     pcImageMemory = NULL;
+
+    return data;
 }
 
-string Camera::Configure(int nPixelClock, double exposure, double fps, int gain, string pixel_format)
+std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, double fps, int gain, string pixel_format)
 {
+    std::vector<boost::any> return_values;
+
     // Set pixel clock
     nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_SET, (void *)&nPixelClock, sizeof(nPixelClock));
     std::cout << "IS_PIXELCLOCK_CMD_SET returned " << nRet << ". tried to set pixel clock to = " << nPixelClock << std::endl;
@@ -353,6 +359,7 @@ string Camera::Configure(int nPixelClock, double exposure, double fps, int gain,
     nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_GET, (void *)&nPixelClock, sizeof(nPixelClock));
     std::cout << "IS_PIXELCLOCK_CMD_GET returned " << nRet << ". The current pixel clock is = " << nPixelClock << std::endl;
     //SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, nPixelClock);
+    return_values.push_back(nPixelClock);
 
     // Set frame rate
     double new_fps;
@@ -361,6 +368,7 @@ string Camera::Configure(int nPixelClock, double exposure, double fps, int gain,
     is_SetFrameRate(hCam, IS_GET_FRAMERATE, &fps);
     std::cout << "Applied framerate " << fps << " fps." << std::endl;
     //SetDatapointThread *m_SetDatapointThread_fps = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.FPS.FPS_v", 2, fps);
+    return_values.push_back(fps);
 
     // Set exposure
     double current_exposure;
@@ -372,11 +380,14 @@ string Camera::Configure(int nPixelClock, double exposure, double fps, int gain,
     is_Exposure(hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, (void *)&current_exposure, sizeof(current_exposure));
     std::cout << "Current exposure is: " << current_exposure << std::endl;
     //SetDatapointThread *m_SetDatapointThread_exposure = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, current_exposure);
+    return_values.push_back(current_exposure);
 
     // Set hardware gain
     is_SetHardwareGain(hCam, gain, 14, 0, 32); // Master, red, green, blue
     int master_gain = is_SetHardwareGain(hCam, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER);
     //SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, master_gain);
+    return_values.push_back(master_gain);
+
 
     // Set Display Mode
     nRet = is_SetDisplayMode(hCam, IS_SET_DM_DIB);
@@ -388,6 +399,7 @@ string Camera::Configure(int nPixelClock, double exposure, double fps, int gain,
     nRet = is_SetColorMode(hCam, IS_GET_COLOR_MODE);
     std::cout << "GetColorMode returned " << pixel_formats.right.at(nRet) << std::endl;
     //SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, pixel_formats.right.at(nRet));
+    return_values.push_back(pixel_formats.right.at(nRet));
 
     // Setting image format
     nRet = is_ImageFormat(hCam, IMGFRMT_CMD_SET_FORMAT, &formatID, sizeof(formatID));
@@ -397,6 +409,8 @@ string Camera::Configure(int nPixelClock, double exposure, double fps, int gain,
 
     //Call destructors?
 
-    return "Message status"; //TODO: You should return errors here.
+
+    //return "Message status"; //TODO: You should return errors here.
+    return return_values;
 }
 
