@@ -327,8 +327,6 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
                 //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
                 SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), temString, m_nameSpace, displayImage); //pushes the image to the datapoint
-
-
                 
             }
 

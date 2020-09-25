@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- <OPCUA xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://lappweb.in2p3.fr/~panazol/xsd/v2_0_0/MOS_OPCUA.xsd"> -->
-<OPCUA xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://lappweb.in2p3.fr/~panazol/xsd/v2_0_0/dict_device.xsd">        
+<OPCUA xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://lappweb.in2p3.fr/~panazol/xsd/v2_0_0/dict_device.xsd">
         <!--
  *
  * ***********************************************************
@@ -183,7 +183,6 @@
                 </Instruction_set>
 
 
-
                 <!--
   * ************************************
   * WARNING! Note of developer
@@ -211,7 +210,7 @@
                 <!--                        </Argument>
                 </HardwareConfig>
 -->
-                <FileFSMRef>FSM_CDM.xml</FileFSMRef>
+                <FileFSMRef>FSM_CDM_v4.0.xml</FileFSMRef>
                 <FSM>
                         <NameFSM>Connect</NameFSM>
                         <Argument>
@@ -858,9 +857,6 @@
                         </SimpleDatapoint>
 
                 </CompoundDatapoint>
-
-
-
 
 
         </SimpleDevice>
