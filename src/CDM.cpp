@@ -11,82 +11,6 @@ using namespace cv;
 Camera camera;
 Helper helper;
 
-/* 
-double CDM::acquire_RA()
-{
-    std::string finalnode = "Drive.DriveControl.RA.RA_v";
-    int nameSpace = 2;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    float element = 0;
-    
-    if (m_clientOpcUaRef_Drive != NULL)
-        CDM::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    std::cout << "RA is: " << element << std::endl;
-    RA = element;
-}
-
-double CDM::acquire_DEC()
-{
-    std::string finalnode = "Drive.DriveControl.Dec.Dec_v";
-    int nameSpace = 2;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    float element = 0;
-    if (m_clientOpcUaRef_Drive != NULL)
-        CDM::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    cout << "Dec is: " << element << endl;
-    DEC = element;
-}
-
-double CDM::acquire_Azimuth()
-{
-    std::string finalnode = "Drive.DriveControl.CurrentPosition.azimuth_position.azimuth_position_v";
-    int nameSpace = 2;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    float element = 0;
-    if (m_clientOpcUaRef_Drive != NULL)
-        CDM::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    cout << "Azimuth is: " << element << endl;
-    azimuth = element;
-}
-
-double CDM::acquire_Zenith()
-{
-    std::string finalnode = "Drive.DriveControl.CurrentPosition.elevation_position.elevation_position_v";
-    int nameSpace = 2;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    float element = 0;
-    if (m_clientOpcUaRef_Drive != NULL)
-        CDM::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    cout << "Zenith is: " << element << endl;
-    zenith = element;
-}
-
-int CDM::acquire_LED_intensity()
-{
-    std::string finalnode = "ECC_LST.ECC.Monitoring.LEDPositions.Led_01.Led_01_v";
-    int nameSpace = 2;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    int element = 0;
-    if(m_clientOpcUaRef_ECC!=NULL)
-        CDM::m_clientOpcUaRef_ECC->getDatapoint(finalnode, nameSpace, element);
-    cout << "LED intensity is: " << element<< endl;
-    LED_intensity = element;
-}
-
-bool CDM::acquire_OARL_state()
-{
-    std::string finalnode = "PLC 400 Server.CPU 414-3 PNDP.DB_IO_Module1_DishCenter.OARL_On";
-    int nameSpace = 7;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    bool element = 0;
-    if(m_clientOpcUaRef_Relay!=NULL)
-        CDM::m_clientOpcUaRef_Relay->getDatapoint(finalnode, nameSpace, element);
-    cout << "OARL status is: " << element<< endl;
-    OARL_state = element;
-}
-
- */
-
 void init_logging()
 {
     logging::register_simple_formatter_factory<logging::trivial::severity_level, char>("Severity");
@@ -368,7 +292,7 @@ int CDM::Comment(std::string comment)
     cout << "Comments is: " << comment << endl;
     helper.set_StarName(comment);
     //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.comment.comment_v", 2, comment);
-    SetDatapointThread *m_SetDatapointThread_comment = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, comment);
+    //SetDatapointThread *m_SetDatapointThread_comment = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, comment);
 
 }
 
@@ -400,125 +324,6 @@ int CDM::set(const std::string &chaine, int commandStringAck, std::vector<boost:
     int ret = 0;
     return ret;
 }
-
-/* 
-int CDM::connectOpcUa_Drive(std::string url)
-{
-	int ret = 0;
-
-	std::string pluginClass = "ptr_Plugin";
-	DynamicLoader *pluginsLoader;
-
-	std::string pluginFile = API_LIB_PATH;
-	char *pPath;
-	pPath = getenv("MOS_PATH");
-	if (pPath != NULL)
-	{
-		pluginFile = pPath;
-		pluginFile += "/../lib/libDataAccessClientOPCUA.so";
-	}
-
-	pluginsLoader = new DynamicLoader(pluginFile, pluginClass);
-	m_clientOpcUaRef_Drive = pluginsLoader->load();
-	if (m_clientOpcUaRef_Drive == NULL)
-	{
-		ret = 1;
-	}
-	else
-	{
-		int cpt = 0;
-		int flag = 0;
-		do
-		{
-			ret = m_clientOpcUaRef_Drive->connect(url, NULL);
-			//ret = m_clientOpcUaRef_Drive->connect(url);
-			flag = ret;
-			if (cpt == 3)
-				flag = 0;
-			cpt++;
-		} while (flag == -1);
-	}
-	return ret;
-}
-
-int CDM::connectOpcUa_Relay(std::string url)
-{
-	int ret = 0;
-
-	std::string pluginClass = "ptr_Plugin";
-	DynamicLoader *pluginsLoader;
-
-	std::string pluginFile = API_LIB_PATH;
-	char *pPath;
-	pPath = getenv("MOS_PATH");
-	if (pPath != NULL)
-	{
-		pluginFile = pPath;
-		pluginFile += "/../lib/libDataAccessClientOPCUA.so";
-	}
-
-	pluginsLoader = new DynamicLoader(pluginFile, pluginClass);
-	m_clientOpcUaRef_Relay = pluginsLoader->load();
-	if (m_clientOpcUaRef_Relay == NULL)
-	{
-		ret = 1;
-	}
-	else
-	{
-		int cpt = 0;
-		int flag = 0;
-		do
-		{
-			ret = m_clientOpcUaRef_Relay->connect(url, NULL);
-			//ret = m_clientOpcUaRef_Relay->connect(url);
-			flag = ret;
-			if (cpt == 3)
-				flag = 0;
-			cpt++;
-		} while (flag == -1);
-	}
-	return ret;
-}
-
-int CDM::connectOpcUa_ECC(std::string url)
-{
-	int ret = 0;
-
-	std::string pluginClass = "ptr_Plugin";
-	DynamicLoader *pluginsLoader;
-
-	std::string pluginFile = API_LIB_PATH;
-	char *pPath;
-	pPath = getenv("MOS_PATH");
-	if (pPath != NULL)
-	{
-		pluginFile = pPath;
-		pluginFile += "/../lib/libDataAccessClientOPCUA.so";
-	}
-
-	pluginsLoader = new DynamicLoader(pluginFile, pluginClass);
-	m_clientOpcUaRef_ECC = pluginsLoader->load();
-	if (m_clientOpcUaRef_ECC == NULL)
-	{
-		ret = 1;
-	}
-	else
-	{
-		int cpt = 0;
-		int flag = 0;
-		do
-		{
-			ret = m_clientOpcUaRef_ECC->connect(url, NULL);
-			//ret = m_clientOpcUaRef_ECC->connect(url);
-			flag = ret;
-			if (cpt == 3)
-				flag = 0;
-			cpt++;
-		} while (flag == -1);
-	}
-	return ret;
-}
- */
 
 
 // Be careful, always need to allow to connect this Plugin with MOS
