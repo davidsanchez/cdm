@@ -1,4 +1,0 @@
-#MOS_Device -d server.xml -p 48011 -i
-MOS_Device -d Unit_CDM_Model.xml -p 48011 -i
-
-

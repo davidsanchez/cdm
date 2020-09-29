@@ -1,0 +1,89 @@
+<!-- __________________________________ -->
+<!-- Author : PANAZOL jean-Luc          -->
+<!-- Date   :                           -->
+<!-- Name   : FSM_CDM.xml                -->
+<!--                                    -->
+<!-- __________________________________ -->
+<!-- Date   :  03/03/2020               -->
+<!-- Add comments                       -->
+<!-- __________________________________ -->
+
+
+<FSM_Definition>
+	<TransitionFSM>
+		<Name>Connect</Name>
+		<StateCondition>0</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>Disconnect</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>0</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>Configure</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>GetImage</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>StartCDM</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>2</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>StopCDM</Name>
+		<StateCondition>2</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>GoToTpoint</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>3</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>GoToReady</Name>
+		<StateCondition>3</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>GetMultipleImages</Name>
+		<StateCondition>3</StateCondition>
+		<FinalTransition>4</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>StopGetMultipleImages</Name>
+		<StateCondition>4</StateCondition>
+		<FinalTransition>3</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>Error</Name>
+		<StateCondition>0</StateCondition>
+		<StateCondition>1</StateCondition>
+		<StateCondition>2</StateCondition>
+		<StateCondition>3</StateCondition>
+		<StateCondition>4</StateCondition>
+		<FinalTransition>5</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>Acknowledge</Name>
+		<StateCondition>5</StateCondition> 
+		<FinalTransition>0</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+</FSM_Definition>
