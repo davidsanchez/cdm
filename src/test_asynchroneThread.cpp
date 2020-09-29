@@ -68,13 +68,13 @@ int TestAsynchroneThread::cmdOpenShutter(std::string datapointName, int nameSpac
 	return ret;
 }
 
-int TestAsynchroneThread::cmdGetMultipleImages(std::string datapointName, int nameSpace)
+int TestAsynchroneThread::cmdGetMultipleImages( std::string datapointName, int nameSpace, int n_images)
 {
 	int ret = 0;
 	m_cmdGetMultipleImages = true;
 	m_datapointName = datapointName;
 	m_nameSpace = nameSpace;
-
+	TestAsynchroneThread::n_images = n_images;
 	return ret;
 }
 
@@ -170,9 +170,23 @@ void *TestAsynchroneThread::run(void *params)
 
 				// ****************** here put the code for Start who take a long time to execute ***************
 				
-				//usleep(9000000); //TODO: delete me
-				camera.GetMultipleImages(10);
 
+				//TODO: put the transition state to 1
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 1);
+				
+				std::vector<std::string> v_image_paths = camera.GetMultipleImages(n_images);
+
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, v_image_paths);
+
+
+				//SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, v_image_paths);
+
+				//SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, 2);
+
+
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 3);
+				//TODO: put the transition state to 0
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
 
 				// you can put the outputs arguments in this place to inform the server
 				temString = m_datapointName + "._OutputArguments._Val_Retour";

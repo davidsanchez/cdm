@@ -1,12 +1,188 @@
 #include <Camera.h>
 
-#include <iostream>
 #include <chrono>
+#include <iostream>
+
+#include "Helper.h"
+#include <CCfits>
+
+extern Helper helper;
+using namespace CCfits;
 
 using namespace std;
 using namespace cv;
 
+std::string Camera::writeFITSImage(Mat image)
+{
+    //TODO: should also send image data type to this method, now assume 8bit
 
+    // if( ePixelFormat == VmbPixelFormatMono14)
+    //     image=4*image; // For converting 14bit images to 16bit
+
+    flip(image, image, 0); // Vertical flipping of image so it is displayed nicely in DS9.
+
+    // Create a FITS primary array containing a 2-D image
+    // declare axis arrays.
+    long naxis = 2;
+    long naxes[2] = {image.cols, image.rows};
+
+    // declare auto-pointer to FITS at function scope. Ensures no resources
+    // leaked if something fails in dynamic allocation.
+    std::auto_ptr<FITS> pFits(0);
+
+    std::ostringstream streamObj;
+    std::ostringstream stream_fitsPath;
+    std::ostringstream stream_remoteImagePath;
+
+    stream_fitsPath << std::fixed << std::setprecision(4) << helper.get_fitsPath();
+    stream_remoteImagePath << std::fixed << std::setprecision(4) << helper.get_remoteImagePathPrefix();
+
+    streamObj << std::fixed;
+    streamObj << std::setprecision(4);
+    streamObj << helper.unix_timestamp();
+    streamObj << "-STAR=";
+    streamObj << helper.get_StarName();
+    streamObj << "-EXP=";
+    streamObj << Camera::get_exposure();
+    streamObj << "-ZD=";
+    streamObj << helper.get_Zenith();
+    streamObj << "-AZ=";
+    streamObj << helper.get_Azimuth();
+    // streamObj << "-OFFZD=";
+    // streamObj << helper.get_OffsetZenith();
+    // streamObj << "-OFFAZ=";
+    // streamObj << helper.get_OffsetAzimuth();
+    streamObj << "-LED=";
+    streamObj << helper.get_LED_intensity();
+    streamObj << "-OARL=";
+    streamObj << helper.get_OARL_state();
+    streamObj << ".fits";
+
+    stream_fitsPath << streamObj.str();
+    stream_remoteImagePath << streamObj.str();
+    std::string fileName = streamObj.str();
+    std::string filePath = stream_fitsPath.str();
+    std::string remoteImagePath = stream_remoteImagePath.str();
+
+    std::cout << "filePath: " << filePath << std::endl;
+    std::cout << "remoteImagePath: " << remoteImagePath << std::endl;
+
+    try
+    {
+        if ((iBitsPerPixel == 16) || (iBitsPerPixel == 12) || (iBitsPerPixel == 10))
+            pFits.reset(new FITS(filePath, USHORT_IMG, naxis, naxes)); //BYTE_IMG for 8bit, USHORT_IMG for 16bit
+        else if (iBitsPerPixel == 8)
+            pFits.reset(new FITS(filePath, BYTE_IMG, naxis, naxes));
+
+        else
+            cout << "Error invalid bitdepth value for saving!" << endl;
+    }
+    catch (FITS::CantCreate)
+    {
+        // ... or not, as the case may be.
+        return "-1"; //TODO: KLUDGE, should return just -1?
+    }
+
+    long &vectorLength = naxes[0];
+    long &numberOfRows = naxes[1];
+    long nelements(1);
+    long fpixel(1);
+
+    nelements = std::accumulate(&naxes[0], &naxes[naxis], 1, std::multiplies<long>());
+
+    /* 	// Mat to array 8bit
+	std::vector<uchar> array;
+	if (image.isContinuous())
+	{
+		// array.assign(mat.datastart, mat.dataend); // <- has problems for sub-matrix like mat = big_mat.row(i)
+		array.assign(image.data, image.data + image.total());
+	}
+	else
+	{
+		for (int i = 0; i < image.rows; ++i)
+		{
+			//array.insert(array.end(), image.ptr<uchar>(i), image.ptr<uchar>(i)+image.cols);
+			array.insert(array.end(), image.ptr<uint16_t>(i), image.ptr<uint16_t>(i) + image.cols);
+		}
+	} */
+
+    if ((iBitsPerPixel == 16) || (iBitsPerPixel == 12) || (iBitsPerPixel == 10))
+    {
+        // Mat to array 16bit
+        std::vector<uint16_t> array;
+        if (image.isContinuous())
+        {
+            array.assign((uint16_t *)image.data, (uint16_t *)image.data + image.total());
+        }
+        else
+        {
+            for (int i = 0; i < image.rows; ++i)
+            {
+                //array.insert(array.end(), image.ptr<uchar>(i), image.ptr<uchar>(i)+image.cols);
+                array.insert(array.end(), image.ptr<uint16_t>(i), image.ptr<uint16_t>(i) + image.cols);
+            }
+        }
+
+        // Convert array to valarray
+        valarray<uint16_t> myVala(array.data(), array.size());
+        pFits->pHDU().write(fpixel, nelements, myVala);
+    }
+
+    else if (iBitsPerPixel == 8)
+    {
+        // Mat to array 8bit
+        std::vector<uchar> array;
+        if (image.isContinuous())
+        {
+            // array.assign(mat.datastart, mat.dataend); // <- has problems for sub-matrix like mat = big_mat.row(i)
+            array.assign(image.data, image.data + image.total());
+        }
+        else
+        {
+            for (int i = 0; i < image.rows; ++i)
+            {
+                array.insert(array.end(), image.ptr<uchar>(i), image.ptr<uchar>(i) + image.cols);
+                //array.insert(array.end(), image.ptr<uint16_t>(i), image.ptr<uint16_t>(i) + image.cols);
+            }
+        }
+
+        // Convert array to valarray
+        valarray<uchar> myVala(array.data(), array.size());
+        pFits->pHDU().write(fpixel, nelements, myVala);
+    }
+
+    else
+        cout << "Check pixel format" << endl;
+
+    pFits->pHDU().addKey("RA", helper.get_RA(), "Right Ascension");
+    pFits->pHDU().addKey("DEC", helper.get_DEC(), "Declination");
+    pFits->pHDU().addKey("EPOCH", "2000.0", "Epoch");
+    pFits->pHDU().addKey("EQUINOX", "2000.0", "Equinox");
+    //pFits->pHDU().addKey("SECPIX_SG", 18.56, "Arcsec per pixel"); TODO: Add this information for CDM
+
+    pFits->pHDU().addKey("EXPOSURE", Camera::get_exposure(), "Total Exposure Time in miliseconds");
+    pFits->pHDU().addKey("TIME", helper.unix_timestamp(), "Unix epoch time in seconds");
+    pFits->pHDU().addKey("UTC", helper.UTC_time(), "UTC time");
+
+    pFits->pHDU().addKey("LAT", 28.7573, "Latitude: Location:ORM");
+    pFits->pHDU().addKey("LONG", 17.8850, "Longitude: Location:ORM");
+    pFits->pHDU().addKey("ZENITH", helper.get_Zenith(), "Zenith, in degrees");
+    pFits->pHDU().addKey("AZIMUTH", helper.get_Azimuth(), "Azimuth, in degrees");
+
+    //pFits->pHDU().addKey("OFFZEN", CDM::get_OffsetZenith(), "Offset of Zenith, in degrees");
+    //pFits->pHDU().addKey("OFFAZ", CDM::get_OffsetAzimuth(), "Offset of Azimuth, in degrees");
+    pFits->pHDU().addKey("OBJECT", helper.get_StarName(), "Star name");
+    pFits->pHDU().addKey("LED", helper.get_LED_intensity(), "LED01 intensity");
+    pFits->pHDU().addKey("OARL", helper.get_OARL_state(), "OARL status");
+
+    //     pFits->pHDU().addKey("GAIN", gain_value, "Gain");
+    //     pFits->pHDU().addKey("GAMMA", gamma_value, "Gamma");
+
+    std::cout << pFits->pHDU() << std::endl;
+
+    //return remoteImagePath;
+    return fileName;
+}
 
 int Camera::Connect()
 {
@@ -81,13 +257,13 @@ int Camera::Start()
 
     nRet = is_CaptureVideo(hCam, IS_WAIT);
     std::cout << "is_CaptureVideo returned " << nRet << std::endl;
-    if(nRet == 0)
-        m_active=1;
+    if (nRet == 0)
+        m_active = 1;
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
 
-    while (m_active==1)
+    while (m_active == 1)
     {
         // Use is_LockSeqBuf when processing image?
 
@@ -160,7 +336,6 @@ int Camera::Start()
             std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
         }
     }
-
 }
 
 int Camera::Stop()
@@ -183,11 +358,11 @@ int Camera::Stop()
     //     nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
     //     cout << "is_FreeImageMem: " << nRet << endl;
     // }
-
 }
 
-int Camera::GetMultipleImages(int n_images)
+vector<std::string> Camera::GetMultipleImages(int n_images)
 {
+    vector<std::string> v_image_paths;
     int i_images_taken = 0;
     int n_allocated_memories = 10;
     char *pcImageMemory_arr[n_allocated_memories];
@@ -196,9 +371,8 @@ int Camera::GetMultipleImages(int n_images)
     {
         nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
         std::cout << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
-        ;
-        is_AddToSequence(hCam, pcImageMemory, nMemoryId);
 
+        is_AddToSequence(hCam, pcImageMemory, nMemoryId);
         pcImageMemory_arr[i] = pcImageMemory;
         nMemoryId_arr[i] = nMemoryId;
     }
@@ -221,9 +395,57 @@ int Camera::GetMultipleImages(int n_images)
         {
             {
                 auto tp_start = std::chrono::high_resolution_clock::now();
+                Mat src, dst;
 
-                //Mat src = cv::Mat(iHeight, iWidth, CV_8UC3, (uchar *)pBuffer); //DZ , 3*iWidth
-                Mat src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer); //DZ , 3*iWidth
+                if (iBitsPerPixel == 8)
+                    src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
+
+                else if (iBitsPerPixel == 16)
+                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+
+                else if (iBitsPerPixel == 12)
+                {
+                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+                    src = 16 * src;
+                }
+
+                else if (iBitsPerPixel == 10)
+                {
+                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+                    src = 64 * src;
+                }
+
+                else
+                {
+                    cout << "Check bitdepth!" << endl;
+                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+                }
+
+                //transpose+flip = 90 deg rotation
+                transpose(src, src);
+                flip(src, src, 1);
+
+                std::string imageName = writeFITSImage(src);
+                std::string filePath = helper.get_fitsPath() + imageName;
+                std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
+
+                char exec[300];
+                sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
+                cout << "Command is: " << exec << endl;
+                int scp_result = system(exec);
+                cout << "Output of scp is: " << scp_result << endl;
+
+                if (scp_result == 0)
+                {
+                    std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
+                }
+                else
+                {
+                    cout << "There was a problem while copying the image!" << endl;
+                    remoteImagePath = "Error";
+                }
+
+                v_image_paths.push_back(remoteImagePath);
 
                 auto tp_stop = std::chrono::high_resolution_clock::now();
                 auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
@@ -262,7 +484,6 @@ int Camera::GetMultipleImages(int n_images)
             if (nRet == IS_SUCCESS)
 
             {
-
                 WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
                 std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
             }
@@ -304,6 +525,14 @@ int Camera::GetMultipleImages(int n_images)
     }
 
     cout << "Finished GetMultipleImages" << endl;
+    
+    // TODO: also publish the images without saving to disk first
+    // TODO: also publish the vector of image paths
+
+    //helper.publish_datapoint("Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, 4);
+
+
+    return v_image_paths;
 }
 
 vector<unsigned char> Camera::GetImage()
@@ -334,7 +563,7 @@ vector<unsigned char> Camera::GetImage()
 
     vector<unsigned char> data;
     cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
-    
+
     //int m_nameSpace = 2;
     //string temString = "UnitCDM.AuxControlCameraM.image.image_v";
     //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
@@ -381,6 +610,7 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     std::cout << "Current exposure is: " << current_exposure << std::endl;
     //SetDatapointThread *m_SetDatapointThread_exposure = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, current_exposure);
     return_values.push_back(current_exposure);
+    Camera::exposure_setting = current_exposure;
 
     // Set hardware gain
     is_SetHardwareGain(hCam, gain, 14, 0, 32); // Master, red, green, blue
@@ -388,12 +618,12 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     //SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, master_gain);
     return_values.push_back(master_gain);
 
-
     // Set Display Mode
     nRet = is_SetDisplayMode(hCam, IS_SET_DM_DIB);
     std::cout << "SetDisplayMode returned " << nRet << std::endl;
 
     // Set Color Mode
+    //TODO: depending on the chosen pixel format the iBitsPerPixel should also change.
     nRet = is_SetColorMode(hCam, pixel_formats.left.at(pixel_format));
     std::cout << "SetColorMode returned " << nRet << std::endl;
     nRet = is_SetColorMode(hCam, IS_GET_COLOR_MODE);
@@ -409,8 +639,6 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
 
     //Call destructors?
 
-
     //return "Message status"; //TODO: You should return errors here.
     return return_values;
 }
-

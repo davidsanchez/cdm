@@ -25,12 +25,14 @@ public:
 
     int Connect();
     int Disconnect();
-    std::vector<boost::any> Configure(int nPixelClock=216, double exposure=1000, double fps=1, int gain=0, std::string pixel_format="IS_CM_MONO8");
+    std::vector<boost::any> Configure(int nPixelClock=216, double exposure=1000, double fps=1, int gain=0, std::string pixel_format="IS_CM_SENSOR_RAW16");
     std::vector<unsigned char> GetImage();
-    int GetMultipleImages(int n_images);
+    std::vector<std::string> GetMultipleImages(int n_images);
     int Start();
     int Stop();
-    
+
+    double get_exposure() {return Camera::exposure_setting;}
+    std::string writeFITSImage(cv::Mat image);  
 
 //private:
     // Camera stuff
@@ -43,10 +45,11 @@ public:
 
     uint formatID = 36;
 
+    double exposure_setting = 0;
     
     // Need to find out the memory size of the pixel and the colour mode
-    int iColorMode = IS_CM_MONO8; //IS_CM_SENSOR_RAW16;
-    int iBitsPerPixel = 8;        //16;
+    int iColorMode = IS_CM_SENSOR_RAW16; //IS_CM_MONO8; 
+    int iBitsPerPixel = 16;        //8;
     int iWidth = 0;  // will be properly initialized with the sensor info struct information
     int iHeight = 0; // will be properly initialized with the sensor info struct information
     double dblFrameRateToSet = 10.0; // if set to 0.0 the max possible fps will be set

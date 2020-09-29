@@ -100,8 +100,8 @@
                                 </Asynchronous>
                         </Instruction>
                         <Instruction>
-                                <Name>stopGetMultipleImages_Instruction</Name>
-                                <Cmd>stopGetMultipleImages</Cmd>
+                                <Name>StopGetMultipleImages_Instruction</Name>
+                                <Cmd>StopGetMultipleImages</Cmd>
                         </Instruction>
                         <Instruction>
                                 <Name>get_swVersion_Instruction</Name>
@@ -410,7 +410,7 @@
                         </DeviceInstruction>
                 </FSM>
                 <FSM>
-                        <NameFSM>stopGetMultipleImages</NameFSM>
+                        <NameFSM>StopGetMultipleImages</NameFSM>
 
                         <Argument>
                                 <Name>Return_value</Name>
@@ -418,7 +418,7 @@
                                 <Access>Output</Access>
                         </Argument>
                         <DeviceInstruction>
-                                <Value>stopGetMultipleImages_Instruction</Value>
+                                <Value>StopGetMultipleImages_Instruction</Value>
                         </DeviceInstruction>
                 </FSM>
 

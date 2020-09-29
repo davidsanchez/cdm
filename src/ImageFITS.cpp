@@ -1,8 +1,10 @@
 #include "ImageFITS.h"
+#include "Helper.h"
 
+extern Helper helper;
 using namespace CCfits;
 
-std::string ImageFITS::writeFITSImage(Mat image) //, double exposure_value) //,  double azimuth, double zenith)
+std::string ImageFITS::writeFITSImage(Mat image)
 {
 	//TODO: should also send image data type to this method, now assume 8bit
 

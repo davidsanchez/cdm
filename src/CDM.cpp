@@ -1,5 +1,6 @@
 #include "CDM.h"
 #include "Camera.h"
+#include "Helper.h"
 
 #include <boost/any.hpp>
 
@@ -8,16 +9,19 @@ using namespace cv;
 
 // initialize object of Camera class
 Camera camera;
+Helper helper;
 
+/* 
 double CDM::acquire_RA()
 {
     std::string finalnode = "Drive.DriveControl.RA.RA_v";
     int nameSpace = 2;
     //short int element; //(change with the good type of the datapoint float/int/string/.....)
     float element = 0;
+    
     if (m_clientOpcUaRef_Drive != NULL)
         CDM::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    cout << "RA is: " << element << endl;
+    std::cout << "RA is: " << element << std::endl;
     RA = element;
 }
 
@@ -81,7 +85,7 @@ bool CDM::acquire_OARL_state()
     OARL_state = element;
 }
 
-
+ */
 
 void init_logging()
 {
@@ -113,12 +117,14 @@ int CDM::init(const std::string &chaine)
     PluginsBase::init(chaine);
 
     init_logging();
+    /* Logging example. Uncomment to see example.
     BOOST_LOG_TRIVIAL(trace) << "A trace severity message";
     BOOST_LOG_TRIVIAL(debug) << "A debug severity message";
     BOOST_LOG_TRIVIAL(info) << "An informational severity message";
     BOOST_LOG_TRIVIAL(warning) << "A warning severity message";
     BOOST_LOG_TRIVIAL(error) << "An error severity message";
-    BOOST_LOG_TRIVIAL(fatal) << "A fatal severity message";
+    BOOST_LOG_TRIVIAL(fatal) << "A fatal severity message"; 
+    */
 
     return ret;
 }
@@ -163,11 +169,13 @@ int CDM::afterStart()
     m_testThread = new TestAsynchroneThread(getDataAccessClientOPCUARef());
     ret = m_testThread->startRun();
 
+    //helper.set_OPCUAref( getDataAccessClientOPCUARef() );
+
     // Trying to access other OPCUA server
 	//connectOpcUa("opc.tcp://address:port"); // example opc.tcp://lappc-f578l:48080
-	int connection_result_Drive = connectOpcUa_Drive("opc.tcp://10.200.100.105:48010"); //This is Drive OPCUA. Old = opc.tcp://10.1.8.3:48010
-	int connection_result_Relay = connectOpcUa_Relay("opc.tcp://10.1.10.5:4845"); //This is Central Dish Cabinet Relay. Used for toggling SG camera power. Old = opc.tcp://10.1.8.3:48010
-	int connection_result_ECC = connectOpcUa_ECC("opc.tcp://10.1.4.66:4841"); //This is ECC OPCUA.
+	int connection_result_Drive = helper.connectOpcUa_Drive("opc.tcp://10.200.100.105:48010"); //This is Drive OPCUA. Old = opc.tcp://10.1.8.3:48010
+	int connection_result_Relay =helper.connectOpcUa_Relay("opc.tcp://10.1.10.5:4845"); //This is Central Dish Cabinet Relay. Used for toggling SG camera power. Old = opc.tcp://10.1.8.3:48010
+	int connection_result_ECC = helper.connectOpcUa_ECC("opc.tcp://10.1.4.66:4841"); //This is ECC OPCUA.
 
 	cout << "Drive status OPCUA: "<< connection_result_Drive << endl;
 	cout << "Central dish cabinet relay status OPCUA: "<< connection_result_Relay << endl;
@@ -181,7 +189,11 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 {
     printf("CDM::cmdAsynch\n");
     cout << "Async command is: " << command << endl;
-    cout << "Datapoint name: " << datapointName << endl;
+    cout << "Async commandStringAck is: " << commandStringAck << endl;
+    cout << "Async Datapoint name: " << datapointName << endl;
+    cout << "Async NameSpace: " << nameSpace << endl;
+    cout << "Async Result: " << result << endl;
+
     // not use in this example
     int ret = 0;
     result = "";
@@ -196,18 +208,19 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
     if (command.compare("GetMultipleImages") == 0)
     {
-        m_testThread->cmdGetMultipleImages(datapointName, nameSpace);
 
-        acquire_Azimuth();
-        acquire_Zenith();
-        acquire_RA();
-        acquire_DEC();
-        acquire_LED_intensity();
-        acquire_OARL_state();
+        int tmp_n_images = 10; //TODO: Fix, ask JeanLuc how to input
 
-        std::vector<string> data(5, "mytest");
-        SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, data);
+        helper.acquire_Azimuth();
+        helper.acquire_Zenith();
+        helper.acquire_RA();
+        helper.acquire_DEC();
+        helper.acquire_LED_intensity();
+        helper.acquire_OARL_state();
 
+        m_testThread->cmdGetMultipleImages(datapointName, nameSpace, tmp_n_images);
+
+        //SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, data);
     }
 
     if (command.compare("Start") == 0)
@@ -305,21 +318,15 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 // Put here the rest Datapoint Threads or refactor
             }
 
-            if (subChaine1.compare("Comment") == 0)
+            if (subChaine1.compare("AddComment") == 0)
             {
                 // TODO: Make some parsing/safety checks. best inside Comment function.
+                boost::trim_right(subChaine2);
                 CDM::Comment(subChaine2);
             }
 
             if (subChaine1.compare("GetImage") == 0)
             {
-
-                image_header_info.azimuth = acquire_Azimuth();
-                image_header_info.zenith = acquire_Zenith();
-                image_header_info.RA = acquire_RA();
-                image_header_info.DEC = acquire_DEC();
-                image_header_info.LED_intensity = acquire_LED_intensity();
-                image_header_info.OARL_state = acquire_OARL_state();
 
                 vector<unsigned char> displayImage = camera.GetImage();
 
@@ -356,10 +363,13 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
     return ret;
 }
 
-int CDM::Comment(string comment)
+int CDM::Comment(std::string comment)
 {
-    this->comment = comment;
-    SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, this->comment);
+    cout << "Comments is: " << comment << endl;
+    helper.set_StarName(comment);
+    //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.comment.comment_v", 2, comment);
+    SetDatapointThread *m_SetDatapointThread_comment = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, comment);
+
 }
 
 int CDM::close()
@@ -369,10 +379,13 @@ int CDM::close()
 
     //Exit camera for example
     // ...
+    camera.Disconnect();
 
     // Close connection
-    m_clientOpcUaRef->disconnect();
-
+	/* m_clientOpcUaRef_Drive->disconnect();
+	m_clientOpcUaRef_Relay->disconnect();
+	m_clientOpcUaRef_ECC->disconnect();
+    */
     return ret;
 }
 
@@ -388,7 +401,7 @@ int CDM::set(const std::string &chaine, int commandStringAck, std::vector<boost:
     return ret;
 }
 
-
+/* 
 int CDM::connectOpcUa_Drive(std::string url)
 {
 	int ret = 0;
@@ -505,7 +518,7 @@ int CDM::connectOpcUa_ECC(std::string url)
 	}
 	return ret;
 }
-
+ */
 
 
 // Be careful, always need to allow to connect this Plugin with MOS

@@ -52,6 +52,7 @@ add_library(
         CDM.cpp
         test_asynchroneThread.cpp
         Camera.cpp
+        Helper.cpp
         #ImageAnalysis.cpp
         #ImageFITS.cpp
         )
