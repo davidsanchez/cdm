@@ -246,7 +246,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             {
                 // TODO: Make some parsing/safety checks. best inside Comment function.
                 boost::trim_right(subChaine2);
-                CDM::Comment(subChaine2);
+                CDM::AddComment(subChaine2);
             }
 
             if (subChaine1.compare("GetImage") == 0)
@@ -287,7 +287,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
     return ret;
 }
 
-int CDM::Comment(std::string comment)
+int CDM::AddComment(std::string comment)
 {
     cout << "Comments is: " << comment << endl;
     helper.set_StarName(comment);

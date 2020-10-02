@@ -56,7 +56,7 @@ public:
     int get(const std::string& chaine, int commandStringAck, std::vector<boost::any>& tabValue);
     int set(const std::string& chaine, int commandStringAck, std::vector<boost::any>& tabValue);
 
-    int Comment(std::string comment);
+    int AddComment(std::string comment);
 
 private:
 
