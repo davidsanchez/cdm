@@ -161,11 +161,17 @@ public:
     double get_OffsetZenith() { return Helper::offset_zenith; }
     int get_LED_intensity() {return Helper::LED_intensity;}
     bool get_OARL_state() {return Helper::OARL_state;}
+    int get_nImagesGet() {return Helper::nImagesGet;}
+    int set_nImagesGet(int nImagesGet) {Helper::nImagesGet = nImagesGet;}
 
     std::string get_fitsPath() {return Helper::fitsPath; }
     std::string get_remoteImagePathPrefix() {return Helper::remoteImagePathPrefix; }
     std::string get_StarName() { return Helper::StarName; }
-    std::string set_StarName(std::string StarName) { Helper::StarName=StarName; }
+    void set_StarName(std::string StarName_tmp) 
+    {
+        Helper::StarName=StarName_tmp; 
+        std::cout<<"StarName is: " << get_StarName() <<std::endl;
+    }
 
     int connectOpcUa_Drive(std::string url);
     int connectOpcUa_Relay(std::string url);
@@ -192,6 +198,7 @@ private:
     double offset_zenith = 0;
     double RA = 0;
     double DEC = 0;
+    int nImagesGet=1;
 
     std::string StarName = "";
     std::string imagePath = "/home/lstoperator/CDM/images/";

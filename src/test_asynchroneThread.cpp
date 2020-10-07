@@ -178,6 +178,11 @@ void *TestAsynchroneThread::run(void *params)
 
 				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, v_image_paths);
 
+				// We want to push these imagePaths as single string
+				std::string imagePath_cat;
+				for (const auto &piece : v_image_paths) imagePath_cat += "\n" + piece;
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.imagePath_cat.imagePath_cat_v", 2, imagePath_cat);
+
 
 				//SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, v_image_paths);
 

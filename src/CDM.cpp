@@ -40,7 +40,7 @@ int CDM::init(const std::string &chaine)
     printf("\n***********************************\nIn CDM::init\n***********************************\n");
     PluginsBase::init(chaine);
 
-    init_logging();
+    //init_logging();
     /* Logging example. Uncomment to see example.
     BOOST_LOG_TRIVIAL(trace) << "A trace severity message";
     BOOST_LOG_TRIVIAL(debug) << "A debug severity message";
@@ -133,7 +133,8 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
     if (command.compare("GetMultipleImages") == 0)
     {
 
-        int tmp_n_images = 10; //TODO: Fix, ask JeanLuc how to input
+        //int tmp_n_images = 10; //TODO: Fix, ask JeanLuc how to input
+        int tmp_n_images = helper.get_nImagesGet();
 
         helper.acquire_Azimuth();
         helper.acquire_Zenith();
@@ -246,7 +247,15 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             {
                 // TODO: Make some parsing/safety checks. best inside Comment function.
                 boost::trim_right(subChaine2);
-                CDM::AddComment(subChaine2);
+                //CDM::AddComment(subChaine2);
+                helper.set_StarName(subChaine2);
+            }
+
+            if (subChaine1.compare("Add_nImagesGet") == 0)
+            {
+                // TODO: Make some parsing/safety checks. best inside Comment function.
+                boost::trim_right(subChaine2);
+                helper.set_nImagesGet(atoi(subChaine2.c_str()));
             }
 
             if (subChaine1.compare("GetImage") == 0)

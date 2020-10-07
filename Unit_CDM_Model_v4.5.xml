@@ -58,6 +58,10 @@
                                 <Cmd>AddComment</Cmd>
                         </Instruction>
                         <Instruction>
+                                <Name>Add_nImagesGet_Instruction</Name>
+                                <Cmd>Add_nImagesGet</Cmd>
+                        </Instruction>
+                        <Instruction>
                                 <Name>GetImage_Instruction</Name>
                                 <Cmd>GetImage</Cmd>
                         </Instruction>
@@ -444,6 +448,28 @@
                                 <Value>AddComment_Instruction</Value>
                         </DeviceInstruction>
                 </Method>
+                <Method>
+                        <Name>Add_nImagesGet</Name>
+                        <Argument>
+                                <Name>Input_nImagesGet</Name>
+                                <Type>int32</Type>
+                                <Access>Input</Access>
+                                <Range>
+                                        <Min>1</Min>
+                                        <Max>500</Max>
+                                </Range>
+                                <Description>Number of images to take with GetMultipleImages</Description>
+                        </Argument>
+                        <Argument>
+                                <Name>Return_value</Name>
+                                <Type>string</Type>
+                                <Access>Output</Access>
+                                <Description></Description>
+                        </Argument>
+                        <DeviceInstruction>
+                                <Value>Add_nImagesGet_Instruction</Value>
+                        </DeviceInstruction>
+                </Method>
                 <CompoundDatapoint>
                         <Name>0_ProgramInformations</Name>
                         <Attribut>
@@ -725,6 +751,25 @@
                                 <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
                                 <DefaultValue>0</DefaultValue>
                                 <Description>Full .fits image path</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_imagePath_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
+                                <Config>0</Config>
+                        </Info> -->
+                                <Name>imagePath_cat</Name>
+                                <Type>string</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>0</DefaultValue>
+                                <Description>Concatenated Full .fits image path</Description>
                                 <Historizing>1</Historizing>
                                 <Method>
                                         <Name>get</Name>
