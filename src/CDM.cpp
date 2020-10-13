@@ -150,7 +150,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
                 boost::trim_right(subChaine2);
                 m_testThread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
 
-                SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str())); 
+                //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str())); 
             }
 
             if (subChaine1.compare("Start") == 0)
@@ -279,6 +279,11 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), temString, m_nameSpace, displayImage); //pushes the image to the datapoint
                 */
                 
+            }
+
+            if (subChaine1.compare("StopGetMultipleImages") == 0)
+            {
+                camera.StopGetMultipleImages();
             }
 
             if (subChaine1.compare("Start") == 0)

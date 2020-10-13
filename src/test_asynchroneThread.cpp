@@ -171,8 +171,8 @@ void *TestAsynchroneThread::run(void *params)
 				// ****************** here put the code for Start who take a long time to execute ***************
 				
 
-				//TODO: put the transition state to 1
-				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 1);
+				// Put the transition state to 1. But then you can't call StopGetMultipleImages.
+				//m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 1);
 				
 				//std::vector<std::string> v_image_paths = camera.GetMultipleImages(n_images);
 				std::vector<std::string> v_image_paths = camera.GetMultipleImages(n_images, m_dataAccessClientOPCUA);
@@ -191,8 +191,8 @@ void *TestAsynchroneThread::run(void *params)
 
 
 				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 3);
-				//TODO: put the transition state to 0
-				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
+				// Put the transition state to 0. 
+				//m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
 
 				// you can put the outputs arguments in this place to inform the server
 				temString = m_datapointName + "._OutputArguments._Val_Retour";

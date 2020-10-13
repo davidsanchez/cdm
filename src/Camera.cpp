@@ -362,6 +362,8 @@ int Camera::Stop()
 
 vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCUA *myclient)
 {
+    b_keep_taking = 1;
+
     vector<std::string> v_image_paths;
     int i_images_taken = 0;
     int n_allocated_memories = 10;
@@ -384,7 +386,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     int loop_image_count = 0;
     int64_t duration_count = 0;
 
-    while (i_images_taken < n_images)
+    while ( (i_images_taken < n_images) && (b_keep_taking==1) )
     {
         // Use is_LockSeqBuf when processing image?
 
@@ -425,6 +427,21 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
                 transpose(src, src);
                 flip(src, src, 1);
 
+                std::vector<int> compression_params;
+                compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+                compression_params.push_back(0);
+                resize(src, dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
+
+                vector<unsigned char> data;
+                cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
+
+                int m_nameSpace = 2;
+                string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
+                //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
+                SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
+
+                SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken+1); //Updates the number of images taken
+
                 std::string imageName = writeFITSImage(src);
                 std::string filePath = helper.get_fitsPath() + imageName;
                 std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
@@ -443,19 +460,6 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
                     cout << "There was a problem while copying the image!" << endl;
                     remoteImagePath = "Error";
                 }
-
-                std::vector<int> compression_params;
-                compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
-                compression_params.push_back(0);
-                resize(src, dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
-
-                vector<unsigned char> data;
-                cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
-
-                int m_nameSpace = 2;
-                string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
-                //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
-                SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
                 v_image_paths.push_back(remoteImagePath);
 
@@ -546,6 +550,11 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     return v_image_paths;
 }
 
+void Camera::StopGetMultipleImages()
+{
+    b_keep_taking = 0;
+}
+
 void Camera::GetImage(DataAccessClientOPCUA *myclient)
 {
     nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
@@ -569,6 +578,19 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     transpose(src, src);
     flip(src, src, 1);
 
+    std::vector<int> compression_params;
+    compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+    compression_params.push_back(0);
+    resize(src, dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
+
+    vector<unsigned char> data;
+    cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
+
+    int m_nameSpace = 2;
+    string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
+    //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
+    SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
+
     std::string imageName = writeFITSImage(src);
     std::string filePath = helper.get_fitsPath() + imageName;
     std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
@@ -587,19 +609,6 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
         cout << "There was a problem while copying the image!" << endl;
         remoteImagePath = "Error";
     }
-
-    std::vector<int> compression_params;
-    compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
-    compression_params.push_back(0);
-    resize(src, dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
-
-    vector<unsigned char> data;
-    cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
-
-    int m_nameSpace = 2;
-    string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
-    //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
-    SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
     // Free the allocated buffer
     if (pcImageMemory != NULL)

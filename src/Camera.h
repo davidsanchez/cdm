@@ -33,6 +33,7 @@ public:
     void GetImage(DataAccessClientOPCUA* myclient);
     //std::vector<std::string> GetMultipleImages(int n_images);
     std::vector<std::string> GetMultipleImages(int n_images, DataAccessClientOPCUA* myclient);
+    void StopGetMultipleImages();
     int Start();
     int Stop();
 
@@ -62,6 +63,7 @@ public:
     int nRet;
 
     int m_active=0;
+    bool b_keep_taking=1;
 
     typedef boost::bimap< std::string, int > bimap;
     const bimap pixel_formats = boost::assign::list_of< bimap::relation >
