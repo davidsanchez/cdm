@@ -150,7 +150,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
                 boost::trim_right(subChaine2);
                 m_testThread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
 
-                //SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, data);
+                SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str())); 
             }
 
             if (subChaine1.compare("Start") == 0)
@@ -255,18 +255,26 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             {
                 // TODO: Make some parsing/safety checks. best inside Comment function.
                 boost::trim_right(subChaine2);
-                //CDM::AddComment(subChaine2);
-                helper.set_StarName(subChaine2);
+                CDM::AddComment(subChaine2);
+                //helper.set_StarName(subChaine2);
+
+                //SetDatapointThread *m_SetDatapointThread_comment = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, subChaine2); 
             }
 
             if (subChaine1.compare("GetImage") == 0)
             {
-
+                
+                helper.acquire_Azimuth();
+                helper.acquire_Zenith();
+                helper.acquire_RA();
+                helper.acquire_DEC();
+                helper.acquire_LED_intensity();
+                helper.acquire_OARL_state();
+                
                 vector<unsigned char> displayImage = camera.GetImage();
 
                 int m_nameSpace = 2;
                 string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
-                //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
                 SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), temString, m_nameSpace, displayImage); //pushes the image to the datapoint
             }
 
@@ -291,9 +299,10 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 int CDM::AddComment(std::string comment)
 {
     cout << "Comments is: " << comment << endl;
+    
     helper.set_StarName(comment);
-    //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.comment.comment_v", 2, comment);
-    //SetDatapointThread *m_SetDatapointThread_comment = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, comment);
+    SetDatapointThread *m_SetDatapointThread_comment = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, comment); 
+
 }
 
 int CDM::close()

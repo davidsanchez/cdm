@@ -421,7 +421,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images)
                     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
                 }
 
-                //transpose+flip = 90 deg rotation
+                // Transpose + Flip = 90 deg rotation
                 transpose(src, src);
                 flip(src, src, 1);
 
@@ -434,7 +434,6 @@ vector<std::string> Camera::GetMultipleImages(int n_images)
                 cout << "Command is: " << exec << endl;
                 int scp_result = system(exec);
                 cout << "Output of scp is: " << scp_result << endl;
-
                 if (scp_result == 0)
                 {
                     std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
@@ -550,11 +549,32 @@ vector<unsigned char> Camera::GetImage()
 
     cv::Mat src, dst;
     if (iBitsPerPixel == 8)
-        src = cv::Mat(3684, 4912, CV_8UC1, (uchar *)pcImageMemory);
+        src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pcImageMemory);
+    else if (iBitsPerPixel == 16)
+        src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pcImageMemory);
 
     // Transpose + Flip = 90 deg rotation
     transpose(src, src);
     flip(src, src, 1);
+
+    std::string imageName = writeFITSImage(src);
+    std::string filePath = helper.get_fitsPath() + imageName;
+    std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
+
+    char exec[300];
+    sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
+    cout << "Command is: " << exec << endl;
+    int scp_result = system(exec);
+    cout << "Output of scp is: " << scp_result << endl;
+    if (scp_result == 0)
+    {
+        std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
+    }
+    else
+    {
+        cout << "There was a problem while copying the image!" << endl;
+        remoteImagePath = "Error";
+    }
 
     std::vector<int> compression_params;
     compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);

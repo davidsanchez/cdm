@@ -230,24 +230,12 @@
                 <FileFSMRef>FSM_CDM_v4.5.xml</FileFSMRef>
                 <FSM>
                         <NameFSM>Connect</NameFSM>
-
-                        <Argument>
-                                <Name>Return_value</Name>
-                                <Type>string</Type>
-                                <Access>Output</Access>
-                        </Argument>
                         <DeviceInstruction>
                                 <Value>Connect_Instruction</Value>
                         </DeviceInstruction>
                 </FSM>
                 <FSM>
                         <NameFSM>Disconnect</NameFSM>
-
-                        <Argument>
-                                <Name>Return_value</Name>
-                                <Type>string</Type>
-                                <Access>Output</Access>
-                        </Argument>
                         <DeviceInstruction>
                                 <Value>Disconnect_Instruction</Value>
                         </DeviceInstruction>
@@ -300,102 +288,54 @@
                                         <Max></Max>
                                 </Range>
                         </Argument>
-                        <Argument>
-                                <Name>Return_value</Name>
-                                <Type>string</Type>
-                                <Access>Output</Access>
-                        </Argument>
                         <DeviceInstruction>
                                 <Value>Configure_Instruction</Value>
                         </DeviceInstruction>
                 </FSM>
                 <FSM>
                         <NameFSM>GetImage</NameFSM>
-
-                        <Argument>
-                                <Name>Return_value</Name>
-                                <Type>string</Type>
-                                <Access>Output</Access>
-                        </Argument>
                         <DeviceInstruction>
                                 <Value>GetImage_Instruction</Value>
                         </DeviceInstruction>
                 </FSM>
                 <FSM>
                         <NameFSM>StartCDM</NameFSM>
-
-                        <Argument>
-                                <Name>Return_value</Name>
-                                <Type>string</Type>
-                                <Access>Output</Access>
-                        </Argument>
                         <DeviceInstruction>
                                 <Value>StartCDM_Instruction</Value>
                         </DeviceInstruction>
                 </FSM>
                 <FSM>
                         <NameFSM>StopCDM</NameFSM>
-
-                        <Argument>
-                                <Name>Return_value</Name>
-                                <Type>string</Type>
-                                <Access>Output</Access>
-                        </Argument>
                         <DeviceInstruction>
                                 <Value>StopCDM_Instruction</Value>
                         </DeviceInstruction>
                 </FSM>
                 <FSM>
                         <NameFSM>Error</NameFSM>
-
-                        <Argument>
-                                <Name>Return_value</Name>
-                                <Type>string</Type>
-                                <Access>Output</Access>
-                        </Argument>
                         <DeviceInstruction>
                                 <Value>Error_Instruction</Value>
                         </DeviceInstruction>
                 </FSM>
                 <FSM>
                         <NameFSM>Acknowledge</NameFSM>
-
-                        <Argument>
-                                <Name>Return_value</Name>
-                                <Type>string</Type>
-                                <Access>Output</Access>
-                        </Argument>
                         <DeviceInstruction>
                                 <Value>Acknowledge_Instruction</Value>
                         </DeviceInstruction>
                 </FSM>
                 <FSM>
                         <NameFSM>GoToTpoint</NameFSM>
-
-                        <Argument>
-                                <Name>Return_value</Name>
-                                <Type>string</Type>
-                                <Access>Output</Access>
-                        </Argument>
                         <DeviceInstruction>
                                 <Value>GoToTpoint_Instruction</Value>
                         </DeviceInstruction>
                 </FSM>
                 <FSM>
                         <NameFSM>GoToReady</NameFSM>
-
-                        <Argument>
-                                <Name>Return_value</Name>
-                                <Type>string</Type>
-                                <Access>Output</Access>
-                        </Argument>
                         <DeviceInstruction>
                                 <Value>GoToReady_Instruction</Value>
                         </DeviceInstruction>
                 </FSM>
                 <FSM>
                         <NameFSM>GetMultipleImages</NameFSM>
-
                         <Argument>
                                 <Name>N_images</Name>
                                 <Type>int32</Type>
@@ -411,12 +351,6 @@
                 </FSM>
                 <FSM>
                         <NameFSM>StopGetMultipleImages</NameFSM>
-
-                        <Argument>
-                                <Name>Return_value</Name>
-                                <Type>string</Type>
-                                <Access>Output</Access>
-                        </Argument>
                         <DeviceInstruction>
                                 <Value>StopGetMultipleImages_Instruction</Value>
                         </DeviceInstruction>
@@ -433,12 +367,6 @@
                                         <Max></Max>
                                 </Range>
                                 <Description>This will be added to the filename and in the image header</Description>
-                        </Argument>
-                        <Argument>
-                                <Name>Return_value</Name>
-                                <Type>string</Type>
-                                <Access>Output</Access>
-                                <Description></Description>
                         </Argument>
                         <DeviceInstruction>
                                 <Value>AddComment_Instruction</Value>
