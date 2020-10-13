@@ -1,6 +1,9 @@
 #ifndef Camera_H_
 #define Camera_H_
 
+#include "pluginsBase.h"
+#include "lappThread.h" // needed for MOS
+
 #include <iostream>
 
 #include <opencv2/core/core.hpp>
@@ -26,8 +29,10 @@ public:
     int Connect();
     int Disconnect();
     std::vector<boost::any> Configure(int nPixelClock=216, double exposure=1000, double fps=1, int gain=0, std::string pixel_format="IS_CM_SENSOR_RAW16");
-    std::vector<unsigned char> GetImage();
-    std::vector<std::string> GetMultipleImages(int n_images);
+    //std::vector<unsigned char> GetImage();
+    void GetImage(DataAccessClientOPCUA* myclient);
+    //std::vector<std::string> GetMultipleImages(int n_images);
+    std::vector<std::string> GetMultipleImages(int n_images, DataAccessClientOPCUA* myclient);
     int Start();
     int Stop();
 

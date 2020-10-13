@@ -360,7 +360,7 @@ int Camera::Stop()
     // }
 }
 
-vector<std::string> Camera::GetMultipleImages(int n_images)
+vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCUA *myclient)
 {
     vector<std::string> v_image_paths;
     int i_images_taken = 0;
@@ -444,6 +444,19 @@ vector<std::string> Camera::GetMultipleImages(int n_images)
                     remoteImagePath = "Error";
                 }
 
+                std::vector<int> compression_params;
+                compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+                compression_params.push_back(0);
+                resize(src, dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
+
+                vector<unsigned char> data;
+                cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
+
+                int m_nameSpace = 2;
+                string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
+                //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
+                SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
+
                 v_image_paths.push_back(remoteImagePath);
 
                 auto tp_stop = std::chrono::high_resolution_clock::now();
@@ -524,17 +537,16 @@ vector<std::string> Camera::GetMultipleImages(int n_images)
     }
 
     cout << "Finished GetMultipleImages" << endl;
-    
+
     // TODO: also publish the images without saving to disk first
     // TODO: also publish the vector of image paths
 
     //helper.publish_datapoint("Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, 4);
 
-
     return v_image_paths;
 }
 
-vector<unsigned char> Camera::GetImage()
+void Camera::GetImage(DataAccessClientOPCUA *myclient)
 {
     nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
     printf("Status is_AllocImageMem %d\n", nRet);
@@ -584,17 +596,17 @@ vector<unsigned char> Camera::GetImage()
     vector<unsigned char> data;
     cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
 
-    //int m_nameSpace = 2;
-    //string temString = "UnitCDM.AuxControlCameraM.image.image_v";
+    int m_nameSpace = 2;
+    string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
     //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
-    //SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), temString, m_nameSpace, data); //pushes the image to the datapoint
+    SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
     // Free the allocated buffer
     if (pcImageMemory != NULL)
         is_FreeImageMem(hCam, pcImageMemory, nMemoryId);
     pcImageMemory = NULL;
 
-    return data;
+    return;
 }
 
 std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, double fps, int gain, string pixel_format)

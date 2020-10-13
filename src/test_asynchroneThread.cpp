@@ -174,7 +174,8 @@ void *TestAsynchroneThread::run(void *params)
 				//TODO: put the transition state to 1
 				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 1);
 				
-				std::vector<std::string> v_image_paths = camera.GetMultipleImages(n_images);
+				//std::vector<std::string> v_image_paths = camera.GetMultipleImages(n_images);
+				std::vector<std::string> v_image_paths = camera.GetMultipleImages(n_images, m_dataAccessClientOPCUA);
 
 				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, v_image_paths);
 

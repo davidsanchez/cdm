@@ -270,12 +270,15 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 helper.acquire_DEC();
                 helper.acquire_LED_intensity();
                 helper.acquire_OARL_state();
-                
-                vector<unsigned char> displayImage = camera.GetImage();
 
+                camera.GetImage(getDataAccessClientOPCUARef()); // pushes the image to the datapoint inside the function
+
+                /* vector<unsigned char> displayImage = camera.GetImage();
                 int m_nameSpace = 2;
                 string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
                 SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), temString, m_nameSpace, displayImage); //pushes the image to the datapoint
+                */
+                
             }
 
             if (subChaine1.compare("Start") == 0)
