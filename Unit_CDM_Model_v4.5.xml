@@ -58,10 +58,6 @@
                                 <Cmd>AddComment</Cmd>
                         </Instruction>
                         <Instruction>
-                                <Name>Add_nImagesGet_Instruction</Name>
-                                <Cmd>Add_nImagesGet</Cmd>
-                        </Instruction>
-                        <Instruction>
                                 <Name>GetImage_Instruction</Name>
                                 <Cmd>GetImage</Cmd>
                         </Instruction>
@@ -96,7 +92,7 @@
                         </Instruction>
                         <Instruction>
                                 <Name>GetMultipleImages_Instruction</Name>
-                                <Cmd>GetMultipleImages</Cmd>
+                                <Cmd>GetMultipleImages %1</Cmd>
                                 <Asynchronous>
                                         <Enable>true</Enable>
                                         <TimeOut>2</TimeOut>
@@ -448,28 +444,7 @@
                                 <Value>AddComment_Instruction</Value>
                         </DeviceInstruction>
                 </Method>
-                <Method>
-                        <Name>Add_nImagesGet</Name>
-                        <Argument>
-                                <Name>Input_nImagesGet</Name>
-                                <Type>int32</Type>
-                                <Access>Input</Access>
-                                <Range>
-                                        <Min>1</Min>
-                                        <Max>500</Max>
-                                </Range>
-                                <Description>Number of images to take with GetMultipleImages</Description>
-                        </Argument>
-                        <Argument>
-                                <Name>Return_value</Name>
-                                <Type>string</Type>
-                                <Access>Output</Access>
-                                <Description></Description>
-                        </Argument>
-                        <DeviceInstruction>
-                                <Value>Add_nImagesGet_Instruction</Value>
-                        </DeviceInstruction>
-                </Method>
+
                 <CompoundDatapoint>
                         <Name>0_ProgramInformations</Name>
                         <Attribut>

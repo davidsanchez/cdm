@@ -96,62 +96,72 @@ int CDM::afterStart()
     //helper.set_OPCUAref( getDataAccessClientOPCUARef() );
 
     // Trying to access other OPCUA server
-	//connectOpcUa("opc.tcp://address:port"); // example opc.tcp://lappc-f578l:48080
-	int connection_result_Drive = helper.connectOpcUa_Drive("opc.tcp://10.200.100.105:48010"); //This is Drive OPCUA. Old = opc.tcp://10.1.8.3:48010
-	int connection_result_Relay =helper.connectOpcUa_Relay("opc.tcp://10.1.10.5:4845"); //This is Central Dish Cabinet Relay. Used for toggling SG camera power. Old = opc.tcp://10.1.8.3:48010
-	int connection_result_ECC = helper.connectOpcUa_ECC("opc.tcp://10.1.4.66:4841"); //This is ECC OPCUA.
+    //connectOpcUa("opc.tcp://address:port"); // example opc.tcp://lappc-f578l:48080
+    int connection_result_Drive = helper.connectOpcUa_Drive("opc.tcp://10.200.100.105:48010"); //This is Drive OPCUA. Old = opc.tcp://10.1.8.3:48010
+    int connection_result_Relay = helper.connectOpcUa_Relay("opc.tcp://10.1.10.5:4845");       //This is Central Dish Cabinet Relay. Used for toggling SG camera power. Old = opc.tcp://10.1.8.3:48010
+    int connection_result_ECC = helper.connectOpcUa_ECC("opc.tcp://10.1.4.66:4841");           //This is ECC OPCUA.
 
-	cout << "Drive status OPCUA: "<< connection_result_Drive << endl;
-	cout << "Central dish cabinet relay status OPCUA: "<< connection_result_Relay << endl;
-	cout << "ECC status OPCUA: "<< connection_result_ECC << endl;
-	cout << "After start finished!" << endl;
+    cout << "Drive status OPCUA: " << connection_result_Drive << endl;
+    cout << "Central dish cabinet relay status OPCUA: " << connection_result_Relay << endl;
+    cout << "ECC status OPCUA: " << connection_result_ECC << endl;
+    cout << "After start finished!" << endl;
 
     return ret;
 }
 
 int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::string &datapointName, int nameSpace, std::string &result)
 {
-    printf("CDM::cmdAsynch\n");
-    cout << "Async command is: " << command << endl;
-    cout << "Async commandStringAck is: " << commandStringAck << endl;
-    cout << "Async Datapoint name: " << datapointName << endl;
-    cout << "Async NameSpace: " << nameSpace << endl;
-    cout << "Async Result: " << result << endl;
-
-    // not use in this example
     int ret = 0;
-    result = "";
-    if (command.compare("CloseShutters") == 0)
+    printf("In CMDAsync part: received command with the instruction: %s\n", command.c_str());
+    std::string chaine = command + " ";
+    std::string subChaine1 = chaine;
+    std::string subChaine2 = chaine;
+    int flag = 1;
+    std::string::size_type pos;
+    while (flag)
     {
-        m_testThread->cmdCloseShutter(datapointName, nameSpace);
+        subChaine1 = subChaine2;
+        pos = subChaine2.find(' ');   // find separator =' '
+        if (pos == std::string::npos) // nothing to do ? -> exit
+            flag = 0;
+        else
+        {
+            subChaine1.erase(pos);        // find the pair name:value
+            subChaine2.erase(0, pos + 1); // store the rest of the string (example the arguments of the instruction)
+
+            if (subChaine1.compare("CloseShutters") == 0)
+            {
+                m_testThread->cmdCloseShutter(datapointName, nameSpace);
+            }
+            if (subChaine1.compare("OpenShutters") == 0)
+            {
+                m_testThread->cmdOpenShutter(datapointName, nameSpace);
+            }
+
+            if (subChaine1.compare("GetMultipleImages") == 0)
+            {
+                helper.acquire_Azimuth();
+                helper.acquire_Zenith();
+                helper.acquire_RA();
+                helper.acquire_DEC();
+                helper.acquire_LED_intensity();
+                helper.acquire_OARL_state();
+
+                boost::trim_right(subChaine2);
+                m_testThread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
+
+                //SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, data);
+            }
+
+            if (subChaine1.compare("Start") == 0)
+            {
+                m_testThread->cmdStart(datapointName, nameSpace);
+            }
+
+        }
     }
-    if (command.compare("OpenShutters") == 0)
-    {
-        m_testThread->cmdOpenShutter(datapointName, nameSpace);
-    }
-
-    if (command.compare("GetMultipleImages") == 0)
-    {
-
-        //int tmp_n_images = 10; //TODO: Fix, ask JeanLuc how to input
-        int tmp_n_images = helper.get_nImagesGet();
-
-        helper.acquire_Azimuth();
-        helper.acquire_Zenith();
-        helper.acquire_RA();
-        helper.acquire_DEC();
-        helper.acquire_LED_intensity();
-        helper.acquire_OARL_state();
-
-        m_testThread->cmdGetMultipleImages(datapointName, nameSpace, tmp_n_images);
-
-        //SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, data);
-    }
-
-    if (command.compare("Start") == 0)
-    {
-        m_testThread->cmdStart(datapointName, nameSpace);
-    }
+    // example here do nothing but wait
+    //sleep(3);
 
     return ret;
 }
@@ -183,12 +193,11 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 std::vector<boost::any> configure_settings = camera.Configure(); // Sets default parameters
 
                 //Todo: add this part as a function
-                SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, boost::any_cast<int> (configure_settings[0]));
+                SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, boost::any_cast<int>(configure_settings[0]));
                 SetDatapointThread *m_SetDatapointThread_fps = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.FPS.FPS_v", 2, boost::any_cast<double>(configure_settings[1]));
-                SetDatapointThread *m_SetDatapointThread_exposure = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, boost::any_cast<double> ((configure_settings[2])));
-                SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, boost::any_cast<int> ((configure_settings[3])));
-                SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, boost::any_cast<string> (configure_settings[4]));
-
+                SetDatapointThread *m_SetDatapointThread_exposure = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, boost::any_cast<double>((configure_settings[2])));
+                SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, boost::any_cast<int>((configure_settings[3])));
+                SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, boost::any_cast<string>(configure_settings[4]));
 
                 /* Standby stuff and tests
 				// Checks if stanby is supported. Return 1 because it is supported.
@@ -233,12 +242,11 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 std::vector<boost::any> configure_settings = camera.Configure(stoi(results[0]), stod(results[1]), stod(results[2]), stoi(results[3]), results[4]);
 
                 //Todo: add this part as a function
-                SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, boost::any_cast<int> (configure_settings[0]));
+                SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, boost::any_cast<int>(configure_settings[0]));
                 SetDatapointThread *m_SetDatapointThread_fps = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.FPS.FPS_v", 2, boost::any_cast<double>(configure_settings[1]));
-                SetDatapointThread *m_SetDatapointThread_exposure = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, boost::any_cast<double> ((configure_settings[2])));
-                SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, boost::any_cast<int> ((configure_settings[3])));
-                SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, boost::any_cast<string> (configure_settings[4]));
-    
+                SetDatapointThread *m_SetDatapointThread_exposure = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, boost::any_cast<double>((configure_settings[2])));
+                SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, boost::any_cast<int>((configure_settings[3])));
+                SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, boost::any_cast<string>(configure_settings[4]));
 
                 // Put here the rest Datapoint Threads or refactor
             }
@@ -251,13 +259,6 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 helper.set_StarName(subChaine2);
             }
 
-            if (subChaine1.compare("Add_nImagesGet") == 0)
-            {
-                // TODO: Make some parsing/safety checks. best inside Comment function.
-                boost::trim_right(subChaine2);
-                helper.set_nImagesGet(atoi(subChaine2.c_str()));
-            }
-
             if (subChaine1.compare("GetImage") == 0)
             {
 
@@ -267,14 +268,6 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
                 //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
                 SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), temString, m_nameSpace, displayImage); //pushes the image to the datapoint
-                
-            }
-
-            if (subChaine1.compare("GetMultipleImages") == 0)
-            {
-                // TODO: Move to async part
-                // CDM::GetMultipleImages(atoi(subChaine2.c_str()));
-
             }
 
             if (subChaine1.compare("Start") == 0)
@@ -287,7 +280,6 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             {
                 //CDM::Stop();
             }
-
         }
     }
     // example here do nothing but wait
@@ -302,7 +294,6 @@ int CDM::AddComment(std::string comment)
     helper.set_StarName(comment);
     //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.comment.comment_v", 2, comment);
     //SetDatapointThread *m_SetDatapointThread_comment = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, comment);
-
 }
 
 int CDM::close()
@@ -315,7 +306,7 @@ int CDM::close()
     camera.Disconnect();
 
     // Close connection
-	/* m_clientOpcUaRef_Drive->disconnect();
+    /* m_clientOpcUaRef_Drive->disconnect();
 	m_clientOpcUaRef_Relay->disconnect();
 	m_clientOpcUaRef_ECC->disconnect();
     */
@@ -333,7 +324,6 @@ int CDM::set(const std::string &chaine, int commandStringAck, std::vector<boost:
     int ret = 0;
     return ret;
 }
-
 
 // Be careful, always need to allow to connect this Plugin with MOS
 extern "C"
