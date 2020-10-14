@@ -419,7 +419,7 @@
                                                 <Max></Max>
                                         </Range>
                                 </Argument>
-                                <Argument>
+                                <!-- <Argument>
                                         <Name>Return_value</Name>
                                         <Type>string</Type>
                                         <Access>Input</Access>
@@ -427,7 +427,7 @@
                                                 <Min></Min>
                                                 <Max></Max>
                                         </Range>
-                                </Argument>
+                                </Argument> -->
                                 <DeviceInstruction>
                                         <Value>AddComment_Instruction</Value>
                                 </DeviceInstruction>

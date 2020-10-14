@@ -462,6 +462,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
                 }
 
                 v_image_paths.push_back(remoteImagePath);
+                SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName); //Updates the imageName
 
                 auto tp_stop = std::chrono::high_resolution_clock::now();
                 auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
@@ -588,7 +589,6 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
 
     int m_nameSpace = 2;
     string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
-    //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
     SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
     std::string imageName = writeFITSImage(src);
@@ -609,6 +609,8 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
         cout << "There was a problem while copying the image!" << endl;
         remoteImagePath = "Error";
     }
+
+    SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName); //Updates the imageName
 
     // Free the allocated buffer
     if (pcImageMemory != NULL)
