@@ -237,6 +237,11 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 std::vector<std::string> results;
                 boost::split(results, subChaine2, [](char c) { return c == ' '; });
 
+                // Check that the input string is some sensible value
+                if ( (results[4] != "IS_CM_MONO8") || (results[4] != "IS_CM_SENSOR_RAW16") )
+                    results[4] = "IS_CM_SENSOR_RAW16";
+
+
                 // TODO:get the returning string value and return it to OPCUA
                 //Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, std::string pixel_format="IS_CM_MONO8");
                 std::vector<boost::any> configure_settings = camera.Configure(stoi(results[0]), stod(results[1]), stod(results[2]), stoi(results[3]), results[4]);
