@@ -30,10 +30,14 @@ MESSAGE( STATUS "==============================================" )
     include_directories(Source)
     include_directories(/usr/local/include/CCfits)
 
+    include_directories(/home/shifter/YoctoMeteo_cpp/Sources)
+    include_directories(/home/shifter/YoctoMeteo_cpp/Sources/yapi)
+
     link_directories(${MOS_PATH}/lib)
     link_directories(${CMAKE_CURRENT_SOURCE_DIR})
     link_directories(/usr/lib)
-    link_directories(/usr/local/lib)      
+    link_directories(/usr/local/lib)
+    link_directories(/home/shifter/YoctoMeteo_cpp/Binaries/linux/64bits)
 
 IF (UNIX)
     INCLUDE_DIRECTORIES()
@@ -53,6 +57,7 @@ add_library(
         test_asynchroneThread.cpp
         Camera.cpp
         Helper.cpp
+        Meteo.cpp
         #ImageAnalysis.cpp
         #ImageFITS.cpp
         )
@@ -63,6 +68,7 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}  ueye_api) # Camera library
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  opencv_core opencv_highgui opencv_imgproc ) #OpenCV
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  CCfits cfitsio ) # FITS files library
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  boost_log boost_log_setup ) # Boost
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}  usb-1.0 yocto ) # Yocto-Meteo
 
 set_target_properties( PROPERTIES DEBUG_POSTFIX "d")
 

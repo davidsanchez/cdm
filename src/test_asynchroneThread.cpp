@@ -239,6 +239,14 @@ void *TestAsynchroneThread::run(void *params)
 				m_cmdStart = 0;
 			}
 
+			if (m_cmdMeteo == 1)
+			{
+				vector<float> meteo_val = meteo.Update();
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.Sensor.temperature.temperature_v", 2, meteo_val[0]);			
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.Sensor.humidity.humidity_v", 2, meteo_val[1]);
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.Sensor.pressure.pressure_v", 2, meteo_val[2]);
+			}
+
 		}
 	}
 	return NULL;
