@@ -43,7 +43,7 @@ std::string Camera::writeFITSImage(Mat image, string img_info)
     streamObj << "-STAR=";
     streamObj << helper.get_StarName();
     streamObj << "-EXP=";
-    //streamObj << std::setprecision(0);
+    streamObj << std::setprecision(0);
     streamObj << Camera::get_exposure();
     streamObj << "-ZD=";
     streamObj << helper.get_Zenith();
@@ -57,6 +57,16 @@ std::string Camera::writeFITSImage(Mat image, string img_info)
     streamObj << helper.get_LED_intensity();
     streamObj << "-OARL=";
     streamObj << helper.get_OARL_state();
+    streamObj << "-parked=";
+    streamObj << helper.get_Drive_status_parked();
+    streamObj << "-parkingPos=";
+    streamObj << helper.get_Drive_status_in_parking_position();
+    streamObj << "-inMotion=";
+    streamObj << helper.get_Drive_status_in_motion();
+    streamObj << "-tracking=";
+    streamObj << helper.get_Drive_status_tracking_in_progress();
+
+
     if (img_info != "")
         streamObj << "-" << img_info;
     streamObj << ".fits";
