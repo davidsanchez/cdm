@@ -43,6 +43,7 @@ std::string Camera::writeFITSImage(Mat image, string img_info)
     streamObj << "-STAR=";
     streamObj << helper.get_StarName();
     streamObj << "-EXP=";
+    //streamObj << std::setprecision(0);
     streamObj << Camera::get_exposure();
     streamObj << "-ZD=";
     streamObj << helper.get_Zenith();
@@ -57,7 +58,7 @@ std::string Camera::writeFITSImage(Mat image, string img_info)
     streamObj << "-OARL=";
     streamObj << helper.get_OARL_state();
     if (img_info != "")
-        streamObj << "_" << img_info;
+        streamObj << "-" << img_info;
     streamObj << ".fits";
 
     stream_fitsPath << streamObj.str();
@@ -177,6 +178,10 @@ std::string Camera::writeFITSImage(Mat image, string img_info)
     pFits->pHDU().addKey("LED", helper.get_LED_intensity(), "LED01 intensity");
     pFits->pHDU().addKey("OARL", helper.get_OARL_state(), "OARL status");
     pFits->pHDU().addKey("INFO", img_info, "Additional image info");
+    pFits->pHDU().addKey("INMOTION", helper.get_Drive_status_in_motion(), "Drive status - In Motion");
+    pFits->pHDU().addKey("PARKED", helper.get_Drive_status_parked(), "Drive status - Parked");
+    pFits->pHDU().addKey("PARKINGP", helper.get_Drive_status_in_parking_position(), "Drive status - In Parking Position");
+    pFits->pHDU().addKey("TRACKING", helper.get_Drive_status_tracking_in_progress(), "Drive status - Tracking In Progress");
 
     //     pFits->pHDU().addKey("GAIN", gain_value, "Gain");
     //     pFits->pHDU().addKey("GAMMA", gamma_value, "Gamma");

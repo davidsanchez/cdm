@@ -111,6 +111,58 @@ bool Helper::acquire_OARL_state()
     OARL_state = element;
 }
 
+bool Helper::acquire_drive_status_in_motion()
+{
+    std::string finalnode = "Drive.DriveControl.Status.Status_In_Motion.Status_In_Motion_v";
+    int nameSpace = 2;
+    //short int element; //(change with the good type of the datapoint float/int/string/.....)
+    bool element = 0;
+    
+    if (m_clientOpcUaRef_Drive != NULL)
+        Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
+    std::cout << "Drive status of In Motion is: " << element << std::endl;
+    drive_status_in_motion = element;
+}
+
+bool Helper::acquire_drive_status_in_parking_position()
+{
+    std::string finalnode = "Drive.DriveControl.Status.Status_In_Parking_Position.Status_In_Parking_Position_v";
+    int nameSpace = 2;
+    //short int element; //(change with the good type of the datapoint float/int/string/.....)
+    bool element = 0;
+    
+    if (m_clientOpcUaRef_Drive != NULL)
+        Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
+    std::cout << "Drive status of In Parking Position is: " << element << std::endl;
+    drive_status_in_parking_position = element;
+}
+
+bool Helper::acquire_drive_status_parked()
+{
+    std::string finalnode = "Drive.DriveControl.Status.Status_Parked.Status_Parked_v";
+    int nameSpace = 2;
+    //short int element; //(change with the good type of the datapoint float/int/string/.....)
+    bool element = 0;
+    
+    if (m_clientOpcUaRef_Drive != NULL)
+        Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
+    std::cout << "Drive status of Parked: " << element << std::endl;
+    drive_status_parked = element;
+}
+
+bool Helper::acquire_drive_status_tracking_in_progress()
+{
+    std::string finalnode = "Drive.DriveControl.Status.Status_Tracking_In_Progress.Status_Tracking_In_Progress_v";
+    int nameSpace = 2;
+    //short int element; //(change with the good type of the datapoint float/int/string/.....)
+    bool element = 0;
+    
+    if (m_clientOpcUaRef_Drive != NULL)
+        Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
+    std::cout << "Drive status of Tracking In Progress: " << element << std::endl;
+    drive_status_tracking_in_progress = element;
+}
+
 int Helper::connectOpcUa_Drive(std::string url)
 {
 	int ret = 0;

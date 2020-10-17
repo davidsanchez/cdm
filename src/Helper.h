@@ -151,6 +151,10 @@ public:
     double acquire_Zenith();
     int acquire_LED_intensity();
     bool acquire_OARL_state();
+    bool acquire_drive_status_in_motion();
+    bool acquire_drive_status_in_parking_position();
+    bool acquire_drive_status_parked();
+    bool acquire_drive_status_tracking_in_progress();
 
     double get_RA() { return Helper::RA; }
     double get_DEC() { return Helper::DEC; }
@@ -161,6 +165,11 @@ public:
     double get_OffsetZenith() { return Helper::offset_zenith; }
     int get_LED_intensity() {return Helper::LED_intensity;}
     bool get_OARL_state() {return Helper::OARL_state;}
+    bool get_Drive_status_in_motion() {return Helper::drive_status_in_motion;}
+    bool get_Drive_status_in_parking_position() {return Helper::drive_status_in_parking_position;}
+    bool get_Drive_status_parked() {return Helper::drive_status_parked;}
+    bool get_Drive_status_tracking_in_progress() {return Helper::drive_status_tracking_in_progress;}
+
     int get_nImagesGet() {return Helper::nImagesGet;}
     int set_nImagesGet(int nImagesGet) {Helper::nImagesGet = nImagesGet;}
 
@@ -198,6 +207,10 @@ private:
     double offset_zenith = 0;
     double RA = 0;
     double DEC = 0;
+    bool drive_status_in_motion=0;
+    bool drive_status_in_parking_position=0;
+    bool drive_status_parked=0;
+    bool drive_status_tracking_in_progress=0;
     int nImagesGet=1;
 
     std::string StarName = "";

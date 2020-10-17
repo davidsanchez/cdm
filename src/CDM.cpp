@@ -146,6 +146,10 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
                 helper.acquire_DEC();
                 helper.acquire_LED_intensity();
                 helper.acquire_OARL_state();
+                helper.acquire_drive_status_in_motion();
+                helper.acquire_drive_status_in_parking_position();
+                helper.acquire_drive_status_parked();
+                helper.acquire_drive_status_tracking_in_progress();
 
                 boost::trim_right(subChaine2);
                 m_testThread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
@@ -161,6 +165,10 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
                 helper.acquire_DEC();
                 helper.acquire_LED_intensity();
                 helper.acquire_OARL_state();
+                helper.acquire_drive_status_in_motion();
+                helper.acquire_drive_status_in_parking_position();
+                helper.acquire_drive_status_parked();
+                helper.acquire_drive_status_tracking_in_progress();
 
                 boost::trim_right(subChaine2);
                 m_testThread->cmdGetMultipleImagesStacked(datapointName, nameSpace, atoi(subChaine2.c_str()));
@@ -290,6 +298,10 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 helper.acquire_DEC();
                 helper.acquire_LED_intensity();
                 helper.acquire_OARL_state();
+                helper.acquire_drive_status_in_motion();
+                helper.acquire_drive_status_in_parking_position();
+                helper.acquire_drive_status_parked();
+                helper.acquire_drive_status_tracking_in_progress();
 
                 camera.GetImage(getDataAccessClientOPCUARef()); // pushes the image to the datapoint inside the function
 
