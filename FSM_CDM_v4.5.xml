@@ -65,6 +65,12 @@
 		<AutomaticChangeTransition>true</AutomaticChangeTransition>
 	</TransitionFSM>
 	<TransitionFSM>
+		<Name>GetMultipleImagesStacked</Name>
+		<StateCondition>3</StateCondition>
+		<FinalTransition>4</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
 		<Name>StopGetMultipleImages</Name>
 		<StateCondition>4</StateCondition>
 		<FinalTransition>3</FinalTransition>

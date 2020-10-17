@@ -37,6 +37,7 @@ public:
     int cmdOpenShutter(std::string datapointName, int nameSpace);
     int cmdCloseShutter(std::string datapointName, int nameSpace);
     int cmdGetMultipleImages(std::string datapointName, int nameSpace, int n_images);
+    int cmdGetMultipleImagesStacked(std::string datapointName, int nameSpace, int n_images);
     int cmdStart(std::string datapointName, int nameSpace);
 
 private:
@@ -46,6 +47,7 @@ private:
     int m_cmdCloseShutter;
     int m_cmdOpenShutter;
     int m_cmdGetMultipleImages;
+    int m_cmdGetMultipleImagesStacked;
     int m_cmdStart;
 	int m_cmdMeteo=1;
     int m_nameSpace;

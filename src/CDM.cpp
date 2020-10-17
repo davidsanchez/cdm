@@ -153,6 +153,21 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
                 //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str())); 
             }
 
+            if (subChaine1.compare("GetMultipleImagesStacked") == 0)
+            {
+                helper.acquire_Azimuth();
+                helper.acquire_Zenith();
+                helper.acquire_RA();
+                helper.acquire_DEC();
+                helper.acquire_LED_intensity();
+                helper.acquire_OARL_state();
+
+                boost::trim_right(subChaine2);
+                m_testThread->cmdGetMultipleImagesStacked(datapointName, nameSpace, atoi(subChaine2.c_str()));
+
+                //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str())); 
+            }
+
             if (subChaine1.compare("Start") == 0)
             {
                 m_testThread->cmdStart(datapointName, nameSpace);

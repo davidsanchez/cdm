@@ -98,6 +98,14 @@
                                         <TimeOut>2</TimeOut>
                                         <EndInstruction></EndInstruction>
                                 </Asynchronous>
+                        </Instruction>                        <Instruction>
+                                <Name>GetMultipleImagesStacked_Instruction</Name>
+                                <Cmd>GetMultipleImagesStacked %1</Cmd>
+                                <Asynchronous>
+                                        <Enable>true</Enable>
+                                        <TimeOut>2</TimeOut>
+                                        <EndInstruction></EndInstruction>
+                                </Asynchronous>
                         </Instruction>
                         <Instruction>
                                 <Name>StopGetMultipleImages_Instruction</Name>
@@ -347,6 +355,20 @@
                         </Argument>
                         <DeviceInstruction>
                                 <Value>GetMultipleImages_Instruction</Value>
+                        </DeviceInstruction>
+                </FSM>                <FSM>
+                        <NameFSM>GetMultipleImagesStacked</NameFSM>
+                        <Argument>
+                                <Name>N_images</Name>
+                                <Type>int32</Type>
+                                <Access>Input</Access>
+                                <Range>
+                                        <Min>1</Min>
+                                        <Max>500</Max>
+                                </Range>
+                        </Argument>
+                        <DeviceInstruction>
+                                <Value>GetMultipleImagesStacked_Instruction</Value>
                         </DeviceInstruction>
                 </FSM>
                 <FSM>

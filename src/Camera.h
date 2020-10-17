@@ -33,12 +33,13 @@ public:
     void GetImage(DataAccessClientOPCUA* myclient);
     //std::vector<std::string> GetMultipleImages(int n_images);
     std::vector<std::string> GetMultipleImages(int n_images, DataAccessClientOPCUA* myclient);
+    std::vector<std::string> GetMultipleImagesStacked(int n_images, DataAccessClientOPCUA* myclient);
     void StopGetMultipleImages();
     int Start();
     int Stop();
 
     double get_exposure() {return Camera::exposure_setting;}
-    std::string writeFITSImage(cv::Mat image);  
+    std::string writeFITSImage(cv::Mat image, std::string img_info = "");  
 
 //private:
     // Camera stuff

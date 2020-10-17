@@ -12,7 +12,7 @@ using namespace CCfits;
 using namespace std;
 using namespace cv;
 
-std::string Camera::writeFITSImage(Mat image)
+std::string Camera::writeFITSImage(Mat image, string img_info)
 {
     //TODO: should also send image data type to this method, now assume 8bit
 
@@ -56,6 +56,8 @@ std::string Camera::writeFITSImage(Mat image)
     streamObj << helper.get_LED_intensity();
     streamObj << "-OARL=";
     streamObj << helper.get_OARL_state();
+    if (img_info != "")
+        streamObj << "_" << img_info;
     streamObj << ".fits";
 
     stream_fitsPath << streamObj.str();
@@ -174,6 +176,7 @@ std::string Camera::writeFITSImage(Mat image)
     pFits->pHDU().addKey("OBJECT", helper.get_StarName(), "Star name");
     pFits->pHDU().addKey("LED", helper.get_LED_intensity(), "LED01 intensity");
     pFits->pHDU().addKey("OARL", helper.get_OARL_state(), "OARL status");
+    pFits->pHDU().addKey("INFO", img_info, "Additional image info");
 
     //     pFits->pHDU().addKey("GAIN", gain_value, "Gain");
     //     pFits->pHDU().addKey("GAMMA", gamma_value, "Gamma");
@@ -386,7 +389,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     int loop_image_count = 0;
     int64_t duration_count = 0;
 
-    while ( (i_images_taken < n_images) && (b_keep_taking==1) )
+    while ((i_images_taken < n_images) && (b_keep_taking == 1))
     {
         // Use is_LockSeqBuf when processing image?
 
@@ -440,7 +443,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
                 //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
                 SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
-                SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken+1); //Updates the number of images taken
+                SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken + 1); //Updates the number of images taken
 
                 std::string imageName = writeFITSImage(src);
                 std::string filePath = helper.get_fitsPath() + imageName;
@@ -547,6 +550,216 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     // TODO: also publish the vector of image paths
 
     //helper.publish_datapoint("Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, 4);
+
+    return v_image_paths;
+}
+
+vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessClientOPCUA *myclient)
+{
+    b_keep_taking = 1;
+    cv::Mat accumulated_images = cv::Mat::zeros(iWidth, iHeight, CV_64FC1); // contains accumulated images. Height and width are reversed as the camera images are rotated 90 deg after taking.
+
+    vector<std::string> v_image_paths;
+    int i_images_taken = 0;
+    int n_allocated_memories = 10;
+    char *pcImageMemory_arr[n_allocated_memories];
+    int nMemoryId_arr[n_allocated_memories];
+    for (int i = 0; i < n_allocated_memories; i++)
+    {
+        nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
+        std::cout << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
+
+        is_AddToSequence(hCam, pcImageMemory, nMemoryId);
+        pcImageMemory_arr[i] = pcImageMemory;
+        nMemoryId_arr[i] = nMemoryId;
+    }
+    is_InitImageQueue(hCam, 0);
+
+    nRet = is_CaptureVideo(hCam, IS_WAIT);
+    std::cout << "is_CaptureVideo returned " << nRet << std::endl;
+
+    int loop_image_count = 0;
+    int64_t duration_count = 0;
+
+    while ((i_images_taken < n_images) && (b_keep_taking == 1))
+    {
+        // Use is_LockSeqBuf when processing image?
+
+        char *pBuffer = NULL;
+        nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
+
+        if (nRet == IS_SUCCESS)
+        {
+            {
+                auto tp_start = std::chrono::high_resolution_clock::now();
+                Mat src, dst;
+
+                if (iBitsPerPixel == 8)
+                    src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
+
+                else if (iBitsPerPixel == 16)
+                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+
+                else if (iBitsPerPixel == 12)
+                {
+                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+                    src = 16 * src;
+                }
+
+                else if (iBitsPerPixel == 10)
+                {
+                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+                    src = 64 * src;
+                }
+
+                else
+                {
+                    cout << "Check bitdepth!" << endl;
+                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+                }
+
+                // Transpose + Flip = 90 deg rotation
+                transpose(src, src);
+                flip(src, src, 1);
+
+                std::vector<int> compression_params;
+                compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+                compression_params.push_back(0);
+                resize(src, dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
+
+                vector<unsigned char> data;
+                cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
+
+                int m_nameSpace = 2;
+                string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
+                //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
+                SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
+
+                SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken + 1); //Updates the number of images taken
+
+                // Accumulate images. In OpenCV_v2 input has to be 8bit or 32bit?
+                //Conversion from CV_32 to CV_64 should be automatic (TODO: verify)
+                //src.convertTo(src, CV_32FC1);
+                cv::accumulate(src, accumulated_images);
+
+                auto tp_stop = std::chrono::high_resolution_clock::now();
+                auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
+                duration_count += ms.count();
+
+                if (++loop_image_count == 100)
+                {
+                    std::cout << "Duration: " << duration_count / loop_image_count << std::endl;
+                    loop_image_count = 0;
+                    duration_count = 0;
+                }
+            }
+            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
+            i_images_taken++;
+        }
+        else if (nRet == IS_CAPTURE_STATUS)
+        {
+
+            UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
+            INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
+
+            std::cout << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
+            std::cout << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
+            std::cout << "\tApiNoDestMem:    " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_NO_DEST_MEM] << std::endl;
+            std::cout << "\tApiImageLocked:  " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_IMAGE_LOCKED] << std::endl;
+            std::cout << "\tUsbTransferFail: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_USB_TRANSFER_FAILED] << std::endl;
+
+            //	wLinkSpeed_Mb
+            // The camera has the device ID 1
+
+            UINT nDeviceId = 1;
+            IS_DEVICE_INFO deviceInfo;
+            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
+            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
+
+            if (nRet == IS_SUCCESS)
+
+            {
+                WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
+                std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
+            }
+
+            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
+        }
+        else
+        {
+            std::cout << "is_WaitForNextImage : " << nRet << std::endl;
+            //	wLinkSpeed_Mb
+            // The camera has the device ID 1
+
+            UINT nDeviceId = 1;
+            IS_DEVICE_INFO deviceInfo;
+            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
+            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
+
+            WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
+            std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
+        }
+
+        cout << "Images taken: " << i_images_taken << endl;
+    }
+
+    // Now convert, save and publish the image
+    accumulated_images.convertTo(accumulated_images, CV_16UC1, 1. / i_images_taken);
+
+    // Publish the final image
+    Mat accumulated_images_dst;
+    std::vector<int> compression_params;
+    compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+    compression_params.push_back(0);
+    resize(accumulated_images, accumulated_images_dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
+    vector<unsigned char> data;
+    cv::imencode(".png", accumulated_images_dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
+    int m_nameSpace = 2;
+    string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
+    SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
+
+    // Make a FITS image
+    std::string imageName = writeFITSImage(accumulated_images, "avg");
+    std::string filePath = helper.get_fitsPath() + imageName;
+    std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
+
+    char exec[300];
+    sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
+    cout << "Command is: " << exec << endl;
+    int scp_result = system(exec);
+    cout << "Output of scp is: " << scp_result << endl;
+    if (scp_result == 0)
+    {
+        std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
+    }
+    else
+    {
+        cout << "There was a problem while copying the image!" << endl;
+        remoteImagePath = "Error";
+    }
+
+    v_image_paths.push_back(remoteImagePath);
+    SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName); //Updates the imageName
+
+    // Free the OpenCV memory?
+    // Free the allocated memories
+
+    nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
+    cout << "is_StopLiveVideo result: " << nRet << endl;
+
+    nRet = is_ExitImageQueue(hCam);
+    cout << "is_ExitImageQueue: " << nRet << endl;
+
+    nRet = is_ClearSequence(hCam);
+    cout << "is_ClearSequence: " << nRet << endl;
+
+    for (int i = 0; i < n_allocated_memories; i++)
+    {
+        nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
+        cout << "is_FreeImageMem: " << nRet << endl;
+    }
+
+    cout << "Finished GetMultipleImages" << endl;
 
     return v_image_paths;
 }
