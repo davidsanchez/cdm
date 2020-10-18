@@ -734,7 +734,8 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
     // Make a FITS image
-    std::string imageName = writeFITSImage(accumulated_images, "avg");
+    std:string string_average = "avg=" + std::to_string(i_images_taken);
+    std::string imageName = writeFITSImage(accumulated_images, string_average);
     std::string filePath = helper.get_fitsPath() + imageName;
     std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
 
