@@ -719,7 +719,10 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     }
 
     // Now convert, save and publish the image
-    accumulated_images.convertTo(accumulated_images, CV_16UC1, 1. / i_images_taken);
+    if (iBitsPerPixel == 16)
+        accumulated_images.convertTo(accumulated_images, CV_16UC1, 1. / i_images_taken);
+    else if (iBitsPerPixel == 8)
+        accumulated_images.convertTo(accumulated_images, CV_8UC1, 1. / i_images_taken);
 
     // Publish the final image
     Mat accumulated_images_dst;
