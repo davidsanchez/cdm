@@ -366,7 +366,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 
     vector<std::string> v_image_paths;
     int i_images_taken = 0;
-    int n_allocated_memories = 10;
+    int n_allocated_memories = 20;
     char *pcImageMemory_arr[n_allocated_memories];
     int nMemoryId_arr[n_allocated_memories];
     for (int i = 0; i < n_allocated_memories; i++)

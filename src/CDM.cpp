@@ -97,7 +97,7 @@ int CDM::afterStart()
 
     // Trying to access other OPCUA server
     //connectOpcUa("opc.tcp://address:port"); // example opc.tcp://lappc-f578l:48080
-    int connection_result_Drive = helper.connectOpcUa_Drive("opc.tcp://10.200.100.105:48010"); //This is Drive OPCUA. Old = opc.tcp://10.1.8.3:48010
+    int connection_result_Drive = helper.connectOpcUa_Drive("opc.tcp://10.200.100.105:48011"); //This is Drive OPCUA. Old = opc.tcp://10.1.8.3:48010
     int connection_result_Relay = helper.connectOpcUa_Relay("opc.tcp://10.1.10.5:4845");       //This is Central Dish Cabinet Relay. Used for toggling SG camera power. Old = opc.tcp://10.1.8.3:48010
     int connection_result_ECC = helper.connectOpcUa_ECC("opc.tcp://10.1.4.66:4841");           //This is ECC OPCUA.
 
