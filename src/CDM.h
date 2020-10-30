@@ -12,7 +12,7 @@
 #include <ctime>
 #include <iomanip> // Used for setprecision
 #include <cmath>
-#include <unistd.h> // TODO: why is this used?
+#include <unistd.h> // TODO: why is this used? For usleep for example.
 
 #include "pluginsBase.h"	//TODO: move this to .h file? Was in .cpp before
 #include "lappThread.h" // needed for MOS
