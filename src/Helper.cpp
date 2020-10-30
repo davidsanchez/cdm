@@ -40,7 +40,7 @@ string Helper::UTC_time()
 
 double Helper::acquire_RA()
 {
-    std::string finalnode = "Drive.DriveControl.RA.RA_v";
+    std::string finalnode = "Drive.DriveControl.RA_Telescope.RA_Telescope_v";
     int nameSpace = 2;
     //short int element; //(change with the good type of the datapoint float/int/string/.....)
     float element = 0;
@@ -53,7 +53,7 @@ double Helper::acquire_RA()
 
 double Helper::acquire_DEC()
 {
-    std::string finalnode = "Drive.DriveControl.Dec.Dec_v";
+    std::string finalnode = "Drive.DriveControl.Dec_Telescope.Dec_Telescope_v";
     int nameSpace = 2;
     //short int element; //(change with the good type of the datapoint float/int/string/.....)
     float element = 0;
@@ -77,7 +77,7 @@ double Helper::acquire_Azimuth()
 
 double Helper::acquire_Zenith()
 {
-    std::string finalnode = "Drive.DriveControl.CurrentPosition.elevation_position.elevation_position_v";
+    std::string finalnode = "Drive.DriveControl.CurrentPosition.zenithangle_position.zenithangle_position_v";
     int nameSpace = 2;
     //short int element; //(change with the good type of the datapoint float/int/string/.....)
     float element = 0;
