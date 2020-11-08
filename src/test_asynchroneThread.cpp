@@ -163,6 +163,9 @@ void *TestAsynchroneThread::run(void *params)
 
 			if (m_cmdGetMultipleImages == 1)
 			{
+				// Puts the FSM.state to 4
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 4);
+
 				// inform that the command is in progress
 				temString = m_datapointName + "._InProgressBar";
 				t = 1;
@@ -189,7 +192,7 @@ void *TestAsynchroneThread::run(void *params)
 
 				//SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, 2);
 
-
+				// Puts the FSM.state back to 3
 				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 3);
 				// Put the transition state to 0. 
 				//m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
