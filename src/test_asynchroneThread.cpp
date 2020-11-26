@@ -173,6 +173,9 @@ void *TestAsynchroneThread::run(void *params)
 
 			if (m_cmdGetMultipleImages == 1)
 			{
+				// Puts the FSM.state to 4
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 4);
+
 				// inform that the command is in progress
 				temString = m_datapointName + "._InProgressBar";
 				t = 1;
