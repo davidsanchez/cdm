@@ -39,6 +39,7 @@ public:
     int cmdGetMultipleImages(std::string datapointName, int nameSpace, int n_images);
     int cmdGetMultipleImagesStacked(std::string datapointName, int nameSpace, int n_images);
     int cmdStart(std::string datapointName, int nameSpace);
+    int cmdConfigure(std::string datapointName, int nameSpace, int nPixelClock, double exposure, double fps, int gain, std::string pixel_format);
 
 private:
     int m_stop;
@@ -49,6 +50,7 @@ private:
     int m_cmdGetMultipleImages;
     int m_cmdGetMultipleImagesStacked;
     int m_cmdStart;
+    int m_cmdConfigure;
 	int m_cmdMeteo=1;
     int m_nameSpace;
     std::string m_datapointName;
@@ -63,6 +65,11 @@ private:
     double zenith;
     int LED_intensity;
     bool OARL_state;
+    int nPixelClock;
+    double exposure;
+    double fps;
+    int gain;
+    std::string pixel_format;
 };
 
 #endif //__TESTASYNCHRONECONTROLLER_H__

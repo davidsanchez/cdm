@@ -97,6 +97,19 @@ int TestAsynchroneThread::cmdStart(std::string datapointName, int nameSpace)
 	return ret;
 }
 
+int TestAsynchroneThread::cmdConfigure(std::string datapointName, int nameSpace, int nPixelClock, double exposure, double fps, int gain, std::string pixel_format)
+{
+	int ret = 0;
+	m_cmdConfigure = true;
+	m_datapointName = datapointName;
+	m_nameSpace = nameSpace;
+	TestAsynchroneThread::nPixelClock = nPixelClock;
+	TestAsynchroneThread::exposure = exposure;
+	TestAsynchroneThread::fps = fps;
+	TestAsynchroneThread::gain = gain;
+	TestAsynchroneThread::pixel_format = pixel_format;
+	return ret;
+}
 
 void *TestAsynchroneThread::run(void *params)
 {
@@ -197,6 +210,7 @@ void *TestAsynchroneThread::run(void *params)
 				for (const auto &piece : v_image_paths) imagePath_cat += "\n" + piece;
 				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.imagePath_cat.imagePath_cat_v", 2, imagePath_cat);
 
+				// Puts the FSM.state back to 3
 				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 3);
 				// Put the transition state to 0. 
 				//m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
@@ -221,6 +235,10 @@ void *TestAsynchroneThread::run(void *params)
 
 			if (m_cmdGetMultipleImagesStacked == 1)
 			{
+
+				// Puts the FSM.state to 4
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 4);
+
 				// inform that the command is in progress
 				temString = m_datapointName + "._InProgressBar";
 				t = 1;
@@ -242,6 +260,7 @@ void *TestAsynchroneThread::run(void *params)
 				for (const auto &piece : v_image_paths) imagePath_cat += "\n" + piece;
 				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.imagePath_cat.imagePath_cat_v", 2, imagePath_cat);
 
+				// Puts the FSM.state back to 3
 				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 3);
 				// Put the transition state to 0. 
 				//m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
@@ -297,6 +316,49 @@ void *TestAsynchroneThread::run(void *params)
 				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.Sensor.temperature.temperature_v", 2, meteo_val[0]);			
 				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.Sensor.humidity.humidity_v", 2, meteo_val[1]);
 				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.Sensor.pressure.pressure_v", 2, meteo_val[2]);
+			}
+
+			if (m_cmdConfigure == 1)
+			{
+				// Puts the FSM.transition to 1
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 1);
+
+				// inform that the command is in progress
+				temString = m_datapointName + "._InProgressBar";
+				t = 1;
+				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
+
+				// ****************** here put the code for Start who take a long time to execute ***************
+				
+				//Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, std::string pixel_format="IS_CM_MONO8");
+
+				std::vector<boost::any> configure_settings = camera.Configure(nPixelClock, exposure, fps, gain, pixel_format);
+
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, boost::any_cast<int>(configure_settings[0]));
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.FPS.FPS_v", 2, boost::any_cast<double>(configure_settings[1]));
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, boost::any_cast<double>(configure_settings[2]));
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.gain.gain_v", 2, boost::any_cast<int>((configure_settings[3])));
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, boost::any_cast<string>(configure_settings[4]));
+				
+				// Puts the FSM.transition back to 0
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
+				
+				// you can put the outputs arguments in this place to inform the server
+				temString = m_datapointName + "._OutputArguments._Val_Retour";
+				tempValue = "command Open : c'est bon c'est fini : JL ";
+				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, tempValue);
+
+				// inform that the command is done
+				temString = m_datapointName + "._Done";
+				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, true);
+
+				// inform that the command is not in progress
+				temString = m_datapointName + "._InProgressBar";
+				t = 0;
+				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
+
+				// reset the command
+				m_cmdConfigure = 0;
 			}
 
 		}

@@ -257,6 +257,8 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             if (subChaine1.compare("Configure") == 0)
             {
                 //TODO: check what will happen if some of the parameters missing. The code below assumes that you received everything! Need to implement some safety guard.
+                // Actually OPCUA should check that all the parameters are in the input, right?
+
                 std::vector<std::string> results;
                 boost::split(results, subChaine2, [](char c) { return c == ' '; });
                 
@@ -271,18 +273,11 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                     camera.iBitsPerPixel = 16;
                 }
 
-                // TODO:get the returning string value and return it to OPCUA
                 //Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, std::string pixel_format="IS_CM_MONO8");
-                std::vector<boost::any> configure_settings = camera.Configure(stoi(results[0]), stod(results[1]), stod(results[2]), stoi(results[3]), results[4]);
+                std::string datapointName = "Unit_CDM.AuxControl.FSM.Configure";
+                int nameSpace = 2; 
+                m_testThread->cmdConfigure(datapointName, nameSpace, stoi(results[0]), stod(results[1]), stod(results[2]), stoi(results[3]), results[4]);
 
-                //Todo: add this part as a function
-                SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, boost::any_cast<int>(configure_settings[0]));
-                SetDatapointThread *m_SetDatapointThread_fps = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.FPS.FPS_v", 2, boost::any_cast<double>(configure_settings[1]));
-                SetDatapointThread *m_SetDatapointThread_exposure = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, boost::any_cast<double>((configure_settings[2])));
-                SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, boost::any_cast<int>((configure_settings[3])));
-                SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, boost::any_cast<string>(configure_settings[4]));
-
-                // Put here the rest Datapoint Threads or refactor
             }
 
             if (subChaine1.compare("AddComment") == 0)
