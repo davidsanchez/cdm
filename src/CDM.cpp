@@ -129,15 +129,6 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
             subChaine1.erase(pos);        // find the pair name:value
             subChaine2.erase(0, pos + 1); // store the rest of the string (example the arguments of the instruction)
 
-            if (subChaine1.compare("CloseShutters") == 0)
-            {
-                m_testThread->cmdCloseShutter(datapointName, nameSpace);
-            }
-            if (subChaine1.compare("OpenShutters") == 0)
-            {
-                m_testThread->cmdOpenShutter(datapointName, nameSpace);
-            }
-
             if (subChaine1.compare("GetMultipleImages") == 0)
             {
                 helper.acquire_Azimuth();
@@ -176,9 +167,9 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
                 //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str())); 
             }
 
-            if (subChaine1.compare("Start") == 0)
+            if (subChaine1.compare("StartCDM") == 0)
             {
-                m_testThread->cmdStart(datapointName, nameSpace);
+                m_testThread->cmdStartCDM(datapointName, nameSpace);
             }
 
         }
@@ -319,15 +310,9 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 camera.StopGetMultipleImages();
             }
 
-            if (subChaine1.compare("Start") == 0)
+            if (subChaine1.compare("StopCDM") == 0)
             {
-                // TODO: Move to async part
-                //CDM::Start();
-            }
-
-            if (subChaine1.compare("Stop") == 0)
-            {
-                //CDM::Stop();
+                camera.StopCDM();
             }
         }
     }

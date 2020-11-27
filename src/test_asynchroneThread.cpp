@@ -20,9 +20,11 @@ TestAsynchroneThread::TestAsynchroneThread(DataAccessClientOPCUA *dataAccessClie
 	m_pause = false;
 	m_stop = false;
 	m_command = 0;
-	m_cmdCloseShutter = 0;
-	m_cmdOpenShutter = 0;
-	m_cmdStart = 0;
+	m_cmdGetMultipleImages=0;
+    m_cmdGetMultipleImagesStacked=0;
+	m_cmdConfigure=0;
+	m_cmdStartCDM = 0;
+	m_cmdMeteo=1;
 	m_dataAccessClientOPCUA = dataAccessClientOPCUA;
 }
 
@@ -50,24 +52,6 @@ int TestAsynchroneThread::stop()
 	return ret;
 }
 
-int TestAsynchroneThread::cmdCloseShutter(std::string datapointName, int nameSpace)
-{
-	int ret = 0;
-	m_cmdCloseShutter = true;
-	m_datapointName = datapointName;
-	m_nameSpace = nameSpace;
-	return ret;
-}
-
-int TestAsynchroneThread::cmdOpenShutter(std::string datapointName, int nameSpace)
-{
-	int ret = 0;
-	m_cmdOpenShutter = true;
-	m_datapointName = datapointName;
-	m_nameSpace = nameSpace;
-	return ret;
-}
-
 int TestAsynchroneThread::cmdGetMultipleImages( std::string datapointName, int nameSpace, int n_images)
 {
 	int ret = 0;
@@ -88,10 +72,10 @@ int TestAsynchroneThread::cmdGetMultipleImagesStacked( std::string datapointName
 	return ret;
 }
 
-int TestAsynchroneThread::cmdStart(std::string datapointName, int nameSpace)
+int TestAsynchroneThread::cmdStartCDM(std::string datapointName, int nameSpace)
 {
 	int ret = 0;
-	m_cmdStart = true;
+	m_cmdStartCDM = true;
 	m_datapointName = datapointName;
 	m_nameSpace = nameSpace;
 	return ret;
@@ -126,64 +110,6 @@ void *TestAsynchroneThread::run(void *params)
 		//std::cout << "DZ async not stopped" << std::endl;
 		if (m_pause == false)
 		{
-			usleep(1000000);
-			if (m_cmdCloseShutter == 1)
-			{
-				// inform that the command is in progress
-				temString = m_datapointName + "._InProgressBar";
-				t = 1;
-				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
-
-				// ****************** here put the code for closeShutter who take a long time to execute ***************
-
-				// you can put the outputs arguments in this place to inform the server
-				temString = m_datapointName + "._OutputArguments._Val_Retour";
-				tempValue = "command Open : c'est bon c'est fini : JL ";
-				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, tempValue);
-
-				// inform that the command is done
-				temString = m_datapointName + "._Done";
-				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, true);
-
-				// inform that the command is not in progress
-				temString = m_datapointName + "._InProgressBar";
-				t = 0;
-				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
-
-				// reset the command
-				m_cmdCloseShutter = 0;
-			}
-
-			if (m_cmdOpenShutter == 1)
-			{
-				
-				// inform that the command is in progress
-				temString = m_datapointName + "._InProgressBar";
-				t = 1;
-				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
-
-				// ****************** here put the code for closeShutter who take a long time to execute ***************
-
-				std::cout << "In async OpenShutter" << std::endl;
-
-				// you can put the outputs arguments in this place to inform the server
-				temString = m_datapointName + "._OutputArguments._Val_Retour";
-				tempValue = "command Open : c'est bon c'est fini : JL ";
-				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, tempValue);
-
-				// inform that the command is done
-				temString = m_datapointName + "._Done";
-				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, true);
-
-				// inform that the command is not in progress
-				temString = m_datapointName + "._InProgressBar";
-				t = 0;
-				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
-
-				// reset the command
-				m_cmdOpenShutter = 0;
-			}
-
 			if (m_cmdGetMultipleImages == 1)
 			{
 				// Puts the FSM.state to 4
@@ -283,14 +209,19 @@ void *TestAsynchroneThread::run(void *params)
 				m_cmdGetMultipleImagesStacked = 0;
 			}
 
-			if (m_cmdStart == 1)
+			if (m_cmdStartCDM == 1)
 			{
+				// Puts the FSM.state to 2
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 2);
+
 				// inform that the command is in progress
 				temString = m_datapointName + "._InProgressBar";
 				t = 1;
 				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
 
 				// ****************** here put the code for Start who take a long time to execute ***************
+				camera.StartCDM(m_dataAccessClientOPCUA);
+
 
 				// you can put the outputs arguments in this place to inform the server
 				temString = m_datapointName + "._OutputArguments._Val_Retour";
@@ -307,7 +238,10 @@ void *TestAsynchroneThread::run(void *params)
 				m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
 
 				// reset the command
-				m_cmdStart = 0;
+				m_cmdStartCDM = 0;
+
+				// Puts the FSM.state back to 1
+				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 1);
 			}
 
 			if (m_cmdMeteo == 1)

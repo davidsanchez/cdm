@@ -37,6 +37,9 @@ public:
     void StopGetMultipleImages();
     int Start();
     int Stop();
+    int StartCDM(DataAccessClientOPCUA* myclient);
+    int StopCDM();
+
 
     double get_exposure() {return Camera::exposure_setting;}
     std::string writeFITSImage(cv::Mat image, std::string img_info = "");  

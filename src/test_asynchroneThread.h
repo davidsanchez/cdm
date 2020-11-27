@@ -34,22 +34,18 @@ public:
     void pause();
     void resume();
     int startRun();
-    int cmdOpenShutter(std::string datapointName, int nameSpace);
-    int cmdCloseShutter(std::string datapointName, int nameSpace);
     int cmdGetMultipleImages(std::string datapointName, int nameSpace, int n_images);
     int cmdGetMultipleImagesStacked(std::string datapointName, int nameSpace, int n_images);
-    int cmdStart(std::string datapointName, int nameSpace);
+    int cmdStartCDM(std::string datapointName, int nameSpace);
     int cmdConfigure(std::string datapointName, int nameSpace, int nPixelClock, double exposure, double fps, int gain, std::string pixel_format);
 
 private:
     int m_stop;
     int m_pause;
     int m_command;
-    int m_cmdCloseShutter;
-    int m_cmdOpenShutter;
     int m_cmdGetMultipleImages;
     int m_cmdGetMultipleImagesStacked;
-    int m_cmdStart;
+    int m_cmdStartCDM;
     int m_cmdConfigure;
 	int m_cmdMeteo=1;
     int m_nameSpace;

@@ -254,6 +254,7 @@ int Camera::Disconnect()
     hCam = NULL;
 }
 
+
 int Camera::Start()
 {
     cout << "Start command" << endl;
@@ -357,6 +358,130 @@ int Camera::Start()
 }
 
 int Camera::Stop()
+{
+    // Free the OpenCV memory?
+    // Free the allocated memories
+
+    nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
+    cout << "is_StopLiveVideo result: " << nRet << endl;
+
+    nRet = is_ExitImageQueue(hCam);
+    cout << "is_ExitImageQueue: " << nRet << endl;
+
+    nRet = is_ClearSequence(hCam);
+    cout << "is_ClearSequence: " << nRet << endl;
+
+    // TODO: You have to do this
+    // for (int i = 0; i < n_allocated_memories; i++)
+    // {
+    //     nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
+    //     cout << "is_FreeImageMem: " << nRet << endl;
+    // }
+}
+
+int Camera::StartCDM(DataAccessClientOPCUA* myclient)
+{
+    cout << "StartCDM command" << endl;
+
+    int i_images_taken = 0;
+    int n_allocated_memories = 10;
+    char *pcImageMemory_arr[n_allocated_memories];
+    int nMemoryId_arr[n_allocated_memories];
+    for (int i = 0; i < n_allocated_memories; i++)
+    {
+        nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
+        std::cout << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
+        is_AddToSequence(hCam, pcImageMemory, nMemoryId);
+
+        pcImageMemory_arr[i] = pcImageMemory;
+        nMemoryId_arr[i] = nMemoryId;
+    }
+    is_InitImageQueue(hCam, 0);
+
+    nRet = is_CaptureVideo(hCam, IS_WAIT);
+    std::cout << "is_CaptureVideo returned " << nRet << std::endl;
+    if (nRet == 0)
+        m_active = 1;
+
+    int loop_image_count = 0;
+    int64_t duration_count = 0;
+
+    while (m_active == 1)
+    {
+        // Use is_LockSeqBuf when processing image?
+
+        char *pBuffer = NULL;
+        nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
+
+        if (nRet == IS_SUCCESS)
+        {
+            {
+                auto tp_start = std::chrono::high_resolution_clock::now();
+
+                //Mat src = cv::Mat(iHeight, iWidth, CV_8UC3, (uchar *)pBuffer); //DZ , 3*iWidth
+                Mat src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer); //DZ , 3*iWidth
+
+                auto tp_stop = std::chrono::high_resolution_clock::now();
+                auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
+                duration_count += ms.count();
+
+                if (++loop_image_count == 100)
+                {
+                    std::cout << "Duration: " << duration_count / loop_image_count << std::endl;
+                    loop_image_count = 0;
+                    duration_count = 0;
+                }
+            }
+            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
+            i_images_taken++;
+        }
+        else if (nRet == IS_CAPTURE_STATUS)
+        {
+
+            UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
+            INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
+
+            std::cout << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
+            std::cout << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
+            std::cout << "\tApiNoDestMem:    " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_NO_DEST_MEM] << std::endl;
+            std::cout << "\tApiImageLocked:  " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_IMAGE_LOCKED] << std::endl;
+            std::cout << "\tUsbTransferFail: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_USB_TRANSFER_FAILED] << std::endl;
+
+            //	wLinkSpeed_Mb
+            // The camera has the device ID 1
+
+            UINT nDeviceId = 1;
+            IS_DEVICE_INFO deviceInfo;
+            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
+            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
+
+            if (nRet == IS_SUCCESS)
+
+            {
+                WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
+                std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
+            }
+
+            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
+        }
+        else
+        {
+            std::cout << "is_WaitForNextImage : " << nRet << std::endl;
+            //	wLinkSpeed_Mb
+            // The camera has the device ID 1
+
+            UINT nDeviceId = 1;
+            IS_DEVICE_INFO deviceInfo;
+            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
+            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
+
+            WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
+            std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
+        }
+    }
+}
+
+int Camera::StopCDM()
 {
     // Free the OpenCV memory?
     // Free the allocated memories
