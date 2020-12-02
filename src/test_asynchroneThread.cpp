@@ -211,6 +211,7 @@ void *TestAsynchroneThread::run(void *params)
 
 			if (m_cmdStartCDM == 1)
 			{
+				cout << "In asynchroneThread: cmdStartCDM" << endl;
 				// Puts the FSM.state to 2
 				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 2);
 
@@ -242,6 +243,8 @@ void *TestAsynchroneThread::run(void *params)
 
 				// Puts the FSM.state back to 1
 				m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 1);
+
+				cout << "End of cdmStartCDM inside AsynchroneThread.cpp" << endl;
 			}
 
 			if (m_cmdMeteo == 1)

@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "Helper.h"
+#include "ImageAnalysis.h"
 #include <CCfits>
 
 extern Helper helper;
@@ -254,135 +255,48 @@ int Camera::Disconnect()
     hCam = NULL;
 }
 
-
-int Camera::Start()
-{
-    cout << "Start command" << endl;
-
-    int i_images_taken = 0;
-    int n_allocated_memories = 10;
-    char *pcImageMemory_arr[n_allocated_memories];
-    int nMemoryId_arr[n_allocated_memories];
-    for (int i = 0; i < n_allocated_memories; i++)
-    {
-        nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-        std::cout << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
-        is_AddToSequence(hCam, pcImageMemory, nMemoryId);
-
-        pcImageMemory_arr[i] = pcImageMemory;
-        nMemoryId_arr[i] = nMemoryId;
-    }
-    is_InitImageQueue(hCam, 0);
-
-    nRet = is_CaptureVideo(hCam, IS_WAIT);
-    std::cout << "is_CaptureVideo returned " << nRet << std::endl;
-    if (nRet == 0)
-        m_active = 1;
-
-    int loop_image_count = 0;
-    int64_t duration_count = 0;
-
-    while (m_active == 1)
-    {
-        // Use is_LockSeqBuf when processing image?
-
-        char *pBuffer = NULL;
-        nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
-
-        if (nRet == IS_SUCCESS)
-        {
-            {
-                auto tp_start = std::chrono::high_resolution_clock::now();
-
-                //Mat src = cv::Mat(iHeight, iWidth, CV_8UC3, (uchar *)pBuffer); //DZ , 3*iWidth
-                Mat src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer); //DZ , 3*iWidth
-
-                auto tp_stop = std::chrono::high_resolution_clock::now();
-                auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
-                duration_count += ms.count();
-
-                if (++loop_image_count == 100)
-                {
-                    std::cout << "Duration: " << duration_count / loop_image_count << std::endl;
-                    loop_image_count = 0;
-                    duration_count = 0;
-                }
-            }
-            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
-            i_images_taken++;
-        }
-        else if (nRet == IS_CAPTURE_STATUS)
-        {
-
-            UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
-            INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
-
-            std::cout << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
-            std::cout << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
-            std::cout << "\tApiNoDestMem:    " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_NO_DEST_MEM] << std::endl;
-            std::cout << "\tApiImageLocked:  " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_IMAGE_LOCKED] << std::endl;
-            std::cout << "\tUsbTransferFail: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_USB_TRANSFER_FAILED] << std::endl;
-
-            //	wLinkSpeed_Mb
-            // The camera has the device ID 1
-
-            UINT nDeviceId = 1;
-            IS_DEVICE_INFO deviceInfo;
-            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
-            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
-
-            if (nRet == IS_SUCCESS)
-
-            {
-                WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-                std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
-            }
-
-            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
-        }
-        else
-        {
-            std::cout << "is_WaitForNextImage : " << nRet << std::endl;
-            //	wLinkSpeed_Mb
-            // The camera has the device ID 1
-
-            UINT nDeviceId = 1;
-            IS_DEVICE_INFO deviceInfo;
-            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
-            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
-
-            WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-            std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
-        }
-    }
-}
-
-int Camera::Stop()
-{
-    // Free the OpenCV memory?
-    // Free the allocated memories
-
-    nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
-    cout << "is_StopLiveVideo result: " << nRet << endl;
-
-    nRet = is_ExitImageQueue(hCam);
-    cout << "is_ExitImageQueue: " << nRet << endl;
-
-    nRet = is_ClearSequence(hCam);
-    cout << "is_ClearSequence: " << nRet << endl;
-
-    // TODO: You have to do this
-    // for (int i = 0; i < n_allocated_memories; i++)
-    // {
-    //     nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
-    //     cout << "is_FreeImageMem: " << nRet << endl;
-    // }
-}
+// TODO: merge GetMultipleImages, GetMultipleImagesStacked and StartCDM into one function?
 
 int Camera::StartCDM(DataAccessClientOPCUA* myclient)
 {
     cout << "StartCDM command" << endl;
 
+    // Temporary used for testing purposes. Delete later.
+    std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/1604897067-STAR=Mothallah-EXP=49.9945-ZD=62.9105-AZ=290.7250-OFFZD=0.0000-OFFAZ=0.0000-LED=20-OARL=1.fits",Read,true));
+    PHDU& image = pInfile->pHDU(); 
+    //std::valarray<unsigned long>  contents;
+    std::valarray<uint16_t>  contents;
+    // read all user-specifed, coordinate, and checksum keys in the image
+    image.readAllKeys();
+    image.read(contents);
+    // this doesn't print the data, just header info.
+    //std::cout << image << std::endl;
+
+    long ax1(image.axis(0));
+    long ax2(image.axis(1));
+
+    // for (long j = 0; j < ax2; j+=10)
+    // {
+    //     std::ostream_iterator<short> c(std::cout,"\t");
+    //     std::copy(&contents[j*ax1],&contents[(j+1)*ax1-1],c);
+    //     std::cout << '\n';       
+    // }        
+    // std::cout << std::endl;
+
+    std::vector<uint16_t> myvec(begin(contents), end(contents));
+    Mat m1(ax2, ax1, CV_16UC1, myvec.data()); 
+    //cv::imwrite("/home/lstoperator/CDM/images/mytest.png", m1);
+
+    ImageAnalysis myimage(m1);
+    //myimage.Draw();
+    myimage.CalculateCircle();
+
+    
+    // End of temporary block
+
+
+    b_keep_taking = 1;
+
     int i_images_taken = 0;
     int n_allocated_memories = 10;
     char *pcImageMemory_arr[n_allocated_memories];
@@ -400,13 +314,11 @@ int Camera::StartCDM(DataAccessClientOPCUA* myclient)
 
     nRet = is_CaptureVideo(hCam, IS_WAIT);
     std::cout << "is_CaptureVideo returned " << nRet << std::endl;
-    if (nRet == 0)
-        m_active = 1;
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
 
-    while (m_active == 1)
+    while (b_keep_taking == 1)
     {
         // Use is_LockSeqBuf when processing image?
 
@@ -415,11 +327,82 @@ int Camera::StartCDM(DataAccessClientOPCUA* myclient)
 
         if (nRet == IS_SUCCESS)
         {
+            // TODO: Why is this brace here?
             {
                 auto tp_start = std::chrono::high_resolution_clock::now();
 
-                //Mat src = cv::Mat(iHeight, iWidth, CV_8UC3, (uchar *)pBuffer); //DZ , 3*iWidth
-                Mat src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer); //DZ , 3*iWidth
+                
+
+                // Mat src, dst;
+
+                // if (iBitsPerPixel == 8)
+                //     src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
+
+                // else if (iBitsPerPixel == 16)
+                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+
+                // else if (iBitsPerPixel == 12)
+                // {
+                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+                //     src = 16 * src;
+                // }
+
+                // else if (iBitsPerPixel == 10)
+                // {
+                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+                //     src = 64 * src;
+                // }
+
+                // else
+                // {
+                //     cout << "Check bitdepth!" << endl;
+                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+                // }
+
+                // // Transpose + Flip = 90 deg rotation
+                // transpose(src, src);
+                // flip(src, src, 1);
+
+                // std::vector<int> compression_params;
+                // compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+                // compression_params.push_back(0);
+                // resize(src, dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
+
+                // vector<unsigned char> data;
+                // cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
+
+                // int m_nameSpace = 2;
+                // string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
+                // //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
+                // SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
+
+                // SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken + 1); //Updates the number of images taken
+
+                // std::string imageName = writeFITSImage(src);
+                // std::string filePath = helper.get_fitsPath() + imageName;
+                // std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
+
+                // char exec[300];
+                // sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
+                // cout << "Command is: " << exec << endl;
+                // int scp_result = system(exec);
+                // cout << "Output of scp is: " << scp_result << endl;
+                // if (scp_result == 0)
+                // {
+                //     std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
+                // }
+                // else
+                // {
+                //     cout << "There was a problem while copying the image!" << endl;
+                //     remoteImagePath = "Error";
+                // }
+
+                // v_image_paths.push_back(remoteImagePath);
+                // SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName); //Updates the imageName
+
+
+
+
 
                 auto tp_stop = std::chrono::high_resolution_clock::now();
                 auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
@@ -479,10 +462,7 @@ int Camera::StartCDM(DataAccessClientOPCUA* myclient)
             std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
         }
     }
-}
 
-int Camera::StopCDM()
-{
     // Free the OpenCV memory?
     // Free the allocated memories
 
@@ -495,12 +475,14 @@ int Camera::StopCDM()
     nRet = is_ClearSequence(hCam);
     cout << "is_ClearSequence: " << nRet << endl;
 
-    // TODO: You have to do this
-    // for (int i = 0; i < n_allocated_memories; i++)
-    // {
-    //     nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
-    //     cout << "is_FreeImageMem: " << nRet << endl;
-    // }
+    for (int i = 0; i < n_allocated_memories; i++)
+    {
+        nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
+        cout << "is_FreeImageMem: " << nRet << endl;
+    }
+
+    cout << "Finished StartCDM" << endl;
+
 }
 
 vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCUA *myclient)
@@ -908,7 +890,13 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     return v_image_paths;
 }
 
+// TODO: these 2 methods are redundant. Use only 1. 
 void Camera::StopGetMultipleImages()
+{
+    b_keep_taking = 0;
+}
+
+int Camera::StopCDM()
 {
     b_keep_taking = 0;
 }

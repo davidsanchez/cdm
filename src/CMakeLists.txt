@@ -58,7 +58,7 @@ add_library(
         Camera.cpp
         Helper.cpp
         Meteo.cpp
-        #ImageAnalysis.cpp
+        ImageAnalysis.cpp
         #ImageFITS.cpp
         )
 

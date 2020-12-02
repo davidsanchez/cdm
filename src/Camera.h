@@ -35,8 +35,6 @@ public:
     std::vector<std::string> GetMultipleImages(int n_images, DataAccessClientOPCUA* myclient);
     std::vector<std::string> GetMultipleImagesStacked(int n_images, DataAccessClientOPCUA* myclient);
     void StopGetMultipleImages();
-    int Start();
-    int Stop();
     int StartCDM(DataAccessClientOPCUA* myclient);
     int StopCDM();
 
@@ -66,7 +64,6 @@ public:
     IS_RECT rectAOI;
     int nRet;
 
-    int m_active=0;
     bool b_keep_taking=1;
 
     typedef boost::bimap< std::string, int > bimap;
