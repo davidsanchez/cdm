@@ -155,6 +155,7 @@ public:
     bool acquire_drive_status_in_parking_position();
     bool acquire_drive_status_parked();
     bool acquire_drive_status_tracking_in_progress();
+    std::string acquire_StarName();
 
     double get_RA() { return Helper::RA; }
     double get_DEC() { return Helper::DEC; }
@@ -172,14 +173,22 @@ public:
 
     int get_nImagesGet() {return Helper::nImagesGet;}
     int set_nImagesGet(int nImagesGet) {Helper::nImagesGet = nImagesGet;}
+    std::string get_StarName() { return Helper::StarName; }
+    std::string get_Comment() { return Helper::Comment; }
 
     std::string get_fitsPath() {return Helper::fitsPath; }
     std::string get_remoteImagePathPrefix() {return Helper::remoteImagePathPrefix; }
-    std::string get_StarName() { return Helper::StarName; }
+    
     void set_StarName(std::string StarName_tmp) 
     {
         Helper::StarName=StarName_tmp; 
         std::cout<<"StarName is: " << get_StarName() <<std::endl;
+    }
+
+    void set_Comment(std::string Comment_tmp) 
+    {
+        Helper::Comment=Comment_tmp; 
+        std::cout<<"Comment is: " << get_Comment() <<std::endl;
     }
 
     int connectOpcUa_Drive(std::string url);
@@ -214,6 +223,7 @@ private:
     int nImagesGet=1;
 
     std::string StarName = "";
+    std::string Comment = "";
     std::string imagePath = "/home/lstoperator/CDM/images/";
     std::string fitsPath = "/home/lstoperator/CDM/fits/";
     std::string remoteImagePathPrefix = "/fefs/home/lapp/CDM_Images/";

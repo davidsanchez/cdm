@@ -160,6 +160,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
                 helper.acquire_drive_status_in_parking_position();
                 helper.acquire_drive_status_parked();
                 helper.acquire_drive_status_tracking_in_progress();
+                helper.acquire_StarName();
 
                 boost::trim_right(subChaine2);
                 m_testThread->cmdGetMultipleImagesStacked(datapointName, nameSpace, atoi(subChaine2.c_str()));
@@ -284,6 +285,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             if (subChaine1.compare("GetImage") == 0)
             {
                 
+                helper.acquire_StarName();
                 helper.acquire_Azimuth();
                 helper.acquire_Zenith();
                 helper.acquire_RA();
@@ -294,6 +296,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 helper.acquire_drive_status_in_parking_position();
                 helper.acquire_drive_status_parked();
                 helper.acquire_drive_status_tracking_in_progress();
+                
 
                 camera.GetImage(getDataAccessClientOPCUARef()); // pushes the image to the datapoint inside the function
 
@@ -324,9 +327,9 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
 int CDM::AddComment(std::string comment)
 {
-    cout << "Comments is: " << comment << endl;
+    cout << "Comment is: " << comment << endl;
     
-    helper.set_StarName(comment);
+    helper.set_Comment(comment);
     SetDatapointThread *m_SetDatapointThread_comment = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, comment); 
 
 }

@@ -163,6 +163,19 @@ bool Helper::acquire_drive_status_tracking_in_progress()
     drive_status_tracking_in_progress = element;
 }
 
+string Helper::acquire_StarName()
+{
+    std::string finalnode = "Drive.DriveControl.SourceName.SourceName_v";
+    int nameSpace = 2;
+    //short int element; //(change with the good type of the datapoint float/int/string/.....)
+    string element = "";
+    if(m_clientOpcUaRef_Drive!=NULL)
+        Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
+    cout << "StarName is: " << element << endl;
+    set_StarName(element);
+	return element;
+}
+
 int Helper::connectOpcUa_Drive(std::string url)
 {
 	int ret = 0;

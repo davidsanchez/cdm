@@ -193,8 +193,9 @@ std::string Camera::writeFITSImage(Mat image, string img_info)
     pFits->pHDU().addKey("PARKED", helper.get_Drive_status_parked(), "Drive status - Parked");
     pFits->pHDU().addKey("PARKINGP", helper.get_Drive_status_in_parking_position(), "Drive status - In Parking Position");
     pFits->pHDU().addKey("TRACKING", helper.get_Drive_status_tracking_in_progress(), "Drive status - Tracking In Progress");
-    pFits->pHDU().addKey("GAIN", get_master_gain(), "Gain");
+    pFits->pHDU().addKey("GAIN", Camera::get_master_gain(), "Gain");
     //     pFits->pHDU().addKey("GAMMA", gamma_value, "Gamma");
+    pFits->pHDU().addKey("COMMENT", helper.get_Comment(), "Gamma");
 
     std::cout << pFits->pHDU() << std::endl;
 
