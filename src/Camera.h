@@ -40,7 +40,9 @@ public:
 
 
     double get_exposure() {return Camera::exposure_setting;}
+    int get_master_gain() {return Camera::master_gain_setting;}
     std::string writeFITSImage(cv::Mat image, std::string img_info = "");  
+    
 
 //private:
     // Camera stuff
@@ -54,6 +56,7 @@ public:
     uint formatID = 36;
 
     double exposure_setting = 0;
+    int master_gain_setting = 0;
     
     // Need to find out the memory size of the pixel and the colour mode
     int iColorMode = IS_CM_SENSOR_RAW16; //IS_CM_MONO8; 

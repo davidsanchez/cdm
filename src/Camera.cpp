@@ -193,8 +193,7 @@ std::string Camera::writeFITSImage(Mat image, string img_info)
     pFits->pHDU().addKey("PARKED", helper.get_Drive_status_parked(), "Drive status - Parked");
     pFits->pHDU().addKey("PARKINGP", helper.get_Drive_status_in_parking_position(), "Drive status - In Parking Position");
     pFits->pHDU().addKey("TRACKING", helper.get_Drive_status_tracking_in_progress(), "Drive status - Tracking In Progress");
-
-    //     pFits->pHDU().addKey("GAIN", gain_value, "Gain");
+    pFits->pHDU().addKey("GAIN", get_master_gain(), "Gain");
     //     pFits->pHDU().addKey("GAMMA", gamma_value, "Gamma");
 
     std::cout << pFits->pHDU() << std::endl;
@@ -1001,10 +1000,13 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     Camera::exposure_setting = current_exposure;
 
     // Set hardware gain
+    std::cout << "Gain to be set is: " << gain << std::endl;
     is_SetHardwareGain(hCam, gain, 14, 0, 32); // Master, red, green, blue
     int master_gain = is_SetHardwareGain(hCam, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER);
     //SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, master_gain);
     return_values.push_back(master_gain);
+    Camera::master_gain_setting = master_gain;
+    std::cout << "Gain set is: " << master_gain << std::endl;
 
     // Set Display Mode
     nRet = is_SetDisplayMode(hCam, IS_SET_DM_DIB);
