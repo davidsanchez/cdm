@@ -261,8 +261,11 @@ int Camera::StartCDM(DataAccessClientOPCUA* myclient)
 {
     cout << "StartCDM command" << endl;
 
+    //
     // Temporary used for testing purposes. Delete later.
-    std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/1604897067-STAR=Mothallah-EXP=49.9945-ZD=62.9105-AZ=290.7250-OFFZD=0.0000-OFFAZ=0.0000-LED=20-OARL=1.fits",Read,true));
+    //
+
+    std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/1604897067-STAR=Mothallah-EXP=49.9945-ZD=62.9105-AZ=290.7250-OFFZD=0.0000-OFFAZ=0.0000-LED=20-OARL=1.fits", Read, true));
     PHDU& image = pInfile->pHDU(); 
     //std::valarray<unsigned long>  contents;
     std::valarray<uint16_t>  contents;
@@ -286,14 +289,14 @@ int Camera::StartCDM(DataAccessClientOPCUA* myclient)
     std::vector<uint16_t> myvec(begin(contents), end(contents));
     Mat m1(ax2, ax1, CV_16UC1, myvec.data()); 
     //cv::imwrite("/home/lstoperator/CDM/images/mytest.png", m1);
-
+    
     ImageAnalysis myimage(m1);
     //myimage.Draw();
     myimage.CalculateCircle();
 
-    
+    //
     // End of temporary block
-
+    //
 
     b_keep_taking = 1;
 

@@ -23,6 +23,7 @@ public:
         // To remove the noise
         //TODO: these values for 8bit. Decide for 16bit values.
         cv::threshold(this->image, this->image, 10, 255, THRESH_TOZERO);
+
     };
 
     int Draw();

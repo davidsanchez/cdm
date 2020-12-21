@@ -14,8 +14,6 @@ int ImageAnalysis::Draw()
         circle( this->image, Point(rects_oarl[i][0], rects_oarl[i][1]), 100, Scalar( 65000 ), 10);    
     }
     
-    cv::imwrite("/home/lstoperator/CDM/images/Circles.png", image);
-
 }
 
 int ImageAnalysis::CalculateCircle()
@@ -55,7 +53,7 @@ vector<vector<double>> ImageAnalysis::CalculateSpots()
         {   
             //TODO: Raise some warning! Or just report number of found LEDs always
             // LED is skipped in this case.
-            cout << "ROI Moment normalization of Rect " << i << " is 0." << endl;
+            cout << "ROI Moment normalization of LED " << i << " is 0." << endl;
             //barycenter.resize(0);
             //return barycenter;
         }
@@ -68,9 +66,7 @@ vector<vector<double>> ImageAnalysis::CalculateSpots()
             vector<double> barycenter_global = {rects_led[i][0]-roi_size_led/2. + barycenter_LED[0], rects_led[i][1]-roi_size_led/2. + barycenter_LED[1]};
             barycenter.push_back(barycenter_global); // x and y coordinates for each LED
 
-        }
-        
-        
+        }     
     }
 
     return barycenter;
