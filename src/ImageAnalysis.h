@@ -14,10 +14,27 @@ class ImageAnalysis
 {
 public:
     //Need a constructor
-    ImageAnalysis(Mat image)
+    ImageAnalysis(Mat image, std::string image_flip="None", int image_transpose=0)
     {
+        int flip_code;
+        if(image_flip == "Vertical")
+            flip_code = 0;
+        else if (image_flip == "Horizontal")
+            flip_code = 1;
+        else if (image_flip == "Both")
+            flip_code = -1;
+        else if (image_flip == "None")
+            flip_code = -999;
+        else 
+            flip_code = -999; 
+        
+
         this->image = image.clone(); // TODO: decide on pointer or copying.
-        flip(this->image, this->image, 0); // Vertical flipping of image so it is upright
+
+        if(image_transpose != 0)
+            transpose(this->image, this->image);
+        if(flip_code != -999)            
+            flip(this->image, this->image, flip_code); 
         this->image.convertTo(this->image, CV_8UC1, 1/256.0); //TODO: try with 16bit images
 
         // To remove the noise
@@ -28,6 +45,9 @@ public:
 
     int Draw();
     int CalculateCircle();
+    int SaveImage(std::string ImagePath);
+    int StoreResults();
+    std::string PrintResults();
     vector <vector<double>> CalculateSpots();
 
 //private:
@@ -37,6 +57,12 @@ public:
     int roi_size_led = 40; // Integration region in pixels for LEDs. Check if big enough.
     int roi_size_oarl = 60; // Integration region in pixels for OARL. Check if big enough.
 
+    double circle_a = 0;
+    double circle_b = 0;
+    double circle_r = 0;
+    double circle_s = 0;
+    
+
     vector <vector<int>> rects_led 
     {
         // double commented were not used in 6LED approach
@@ -45,7 +71,7 @@ public:
         { 460, 2967}, // //most left, lower
         { 814, 3567}, // //second most left, lower
         {1334, 3893}, // //most bottom, left one 
-        {2153, 3893}, // most botton, right one
+        {2153, 3893}, // most bottom, right one
         {2683, 3567}, // second most right, lower
         {3028, 2972}, // most right, lower
         {3032, 2293}, // defective one. most right, upper

@@ -1,5 +1,10 @@
 #include <Camera.h>
 
+#include <boost/date_time.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/posix_time/posix_time_io.hpp>
+#include <boost/date_time/time_facet.hpp>
+
 #include <chrono>
 #include <iostream>
 
@@ -12,6 +17,80 @@ using namespace CCfits;
 
 using namespace std;
 using namespace cv;
+/* 
+const std::string currentDateTime()
+{
+    char fmt[64], buf[64];
+    struct timeval tv;
+    struct tm *tm;
+
+    gettimeofday(&tv, NULL);
+    tm = localtime(&tv.tv_sec);
+    strftime(fmt, sizeof fmt, "%Y-%m-%d %H:%M:%S.%%06u", tm);
+    snprintf(buf, sizeof buf, fmt, tv.tv_usec);
+    //cout << buf << endl;
+    return buf;
+}
+
+std::string currentDateTime()
+{
+    timeval curTime;
+    gettimeofday(&curTime, NULL);
+    int milli = curTime.tv_usec / 1000;
+
+    char buffer[80];
+    strftime(buffer, 80, "%Y-%m-%d %H:%M:%S", localtime(&curTime.tv_sec));
+
+    char currentTime[84] = "";
+    sprintf(currentTime, "%s:%03d", buffer, milli);
+    //printf("%s \n", currentTime);
+    return currentTime;
+}
+
+std::string currentDateTime()
+{
+    namespace pt = boost::posix_time;
+    pt::ptime current_date_microseconds = pt::microsec_clock::universal_time();
+    long milliseconds = current_date_microseconds.time_of_day().total_milliseconds();
+    pt::time_duration current_time_milliseconds = pt::milliseconds(milliseconds);
+    pt::ptime current_date_milliseconds(current_date_microseconds.date(),
+                                        current_time_milliseconds);
+
+    pt::time_facet *facet = new pt::time_facet("%Y-%m-%d %H:%M:%s");
+    cout.imbue(locale(cout.getloc(), facet));
+    //std::cout << "Microseconds: " << current_date_microseconds
+    //         << " Milliseconds: " << current_date_milliseconds << std::endl;
+    const std::string str_time = pt::to_simple_string(current_date_milliseconds);
+    //std::cout << pt::to_iso_string(current_date_milliseconds) << std::endl;
+    //std::cout << pt::to_iso_extended_string(current_date_milliseconds) << std::endl;
+
+    std::stringstream stream;
+    stream.imbue(std::locale(std::locale::classic(), facet));
+    stream << current_date_milliseconds;
+    return stream.str();
+}
+
+std::string currentDateTime()
+{
+    std::string isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
+    std::string date = isoString.substr(0, 8);
+    std::string time = isoString.substr(9, 20);
+    //cout << isoString << endl;
+    //cout << date << " " << time << endl;
+    return date + " " +  time;
+}
+ */
+
+std::string currentDateTime()
+{
+    using namespace boost::posix_time;
+    ptime current_time = boost::posix_time::microsec_clock::universal_time();
+    time_facet *facet = new time_facet("%Y-%m-%d %H:%M:%s");
+    std::stringstream stream;
+    stream.imbue(std::locale(std::locale::classic(), facet));
+    stream << current_time;
+    return stream.str();
+}
 
 std::string Camera::writeFITSImage(Mat image, string img_info)
 {
@@ -66,7 +145,6 @@ std::string Camera::writeFITSImage(Mat image, string img_info)
     streamObj << helper.get_Drive_status_in_motion();
     streamObj << "-tracking=";
     streamObj << helper.get_Drive_status_tracking_in_progress();
-
 
     if (img_info != "")
         streamObj << "-" << img_info;
@@ -257,7 +335,7 @@ int Camera::Disconnect()
 
 // TODO: merge GetMultipleImages, GetMultipleImagesStacked and StartCDM into one function?
 
-int Camera::StartCDM(DataAccessClientOPCUA* myclient)
+int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 {
     cout << "StartCDM command" << endl;
 
@@ -265,10 +343,13 @@ int Camera::StartCDM(DataAccessClientOPCUA* myclient)
     // Temporary used for testing purposes. Delete later.
     //
 
-    std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/1604897067-STAR=Mothallah-EXP=49.9945-ZD=62.9105-AZ=290.7250-OFFZD=0.0000-OFFAZ=0.0000-LED=20-OARL=1.fits", Read, true));
-    PHDU& image = pInfile->pHDU(); 
+    //std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/test/1604897067-STAR=Mothallah-EXP=49.9945-ZD=62.9105-AZ=290.7250-OFFZD=0.0000-OFFAZ=0.0000-LED=20-OARL=1.fits", Read, true));
+    //std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/test/1608676057-STAR=-EXP=1000-ZD=62-AZ=33-LED=20-OARL=1-parked=0-parkingPos=0-inMotion=1-tracking=0.fits", Read, true));
+    std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/test/Fake_camera_image.fits", Read, true));
+    
+    PHDU &image = pInfile->pHDU();
     //std::valarray<unsigned long>  contents;
-    std::valarray<uint16_t>  contents;
+    std::valarray<uint16_t> contents;
     // read all user-specifed, coordinate, and checksum keys in the image
     image.readAllKeys();
     image.read(contents);
@@ -282,17 +363,20 @@ int Camera::StartCDM(DataAccessClientOPCUA* myclient)
     // {
     //     std::ostream_iterator<short> c(std::cout,"\t");
     //     std::copy(&contents[j*ax1],&contents[(j+1)*ax1-1],c);
-    //     std::cout << '\n';       
-    // }        
+    //     std::cout << '\n';
+    // }
     // std::cout << std::endl;
 
     std::vector<uint16_t> myvec(begin(contents), end(contents));
-    Mat m1(ax2, ax1, CV_16UC1, myvec.data()); 
+    Mat m1(ax2, ax1, CV_16UC1, myvec.data());
     //cv::imwrite("/home/lstoperator/CDM/images/mytest.png", m1);
-    
-    ImageAnalysis myimage(m1);
-    //myimage.Draw();
-    myimage.CalculateCircle();
+
+    // ImageAnalysis myimage(m1);
+    // myimage.CalculateCircle();
+    // myimage.Draw();
+    // //myimage.StoreResults();
+    // myimage.SaveImage("/home/lstoperator/CDM/images/mytest_leds.png");
+    // return 0;
 
     //
     // End of temporary block
@@ -334,7 +418,26 @@ int Camera::StartCDM(DataAccessClientOPCUA* myclient)
             {
                 auto tp_start = std::chrono::high_resolution_clock::now();
 
+/*                 Mat src;
+                if (iBitsPerPixel == 16)
+                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+                else
+                {
+                    cout << "Wrong bits per pixel" << endl;
+                    return 0;
+                } */
+
+
+                // Vertical flipping of image so it is upright when read from stored old fits files.
+                //ImageAnalysis myimage(m1, "Vertical", 0); 
                 
+                // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
+                // This is to be done for incoming camera image or Fake camera image from fits file.
+                ImageAnalysis myimage(m1, "Horizontal", 1);
+                
+                //ImageAnalysis myimage(src);
+                myimage.CalculateCircle();
+                cout << currentDateTime() << " " << myimage.PrintResults() << endl;
 
                 // Mat src, dst;
 
@@ -402,10 +505,6 @@ int Camera::StartCDM(DataAccessClientOPCUA* myclient)
 
                 // v_image_paths.push_back(remoteImagePath);
                 // SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName); //Updates the imageName
-
-
-
-
 
                 auto tp_stop = std::chrono::high_resolution_clock::now();
                 auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
@@ -485,7 +584,6 @@ int Camera::StartCDM(DataAccessClientOPCUA* myclient)
     }
 
     cout << "Finished StartCDM" << endl;
-
 }
 
 vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCUA *myclient)
@@ -846,8 +944,9 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
     SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
-    // Make a FITS image
-    std:string string_average = "avg=" + std::to_string(i_images_taken);
+// Make a FITS image
+std:
+    string string_average = "avg=" + std::to_string(i_images_taken);
     std::string imageName = writeFITSImage(accumulated_images, string_average);
     std::string filePath = helper.get_fitsPath() + imageName;
     std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
@@ -893,7 +992,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     return v_image_paths;
 }
 
-// TODO: these 2 methods are redundant. Use only 1. 
+// TODO: these 2 methods are redundant. Use only 1.
 void Camera::StopGetMultipleImages()
 {
     b_keep_taking = 0;

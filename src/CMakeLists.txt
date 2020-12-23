@@ -18,6 +18,7 @@ else()
 endif()
 
 MESSAGE( STATUS "" )
+
 MESSAGE( STATUS "==============================================" )
 MESSAGE( STATUS "Now configuring server_OPCUA CMakeLists.txt" )
 MESSAGE( STATUS "==============================================" )
@@ -59,6 +60,9 @@ add_library(
         Helper.cpp
         Meteo.cpp
         ImageAnalysis.cpp
+        Circle/mystuff.h
+        Circle/circle.h
+        Circle/data.h
         #ImageFITS.cpp
         )
 
