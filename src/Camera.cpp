@@ -345,37 +345,65 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
     //std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/test/1604897067-STAR=Mothallah-EXP=49.9945-ZD=62.9105-AZ=290.7250-OFFZD=0.0000-OFFAZ=0.0000-LED=20-OARL=1.fits", Read, true));
     //std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/test/1608676057-STAR=-EXP=1000-ZD=62-AZ=33-LED=20-OARL=1-parked=0-parkingPos=0-inMotion=1-tracking=0.fits", Read, true));
-    std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/test/Fake_camera_image.fits", Read, true));
-    
+    std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/test/Fake_camera_image_8bit.fits", Read, true));
+
+    Mat m1;
     PHDU &image = pInfile->pHDU();
-    //std::valarray<unsigned long>  contents;
-    std::valarray<uint16_t> contents;
-    // read all user-specifed, coordinate, and checksum keys in the image
-    image.readAllKeys();
-    image.read(contents);
-    // this doesn't print the data, just header info.
-    //std::cout << image << std::endl;
 
-    long ax1(image.axis(0));
-    long ax2(image.axis(1));
+    if (iBitsPerPixel == 16)
+    {
+        cout << "Bits per pixel = 16" << endl;
+        std::valarray<uint16_t> contents;
+        // read all user-specifed, coordinate, and checksum keys in the image
+        image.readAllKeys();
+        image.read(contents);
+        //std::cout << image << std::endl; // this doesn't print the data, just header info.
 
-    // for (long j = 0; j < ax2; j+=10)
-    // {
-    //     std::ostream_iterator<short> c(std::cout,"\t");
-    //     std::copy(&contents[j*ax1],&contents[(j+1)*ax1-1],c);
-    //     std::cout << '\n';
-    // }
-    // std::cout << std::endl;
+        long ax1(image.axis(0));
+        long ax2(image.axis(1));
+        cout << "Ax1: " << ax1 << endl;
+        cout << "Ax2: " << ax2 << endl;
 
-    std::vector<uint16_t> myvec(begin(contents), end(contents));
-    Mat m1(ax2, ax1, CV_16UC1, myvec.data());
+        std::vector<uint16_t> myvec(begin(contents), end(contents));
+        Mat m2 = cv::Mat(ax2, ax1, CV_16UC1, myvec.data());
+        m2.copyTo(m1);
+    }
+
+    else if (iBitsPerPixel == 8)
+    {
+        cout << "Bits per pixel = 8" << endl;
+        std::valarray<uchar> contents;
+        // read all user-specifed, coordinate, and checksum keys in the image
+        image.readAllKeys();
+        image.read(contents);
+        //std::cout << image << std::endl; // this doesn't print the data, just header info.
+
+        long ax1(image.axis(0));
+        long ax2(image.axis(1));
+        cout << "Ax1: " << ax1 << endl;
+        cout << "Ax2: " << ax2 << endl;
+
+        std::vector<uchar> myvec(begin(contents), end(contents));
+        Mat m2 = cv::Mat(ax2, ax1, CV_8UC1, myvec.data());
+        m2.copyTo(m1);
+    }
+    else
+    {
+        cout << "Check bits per pixel. Current value not 8 or 16." << endl;
+    }
+
     //cv::imwrite("/home/lstoperator/CDM/images/mytest.png", m1);
+    cout << "Rows: " << m1.rows << endl;
+    cout << "Cols: " << m1.cols << endl;
+    double min, max;
+    cv::minMaxLoc(m1, &min, &max);
+    cout << "Max: " << max << endl;
 
     // ImageAnalysis myimage(m1);
     // myimage.CalculateCircle();
     // myimage.Draw();
     // //myimage.StoreResults();
-    // myimage.SaveImage("/home/lstoperator/CDM/images/mytest_leds.png");
+    // myimage.SaveImage("/home/lstoperator/CDM/images/mytest_8bit.png");
     // return 0;
 
     //
@@ -418,26 +446,53 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             {
                 auto tp_start = std::chrono::high_resolution_clock::now();
 
-/*                 Mat src;
-                if (iBitsPerPixel == 16)
-                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-                else
-                {
-                    cout << "Wrong bits per pixel" << endl;
-                    return 0;
-                } */
-
+                // Mat src, dst;
+                // if (iBitsPerPixel == 8)
+                //     src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
+                // else if (iBitsPerPixel == 16)
+                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+                // else if (iBitsPerPixel == 12)
+                // {
+                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+                //     src = 16 * src;
+                // }
+                // else if (iBitsPerPixel == 10)
+                // {
+                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+                //     src = 64 * src;
+                // }
+                // else
+                // {
+                //     cout << "Check bitdepth!" << endl;
+                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+                // }
 
                 // Vertical flipping of image so it is upright when read from stored old fits files.
-                //ImageAnalysis myimage(m1, "Vertical", 0); 
-                
+                //ImageAnalysis myimage(m1, "Vertical", 0);
+
                 // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
                 // This is to be done for incoming camera image or Fake camera image from fits file.
-                ImageAnalysis myimage(m1, "Horizontal", 1);
-                
+                std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+                ImageAnalysis myimage(m1, "Horizontal", 1, iBitsPerPixel);
+                std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+                std::cout << "Time difference [ImageAnalysis] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+
                 //ImageAnalysis myimage(src);
+                begin = std::chrono::steady_clock::now();
                 myimage.CalculateCircle();
+                end = std::chrono::steady_clock::now();
+                std::cout << "Time difference [CalculateCircle] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+
                 cout << currentDateTime() << " " << myimage.PrintResults() << endl;
+
+                
+                // Make a function that get the LED vector values
+                // Make a function that finds the OARL spots
+                // Push all values to OPCUA
+
+
+
+
 
                 // Mat src, dst;
 
@@ -1123,6 +1178,13 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     std::cout << "GetColorMode returned " << pixel_formats.right.at(nRet) << std::endl;
     //SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, pixel_formats.right.at(nRet));
     return_values.push_back(pixel_formats.right.at(nRet));
+
+    if (pixel_format == "IS_CM_SENSOR_RAW16")
+        iBitsPerPixel = 16;
+    else if (pixel_format == "IS_CM_MONO8")
+        iBitsPerPixel = 8;
+    else
+        cout << "Bad pixel format." << endl;
 
     // Setting image format
     nRet = is_ImageFormat(hCam, IMGFRMT_CMD_SET_FORMAT, &formatID, sizeof(formatID));
