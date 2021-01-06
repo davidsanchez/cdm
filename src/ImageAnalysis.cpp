@@ -35,13 +35,20 @@ int ImageAnalysis::SaveImage(std::string ImagePath)
     cv::imwrite(ImagePath, this->image);
 }
 
-int ImageAnalysis::CalculateCircle()
+void ImageAnalysis::CalculateImage()
+{
+    CalculateCircle();
+    CalculateSpotsOARL();
+    CalculateDisplacements();
+}
+
+void ImageAnalysis::CalculateCircle()
 {
     //cout << "CalculateCircle()" << endl;
 
-    vector<vector<double>> led_positions = CalculateSpots();
-    vector<double> led_positions_x = led_positions[0];
-    vector<double> led_positions_y = led_positions[1];
+    CalculateSpotsLED();
+    vector<double> led_positions_x = this->led_x;
+    vector<double> led_positions_y = this->led_y;
 
     vector<double> led_positions_x_valid = led_positions_x;
     vector<double> led_positions_y_valid = led_positions_y;
@@ -85,32 +92,42 @@ int ImageAnalysis::CalculateCircle()
         this->circle_s = circle.s;
     }
 
-    this->led_x = led_positions_x;
-    this->led_y = led_positions_y;
     this->n_leds = n_leds;
     this->n_leds_valid = n_leds_valid;
 }
 
-int ImageAnalysis::StoreResults()
+void ImageAnalysis::CalculateDisplacements()
 {
+    double oarl_x_mean;
+    double oarl_y_mean;
+    double displacement_x;
+    double displacement_y;
+
+    // Checks if the OARLs are properly detected.
+    if (this->oarl_x[0] > 0 && this->oarl_x[1] > 0)
+    {
+        oarl_x_mean = this->oarl_x[0] + this->oarl_x[1];
+        oarl_y_mean = this->oarl_y[0] + this->oarl_y[1];
+        displacement_x = oarl_x_mean - this->circle_a;
+        displacement_y = oarl_y_mean - this->circle_b;
+    }
+    else
+    {
+        oarl_x_mean = -1;
+        oarl_y_mean = -1;
+        displacement_x = -1;
+        displacement_y = -1;
+    }
+    
+    this->oarl_x_mean = oarl_x_mean;
+    this->oarl_y_mean = oarl_y_mean;
+    this->displacement_x = displacement_x;
+    this->displacement_y = displacement_y;
 }
 
-std::string ImageAnalysis::PrintResults()
+void ImageAnalysis::CalculateSpotsLED()
 {
-    //cout << circle_a << " " << circle_b << " " << circle_r << " " << circle_s << endl;
-    std::ostringstream stream;
-    stream << circle_a << " " << circle_b << " " << circle_r << " " << circle_s;
-    return stream.str();
-}
-
-vector<double> ImageAnalysis::GetResults()
-{
-    vector<double> results = {circle_a, circle_b, circle_r, circle_s};
-}
-
-vector<vector<double>> ImageAnalysis::CalculateSpots()
-{
-    // Calculates the center of spots. For LED or OARL.
+    // Calculates the center of spots for LED.
     // Returns vector of centers of spots.
 
     //cout << "CalculateSpots()" << endl;
@@ -132,8 +149,8 @@ vector<vector<double>> ImageAnalysis::CalculateSpots()
             //TODO: Raise some warning! Or just report number of found LEDs always
             // LED is skipped in this case.
             cout << "ROI Moment normalization of LED " << i << " is 0." << endl;
-            barycenter_x.push_back(-1); // x coordinates for each LED
-            barycenter_y.push_back(-1); // x coordinates for each LED
+            barycenter_x.push_back(-1); // sets to -1 if the LED not detected
+            barycenter_y.push_back(-1); // sets to -1 if the LED not detected
 
             //barycenter.resize(0);
             //return barycenter;
@@ -158,10 +175,109 @@ vector<vector<double>> ImageAnalysis::CalculateSpots()
         }
     }
 
-    // Making one vector just so it can be returned as one value. Unpacked later.
-    barycenter.push_back(barycenter_x);
-    barycenter.push_back(barycenter_y);
-    return barycenter;
+    this->led_x = barycenter_x;
+    this->led_y = barycenter_y;
 
     //cv::imwrite("/home/lstoperator/CDM/images/Rectangles.png", image);
+}
+
+void ImageAnalysis::CalculateSpotsOARL()
+{
+    // Calculates the center of spots for OARL.
+    // Returns vector of centers of spots.
+
+    //cout << "CalculateSpots()" << endl;
+    vector<vector<double>> barycenter;
+    vector<double> barycenter_x;
+    vector<double> barycenter_y;
+
+    for (int i = 0; i < this->rects_oarl.size(); i++)
+    {
+        //Create the rectangle ROI
+        cv::Rect roi(rects_oarl[i][0] - roi_size_oarl / 2., rects_oarl[i][1] - roi_size_oarl / 2., roi_size_oarl, roi_size_oarl);
+        //cv::rectangle(this->image, roi, Scalar( 65000 ), 10 );
+        Mat image_roi = image(roi);
+        // Calculates image moments, used for centre of gravity calculations
+        Moments mu = moments(image_roi);
+
+        if (mu.m00 == 0)
+        {
+            //TODO: Raise some warning! Or just report number of found OARLs always
+            // OARL is skipped in this case.
+            cout << "ROI Moment normalization of OARL " << i << " is 0." << endl;
+            barycenter_x.push_back(-1); // sets to -1 if the OARL not detected
+            barycenter_y.push_back(-1); // sets to -1 if the OARL not detected
+
+            //barycenter.resize(0);
+            //return barycenter;
+        }
+
+        else
+        {
+            // Barycenter position inside the ROI of the OARL
+            double barycenter_OARL_x = (mu.m10 / mu.m00);
+            double barycenter_OARL_y = (mu.m01 / mu.m00);
+
+            //Barycenter position in the whole image coordinates
+            double barycenter_global_x = rects_oarl[i][0] - roi_size_oarl / 2. + barycenter_OARL_x;
+            double barycenter_global_y = rects_oarl[i][1] - roi_size_oarl / 2. + barycenter_OARL_y;
+
+            // Making the vector of results
+            barycenter_x.push_back(barycenter_global_x); // x coordinates for each OARL
+            barycenter_y.push_back(barycenter_global_y); // x coordinates for each OARL
+        }
+    }
+
+    this->oarl_x = barycenter_x;
+    this->oarl_y = barycenter_y;
+}
+
+int ImageAnalysis::StoreResults()
+{
+}
+
+std::string ImageAnalysis::PrintResults()
+{
+    //cout << circle_a << " " << circle_b << " " << circle_r << " " << circle_s << endl;
+    std::ostringstream stream;
+    stream << circle_a << " " << circle_b << " " << circle_r << " " << circle_s;
+    return stream.str();
+}
+
+vector<double> ImageAnalysis::GetCircleResults()
+{
+    vector<double> results = {circle_a, circle_b, circle_r, circle_s};
+    return results;
+}
+
+vector<double> ImageAnalysis::GetDisplacementResults()
+{
+    vector<double> results = {displacement_x, displacement_y, 0.0};
+    return results;
+}
+
+vector<double> ImageAnalysis::GetLEDxResults()
+{
+    return led_x;
+}
+
+vector<double> ImageAnalysis::GetLEDyResults()
+{
+    return led_y;
+}
+
+vector<double> ImageAnalysis::GetOARLxResults()
+{
+    return oarl_x;
+}
+
+vector<double> ImageAnalysis::GetOARLyResults()
+{
+    return oarl_y;
+}
+
+vector<double> ImageAnalysis::GetOARLmeanResults()
+{
+    vector<double> results = {oarl_x_mean, oarl_y_mean};
+    return results;
 }

@@ -17,6 +17,7 @@ using namespace CCfits;
 
 using namespace std;
 using namespace cv;
+
 /* 
 const std::string currentDateTime()
 {
@@ -90,6 +91,34 @@ std::string currentDateTime()
     stream.imbue(std::locale(std::locale::classic(), facet));
     stream << current_time;
     return stream.str();
+}
+
+std::string currentEpochTime()
+{
+    unsigned long int now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+    unsigned long int part1 = now / 1000;
+    unsigned long int part2 = now % 1000;
+
+    std::string result = to_string(part1) + "." + to_string(part2);
+    return result;
+}
+
+vector<vector<double>> transpose(vector<vector<double>> &A)
+{
+    int rows = A.size();
+    if (rows == 0)
+        return {{}};
+    int cols = A[0].size();
+    vector<vector<double>> r(cols, vector<double>(rows));
+    for (int i = 0; i < rows; ++i)
+    {
+        for (int j = 0; j < cols; ++j)
+        {
+            r[j][i] = A[i][j];
+        }
+    }
+    return r;
 }
 
 std::string Camera::writeFITSImage(Mat image, string img_info)
@@ -411,8 +440,10 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     //
 
     b_keep_taking = 1;
+    int array_size = 10;
+    int nLED = 12;
 
-    int i_images_taken = 0;
+    unsigned long int i_images_taken = 0;
     int n_allocated_memories = 10;
     char *pcImageMemory_arr[n_allocated_memories];
     int nMemoryId_arr[n_allocated_memories];
@@ -433,148 +464,217 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     int loop_image_count = 0;
     int64_t duration_count = 0;
 
+    vector<double> circle_x;
+    vector<double> circle_y;
+    vector<double> circle_R;
+    vector<double> circle_RMS;
+
+    vector<double> displacement_x;
+    vector<double> displacement_y;
+    vector<double> rotation;
+
+    vector<vector<double>> LED_x;
+    vector<vector<double>> LED_y;
+    vector<vector<double>> OARL_x;
+    vector<vector<double>> OARL_y;
+
+    vector<string> timestamp_UTC;
+    vector<string> timestamp_epoch;
+
     while (b_keep_taking == 1)
     {
+        double circle_stddev_R;
+        double circle_stddev_RMS;
+        double circle_stddev_x;
+        double circle_stddev_y;
+
+        vector<double> circle_results;
+        vector<double> displacement_results;
+        vector<double> led_x_results;
+        vector<double> led_y_results;
+        vector<double> oarl_x_results;
+        vector<double> oarl_y_results;
+
         // Use is_LockSeqBuf when processing image?
 
         char *pBuffer = NULL;
         nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
 
+        string epoch_time = currentEpochTime();
+        cout << epoch_time << endl;
+
         if (nRet == IS_SUCCESS)
         {
-            // TODO: Why is this brace here?
+            auto tp_start = std::chrono::high_resolution_clock::now();
+
+            // Mat src, dst;
+            // if (iBitsPerPixel == 8)
+            //     src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
+            // else if (iBitsPerPixel == 16)
+            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+            // else if (iBitsPerPixel == 12)
+            // {
+            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+            //     src = 16 * src;
+            // }
+            // else if (iBitsPerPixel == 10)
+            // {
+            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+            //     src = 64 * src;
+            // }
+            // else
+            // {
+            //     cout << "Check bitdepth!" << endl;
+            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+            // }
+
+            // Vertical flipping of image so it is upright when read from stored old fits files.
+            //ImageAnalysis myimage(m1, "Vertical", 0);
+
+            // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
+            // This is to be done for incoming camera image or Fake camera image from fits file.
+            std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+            ImageAnalysis myimage(m1, "Horizontal", 1, iBitsPerPixel);
+            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+            std::cout << "Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+
+            //ImageAnalysis myimage(src);
+            begin = std::chrono::steady_clock::now();
+            myimage.CalculateImage();
+            end = std::chrono::steady_clock::now();
+            std::cout << "Time difference [CalculateImage] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+
+            cout << currentDateTime() << " " << myimage.PrintResults() << endl;
+
+            circle_results = myimage.GetCircleResults();
+            led_x_results = myimage.GetLEDxResults();
+            led_y_results = myimage.GetLEDyResults();
+            oarl_x_results = myimage.GetOARLxResults();
+            oarl_y_results = myimage.GetOARLyResults();
+            displacement_results = myimage.GetDisplacementResults();
+            //GetOARLmeanResults();
+
+            circle_x.push_back(circle_results[0]);
+            circle_y.push_back(circle_results[1]);
+            circle_R.push_back(circle_results[2]);
+            circle_RMS.push_back(circle_results[3]);
+
+            displacement_x.push_back(displacement_results[0]);
+            displacement_y.push_back(displacement_results[1]);
+            rotation.push_back(displacement_results[2]);
+
+            LED_x.push_back(led_x_results);
+            LED_y.push_back(led_y_results);
+            OARL_x.push_back(oarl_x_results);
+            OARL_y.push_back(oarl_y_results);
+
+            // Make a function that gets the LED vector values
+            // Make a function that finds the OARL spots
+            // Push all values to OPCUA every 10 images
+
+            // Mat src, dst;
+
+            // if (iBitsPerPixel == 8)
+            //     src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
+
+            // else if (iBitsPerPixel == 16)
+            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+
+            // else if (iBitsPerPixel == 12)
+            // {
+            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+            //     src = 16 * src;
+            // }
+
+            // else if (iBitsPerPixel == 10)
+            // {
+            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+            //     src = 64 * src;
+            // }
+
+            // else
+            // {
+            //     cout << "Check bitdepth!" << endl;
+            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+            // }
+
+            // // Transpose + Flip = 90 deg rotation
+            // transpose(src, src);
+            // flip(src, src, 1);
+
+            // std::vector<int> compression_params;
+            // compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+            // compression_params.push_back(0);
+            // resize(src, dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
+
+            // vector<unsigned char> data;
+            // cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
+
+            // int m_nameSpace = 2;
+            // string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
+            // //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
+            // SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
+
+            // SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken + 1); //Updates the number of images taken
+
+            // std::string imageName = writeFITSImage(src);
+            // std::string filePath = helper.get_fitsPath() + imageName;
+            // std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
+
+            // char exec[300];
+            // sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
+            // cout << "Command is: " << exec << endl;
+            // int scp_result = system(exec);
+            // cout << "Output of scp is: " << scp_result << endl;
+            // if (scp_result == 0)
+            // {
+            //     std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
+            // }
+            // else
+            // {
+            //     cout << "There was a problem while copying the image!" << endl;
+            //     remoteImagePath = "Error";
+            // }
+
+            // v_image_paths.push_back(remoteImagePath);
+            // SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName); //Updates the imageName
+
+            auto tp_stop = std::chrono::high_resolution_clock::now();
+            auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
+            duration_count += ms.count();
+
+            if (++loop_image_count == 100)
             {
-                auto tp_start = std::chrono::high_resolution_clock::now();
-
-                // Mat src, dst;
-                // if (iBitsPerPixel == 8)
-                //     src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
-                // else if (iBitsPerPixel == 16)
-                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-                // else if (iBitsPerPixel == 12)
-                // {
-                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-                //     src = 16 * src;
-                // }
-                // else if (iBitsPerPixel == 10)
-                // {
-                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-                //     src = 64 * src;
-                // }
-                // else
-                // {
-                //     cout << "Check bitdepth!" << endl;
-                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-                // }
-
-                // Vertical flipping of image so it is upright when read from stored old fits files.
-                //ImageAnalysis myimage(m1, "Vertical", 0);
-
-                // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
-                // This is to be done for incoming camera image or Fake camera image from fits file.
-                std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-                ImageAnalysis myimage(m1, "Horizontal", 1, iBitsPerPixel);
-                std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-                std::cout << "Time difference [ImageAnalysis] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
-
-                //ImageAnalysis myimage(src);
-                begin = std::chrono::steady_clock::now();
-                myimage.CalculateCircle();
-                end = std::chrono::steady_clock::now();
-                std::cout << "Time difference [CalculateCircle] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
-
-                cout << currentDateTime() << " " << myimage.PrintResults() << endl;
-
-                
-                // Make a function that get the LED vector values
-                // Make a function that finds the OARL spots
-                // Push all values to OPCUA
-
-
-
-
-
-                // Mat src, dst;
-
-                // if (iBitsPerPixel == 8)
-                //     src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
-
-                // else if (iBitsPerPixel == 16)
-                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-
-                // else if (iBitsPerPixel == 12)
-                // {
-                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-                //     src = 16 * src;
-                // }
-
-                // else if (iBitsPerPixel == 10)
-                // {
-                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-                //     src = 64 * src;
-                // }
-
-                // else
-                // {
-                //     cout << "Check bitdepth!" << endl;
-                //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-                // }
-
-                // // Transpose + Flip = 90 deg rotation
-                // transpose(src, src);
-                // flip(src, src, 1);
-
-                // std::vector<int> compression_params;
-                // compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
-                // compression_params.push_back(0);
-                // resize(src, dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
-
-                // vector<unsigned char> data;
-                // cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
-
-                // int m_nameSpace = 2;
-                // string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
-                // //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
-                // SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
-
-                // SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken + 1); //Updates the number of images taken
-
-                // std::string imageName = writeFITSImage(src);
-                // std::string filePath = helper.get_fitsPath() + imageName;
-                // std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
-
-                // char exec[300];
-                // sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
-                // cout << "Command is: " << exec << endl;
-                // int scp_result = system(exec);
-                // cout << "Output of scp is: " << scp_result << endl;
-                // if (scp_result == 0)
-                // {
-                //     std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
-                // }
-                // else
-                // {
-                //     cout << "There was a problem while copying the image!" << endl;
-                //     remoteImagePath = "Error";
-                // }
-
-                // v_image_paths.push_back(remoteImagePath);
-                // SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName); //Updates the imageName
-
-                auto tp_stop = std::chrono::high_resolution_clock::now();
-                auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
-                duration_count += ms.count();
-
-                if (++loop_image_count == 100)
-                {
-                    std::cout << "Duration: " << duration_count / loop_image_count << std::endl;
-                    loop_image_count = 0;
-                    duration_count = 0;
-                }
+                std::cout << "Duration: " << duration_count / loop_image_count << std::endl;
+                loop_image_count = 0;
+                duration_count = 0;
             }
+
             is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
             i_images_taken++;
+
+            if (i_images_taken % array_size == 0)
+            {
+                cout << "Gathered " << array_size << " images:" << endl;
+
+                // We transpose the arrays so instead of grouping it by time first we group it by LEDs/OARLs first.
+                LED_x = transpose(LED_x);
+                LED_y = transpose(LED_y);
+                OARL_x = transpose(OARL_x);
+                OARL_y = transpose(OARL_y);
+
+                int m_nameSpace = 2;
+                string temString = "Unit_CDM.AuxControl.CDM.Circle.Circle_x.Circle_x_v";
+                //SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, circle_x);
+                //delete m_SetDatapointThread; // crashes
+                //SetDatapointThread m_SetDatapointThread(myclient, temString, m_nameSpace, circle_x); //Causes first 2 vector cells to have weird values! TODO: Ask JeanLuc about this.
+
+                circle_x.clear();
+
+                // TODO: Delete DatapointThreads!
+            }
         }
+
         else if (nRet == IS_CAPTURE_STATUS)
         {
 
@@ -618,7 +718,8 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
             std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
         }
-    }
+
+    } // while (b_keep_taking == 1)
 
     // Free the OpenCV memory?
     // Free the allocated memories

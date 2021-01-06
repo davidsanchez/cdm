@@ -170,6 +170,17 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
             if (subChaine1.compare("StartCDM") == 0)
             {
+                std::string datapointName = "Unit_CDM.AuxControl.FSM.Configure";
+                int nameSpace = 2; 
+                m_testThread->cmdConfigure(datapointName, 
+                                           nameSpace, 
+                                           216, // nPixelClock 
+                                           50, // exposure
+                                           1, // fps
+                                           0, // gain
+                                           "IS_CM_MONO8" // pixel_format
+                                           );
+
                 m_testThread->cmdStartCDM(datapointName, nameSpace);
             }
 
@@ -210,19 +221,16 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 std::string datapointName = "Unit_CDM.AuxControl.FSM.Configure";
                 int nameSpace = 2; 
                 //Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, std::string pixel_format="IS_CM_MONO8");
-                m_testThread->cmdConfigure(datapointName, nameSpace, 216, 50, 1, 0, "IS_CM_MONO8");
                 //m_testThread->cmdConfigure(datapointName, nameSpace, 216, 50, 10, 0, "IS_CM_SENSOR_RAW16");
-
-
-                /* std::vector<boost::any> configure_settings = camera.Configure(); // Sets default parameters
-                //Todo: add this part as a function
-                SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, boost::any_cast<int>(configure_settings[0]));
-                SetDatapointThread *m_SetDatapointThread_fps = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.FPS.FPS_v", 2, boost::any_cast<double>(configure_settings[1]));
-                SetDatapointThread *m_SetDatapointThread_exposure = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, boost::any_cast<double>((configure_settings[2])));
-                SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, boost::any_cast<int>((configure_settings[3])));
-                SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, boost::any_cast<string>(configure_settings[4]));
-                 */
-
+                m_testThread->cmdConfigure(datapointName, 
+                                           nameSpace, 
+                                           216, // nPixelClock 
+                                           50, // exposure
+                                           1, // fps
+                                           0, // gain
+                                           "IS_CM_MONO8" // pixel_format
+                                           );
+                
                 /* Standby stuff and tests
 				// Checks if stanby is supported. Return 1 because it is supported.
 				ULONG ulValue = IS_GET_STATUS;

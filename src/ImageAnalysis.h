@@ -66,12 +66,23 @@ public:
     };
 
     int Draw();
-    int CalculateCircle();
     int SaveImage(std::string ImagePath);
     int StoreResults();
-    vector<double> GetResults();
     std::string PrintResults();
-    vector<vector<double>> CalculateSpots();
+
+    vector<double> GetCircleResults();
+    vector<double> GetDisplacementResults();
+    vector<double> GetLEDxResults();
+    vector<double> GetLEDyResults();
+    vector<double> GetOARLxResults();
+    vector<double> GetOARLyResults();
+    vector<double> GetOARLmeanResults();
+
+    void CalculateImage();
+    void CalculateCircle();
+    void CalculateSpotsLED();
+    void CalculateSpotsOARL();
+    void CalculateDisplacements();
 
     //private:
 
@@ -86,6 +97,13 @@ public:
     double circle_s = 0;
     vector<double> led_x;
     vector<double> led_y;
+    vector<double> oarl_x;
+    vector<double> oarl_y;
+
+    double oarl_x_mean = 0;
+    double oarl_y_mean = 0;
+    double displacement_x = 0;
+    double displacement_y = 0;
     int n_leds = 0;
     int n_leds_valid = 0;
 
