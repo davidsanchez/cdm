@@ -664,14 +664,18 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 OARL_y = transpose(OARL_y);
 
                 int m_nameSpace = 2;
-                string temString = "Unit_CDM.AuxControl.CDM.Circle.Circle_x.Circle_x_v";
-                //SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, circle_x);
+                string m_datapointName = "Unit_CDM.AuxControl.CDM.Circle.Circle_x.Circle_x_v";
+                
+
+                myclient->setDatapoint(m_datapointName, m_nameSpace, circle_x);
+
+                //SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, m_datapointName, m_nameSpace, circle_x);
                 //delete m_SetDatapointThread; // crashes
-                //SetDatapointThread m_SetDatapointThread(myclient, temString, m_nameSpace, circle_x); //Causes first 2 vector cells to have weird values! TODO: Ask JeanLuc about this.
+                //SetDatapointThread m_SetDatapointThread(myclient, m_datapointName, m_nameSpace, circle_x); //Causes first 2 vector cells to have weird values! TODO: Ask JeanLuc about this.
 
                 circle_x.clear();
 
-                // TODO: Delete DatapointThreads!
+                // TODO: Delete DatapointThreads or make an object on stack!
             }
         }
 

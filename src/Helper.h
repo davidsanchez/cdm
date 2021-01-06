@@ -133,26 +133,6 @@ public:
             m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_double);
     };
 
-    void Change(void *params)
-    {
-        if (*(static_cast<varType *>(params)) == varType::isVectorByte)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vbyte);
-        else if (*(static_cast<varType *>(params)) == varType::isVectorString)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vstring);
-        else if (*(static_cast<varType *>(params)) == varType::isVectorDouble)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vdouble);
-        else if (*(static_cast<varType *>(params)) == varType::isVectorFloat)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vfloat);
-        else if (*(static_cast<varType *>(params)) == varType::isString)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_str);
-        else if (*(static_cast<varType *>(params)) == varType::isInt)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_int);
-        else if (*(static_cast<varType *>(params)) == varType::isFloat)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_float);
-        else if (*(static_cast<varType *>(params)) == varType::isDouble)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_double);
-    }
-
 private:
     int m_nameSpace;
     std::string m_datapointName;
