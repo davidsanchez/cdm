@@ -118,7 +118,7 @@ void ImageAnalysis::CalculateDisplacements()
         displacement_x = -1;
         displacement_y = -1;
     }
-    
+
     this->oarl_x_mean = oarl_x_mean;
     this->oarl_y_mean = oarl_y_mean;
     this->displacement_x = displacement_x;
@@ -230,6 +230,14 @@ void ImageAnalysis::CalculateSpotsOARL()
 
     this->oarl_x = barycenter_x;
     this->oarl_y = barycenter_y;
+}
+
+vector<uchar> ImageAnalysis::GetImageToPublish()
+{
+    resize(this->image, resized_image, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);   
+    cv::imencode(".png", resized_image, published_image, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
+    
+    return published_image;
 }
 
 int ImageAnalysis::StoreResults()

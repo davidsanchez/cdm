@@ -377,6 +377,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/test/Fake_camera_image_8bit.fits", Read, true));
 
     Mat m1;
+    vector<uchar> published_image;
     PHDU &image = pInfile->pHDU();
 
     if (iBitsPerPixel == 16)
@@ -441,7 +442,6 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
     b_keep_taking = 1;
     int array_size = 10;
-    int nLED = 12;
 
     unsigned long int i_images_taken = 0;
     int n_allocated_memories = 10;
@@ -483,6 +483,8 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
     while (b_keep_taking == 1)
     {
+        std::chrono::steady_clock::time_point begin_loop = std::chrono::steady_clock::now();
+
         double circle_stddev_R;
         double circle_stddev_RMS;
         double circle_stddev_x;
@@ -499,6 +501,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
         char *pBuffer = NULL;
         nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
+        std::chrono::steady_clock::time_point begin_loop_after_image = std::chrono::steady_clock::now();
 
         string epoch_time = currentEpochTime();
         cout << epoch_time << endl;
@@ -546,6 +549,8 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
             cout << currentDateTime() << " " << myimage.PrintResults() << endl;
 
+            begin = std::chrono::steady_clock::now();
+
             circle_results = myimage.GetCircleResults();
             led_x_results = myimage.GetLEDxResults();
             led_y_results = myimage.GetLEDyResults();
@@ -568,9 +573,8 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             OARL_x.push_back(oarl_x_results);
             OARL_y.push_back(oarl_y_results);
 
-            // Make a function that gets the LED vector values
-            // Make a function that finds the OARL spots
-            // Push all values to OPCUA every 10 images
+            end = std::chrono::steady_clock::now();
+            std::cout << "Time difference [Getting image results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
             // Mat src, dst;
 
@@ -653,29 +657,81 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
             i_images_taken++;
 
+            //TODO: Time this process!
             if (i_images_taken % array_size == 0)
             {
+                std::chrono::steady_clock::time_point begin_publish = std::chrono::steady_clock::now();
+
                 cout << "Gathered " << array_size << " images:" << endl;
 
+                //TODO: Time this transpose!
                 // We transpose the arrays so instead of grouping it by time first we group it by LEDs/OARLs first.
+                // So before we had a rows for one timeslices containing different LED information and after the transpose we have rows for each LED containing information for different timeslices.
+
                 LED_x = transpose(LED_x);
                 LED_y = transpose(LED_y);
                 OARL_x = transpose(OARL_x);
                 OARL_y = transpose(OARL_y);
 
                 int m_nameSpace = 2;
-                string m_datapointName = "Unit_CDM.AuxControl.CDM.Circle.Circle_x.Circle_x_v";
-                
 
-                myclient->setDatapoint(m_datapointName, m_nameSpace, circle_x);
+                //TODO: Time this publishing!
+                myclient->setDatapoint(datapointName_circle_x, m_nameSpace, circle_x);
+                myclient->setDatapoint(datapointName_circle_y, m_nameSpace, circle_y);
+                myclient->setDatapoint(datapointName_circle_R, m_nameSpace, circle_R);
+                myclient->setDatapoint(datapointName_circle_RMS, m_nameSpace, circle_RMS);
+
+                myclient->setDatapoint(datapointName_displacement_x, m_nameSpace, displacement_x);
+                myclient->setDatapoint(datapointName_displacement_y, m_nameSpace, displacement_y);
+                myclient->setDatapoint(datapointName_rotation, m_nameSpace, rotation);
+
+                for (int i = 0; i < nLED; i++)
+                {
+                    myclient->setDatapoint(datapointName_LED_x_arrays[i], m_nameSpace, LED_x[i]);
+                    myclient->setDatapoint(datapointName_LED_y_arrays[i], m_nameSpace, LED_y[i]);
+                }
+
+                for (int i = 0; i < nOARL; i++)
+                {
+                    myclient->setDatapoint(datapointName_OARL_x_arrays[i], m_nameSpace, OARL_x[i]);
+                    myclient->setDatapoint(datapointName_OARL_y_arrays[i], m_nameSpace, OARL_y[i]);
+                }
+
+                // TODO: Publish timestamps!
+
+                // TODO: Draw a circle arund the fitted LEDs
+                // Push the image here
+                // Be careful as this is the image after analysis and in the analysis you use a pointer to the image, so the image may be altered. Check this. Also check if it is upright. Alternatively make a copy of the image in the beginning, but only of the every 10th image.
+
+                std::chrono::steady_clock::time_point begin_getimage = std::chrono::steady_clock::now();
+                published_image = myimage.GetImageToPublish();
+                myclient->setDatapoint("Unit_CDM.AuxControl.CDM.image.image_v", m_nameSpace, published_image);
+                myclient->setDatapoint("Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", m_nameSpace, (int)i_images_taken);
+                std::chrono::steady_clock::time_point end_getimage = std::chrono::steady_clock::now();
+                std::cout << "Time difference [Get image for publishing] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_getimage - begin_getimage).count() << "[ms]" << std::endl;
 
                 //SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, m_datapointName, m_nameSpace, circle_x);
                 //delete m_SetDatapointThread; // crashes
                 //SetDatapointThread m_SetDatapointThread(myclient, m_datapointName, m_nameSpace, circle_x); //Causes first 2 vector cells to have weird values! TODO: Ask JeanLuc about this.
 
-                circle_x.clear();
+                // TODO: Delete DatapointThreads or make an object on stack! Or just use setDatapoint if it is quick enough.
 
-                // TODO: Delete DatapointThreads or make an object on stack!
+                circle_x.clear();
+                circle_y.clear();
+                circle_R.clear();
+                circle_RMS.clear();
+
+                displacement_x.clear();
+                displacement_y.clear();
+                rotation.clear();
+
+                LED_x.clear();
+                LED_y.clear();
+                OARL_x.clear();
+                OARL_y.clear();
+
+                std::chrono::steady_clock::time_point end_publish = std::chrono::steady_clock::now();
+                std::cout << "Time difference [Publishing results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_publish - begin_publish).count() << "[ms]" << std::endl;
             }
         }
 
@@ -722,6 +778,11 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
             std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
         }
+
+        std::chrono::steady_clock::time_point end_loop = std::chrono::steady_clock::now();
+        std::cout << "Time difference [One loop] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop).count() << "[ms]" << std::endl;
+
+        std::cout << "Time difference [One loop after image] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop_after_image).count() << "[ms]" << std::endl;
 
     } // while (b_keep_taking == 1)
 

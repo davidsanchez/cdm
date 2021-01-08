@@ -75,6 +75,62 @@ public:
     ( "IS_CM_SENSOR_RAW8", IS_CM_SENSOR_RAW8 )
     ( "IS_CM_SENSOR_RAW16", IS_CM_SENSOR_RAW16 );
 
+    const std::string datapointName_circle_x = "Unit_CDM.AuxControl.CDM.Circle.Circle_x.Circle_x_v";
+    const std::string datapointName_circle_y = "Unit_CDM.AuxControl.CDM.Circle.Circle_y.Circle_y_v";
+    const std::string datapointName_circle_R = "Unit_CDM.AuxControl.CDM.Circle.Circle_R.Circle_R_v";
+    const std::string datapointName_circle_RMS = "Unit_CDM.AuxControl.CDM.Circle.Circle_RMS.Circle_RMS_v";
+    const std::string datapointName_displacement_x = "Unit_CDM.AuxControl.CDM.Displacement.displacement_x.displacement_x_v";
+    const std::string datapointName_displacement_y = "Unit_CDM.AuxControl.CDM.Displacement.displacement_y.displacement_y_v";
+    const std::string datapointName_rotation = "Unit_CDM.AuxControl.CDM.Displacement.rotation.rotation_v";
+
+    const int nLED = 12;
+    const int nOARL = 2;
+
+    // TODO: initalize vectors with the proper size immediately.    
+    std::vector<std::string> datapointName_LED_x_arrays =
+    {
+        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_01.LED_x_01_v", 
+        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_02.LED_x_02_v", 
+        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_03.LED_x_03_v", 
+        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_04.LED_x_04_v", 
+        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_05.LED_x_05_v", 
+        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_06.LED_x_06_v", 
+        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_07.LED_x_07_v", 
+        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_08.LED_x_08_v", 
+        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_09.LED_x_09_v", 
+        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_10.LED_x_10_v", 
+        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_11.LED_x_11_v", 
+        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_12.LED_x_12_v", 
+    };
+
+    std::vector<std::string> datapointName_LED_y_arrays =
+    {
+        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_01.LED_y_01_v", 
+        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_02.LED_y_02_v", 
+        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_03.LED_y_03_v", 
+        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_04.LED_y_04_v", 
+        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_05.LED_y_05_v", 
+        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_06.LED_y_06_v", 
+        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_07.LED_y_07_v", 
+        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_08.LED_y_08_v", 
+        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_09.LED_y_09_v", 
+        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_10.LED_y_10_v", 
+        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_11.LED_y_11_v", 
+        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_12.LED_y_12_v", 
+    };
+
+    std::vector<std::string> datapointName_OARL_x_arrays =
+    {
+        "Unit_CDM.AuxControl.CDM.OARL_x.OARL_x_1.OARL_x_1_v", 
+        "Unit_CDM.AuxControl.CDM.OARL_x.OARL_x_2.OARL_x_2_v", 
+    };
+
+    std::vector<std::string> datapointName_OARL_y_arrays =
+    {
+        "Unit_CDM.AuxControl.CDM.OARL_y.OARL_y_1.OARL_y_1_v", 
+        "Unit_CDM.AuxControl.CDM.OARL_y.OARL_y_2.OARL_y_2_v", 
+    };
+   
 
 };
 

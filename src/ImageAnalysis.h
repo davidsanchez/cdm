@@ -30,45 +30,46 @@ public:
         else
             flip_code = -999;
 
-        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+        // std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
         this->image = image.clone(); // TODO: decide on pointer or copying.
-        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-        std::cout << "Time difference [Clone] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+        // std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+        // std::cout << "Time difference [Clone] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
         if (image_transpose != 0)
         {
-            std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+            // std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
             transpose(this->image, this->image);
-            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-            std::cout << "Time difference [Transpose] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+            // std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+            // std::cout << "Time difference [Transpose] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
         }
         if (flip_code != -999)
         {
-            std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+            // std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
             flip(this->image, this->image, flip_code);
-            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-            std::cout << "Time difference [Flip] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+            // std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+            // std::cout << "Time difference [Flip] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
         }
         
         // Converting image if needed
-        begin = std::chrono::steady_clock::now();
+        // begin = std::chrono::steady_clock::now();
         if (iBitsPerPixel == 16)
             this->image.convertTo(this->image, CV_8UC1, 1 / 256.0); //TODO: try with 16bit images
-        end = std::chrono::steady_clock::now();
-        std::cout << "Time difference [Convert] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+        // end = std::chrono::steady_clock::now();
+        // std::cout << "Time difference [Convert] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
         // To remove the noise
         //TODO: these values for 8bit. Decide for 16bit values.
-        begin = std::chrono::steady_clock::now();
+        //begin = std::chrono::steady_clock::now();
         cv::threshold(this->image, this->image, 10, 255, THRESH_TOZERO);
-        end = std::chrono::steady_clock::now();
-        std::cout << "Time difference [Threshold] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+        //end = std::chrono::steady_clock::now();
+        //std::cout << "Time difference [Threshold] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
     };
 
     int Draw();
     int SaveImage(std::string ImagePath);
     int StoreResults();
     std::string PrintResults();
+    vector<uchar> GetImageToPublish();
 
     vector<double> GetCircleResults();
     vector<double> GetDisplacementResults();
@@ -85,6 +86,10 @@ public:
     void CalculateDisplacements();
 
     //private:
+
+    std::vector<int> compression_params = {CV_IMWRITE_PNG_COMPRESSION, 0};
+    Mat resized_image;
+    vector<unsigned char> published_image;
 
     Mat image;
     double px2arcsec = 7.35;

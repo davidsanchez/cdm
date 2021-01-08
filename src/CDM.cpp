@@ -176,7 +176,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
                                            nameSpace, 
                                            216, // nPixelClock 
                                            50, // exposure
-                                           1, // fps
+                                           10, // fps
                                            0, // gain
                                            "IS_CM_MONO8" // pixel_format
                                            );
