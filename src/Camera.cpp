@@ -698,10 +698,14 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 }
 
                 // TODO: Publish timestamps!
+                // TODO: Publish OARL_mean!
+                // TODO: Check what else you need to publish!
+
 
                 // TODO: Draw a circle arund the fitted LEDs
+                // TODO: Put date and time on the image itself?
+
                 // Push the image here
-                // Be careful as this is the image after analysis and in the analysis you use a pointer to the image, so the image may be altered. Check this. Also check if it is upright. Alternatively make a copy of the image in the beginning, but only of the every 10th image.
 
                 std::chrono::steady_clock::time_point begin_getimage = std::chrono::steady_clock::now();
                 published_image = myimage.GetImageToPublish();
