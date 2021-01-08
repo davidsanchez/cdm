@@ -13,6 +13,8 @@
 #include "test_asynchroneThread.h"
 #include "dataAccessClientOPCUA.h"
 
+#include "Logging.h"
+
 extern Camera camera;
 
 TestAsynchroneThread::TestAsynchroneThread(DataAccessClientOPCUA *dataAccessClientOPCUA)

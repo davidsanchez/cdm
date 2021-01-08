@@ -63,6 +63,7 @@ add_library(
         Circle/mystuff.h
         Circle/circle.h
         Circle/data.h
+        Logging.cpp
         #ImageFITS.cpp
         )
 

@@ -12,6 +12,8 @@
 #include "ImageAnalysis.h"
 #include <CCfits>
 
+#include "Logging.h"
+
 extern Helper helper;
 using namespace CCfits;
 
@@ -106,6 +108,8 @@ std::string currentEpochTime()
 
 vector<vector<double>> transpose(vector<vector<double>> &A)
 {
+    LOG_TRACE << "Camera::transpose()";
+
     int rows = A.size();
     if (rows == 0)
         return {{}};
@@ -123,6 +127,8 @@ vector<vector<double>> transpose(vector<vector<double>> &A)
 
 std::string Camera::writeFITSImage(Mat image, string img_info)
 {
+    LOG_TRACE << "Camera::writeFITSImage()";
+
     //TODO: should also send image data type to this method, now assume 8bit
 
     // if( ePixelFormat == VmbPixelFormatMono14)
@@ -185,8 +191,8 @@ std::string Camera::writeFITSImage(Mat image, string img_info)
     std::string filePath = stream_fitsPath.str();
     std::string remoteImagePath = stream_remoteImagePath.str();
 
-    std::cout << "filePath: " << filePath << std::endl;
-    std::cout << "remoteImagePath: " << remoteImagePath << std::endl;
+    LOG_DEBUG << "filePath: " << filePath << std::endl;
+    LOG_DEBUG << "remoteImagePath: " << remoteImagePath << std::endl;
 
     try
     {
@@ -196,7 +202,7 @@ std::string Camera::writeFITSImage(Mat image, string img_info)
             pFits.reset(new FITS(filePath, BYTE_IMG, naxis, naxes));
 
         else
-            cout << "Error invalid bitdepth value for saving!" << endl;
+            LOG_ERROR << "Error invalid bitdepth value for saving!" << endl;
     }
     catch (FITS::CantCreate)
     {
@@ -273,7 +279,7 @@ std::string Camera::writeFITSImage(Mat image, string img_info)
     }
 
     else
-        cout << "Check pixel format" << endl;
+        LOG_ERROR << "Check pixel format" << endl;
 
     pFits->pHDU().addKey("RA", helper.get_RA(), "Right Ascension");
     pFits->pHDU().addKey("DEC", helper.get_DEC(), "Declination");
@@ -304,7 +310,7 @@ std::string Camera::writeFITSImage(Mat image, string img_info)
     //     pFits->pHDU().addKey("GAMMA", gamma_value, "Gamma");
     pFits->pHDU().addKey("COMMENT", helper.get_Comment(), "Gamma");
 
-    std::cout << pFits->pHDU() << std::endl;
+    LOG_DEBUG << pFits->pHDU() << std::endl;
 
     //return remoteImagePath;
     return fileName;
@@ -312,49 +318,53 @@ std::string Camera::writeFITSImage(Mat image, string img_info)
 
 int Camera::Connect()
 {
+    LOG_TRACE << "Camera::Connect()";
+
     nRet = is_InitCamera(&hCam, NULL);
-    std::cout << "InitCamera returned " << nRet << std::endl;
+    LOG_DEBUG << "InitCamera returned " << nRet << std::endl;
     if (nRet != IS_SUCCESS)
     {
-        std::cout << "Failed to open camera." << std::endl;
+        LOG_ERROR << "Failed to open camera." << std::endl;
         return 1;
     }
 
     is_SetErrorReport(hCam, IS_ENABLE_ERR_REP);
-    cout << "Set Error Report result: " << nRet << endl;
+    LOG_INFO << "Set Error Report result: " << nRet << endl;
 
     nRet = is_ResetToDefault(hCam); //Resets to default values
     if (nRet != IS_SUCCESS)
     {
-        std::cout << "Failed to reset to default values." << std::endl;
+        LOG_ERROR << "Failed to reset to default values." << std::endl;
         return 1;
     }
 
     nRet = is_GetCameraInfo(hCam, &camerainfo);
     if (nRet != IS_SUCCESS)
     {
-        std::cout << "Failed to retrieve camera info." << std::endl;
+        LOG_ERROR << "Failed to retrieve camera info." << std::endl;
     }
 
     nRet = is_GetSensorInfo(hCam, &sensorinfo);
     if (nRet != IS_SUCCESS)
     {
-        std::cout << "Failed to retrieve sensor info." << std::endl;
+        LOG_ERROR << "Failed to retrieve sensor info." << std::endl;
     }
-    std::cout << "Sensor model " << sensorinfo.strSensorName << ". Camera serial no " << camerainfo.SerNo << std::endl;
+    LOG_INFO << "Sensor model " << sensorinfo.strSensorName << ". Camera serial no " << camerainfo.SerNo << std::endl;
 
     nRet = is_AOI(hCam, IS_AOI_IMAGE_GET_AOI, (void *)&rectAOI, sizeof(rectAOI));
     if (nRet != IS_SUCCESS)
     {
-        std::cout << "Failed to retrieve AOI info." << std::endl;
+        LOG_ERROR << "Failed to retrieve AOI info." << std::endl;
     }
     iWidth = rectAOI.s32Width;
     iHeight = rectAOI.s32Height;
-    std::cout << "Image size is " << iWidth << "x" << iHeight << std::endl;
+    LOG_INFO << "Image size is " << iWidth << "x" << iHeight << std::endl;
 }
 
 int Camera::Disconnect()
 {
+    LOG_TRACE << "Camera::Disconnect()";
+
     // You should release the reserved images in memory here. Like OpenCV Mat and IDS images
 
     // Disables the hCam camera handle and releases the data structures and memory areas taken up by the uEye camera
@@ -366,7 +376,7 @@ int Camera::Disconnect()
 
 int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 {
-    cout << "StartCDM command" << endl;
+    LOG_TRACE << "Camera::StartCDM()";
 
     //
     // Temporary used for testing purposes. Delete later.
@@ -382,7 +392,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
     if (iBitsPerPixel == 16)
     {
-        cout << "Bits per pixel = 16" << endl;
+        LOG_DEBUG << "Bits per pixel = 16" << endl;
         std::valarray<uint16_t> contents;
         // read all user-specifed, coordinate, and checksum keys in the image
         image.readAllKeys();
@@ -391,8 +401,8 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
         long ax1(image.axis(0));
         long ax2(image.axis(1));
-        cout << "Ax1: " << ax1 << endl;
-        cout << "Ax2: " << ax2 << endl;
+        LOG_DEBUG << "Ax1: " << ax1 << endl;
+        LOG_DEBUG << "Ax2: " << ax2 << endl;
 
         std::vector<uint16_t> myvec(begin(contents), end(contents));
         Mat m2 = cv::Mat(ax2, ax1, CV_16UC1, myvec.data());
@@ -401,7 +411,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
     else if (iBitsPerPixel == 8)
     {
-        cout << "Bits per pixel = 8" << endl;
+        LOG_DEBUG << "Bits per pixel = 8" << endl;
         std::valarray<uchar> contents;
         // read all user-specifed, coordinate, and checksum keys in the image
         image.readAllKeys();
@@ -410,8 +420,8 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
         long ax1(image.axis(0));
         long ax2(image.axis(1));
-        cout << "Ax1: " << ax1 << endl;
-        cout << "Ax2: " << ax2 << endl;
+        LOG_DEBUG << "Ax1: " << ax1 << endl;
+        LOG_DEBUG << "Ax2: " << ax2 << endl;
 
         std::vector<uchar> myvec(begin(contents), end(contents));
         Mat m2 = cv::Mat(ax2, ax1, CV_8UC1, myvec.data());
@@ -419,15 +429,12 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     }
     else
     {
-        cout << "Check bits per pixel. Current value not 8 or 16." << endl;
+        LOG_ERROR << "Check bits per pixel. Current value not 8 or 16." << endl;
     }
 
     //cv::imwrite("/home/lstoperator/CDM/images/mytest.png", m1);
-    cout << "Rows: " << m1.rows << endl;
-    cout << "Cols: " << m1.cols << endl;
-    double min, max;
-    cv::minMaxLoc(m1, &min, &max);
-    cout << "Max: " << max << endl;
+    LOG_DEBUG << "Rows: " << m1.rows << endl;
+    LOG_DEBUG << "Cols: " << m1.cols << endl;
 
     // ImageAnalysis myimage(m1);
     // myimage.CalculateCircle();
@@ -450,7 +457,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     for (int i = 0; i < n_allocated_memories; i++)
     {
         nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-        std::cout << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
+        LOG_DEBUG << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
         is_AddToSequence(hCam, pcImageMemory, nMemoryId);
 
         pcImageMemory_arr[i] = pcImageMemory;
@@ -459,7 +466,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     is_InitImageQueue(hCam, 0);
 
     nRet = is_CaptureVideo(hCam, IS_WAIT);
-    std::cout << "is_CaptureVideo returned " << nRet << std::endl;
+    LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
@@ -504,7 +511,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
         std::chrono::steady_clock::time_point begin_loop_after_image = std::chrono::steady_clock::now();
 
         string epoch_time = currentEpochTime();
-        cout << epoch_time << endl;
+        //cout << epoch_time << endl;
 
         if (nRet == IS_SUCCESS)
         {
@@ -539,15 +546,13 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
             ImageAnalysis myimage(m1, "Horizontal", 1, iBitsPerPixel);
             std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-            std::cout << "Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+            LOG_INFO << "Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
             //ImageAnalysis myimage(src);
             begin = std::chrono::steady_clock::now();
             myimage.CalculateImage();
             end = std::chrono::steady_clock::now();
-            std::cout << "Time difference [CalculateImage] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
-
-            cout << currentDateTime() << " " << myimage.PrintResults() << endl;
+            LOG_INFO << "Time difference [CalculateImage] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
             begin = std::chrono::steady_clock::now();
 
@@ -574,7 +579,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             OARL_y.push_back(oarl_y_results);
 
             end = std::chrono::steady_clock::now();
-            std::cout << "Time difference [Getting image results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+            LOG_INFO << "Time difference [Getting image results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
             // Mat src, dst;
 
@@ -649,7 +654,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
             if (++loop_image_count == 100)
             {
-                std::cout << "Duration: " << duration_count / loop_image_count << std::endl;
+                LOG_INFO << "Duration: " << duration_count / loop_image_count << std::endl;
                 loop_image_count = 0;
                 duration_count = 0;
             }
@@ -662,7 +667,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             {
                 std::chrono::steady_clock::time_point begin_publish = std::chrono::steady_clock::now();
 
-                cout << "Gathered " << array_size << " images:" << endl;
+                LOG_INFO << "Gathered " << array_size << " images:" << endl;
 
                 //TODO: Time this transpose!
                 // We transpose the arrays so instead of grouping it by time first we group it by LEDs/OARLs first.
@@ -701,7 +706,6 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 // TODO: Publish OARL_mean!
                 // TODO: Check what else you need to publish!
 
-
                 // TODO: Draw a circle arund the fitted LEDs
                 // TODO: Put date and time on the image itself?
 
@@ -712,7 +716,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 myclient->setDatapoint("Unit_CDM.AuxControl.CDM.image.image_v", m_nameSpace, published_image);
                 myclient->setDatapoint("Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", m_nameSpace, (int)i_images_taken);
                 std::chrono::steady_clock::time_point end_getimage = std::chrono::steady_clock::now();
-                std::cout << "Time difference [Get image for publishing] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_getimage - begin_getimage).count() << "[ms]" << std::endl;
+                LOG_INFO << "Time difference [Get image for publishing] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_getimage - begin_getimage).count() << "[ms]" << std::endl;
 
                 //SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, m_datapointName, m_nameSpace, circle_x);
                 //delete m_SetDatapointThread; // crashes
@@ -735,21 +739,22 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 OARL_y.clear();
 
                 std::chrono::steady_clock::time_point end_publish = std::chrono::steady_clock::now();
-                std::cout << "Time difference [Publishing results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_publish - begin_publish).count() << "[ms]" << std::endl;
+                LOG_INFO << "Time difference [Publishing results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_publish - begin_publish).count() << "[ms]" << std::endl;
             }
         }
 
         else if (nRet == IS_CAPTURE_STATUS)
         {
+            LOG_WARNING << "Camera::StartCDM() / IS_CAPTURE_STATUS";
 
             UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
             INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
 
-            std::cout << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
-            std::cout << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
-            std::cout << "\tApiNoDestMem:    " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_NO_DEST_MEM] << std::endl;
-            std::cout << "\tApiImageLocked:  " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_IMAGE_LOCKED] << std::endl;
-            std::cout << "\tUsbTransferFail: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_USB_TRANSFER_FAILED] << std::endl;
+            LOG_WARNING << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
+            LOG_WARNING << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
+            LOG_WARNING << "\tApiNoDestMem:    " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_NO_DEST_MEM] << std::endl;
+            LOG_WARNING << "\tApiImageLocked:  " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_IMAGE_LOCKED] << std::endl;
+            LOG_WARNING << "\tUsbTransferFail: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_USB_TRANSFER_FAILED] << std::endl;
 
             //	wLinkSpeed_Mb
             // The camera has the device ID 1
@@ -763,14 +768,14 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
             {
                 WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-                std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
+                LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
             }
 
             is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
         }
         else
         {
-            std::cout << "is_WaitForNextImage : " << nRet << std::endl;
+            LOG_WARNING << "is_WaitForNextImage : " << nRet << std::endl;
             //	wLinkSpeed_Mb
             // The camera has the device ID 1
 
@@ -780,13 +785,13 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
 
             WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-            std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
+            LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
         }
 
         std::chrono::steady_clock::time_point end_loop = std::chrono::steady_clock::now();
-        std::cout << "Time difference [One loop] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop).count() << "[ms]" << std::endl;
+        //LOG_INFO << "Time difference [One loop] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop).count() << "[ms]" << std::endl;
 
-        std::cout << "Time difference [One loop after image] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop_after_image).count() << "[ms]" << std::endl;
+        LOG_INFO << "Time difference [One loop after image] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop_after_image).count() << "[ms]" << std::endl;
 
     } // while (b_keep_taking == 1)
 
@@ -794,25 +799,27 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     // Free the allocated memories
 
     nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
-    cout << "is_StopLiveVideo result: " << nRet << endl;
+    LOG_DEBUG << "is_StopLiveVideo result: " << nRet << endl;
 
     nRet = is_ExitImageQueue(hCam);
-    cout << "is_ExitImageQueue: " << nRet << endl;
+    LOG_DEBUG << "is_ExitImageQueue: " << nRet << endl;
 
     nRet = is_ClearSequence(hCam);
-    cout << "is_ClearSequence: " << nRet << endl;
+    LOG_DEBUG << "is_ClearSequence: " << nRet << endl;
 
     for (int i = 0; i < n_allocated_memories; i++)
     {
         nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
-        cout << "is_FreeImageMem: " << nRet << endl;
+        LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
     }
 
-    cout << "Finished StartCDM" << endl;
+    LOG_TRACE << "Finished StartCDM" << endl;
 }
 
 vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCUA *myclient)
 {
+    LOG_TRACE << "Camera::GetMultipleImages()";
+
     b_keep_taking = 1;
 
     vector<std::string> v_image_paths;
@@ -823,7 +830,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     for (int i = 0; i < n_allocated_memories; i++)
     {
         nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-        std::cout << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
+        LOG_DEBUG << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
 
         is_AddToSequence(hCam, pcImageMemory, nMemoryId);
         pcImageMemory_arr[i] = pcImageMemory;
@@ -832,7 +839,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     is_InitImageQueue(hCam, 0);
 
     nRet = is_CaptureVideo(hCam, IS_WAIT);
-    std::cout << "is_CaptureVideo returned " << nRet << std::endl;
+    LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
@@ -870,7 +877,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 
                 else
                 {
-                    cout << "Check bitdepth!" << endl;
+                    LOG_ERROR << "Check bitdepth!" << endl;
                     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
                 }
 
@@ -899,16 +906,16 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 
                 char exec[300];
                 sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
-                cout << "Command is: " << exec << endl;
+                LOG_DEBUG << "Command is: " << exec << endl;
                 int scp_result = system(exec);
-                cout << "Output of scp is: " << scp_result << endl;
+                LOG_DEBUG << "Output of scp is: " << scp_result << endl;
                 if (scp_result == 0)
                 {
                     std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
                 }
                 else
                 {
-                    cout << "There was a problem while copying the image!" << endl;
+                    LOG_ERROR << "There was a problem while copying the image!" << endl;
                     remoteImagePath = "Error";
                 }
 
@@ -921,7 +928,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 
                 if (++loop_image_count == 100)
                 {
-                    std::cout << "Duration: " << duration_count / loop_image_count << std::endl;
+                    LOG_INFO << "Duration: " << duration_count / loop_image_count << std::endl;
                     loop_image_count = 0;
                     duration_count = 0;
                 }
@@ -929,17 +936,19 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
             is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
             i_images_taken++;
         }
+
         else if (nRet == IS_CAPTURE_STATUS)
         {
+            LOG_WARNING << "Camera::GetMultipleImages() / IS_CAPTURE_STATUS";
 
             UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
             INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
 
-            std::cout << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
-            std::cout << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
-            std::cout << "\tApiNoDestMem:    " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_NO_DEST_MEM] << std::endl;
-            std::cout << "\tApiImageLocked:  " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_IMAGE_LOCKED] << std::endl;
-            std::cout << "\tUsbTransferFail: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_USB_TRANSFER_FAILED] << std::endl;
+            LOG_WARNING << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
+            LOG_WARNING << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
+            LOG_WARNING << "\tApiNoDestMem:    " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_NO_DEST_MEM] << std::endl;
+            LOG_WARNING << "\tApiImageLocked:  " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_IMAGE_LOCKED] << std::endl;
+            LOG_WARNING << "\tUsbTransferFail: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_USB_TRANSFER_FAILED] << std::endl;
 
             //	wLinkSpeed_Mb
             // The camera has the device ID 1
@@ -953,14 +962,14 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 
             {
                 WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-                std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
+                LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
             }
 
             is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
         }
         else
         {
-            std::cout << "is_WaitForNextImage : " << nRet << std::endl;
+            LOG_WARNING << "is_WaitForNextImage : " << nRet << std::endl;
             //	wLinkSpeed_Mb
             // The camera has the device ID 1
 
@@ -970,7 +979,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
             nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
 
             WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-            std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
+            LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
         }
     }
 
@@ -978,21 +987,21 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     // Free the allocated memories
 
     nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
-    cout << "is_StopLiveVideo result: " << nRet << endl;
+    LOG_DEBUG << "is_StopLiveVideo result: " << nRet << endl;
 
     nRet = is_ExitImageQueue(hCam);
-    cout << "is_ExitImageQueue: " << nRet << endl;
+    LOG_DEBUG << "is_ExitImageQueue: " << nRet << endl;
 
     nRet = is_ClearSequence(hCam);
-    cout << "is_ClearSequence: " << nRet << endl;
+    LOG_DEBUG << "is_ClearSequence: " << nRet << endl;
 
     for (int i = 0; i < n_allocated_memories; i++)
     {
         nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
-        cout << "is_FreeImageMem: " << nRet << endl;
+        LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
     }
 
-    cout << "Finished GetMultipleImages" << endl;
+    LOG_DEBUG << "Finished GetMultipleImages" << endl;
 
     // TODO: also publish the images without saving to disk first
     // TODO: also publish the vector of image paths
@@ -1004,6 +1013,8 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 
 vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessClientOPCUA *myclient)
 {
+    LOG_TRACE << "Camera::GetMultipleImagesStacked()";
+
     b_keep_taking = 1;
     cv::Mat accumulated_images = cv::Mat::zeros(iWidth, iHeight, CV_64FC1); // contains accumulated images. Height and width are reversed as the camera images are rotated 90 deg after taking.
 
@@ -1015,7 +1026,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     for (int i = 0; i < n_allocated_memories; i++)
     {
         nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-        std::cout << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
+        LOG_DEBUG << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
 
         is_AddToSequence(hCam, pcImageMemory, nMemoryId);
         pcImageMemory_arr[i] = pcImageMemory;
@@ -1024,7 +1035,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     is_InitImageQueue(hCam, 0);
 
     nRet = is_CaptureVideo(hCam, IS_WAIT);
-    std::cout << "is_CaptureVideo returned " << nRet << std::endl;
+    LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
@@ -1062,7 +1073,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
 
                 else
                 {
-                    cout << "Check bitdepth!" << endl;
+                    LOG_ERROR << "Check bitdepth!" << endl;
                     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
                 }
 
@@ -1096,7 +1107,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
 
                 if (++loop_image_count == 100)
                 {
-                    std::cout << "Duration: " << duration_count / loop_image_count << std::endl;
+                    LOG_INFO << "Duration: " << duration_count / loop_image_count << std::endl;
                     loop_image_count = 0;
                     duration_count = 0;
                 }
@@ -1104,17 +1115,19 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
             is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
             i_images_taken++;
         }
+
         else if (nRet == IS_CAPTURE_STATUS)
         {
+            LOG_WARNING << "Camera::GetMultipleImagesStacked() / IS_CAPTURE_STATUS";
 
             UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
             INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
 
-            std::cout << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
-            std::cout << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
-            std::cout << "\tApiNoDestMem:    " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_NO_DEST_MEM] << std::endl;
-            std::cout << "\tApiImageLocked:  " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_IMAGE_LOCKED] << std::endl;
-            std::cout << "\tUsbTransferFail: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_USB_TRANSFER_FAILED] << std::endl;
+            LOG_WARNING << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
+            LOG_WARNING << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
+            LOG_WARNING << "\tApiNoDestMem:    " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_NO_DEST_MEM] << std::endl;
+            LOG_WARNING << "\tApiImageLocked:  " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_IMAGE_LOCKED] << std::endl;
+            LOG_WARNING << "\tUsbTransferFail: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_USB_TRANSFER_FAILED] << std::endl;
 
             //	wLinkSpeed_Mb
             // The camera has the device ID 1
@@ -1128,14 +1141,14 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
 
             {
                 WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-                std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
+                LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
             }
 
             is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
         }
         else
         {
-            std::cout << "is_WaitForNextImage : " << nRet << std::endl;
+            LOG_WARNING << "is_WaitForNextImage : " << nRet << std::endl;
             //	wLinkSpeed_Mb
             // The camera has the device ID 1
 
@@ -1145,10 +1158,10 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
             nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
 
             WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-            std::cout << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
+            LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
         }
 
-        cout << "Images taken: " << i_images_taken << endl;
+        LOG_INFO << "Images taken: " << i_images_taken << endl;
     }
 
     // Now convert, save and publish the image
@@ -1170,24 +1183,23 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
 // Make a FITS image
-std:
-    string string_average = "avg=" + std::to_string(i_images_taken);
+    std:string string_average = "avg=" + std::to_string(i_images_taken);
     std::string imageName = writeFITSImage(accumulated_images, string_average);
     std::string filePath = helper.get_fitsPath() + imageName;
     std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
 
     char exec[300];
     sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
-    cout << "Command is: " << exec << endl;
+    LOG_DEBUG << "Command is: " << exec << endl;
     int scp_result = system(exec);
-    cout << "Output of scp is: " << scp_result << endl;
+    LOG_DEBUG << "Output of scp is: " << scp_result << endl;
     if (scp_result == 0)
     {
         std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
     }
     else
     {
-        cout << "There was a problem while copying the image!" << endl;
+        LOG_ERROR << "There was a problem while copying the image!" << endl;
         remoteImagePath = "Error";
     }
 
@@ -1198,21 +1210,21 @@ std:
     // Free the allocated memories
 
     nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
-    cout << "is_StopLiveVideo result: " << nRet << endl;
+    LOG_DEBUG << "is_StopLiveVideo result: " << nRet << endl;
 
     nRet = is_ExitImageQueue(hCam);
-    cout << "is_ExitImageQueue: " << nRet << endl;
+    LOG_DEBUG << "is_ExitImageQueue: " << nRet << endl;
 
     nRet = is_ClearSequence(hCam);
-    cout << "is_ClearSequence: " << nRet << endl;
+    LOG_DEBUG << "is_ClearSequence: " << nRet << endl;
 
     for (int i = 0; i < n_allocated_memories; i++)
     {
         nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
-        cout << "is_FreeImageMem: " << nRet << endl;
+        LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
     }
 
-    cout << "Finished GetMultipleImages" << endl;
+    LOG_DEBUG << "Finished GetMultipleImages" << endl;
 
     return v_image_paths;
 }
@@ -1220,23 +1232,27 @@ std:
 // TODO: these 2 methods are redundant. Use only 1.
 void Camera::StopGetMultipleImages()
 {
+    LOG_TRACE << "Camera::StopGetMultipleImages()";
     b_keep_taking = 0;
 }
 
 int Camera::StopCDM()
 {
+    LOG_TRACE << "Camera::StopCDM()";
     b_keep_taking = 0;
 }
 
 void Camera::GetImage(DataAccessClientOPCUA *myclient)
 {
+    LOG_TRACE << "Camera::GetImage()";
+
     nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-    printf("Status is_AllocImageMem %d\n", nRet);
+    LOG_DEBUG << "Status is_AllocImageMem" << nRet;
     //Activate memory for storing
     nRet = is_SetImageMem(hCam, pcImageMemory, nMemoryId);
-    printf("Status is_SetImageMem %d\n", nRet);
+    LOG_DEBUG << "Status is_SetImageMem" << nRet;
     int nRet = is_FreezeVideo(hCam, IS_WAIT);
-    printf("Status is_FreezeVideo %d\n", nRet);
+    LOG_DEBUG << "Status is_FreezeVideo" << nRet;
 
     // TODO: Add pushing image to a datapoint and making a .fits file
     // Actually make a function that processes the image when it has been taken.y
@@ -1269,16 +1285,16 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
 
     char exec[300];
     sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
-    cout << "Command is: " << exec << endl;
+    LOG_DEBUG << "Command is: " << exec << endl;
     int scp_result = system(exec);
-    cout << "Output of scp is: " << scp_result << endl;
+    LOG_DEBUG << "Output of scp is: " << scp_result << endl;
     if (scp_result == 0)
     {
         std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
     }
     else
     {
-        cout << "There was a problem while copying the image!" << endl;
+        LOG_ERROR << "There was a problem while copying the image!" << endl;
         remoteImagePath = "Error";
     }
 
@@ -1294,58 +1310,60 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
 
 std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, double fps, int gain, string pixel_format)
 {
+    LOG_TRACE << "Camera::Configure()";
+
     std::vector<boost::any> return_values;
 
     // Set pixel clock
     nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_SET, (void *)&nPixelClock, sizeof(nPixelClock));
-    std::cout << "IS_PIXELCLOCK_CMD_SET returned " << nRet << ". tried to set pixel clock to = " << nPixelClock << std::endl;
+    LOG_INFO << "IS_PIXELCLOCK_CMD_SET returned " << nRet << ". tried to set pixel clock to = " << nPixelClock << std::endl;
     // Get current pixel clock
     nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_GET, (void *)&nPixelClock, sizeof(nPixelClock));
-    std::cout << "IS_PIXELCLOCK_CMD_GET returned " << nRet << ". The current pixel clock is = " << nPixelClock << std::endl;
+    LOG_INFO << "IS_PIXELCLOCK_CMD_GET returned " << nRet << ". The current pixel clock is = " << nPixelClock << std::endl;
     //SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, nPixelClock);
     return_values.push_back(nPixelClock);
 
     // Set frame rate
     double new_fps;
     nRet = is_SetFrameRate(hCam, fps, (double *)&new_fps);
-    std::cout << "SetFrameRate returned " << nRet << ". New framerate = " << new_fps << std::endl;
+    LOG_INFO << "SetFrameRate returned " << nRet << ". New framerate = " << new_fps << std::endl;
     is_SetFrameRate(hCam, IS_GET_FRAMERATE, &fps);
-    std::cout << "Applied framerate " << fps << " fps." << std::endl;
+    LOG_INFO << "Applied framerate " << fps << " fps." << std::endl;
     //SetDatapointThread *m_SetDatapointThread_fps = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.FPS.FPS_v", 2, fps);
     return_values.push_back(fps);
 
     // Set exposure
     double current_exposure;
     is_Exposure(hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, (void *)&current_exposure, sizeof(current_exposure));
-    std::cout << "Current exposure is: " << current_exposure << std::endl;
-    std::cout << "Value of exposure to be set is : " << exposure << std::endl;
+    LOG_INFO << "Current exposure is: " << current_exposure << std::endl;
+    LOG_INFO << "Value of exposure to be set is : " << exposure << std::endl;
     is_Exposure(hCam, IS_EXPOSURE_CMD_SET_EXPOSURE, (void *)&exposure, sizeof(current_exposure));
-    std::cout << "Set exposure is: " << exposure << std::endl;
+    LOG_INFO << "Set exposure is: " << exposure << std::endl;
     is_Exposure(hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, (void *)&current_exposure, sizeof(current_exposure));
-    std::cout << "Current exposure is: " << current_exposure << std::endl;
+    LOG_INFO << "Current exposure is: " << current_exposure << std::endl;
     //SetDatapointThread *m_SetDatapointThread_exposure = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, current_exposure);
     return_values.push_back(current_exposure);
     Camera::exposure_setting = current_exposure;
 
     // Set hardware gain
-    std::cout << "Gain to be set is: " << gain << std::endl;
+    LOG_INFO << "Gain to be set is: " << gain << std::endl;
     is_SetHardwareGain(hCam, gain, 14, 0, 32); // Master, red, green, blue
     int master_gain = is_SetHardwareGain(hCam, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER);
     //SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, master_gain);
     return_values.push_back(master_gain);
     Camera::master_gain_setting = master_gain;
-    std::cout << "Gain set is: " << master_gain << std::endl;
+    LOG_INFO << "Gain set is: " << master_gain << std::endl;
 
     // Set Display Mode
     nRet = is_SetDisplayMode(hCam, IS_SET_DM_DIB);
-    std::cout << "SetDisplayMode returned " << nRet << std::endl;
+    LOG_INFO << "SetDisplayMode returned " << nRet << std::endl;
 
     // Set Color Mode
     //TODO: depending on the chosen pixel format the iBitsPerPixel should also change.
     nRet = is_SetColorMode(hCam, pixel_formats.left.at(pixel_format));
-    std::cout << "SetColorMode returned " << nRet << std::endl;
+    LOG_INFO << "SetColorMode returned " << nRet << std::endl;
     nRet = is_SetColorMode(hCam, IS_GET_COLOR_MODE);
-    std::cout << "GetColorMode returned " << pixel_formats.right.at(nRet) << std::endl;
+    LOG_INFO << "GetColorMode returned " << pixel_formats.right.at(nRet) << std::endl;
     //SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, pixel_formats.right.at(nRet));
     return_values.push_back(pixel_formats.right.at(nRet));
 
@@ -1354,11 +1372,11 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     else if (pixel_format == "IS_CM_MONO8")
         iBitsPerPixel = 8;
     else
-        cout << "Bad pixel format." << endl;
+        LOG_ERROR << "Bad pixel format." << endl;
 
     // Setting image format
     nRet = is_ImageFormat(hCam, IMGFRMT_CMD_SET_FORMAT, &formatID, sizeof(formatID));
-    printf("Status ImageFormat %d\n", nRet);
+    LOG_INFO << "Status ImageFormat: " << nRet;
 
     //TODO: Check if the fps, exposure, pixel clock are still after pixel format setting.
 

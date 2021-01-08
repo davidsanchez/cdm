@@ -3,6 +3,8 @@
 #include <iostream>
 #include <ctime>
 
+#include "Logging.h"
+
 using namespace std;
 
 
@@ -47,8 +49,8 @@ double Helper::acquire_RA()
     
     if (m_clientOpcUaRef_Drive != NULL)
         Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    std::cout << "RA is: " << element << std::endl;
     RA = element;
+    LOG_DEBUG << "RA: " << element << std::endl;
 }
 
 double Helper::acquire_DEC()
@@ -59,8 +61,8 @@ double Helper::acquire_DEC()
     float element = 0;
     if (m_clientOpcUaRef_Drive != NULL)
         Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    cout << "Dec is: " << element << endl;
     DEC = element;
+	LOG_DEBUG << "DEC: " << element << std::endl;
 }
 
 double Helper::acquire_Azimuth()
@@ -71,8 +73,8 @@ double Helper::acquire_Azimuth()
     float element = 0;
     if (m_clientOpcUaRef_Drive != NULL)
         Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    cout << "Azimuth is: " << element << endl;
     azimuth = element;
+	LOG_DEBUG << "Azimuth: " << element << std::endl;
 }
 
 double Helper::acquire_Zenith()
@@ -83,8 +85,8 @@ double Helper::acquire_Zenith()
     float element = 0;
     if (m_clientOpcUaRef_Drive != NULL)
         Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    cout << "Zenith is: " << element << endl;
     zenith = element;
+	LOG_DEBUG << "Zenith: " << element << std::endl;
 }
 
 int Helper::acquire_LED_intensity()
@@ -95,8 +97,8 @@ int Helper::acquire_LED_intensity()
     int element = 0;
     if(m_clientOpcUaRef_ECC!=NULL)
         Helper::m_clientOpcUaRef_ECC->getDatapoint(finalnode, nameSpace, element);
-    cout << "LED intensity is: " << element<< endl;
     LED_intensity = element;
+	LOG_DEBUG << "LED_intensity: " << element << std::endl;
 }
 
 bool Helper::acquire_OARL_state()
@@ -107,8 +109,8 @@ bool Helper::acquire_OARL_state()
     bool element = 0;
     if(m_clientOpcUaRef_Relay!=NULL)
         Helper::m_clientOpcUaRef_Relay->getDatapoint(finalnode, nameSpace, element);
-    cout << "OARL status is: " << element<< endl;
     OARL_state = element;
+	LOG_DEBUG << "OARL status: " << element << std::endl;
 }
 
 bool Helper::acquire_drive_status_in_motion()
@@ -120,8 +122,8 @@ bool Helper::acquire_drive_status_in_motion()
     
     if (m_clientOpcUaRef_Drive != NULL)
         Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    std::cout << "Drive status of In Motion is: " << element << std::endl;
     drive_status_in_motion = element;
+	LOG_DEBUG << "Drive status of In Motion: " << element << std::endl;
 }
 
 bool Helper::acquire_drive_status_in_parking_position()
@@ -133,8 +135,9 @@ bool Helper::acquire_drive_status_in_parking_position()
     
     if (m_clientOpcUaRef_Drive != NULL)
         Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    std::cout << "Drive status of In Parking Position is: " << element << std::endl;
     drive_status_in_parking_position = element;
+	LOG_DEBUG << "Drive status of In Parking Position: " << element << std::endl;
+
 }
 
 bool Helper::acquire_drive_status_parked()
@@ -146,8 +149,9 @@ bool Helper::acquire_drive_status_parked()
     
     if (m_clientOpcUaRef_Drive != NULL)
         Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    std::cout << "Drive status of Parked: " << element << std::endl;
     drive_status_parked = element;
+	LOG_DEBUG << "Drive status of Parked: " << element << std::endl;
+
 }
 
 bool Helper::acquire_drive_status_tracking_in_progress()
@@ -159,8 +163,9 @@ bool Helper::acquire_drive_status_tracking_in_progress()
     
     if (m_clientOpcUaRef_Drive != NULL)
         Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    std::cout << "Drive status of Tracking In Progress: " << element << std::endl;
     drive_status_tracking_in_progress = element;
+	LOG_DEBUG << "Drive status of Tracking In Progress: " << element << std::endl;
+
 }
 
 string Helper::acquire_StarName()
@@ -171,13 +176,14 @@ string Helper::acquire_StarName()
     string element = "";
     if(m_clientOpcUaRef_Drive!=NULL)
         Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    cout << "StarName is: " << element << endl;
     set_StarName(element);
+	LOG_DEBUG << "StarName: " << element << std::endl;
 	return element;
 }
 
 int Helper::connectOpcUa_Drive(std::string url)
 {
+    LOG_TRACE << "Helper::connectOpcUa_Drive()";
 	int ret = 0;
 
 	std::string pluginClass = "ptr_Plugin";
@@ -218,6 +224,7 @@ int Helper::connectOpcUa_Drive(std::string url)
 
 int Helper::connectOpcUa_Relay(std::string url)
 {
+    LOG_TRACE << "Helper::connectOpcUa_Relay()";
 	int ret = 0;
 
 	std::string pluginClass = "ptr_Plugin";
@@ -257,6 +264,7 @@ int Helper::connectOpcUa_Relay(std::string url)
 
 int Helper::connectOpcUa_ECC(std::string url)
 {
+    LOG_TRACE << "Helper::connectOpcUa_ECC()";
 	int ret = 0;
 
 	std::string pluginClass = "ptr_Plugin";

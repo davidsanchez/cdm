@@ -13,10 +13,14 @@
 #include "Circle/CircleFitByPratt.cpp"
 #include "Circle/CircleFitByTaubin.cpp"
 
+#include "Logging.h"
+
 using namespace cv;
 
 int ImageAnalysis::Draw()
 {
+    LOG_TRACE << "ImageAnalysis::Draw()";
+
     for (int i = 0; i < this->rects_led.size(); i++)
     {
         cv::circle(this->image, Point(rects_led[i][0], rects_led[i][1]), roi_size_led, Scalar(65000), 10);
@@ -32,11 +36,13 @@ int ImageAnalysis::Draw()
 
 int ImageAnalysis::SaveImage(std::string ImagePath)
 {
+    LOG_TRACE << "ImageAnalysis::SaveImage()";
     cv::imwrite(ImagePath, this->image);
 }
 
 void ImageAnalysis::CalculateImage()
 {
+    LOG_TRACE << "ImageAnalysis::CalculateImage()";
     CalculateCircle();
     CalculateSpotsOARL();
     CalculateDisplacements();
@@ -44,7 +50,7 @@ void ImageAnalysis::CalculateImage()
 
 void ImageAnalysis::CalculateCircle()
 {
-    //cout << "CalculateCircle()" << endl;
+    LOG_TRACE << "ImageAnalysis::CalculateCircle()";
 
     CalculateSpotsLED();
     vector<double> led_positions_x = this->led_x;
@@ -62,7 +68,7 @@ void ImageAnalysis::CalculateCircle()
     if (n_leds_valid < 3)
     {
         // TODO: Raise some errors here
-        cout << "Cannot fit circle with less than 3 points." << endl;
+        LOG_ERROR << "Cannot fit circle with less than 3 points." << endl;
         this->circle_a = 0;
         this->circle_b = 0;
         this->circle_r = 0;
@@ -98,6 +104,8 @@ void ImageAnalysis::CalculateCircle()
 
 void ImageAnalysis::CalculateDisplacements()
 {
+    LOG_TRACE << "ImageAnalysis::CalculateDisplacement()";
+
     double oarl_x_mean;
     double oarl_y_mean;
     double displacement_x;
@@ -127,6 +135,8 @@ void ImageAnalysis::CalculateDisplacements()
 
 void ImageAnalysis::CalculateSpotsLED()
 {
+    LOG_TRACE << "ImageAnalysis::CalculateSpotsLED()";
+
     // Calculates the center of spots for LED.
     // Returns vector of centers of spots.
 
@@ -148,7 +158,7 @@ void ImageAnalysis::CalculateSpotsLED()
         {
             //TODO: Raise some warning! Or just report number of found LEDs always
             // LED is skipped in this case.
-            cout << "ROI Moment normalization of LED " << i << " is 0." << endl;
+            LOG_ERROR << "ROI Moment normalization of LED " << i << " is 0." << endl;
             barycenter_x.push_back(-1); // sets to -1 if the LED not detected
             barycenter_y.push_back(-1); // sets to -1 if the LED not detected
 
@@ -183,6 +193,8 @@ void ImageAnalysis::CalculateSpotsLED()
 
 void ImageAnalysis::CalculateSpotsOARL()
 {
+    LOG_TRACE << "ImageAnalysis::CalculateSpotsOARL()";
+
     // Calculates the center of spots for OARL.
     // Returns vector of centers of spots.
 
@@ -204,7 +216,7 @@ void ImageAnalysis::CalculateSpotsOARL()
         {
             //TODO: Raise some warning! Or just report number of found OARLs always
             // OARL is skipped in this case.
-            cout << "ROI Moment normalization of OARL " << i << " is 0." << endl;
+            LOG_ERROR << "ROI Moment normalization of OARL " << i << " is 0." << endl;
             barycenter_x.push_back(-1); // sets to -1 if the OARL not detected
             barycenter_y.push_back(-1); // sets to -1 if the OARL not detected
 
@@ -234,6 +246,8 @@ void ImageAnalysis::CalculateSpotsOARL()
 
 vector<uchar> ImageAnalysis::GetImageToPublish()
 {
+    LOG_TRACE << "ImageAnalysis::GetImageToPublish()";
+
     resize(this->image, resized_image, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);   
     cv::imencode(".png", resized_image, published_image, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
     
@@ -246,6 +260,8 @@ int ImageAnalysis::StoreResults()
 
 std::string ImageAnalysis::PrintResults()
 {
+    LOG_TRACE << "ImageAnalysis::PrintResults()";
+
     //cout << circle_a << " " << circle_b << " " << circle_r << " " << circle_s << endl;
     std::ostringstream stream;
     stream << circle_a << " " << circle_b << " " << circle_r << " " << circle_s;

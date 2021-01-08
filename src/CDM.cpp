@@ -1,6 +1,7 @@
 #include "CDM.h"
 #include "Camera.h"
 #include "Helper.h"
+#include "Logging.h"
 
 #include <boost/any.hpp>
 
@@ -11,32 +12,11 @@ using namespace cv;
 Camera camera;
 Helper helper;
 
-void init_logging()
-{
-    logging::register_simple_formatter_factory<logging::trivial::severity_level, char>("Severity");
-
-    logging::add_file_log(
-        keywords::file_name = "/home/lstoperator/log/active.log", //active filename
-        //keywords::file_name = "/home/lstoperator/log/file_%Y-%m-%d_%H-%M-%S.%N.log", //active filename
-        keywords::target_file_name = "/home/lstoperator/log/saved/target_%Y-%m-%d_%H-%M-%S.%N.log",  //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
-        keywords::auto_flush = true, //writes messages immediately to file. Should be used only for debug.
-        keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%", 
-        keywords::time_based_rotation = sinks::file::rotation_at_time_point(14, 47, 0), // hour, minute, second
-        keywords::open_mode = std::ios_base::out | std::ios_base::app, //Apends data to the log instead of overwriting.
-        keywords::enable_final_rotation = false // If this is false the active file won't be moved to target_file on program closure. If true a new target_file will be created on program closure.
-    );
-
-    //logging::add_console_log(std::cout, boost::log::keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%");
-    logging::add_console_log(std::cout, boost::log::keywords::format = "[%TimeStamp%] [%Severity%] %Message%");
-
-    logging::core::get()->set_filter(
-        logging::trivial::severity >= logging::trivial::trace);
-
-    logging::add_common_attributes(); // Adds "LineID", "TimeStamp", "ProcessID" and "ThreadID"
-}
-
 int CDM::init(const std::string &chaine)
-{ // You can overwrite this method if you want but not mandatory because the class pluginsInterfaceImpl already implement it:)
+{ 
+    LOG_TRACE << "CDM::init()";
+        
+    // You can overwrite this method if you want but not mandatory because the class pluginsInterfaceImpl already implement it:)
     // but becarefull, you have to call before doing  your bussiness, call the father method (the father class) ( PluginsInterfaceImpl::init())
     // This method is automaticaly call by the program "MOS" after "MOS" server is launched but the "MOS" server is not really ready.
     // So don't use this method in ordr to communicate with the "MOS" Server.
@@ -47,20 +27,16 @@ int CDM::init(const std::string &chaine)
     printf("\n***********************************\nIn CDM::init\n***********************************\n");
     PluginsBase::init(chaine);
 
-    init_logging();
-    // Logging example. Uncomment to see example.
-    BOOST_LOG_TRIVIAL(trace) << "A trace severity message";
-    BOOST_LOG_TRIVIAL(debug) << "A debug severity message";
-    BOOST_LOG_TRIVIAL(info) << "An informational severity message";
-    BOOST_LOG_TRIVIAL(warning) << "A warning severity message";
-    BOOST_LOG_TRIVIAL(error) << "An error severity message";
-    BOOST_LOG_TRIVIAL(fatal) << "A fatal severity message"; 
+
 
     return ret;
 }
 
 int CDM::afterStart()
-{ // You can overwrite this method if you want but not mandatory because the class pluginsInterfaceImpl already implement it:)
+{ 
+    LOG_TRACE << "CDM::afterStart()";
+    
+    // You can overwrite this method if you want but not mandatory because the class pluginsInterfaceImpl already implement it:)
     // but be careful, you have to call before doing your bussiness, call the father method (the father class) ( PluginsInterfaceImpl::afterStart())
     // This method is automatically called by the program "MOS" after "MOS" server is launched and ready.
     int ret = 0;
@@ -117,6 +93,8 @@ int CDM::afterStart()
 
 int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::string &datapointName, int nameSpace, std::string &result)
 {
+    LOG_TRACE << "CDM::cdmAsynch()";
+
     int ret = 0;
     printf("In CMDAsync part: received command with the instruction: %s\n", command.c_str());
     std::string chaine = command + " ";
@@ -137,6 +115,8 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
             if (subChaine1.compare("GetMultipleImages") == 0)
             {
+                LOG_TRACE << "CDM::cdmAsynch() / GetMultipleImages";
+
                 helper.acquire_Azimuth();
                 helper.acquire_Zenith();
                 helper.acquire_RA();
@@ -156,6 +136,8 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
             if (subChaine1.compare("GetMultipleImagesStacked") == 0)
             {
+                LOG_TRACE << "CDM::cdmAsynch() / GetMultipleImagesStacked";
+
                 helper.acquire_Azimuth();
                 helper.acquire_Zenith();
                 helper.acquire_RA();
@@ -176,6 +158,9 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
             if (subChaine1.compare("StartCDM") == 0)
             {
+                LOG_TRACE << "CDM::cdmAsynch() / StartCDM";
+
+
                 std::string datapointName = "Unit_CDM.AuxControl.FSM.Configure";
                 int nameSpace = 2; 
                 m_testThread->cmdConfigure(datapointName, 
@@ -200,6 +185,8 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
 int CDM::cmd(const std::string &command, int commandStringAck, std::string &result)
 {
+    LOG_TRACE << "CDM::cdm()";
+
     int ret = 0;
     printf("In CMD part: received command with the instruction: %s\n", command.c_str());
     std::string chaine = command + " ";
@@ -220,7 +207,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
             if (subChaine1.compare("Connect") == 0)
             {
-                BOOST_LOG_TRIVIAL(trace) << "In Connect"; //TODO: deleteme
+                LOG_TRACE << "CDM::cdm() / Connect";
 
                 camera.Connect();
 
@@ -266,11 +253,14 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
             if (subChaine1.compare("Disconnect") == 0)
             {
+                LOG_TRACE << "CDM::cdm() / Disconnect";
                 camera.Disconnect();
             }
 
             if (subChaine1.compare("Configure") == 0)
             {
+                LOG_TRACE << "CDM::cdm() / Configure";
+
                 //TODO: check what will happen if some of the parameters missing. The code below assumes that you received everything! Need to implement some safety guard.
                 // Actually OPCUA should check that all the parameters are in the input, right?
 
@@ -297,6 +287,8 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
             if (subChaine1.compare("AddComment") == 0)
             {
+                LOG_TRACE << "CDM::cdm() / AddComment";
+
                 // TODO: Make some parsing/safety checks. best inside Comment function.
                 boost::trim_right(subChaine2);
                 CDM::AddComment(subChaine2);
@@ -307,6 +299,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
             if (subChaine1.compare("GetImage") == 0)
             {
+                LOG_TRACE << "CDM::cdm() / GetImage";
                 
                 helper.acquire_StarName();
                 helper.acquire_Azimuth();
@@ -333,11 +326,14 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
             if (subChaine1.compare("StopGetMultipleImages") == 0)
             {
+                LOG_TRACE << "CDM::cdm() / StopGetMultipleImages";
+
                 camera.StopGetMultipleImages();
             }
 
             if (subChaine1.compare("StopCDM") == 0)
             {
+                LOG_TRACE << "CDM::cdm() / StopCDM";
                 camera.StopCDM();
             }
         }
@@ -359,6 +355,8 @@ int CDM::AddComment(std::string comment)
 
 int CDM::close()
 {
+    LOG_TRACE << "CDM::close()";
+
     // here we do nothing
     int ret = 0;
 
@@ -376,12 +374,14 @@ int CDM::close()
 
 int CDM::get(const std::string &chaine, int commandStringAck, std::vector<boost::any> &tabValue)
 {
+    //LOG_TRACE << "CDM::get()";
     int ret = 0;
     return ret;
 }
 
 int CDM::set(const std::string &chaine, int commandStringAck, std::vector<boost::any> &tabValue)
 {
+    //LOG_TRACE << "CDM::set()";
     int ret = 0;
     return ret;
 }

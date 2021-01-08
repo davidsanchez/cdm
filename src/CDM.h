@@ -18,33 +18,9 @@
 #include "lappThread.h" // needed for MOS
 #include "test_asynchroneThread.h"
 
-//#include <ueye.h> // IDS camera
-
-// #include <opencv2/core/core.hpp>
-// #include <opencv2/highgui/highgui.hpp>
-// #include <opencv2/video/video.hpp>
-// #include <opencv2/opencv.hpp>
-
-#include <boost/log/core.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/utility/setup/file.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/utility/setup/console.hpp>
 #include <boost/algorithm/string.hpp>
 //#include <boost/bimap.hpp>
 //#include <boost/assign.hpp>
-
-
-//namespace logging = boost::log;
-//namespace keywords = boost::log::keywords;
-namespace logging = boost::log;
-namespace sinks = boost::log::sinks;
-namespace src = boost::log::sources;
-namespace expr = boost::log::expressions;
-namespace attrs = boost::log::attributes;
-namespace keywords = boost::log::keywords;
-
 
 class CDM : public PluginsBase
 {
@@ -68,7 +44,6 @@ private:
 
     std::string element_opcua_cdm_image = "MOS_Server.CDM.Image.Image_v";
     TestAsynchroneThread* m_testThread;
-
 
 };
 #endif //  CDM_H_
