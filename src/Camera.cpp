@@ -88,12 +88,24 @@ std::string currentDateTime()
 {
     using namespace boost::posix_time;
     ptime current_time = boost::posix_time::microsec_clock::universal_time();
+    time_facet *facet = new time_facet("%Y-%m-%d %H:%M:%S");
+    std::stringstream stream;
+    stream.imbue(std::locale(std::locale::classic(), facet));
+    stream << current_time;
+    return stream.str();
+}
+
+std::string currentDateTimeMs()
+{
+    using namespace boost::posix_time;
+    ptime current_time = boost::posix_time::microsec_clock::universal_time();
     time_facet *facet = new time_facet("%Y-%m-%d %H:%M:%s");
     std::stringstream stream;
     stream.imbue(std::locale(std::locale::classic(), facet));
     stream << current_time;
     return stream.str();
 }
+
 
 std::string currentEpochTime()
 {
@@ -451,7 +463,6 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     int array_size = 10;
 
     unsigned long int i_images_taken = 0;
-    int n_allocated_memories = 10;
     char *pcImageMemory_arr[n_allocated_memories];
     int nMemoryId_arr[n_allocated_memories];
     for (int i = 0; i < n_allocated_memories; i++)
@@ -712,7 +723,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 // Push the image here
 
                 std::chrono::steady_clock::time_point begin_getimage = std::chrono::steady_clock::now();
-                published_image = myimage.GetImageToPublish();
+                published_image = myimage.GetImageToPublish(currentDateTime());
                 myclient->setDatapoint("Unit_CDM.AuxControl.CDM.image.image_v", m_nameSpace, published_image);
                 myclient->setDatapoint("Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", m_nameSpace, (int)i_images_taken);
                 std::chrono::steady_clock::time_point end_getimage = std::chrono::steady_clock::now();

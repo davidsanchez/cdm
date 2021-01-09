@@ -21,7 +21,7 @@ int ImageAnalysis::Draw()
 {
     LOG_TRACE << "ImageAnalysis::Draw()";
 
-    for (int i = 0; i < this->rects_led.size(); i++)
+    /*     for (int i = 0; i < this->rects_led.size(); i++)
     {
         cv::circle(this->image, Point(rects_led[i][0], rects_led[i][1]), roi_size_led, Scalar(65000), 10);
     }
@@ -29,9 +29,9 @@ int ImageAnalysis::Draw()
     for (int i = 0; i < this->rects_oarl.size(); i++)
     {
         cv::circle(this->image, Point(rects_oarl[i][0], rects_oarl[i][1]), roi_size_oarl, Scalar(65000), 10);
-    }
+    } */
 
-    cv::circle(this->image, Point(circle_a, circle_b), circle_r, Scalar(65000), 10);
+    cv::circle(this->image, Point(circle_a, circle_b), circle_r, Scalar(100), 2);
 }
 
 int ImageAnalysis::SaveImage(std::string ImagePath)
@@ -244,13 +244,31 @@ void ImageAnalysis::CalculateSpotsOARL()
     this->oarl_y = barycenter_y;
 }
 
-vector<uchar> ImageAnalysis::GetImageToPublish()
+vector<uchar> ImageAnalysis::GetImageToPublish(string inputText)
 {
     LOG_TRACE << "ImageAnalysis::GetImageToPublish()";
 
-    resize(this->image, resized_image, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);   
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    // INTER_NEAREST is the fastest algorithm but has the worst quality results.
+    // But we are not interested in the quality of the this image as it only used for checking if everything is OK.
+    ImageAnalysis::Draw();
+    resize(this->image, resized_image, cv::Size(0, 0), 0.15, 0.15, INTER_NEAREST);
+    putText(resized_image,
+            inputText,                                                        // Text
+            Point((int)resized_image.cols / 12, (int)resized_image.rows / 8), // Coordinates
+            FONT_HERSHEY_SIMPLEX,                                             // Font type
+            1,                                                                // Font scale
+            255,                                                              // Color
+            1,                                                                // Thickness
+            8                                                                 // Line type
+    );
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    LOG_INFO << "Time difference [Get image for publishing - resize] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+    begin = std::chrono::steady_clock::now();
     cv::imencode(".png", resized_image, published_image, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
-    
+    end = std::chrono::steady_clock::now();
+    LOG_INFO << "Time difference [Get image for publishing - imencode] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+
     return published_image;
 }
 

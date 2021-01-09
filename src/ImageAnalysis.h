@@ -69,7 +69,7 @@ public:
     int SaveImage(std::string ImagePath);
     int StoreResults();
     std::string PrintResults();
-    vector<uchar> GetImageToPublish();
+    vector<uchar> GetImageToPublish(std::string inputText);
 
     vector<double> GetCircleResults();
     vector<double> GetDisplacementResults();
