@@ -88,6 +88,8 @@ int CDM::afterStart()
     cout << "ECC status OPCUA: " << connection_result_ECC << endl;
     cout << "After start finished!" << endl;
 
+    m_testThread->cmdStartMeteo();
+
     return ret;
 }
 
