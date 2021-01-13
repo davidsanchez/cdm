@@ -118,6 +118,7 @@ void *TestAsynchroneThread::run(void *params)
     {
         if (m_pause == false)
         {
+			LOG_TRACE << "In Async thread";
             usleep(1000000);
 
             if (m_cmdGetMultipleImages == 1)
@@ -268,9 +269,10 @@ void *TestAsynchroneThread::run(void *params)
 				// The logger will write first the date and time automatically
 				// Sensor: temperature, humidity, pressure
 				// Weather station: time, date, temperature, pressure, wind direction, humidity, wind speed, wind gusts
+				// We don't make a loop to store this because in each loop the logger would automatically put endl. Although You could bypass that by redefining the logger format.
                 LOG_ENV << meteo_val[0] << " " << meteo_val[1] << " " << meteo_val[2] << " " << ws_data[0] << " " << ws_data[1] << " " << ws_data[2] << " " << ws_data[3] << " " << ws_data[4] << " " << ws_data[5] << " " << ws_data[6] << " "<< ws_data[7];
 
-                usleep(5000000);
+                usleep(9000000);
             }
 
             if (m_cmdConfigure == 1)
