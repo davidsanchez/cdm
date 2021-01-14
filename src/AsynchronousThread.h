@@ -13,11 +13,10 @@
 #ifndef __ASYNCHRONOUSCONTROLLER_H__
 #define __ASYNCHRONOUSCONTROLLER_H__
 
-#include "Camera.h"
-#include "lappThread.h"
 #include "string"
-
-#include "Meteo.cpp"
+#include "lappThread.h"
+#include "Camera.h"
+#include "Meteo.h"
 
 typedef unsigned char Byte;
 
