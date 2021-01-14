@@ -41,7 +41,7 @@ public:
 
     double get_exposure() {return Camera::exposure_setting;}
     int get_master_gain() {return Camera::master_gain_setting;}
-    std::string writeFITSImage(cv::Mat image, std::string img_info = "");  
+    std::string writeFITSImage(cv::Mat image, int n_stack = 1);  
     
 
 //private:

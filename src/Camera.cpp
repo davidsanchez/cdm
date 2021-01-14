@@ -137,7 +137,7 @@ vector<vector<double>> transpose(vector<vector<double>> &A)
     return r;
 }
 
-std::string Camera::writeFITSImage(Mat image, string img_info)
+std::string Camera::writeFITSImage(Mat image, int n_stack)
 {
     LOG_TRACE << "Camera::writeFITSImage()";
 
@@ -193,8 +193,8 @@ std::string Camera::writeFITSImage(Mat image, string img_info)
     streamObj << "-tracking=";
     streamObj << helper.get_Drive_status_tracking_in_progress();
 
-    if (img_info != "")
-        streamObj << "-" << img_info;
+    if (n_stack > 1)
+        streamObj << "-stack=" << n_stack;
     streamObj << ".fits";
 
     stream_fitsPath << streamObj.str();
@@ -313,14 +313,15 @@ std::string Camera::writeFITSImage(Mat image, string img_info)
     pFits->pHDU().addKey("OBJECT", helper.get_StarName(), "Star name");
     pFits->pHDU().addKey("LED", helper.get_LED_intensity(), "LED01 intensity");
     pFits->pHDU().addKey("OARL", helper.get_OARL_state(), "OARL status");
-    pFits->pHDU().addKey("INFO", img_info, "Additional image info");
     pFits->pHDU().addKey("INMOTION", helper.get_Drive_status_in_motion(), "Drive status - In Motion");
     pFits->pHDU().addKey("PARKED", helper.get_Drive_status_parked(), "Drive status - Parked");
     pFits->pHDU().addKey("PARKINGP", helper.get_Drive_status_in_parking_position(), "Drive status - In Parking Position");
     pFits->pHDU().addKey("TRACKING", helper.get_Drive_status_tracking_in_progress(), "Drive status - Tracking In Progress");
-    pFits->pHDU().addKey("GAIN", Camera::get_master_gain(), "Gain");
+    
     //     pFits->pHDU().addKey("GAMMA", gamma_value, "Gamma");
-    pFits->pHDU().addKey("COMMENT", helper.get_Comment(), "Gamma");
+    pFits->pHDU().addKey("GAIN", Camera::get_master_gain(), "Gain");
+    pFits->pHDU().addKey("INFO", helper.get_Comment(), "Additional image info");
+    pFits->pHDU().addKey("STACK", n_stack, "Number of stacked images");
 
     LOG_DEBUG << pFits->pHDU() << std::endl;
 
@@ -1194,8 +1195,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
 // Make a FITS image
-    std:string string_average = "avg=" + std::to_string(i_images_taken);
-    std::string imageName = writeFITSImage(accumulated_images, string_average);
+    std::string imageName = writeFITSImage(accumulated_images, i_images_taken);
     std::string filePath = helper.get_fitsPath() + imageName;
     std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
 
