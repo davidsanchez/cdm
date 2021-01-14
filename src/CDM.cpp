@@ -27,8 +27,6 @@ int CDM::init(const std::string &chaine)
     printf("\n***********************************\nIn CDM::init\n***********************************\n");
     PluginsBase::init(chaine);
 
-
-
     return ret;
 }
 

@@ -29,6 +29,12 @@
 		<AutomaticChangeTransition>true</AutomaticChangeTransition>
 	</TransitionFSM>
 	<TransitionFSM>
+		<Name>Configure</Name>
+		<StateCondition>3</StateCondition>
+		<FinalTransition>3</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
 		<Name>GetImage</Name>
 		<StateCondition>1</StateCondition>
 		<FinalTransition>1</FinalTransition>
