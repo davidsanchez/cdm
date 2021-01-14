@@ -98,22 +98,23 @@ vector<float> Meteo::Update_sensor()
 {
     if (hsensor == NULL || tsensor == NULL || psensor == NULL)
     {
-        cout << "No module connected (check USB cable)" << endl;
-        val = {0, 0, 0};
+        LOG_ERROR << "No module connected (check USB cable)";
+        val = {0, 0, 0, 0};
         return val;
     }
 
     if (hsensor->isOnline())
     {
         temperature = tsensor->get_currentValue();
-        humidity = hsensor->get_currentValue();
+        humidity_rel = hsensor->get_currentValue();
+        humidity_abs = hsensor->get_absHum();
         pressure = psensor->get_currentValue();
-        val = {temperature, humidity, pressure};
+        val = {temperature, humidity_rel, humidity_abs, pressure};
     }
     else
     {
-        cout << "Module not connected (check identification and USB cable)";
-        val = {0, 0, 0};
+        LOG_ERROR << "Module not connected (check identification and USB cable)";
+        val = {0, 0, 0, 0};
     }
 
     return val;

@@ -261,8 +261,9 @@ void *AsynchronousThread::run(void *params)
             {
                 vector<float> meteo_val = meteo.Update_sensor();
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.Sensor.temperature.temperature_v", 2, meteo_val[0]);
-                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.Sensor.humidity.humidity_v", 2, meteo_val[1]);
-                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.Sensor.pressure.pressure_v", 2, meteo_val[2]);
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.Sensor.humidity_relative.humidity_relative_v", 2, meteo_val[1]);
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.Sensor.humidity_absolute.humidity_absolute_v", 2, meteo_val[2]);
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.Sensor.pressure.pressure_v", 2, meteo_val[3]);
 
                 vector<string> ws_data = meteo.Update_WS();
 
@@ -271,8 +272,9 @@ void *AsynchronousThread::run(void *params)
                 // Although You could bypass that by redefining the logger format.
 
                 LOG_ENV << meteo_val[0] << " " // sensor - temperature
-                        << meteo_val[1] << " " // sensor - humidity
-                        << meteo_val[2] << " " // sensor - pressure
+                        << meteo_val[1] << " " // sensor - humidity relative
+                        << meteo_val[2] << " " // sensor - humidity absolute in g/m^3
+                        << meteo_val[3] << " " // sensor - pressure in hPa 
                         << ws_data[0] << " " // MAGIC WS - time
                         << ws_data[1] << " " // MAGIC WS - date
                         << ws_data[2] << " " // MAGIC WS - temperature

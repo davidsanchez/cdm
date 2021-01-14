@@ -40,7 +40,8 @@ public:
     vector<string> Update_WS();  // Gets the data from MAGIC Weather Station.
     
     float get_temperature() { return tsensor->get_currentValue(); }
-    float get_humidity() { return hsensor->get_currentValue(); }
+    float get_humidity_relative() { return hsensor->get_currentValue(); }
+    float get_humidity_absolute() { return hsensor->get_absHum(); }
     float get_pressure() { return psensor->get_currentValue(); }
 
 private:
@@ -48,8 +49,8 @@ private:
     YHumidity *hsensor;
     YTemperature *tsensor;
     YPressure *psensor;
-    float temperature, humidity, pressure;
-    vector<float> val{0, 0, 0};
+    float temperature, humidity_abs, humidity_rel, pressure;
+    vector<float> val{0, 0, 0, 0};
 
     // CURL stuff to get the MAGIC Weather Station data.
     CURL *curl_handle;

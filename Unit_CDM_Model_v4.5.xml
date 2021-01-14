@@ -1113,18 +1113,37 @@
                                 <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                                <Name>humidity</Name>
+                                <Name>humidity_relative</Name>
                                 <Type>float</Type>
                                 <ArraySize>0</ArraySize>
                                 <Multiplicity>1</Multiplicity>
                                 <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
                                 <DefaultValue>0</DefaultValue>
-                                <Description>Humidity inside the hood</Description>
+                                <Description>Eelative humidity inside the hood</Description>
                                 <Historizing>1</Historizing>
                                 <Method>
                                         <Name>get</Name>
                                         <DeviceInstruction>
-                                                <Value>get_humidity_Instruction</Value>
+                                                <Value>get_humidity_relative_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
+                                <Config>0</Config>
+                        </Info> -->
+                                <Name>humidity_absolute</Name>
+                                <Type>float</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>0</DefaultValue>
+                                <Description>Absolute humidity inside the hood</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_humidity_absolute_Instruction</Value>
                                         </DeviceInstruction>
                                 </Method>
                         </SimpleDatapoint>
