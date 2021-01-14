@@ -3,11 +3,10 @@
 
 #include "lappThread.h" // needed for MOS
 #include "pluginsBase.h"
-//#include "test_asynchroneThread.h"
 
 class DataAccessClientOPCUA;
 class PluginsBase;
-class TestAsynchroneThread;
+class AsynchronousThread;
 class SetDatapointThread : public LAPPThread
 {
 public:

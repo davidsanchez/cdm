@@ -16,7 +16,7 @@
 
 #include "pluginsBase.h"	//TODO: move this to .h file? Was in .cpp before
 #include "lappThread.h" // needed for MOS
-#include "test_asynchroneThread.h"
+#include "AsynchronousThread.h"
 
 #include <boost/algorithm/string.hpp>
 //#include <boost/bimap.hpp>
@@ -43,7 +43,9 @@ public:
 private:
 
     std::string element_opcua_cdm_image = "MOS_Server.CDM.Image.Image_v";
-    TestAsynchroneThread* m_testThread;
+    AsynchronousThread *m_Thread;
+    AsynchronousThread *m_ThreadMeteo;
+
 
 };
 #endif //  CDM_H_

@@ -10,14 +10,14 @@
  ** Author : Panazol Jean Luc
  ******************************************************************************/
 
-#include "test_asynchroneThread.h"
+#include "AsynchronousThread.h"
 #include "dataAccessClientOPCUA.h"
 
 #include "Logging.h"
 
 extern Camera camera;
 
-TestAsynchroneThread::TestAsynchroneThread(DataAccessClientOPCUA *dataAccessClientOPCUA)
+AsynchronousThread::AsynchronousThread(DataAccessClientOPCUA *dataAccessClientOPCUA)
 {
     m_pause = false;
     m_stop = false;
@@ -30,58 +30,58 @@ TestAsynchroneThread::TestAsynchroneThread(DataAccessClientOPCUA *dataAccessClie
     m_dataAccessClientOPCUA = dataAccessClientOPCUA;
 }
 
-TestAsynchroneThread::~TestAsynchroneThread()
+AsynchronousThread::~AsynchronousThread()
 {
     m_pause = true;
     m_stop = true;
     wait();
 }
 
-void TestAsynchroneThread::pause()
+void AsynchronousThread::pause()
 {
     m_pause = true;
 }
 
-void TestAsynchroneThread::resume()
+void AsynchronousThread::resume()
 {
     m_pause = false;
 }
 
-int TestAsynchroneThread::stop()
+int AsynchronousThread::stop()
 {
     int ret = 0;
     m_stop = true;
     return ret;
 }
 
-int TestAsynchroneThread::cmdStartMeteo()
+int AsynchronousThread::cmdStartMeteo()
 {
     int ret = 0;
     m_cmdMeteo = true;
     return ret;
 }
 
-int TestAsynchroneThread::cmdGetMultipleImages(std::string datapointName, int nameSpace, int n_images)
+int AsynchronousThread::cmdGetMultipleImages(std::string datapointName, int nameSpace, int n_images)
 {
     int ret = 0;
     m_cmdGetMultipleImages = true;
     m_datapointName = datapointName;
     m_nameSpace = nameSpace;
-    TestAsynchroneThread::n_images = n_images;
+    AsynchronousThread::n_images = n_images;
     return ret;
 }
 
-int TestAsynchroneThread::cmdGetMultipleImagesStacked(std::string datapointName, int nameSpace, int n_images)
+int AsynchronousThread::cmdGetMultipleImagesStacked(std::string datapointName, int nameSpace, int n_images)
 {
     int ret = 0;
     m_cmdGetMultipleImagesStacked = true;
     m_datapointName = datapointName;
     m_nameSpace = nameSpace;
-    TestAsynchroneThread::n_images = n_images;
+    AsynchronousThread::n_images = n_images;
     return ret;
 }
 
-int TestAsynchroneThread::cmdStartCDM(std::string datapointName, int nameSpace)
+int AsynchronousThread::cmdStartCDM(std::string datapointName, int nameSpace)
 {
     int ret = 0;
     m_cmdStartCDM = true;
@@ -90,21 +90,21 @@ int TestAsynchroneThread::cmdStartCDM(std::string datapointName, int nameSpace)
     return ret;
 }
 
-int TestAsynchroneThread::cmdConfigure(std::string datapointName, int nameSpace, int nPixelClock, double exposure, double fps, int gain, std::string pixel_format)
+int AsynchronousThread::cmdConfigure(std::string datapointName, int nameSpace, int nPixelClock, double exposure, double fps, int gain, std::string pixel_format)
 {
     int ret = 0;
     m_cmdConfigure = true;
     m_datapointName = datapointName;
     m_nameSpace = nameSpace;
-    TestAsynchroneThread::nPixelClock = nPixelClock;
-    TestAsynchroneThread::exposure = exposure;
-    TestAsynchroneThread::fps = fps;
-    TestAsynchroneThread::gain = gain;
-    TestAsynchroneThread::pixel_format = pixel_format;
+    AsynchronousThread::nPixelClock = nPixelClock;
+    AsynchronousThread::exposure = exposure;
+    AsynchronousThread::fps = fps;
+    AsynchronousThread::gain = gain;
+    AsynchronousThread::pixel_format = pixel_format;
     return ret;
 }
 
-void *TestAsynchroneThread::run(void *params)
+void *AsynchronousThread::run(void *params)
 {
     // this method run all the time after calling the method startRun() -> in your squeletonPlugin_for_asynchroneMethodCall.cpp file )
     // you can stop with m_stop=true with calling the method stop() (when the program finish)
@@ -118,7 +118,7 @@ void *TestAsynchroneThread::run(void *params)
     {
         if (m_pause == false)
         {
-			LOG_TRACE << "In Async thread";
+			//LOG_TRACE << "In Async thread";
             usleep(1000000);
 
             if (m_cmdGetMultipleImages == 1)
@@ -222,7 +222,7 @@ void *TestAsynchroneThread::run(void *params)
 
             if (m_cmdStartCDM == 1)
             {
-                cout << "In asynchroneThread: cmdStartCDM" << endl;
+                cout << "In AsynchronousThread: cmdStartCDM" << endl;
                 // Puts the FSM.state to 2
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 2);
 
@@ -254,7 +254,7 @@ void *TestAsynchroneThread::run(void *params)
                 // Puts the FSM.state back to 1
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 1);
 
-                cout << "End of cdmStartCDM inside AsynchroneThread.cpp" << endl;
+                cout << "End of cdmStartCDM inside AsynchronousThread.cpp" << endl;
             }
 
             if (m_cmdMeteo == 1)
@@ -266,11 +266,30 @@ void *TestAsynchroneThread::run(void *params)
 
                 vector<string> ws_data = meteo.Update_WS();
 
-				// The logger will write first the date and time automatically
-				// Sensor: temperature, humidity, pressure
-				// Weather station: time, date, temperature, pressure, wind direction, humidity, wind speed, wind gusts
-				// We don't make a loop to store this because in each loop the logger would automatically put endl. Although You could bypass that by redefining the logger format.
-                LOG_ENV << meteo_val[0] << " " << meteo_val[1] << " " << meteo_val[2] << " " << ws_data[0] << " " << ws_data[1] << " " << ws_data[2] << " " << ws_data[3] << " " << ws_data[4] << " " << ws_data[5] << " " << ws_data[6] << " "<< ws_data[7];
+				// The logger will write first the date and time automatically before the these datapoints.
+				// We don't make a loop to store this because in each loop the logger would automatically put endl.
+                // Although You could bypass that by redefining the logger format.
+
+                LOG_ENV << meteo_val[0] << " " // sensor - temperature
+                        << meteo_val[1] << " " // sensor - humidity
+                        << meteo_val[2] << " " // sensor - pressure
+                        << ws_data[0] << " " // MAGIC WS - time
+                        << ws_data[1] << " " // MAGIC WS - date
+                        << ws_data[2] << " " // MAGIC WS - temperature
+                        << ws_data[3] << " " // MAGIC WS - pressure
+                        << ws_data[4] << " " // MAGIC WS - average wind direction
+                        << ws_data[5] << " " // MAGIC WS - humidity
+                        << ws_data[6] << " " // MAGIC WS - wind speed
+                        << ws_data[7] << " " // MAGIC WS - wind gusts
+                        << ws_data[8] << " " // MAGIC WS - average wind speed
+                        << ws_data[9] << " " // MAGIC WS - current wind direction
+                        << ws_data[10] << " " // MAGIC WS - Unknown, maybe some internal temperature.
+                        << ws_data[11] << " " // MAGIC WS - TNG dust
+                        << ws_data[12] << " " // MAGIC WS - TNG seeing
+                        << ws_data[13] << " " // MAGIC WS - rain
+                        << ws_data[14] << " " // MAGIC WS - rain statistics
+                        << ws_data[15] // MAGIC WS - Status
+                        ;
 
                 usleep(9000000);
             }
@@ -322,7 +341,7 @@ void *TestAsynchroneThread::run(void *params)
     return NULL;
 }
 
-int TestAsynchroneThread::startRun()
+int AsynchronousThread::startRun()
 {
     int ret = 0;
     start(NULL);

@@ -72,8 +72,13 @@ int CDM::afterStart()
     }
 
     std::string resultCall;
-    m_testThread = new TestAsynchroneThread(getDataAccessClientOPCUARef());
-    ret = m_testThread->startRun();
+    m_Thread = new AsynchronousThread(getDataAccessClientOPCUARef());
+    m_ThreadMeteo = new AsynchronousThread(getDataAccessClientOPCUARef());
+
+    ret = m_Thread->startRun();
+    int ret2 = m_ThreadMeteo->startRun();
+    m_ThreadMeteo->cmdStartMeteo();
+
 
     //helper.set_OPCUAref( getDataAccessClientOPCUARef() );
 
@@ -87,8 +92,6 @@ int CDM::afterStart()
     cout << "Central dish cabinet relay status OPCUA: " << connection_result_Relay << endl;
     cout << "ECC status OPCUA: " << connection_result_ECC << endl;
     cout << "After start finished!" << endl;
-
-    m_testThread->cmdStartMeteo();
 
     return ret;
 }
@@ -131,7 +134,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
                 helper.acquire_drive_status_tracking_in_progress();
 
                 boost::trim_right(subChaine2);
-                m_testThread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
+                m_Thread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
 
                 //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str())); 
             }
@@ -153,7 +156,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
                 helper.acquire_StarName();
 
                 boost::trim_right(subChaine2);
-                m_testThread->cmdGetMultipleImagesStacked(datapointName, nameSpace, atoi(subChaine2.c_str()));
+                m_Thread->cmdGetMultipleImagesStacked(datapointName, nameSpace, atoi(subChaine2.c_str()));
 
                 //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str())); 
             }
@@ -165,7 +168,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
                 std::string datapointName = "Unit_CDM.AuxControl.FSM.Configure";
                 int nameSpace = 2; 
-                m_testThread->cmdConfigure(datapointName, 
+                m_Thread->cmdConfigure(datapointName, 
                                            nameSpace, 
                                            216, // nPixelClock 
                                            50, // exposure
@@ -174,7 +177,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
                                            "IS_CM_MONO8" // pixel_format
                                            );
 
-                m_testThread->cmdStartCDM(datapointName, nameSpace);
+                m_Thread->cmdStartCDM(datapointName, nameSpace);
             }
 
         }
@@ -216,8 +219,8 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 std::string datapointName = "Unit_CDM.AuxControl.FSM.Configure";
                 int nameSpace = 2; 
                 //Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, std::string pixel_format="IS_CM_MONO8");
-                //m_testThread->cmdConfigure(datapointName, nameSpace, 216, 50, 10, 0, "IS_CM_SENSOR_RAW16");
-                m_testThread->cmdConfigure(datapointName, 
+                //m_Thread->cmdConfigure(datapointName, nameSpace, 216, 50, 10, 0, "IS_CM_SENSOR_RAW16");
+                m_Thread->cmdConfigure(datapointName, 
                                            nameSpace, 
                                            216, // nPixelClock 
                                            50, // exposure
@@ -283,7 +286,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 //Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, std::string pixel_format="IS_CM_MONO8");
                 std::string datapointName = "Unit_CDM.AuxControl.FSM.Configure";
                 int nameSpace = 2; 
-                m_testThread->cmdConfigure(datapointName, nameSpace, stoi(results[0]), stod(results[1]), stod(results[2]), stoi(results[3]), results[4]);
+                m_Thread->cmdConfigure(datapointName, nameSpace, stoi(results[0]), stod(results[1]), stod(results[2]), stoi(results[3]), results[4]);
 
             }
 

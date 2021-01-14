@@ -10,8 +10,8 @@
  ** Author : Panazol Jean Luc
  ******************************************************************************/
 
-#ifndef __TESTASYNCHRONECONTROLLER_H__
-#define __TESTASYNCHRONECONTROLLER_H__
+#ifndef __ASYNCHRONOUSCONTROLLER_H__
+#define __ASYNCHRONOUSCONTROLLER_H__
 
 #include "Camera.h"
 #include "lappThread.h"
@@ -23,11 +23,11 @@ typedef unsigned char Byte;
 
 class DataAccessClientOPCUA;
 
-class TestAsynchroneThread : public LAPPThread
+class AsynchronousThread : public LAPPThread
 {
 public:
-    TestAsynchroneThread(DataAccessClientOPCUA *m_dataAccessClientOPCUA);
-    ~TestAsynchroneThread();
+    AsynchronousThread(DataAccessClientOPCUA *m_dataAccessClientOPCUA);
+    ~AsynchronousThread();
     void *run(void *params);
 
     int stop();
@@ -69,4 +69,4 @@ private:
     std::string pixel_format;
 };
 
-#endif //__TESTASYNCHRONECONTROLLER_H__
+#endif //__ASYNCHRONOUSCONTROLLER_H__

@@ -55,7 +55,7 @@ add_library(
         SHARED
         /usr/include/ueye.h
         CDM.cpp
-        test_asynchroneThread.cpp
+        AsynchronousThread.cpp
         Camera.cpp
         Helper.cpp
         Meteo.cpp
