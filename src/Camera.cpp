@@ -932,7 +932,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
                 }
 
                 v_image_paths.push_back(remoteImagePath);
-                SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName); //Updates the imageName
+                SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
 
                 auto tp_stop = std::chrono::high_resolution_clock::now();
                 auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
@@ -1215,7 +1215,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     }
 
     v_image_paths.push_back(remoteImagePath);
-    SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName); //Updates the imageName
+    SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
 
     // Free the OpenCV memory?
     // Free the allocated memories
@@ -1309,7 +1309,7 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
         remoteImagePath = "Error";
     }
 
-    SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName); //Updates the imageName
+    SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
 
     // Free the allocated buffer
     if (pcImageMemory != NULL)

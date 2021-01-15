@@ -13,9 +13,9 @@ Camera camera;
 Helper helper;
 
 int CDM::init(const std::string &chaine)
-{ 
+{
     LOG_TRACE << "CDM::init()";
-        
+
     // You can overwrite this method if you want but not mandatory because the class pluginsInterfaceImpl already implement it:)
     // but becarefull, you have to call before doing  your bussiness, call the father method (the father class) ( PluginsInterfaceImpl::init())
     // This method is automaticaly call by the program "MOS" after "MOS" server is launched but the "MOS" server is not really ready.
@@ -31,9 +31,10 @@ int CDM::init(const std::string &chaine)
 }
 
 int CDM::afterStart()
-{ 
+{
     LOG_TRACE << "CDM::afterStart()";
-    
+    const int connection_failure = -1;
+
     // You can overwrite this method if you want but not mandatory because the class pluginsInterfaceImpl already implement it:)
     // but be careful, you have to call before doing your bussiness, call the father method (the father class) ( PluginsInterfaceImpl::afterStart())
     // This method is automatically called by the program "MOS" after "MOS" server is launched and ready.
@@ -77,19 +78,48 @@ int CDM::afterStart()
     int ret2 = m_ThreadMeteo->startRun();
     m_ThreadMeteo->cmdStartMeteo();
 
-
     //helper.set_OPCUAref( getDataAccessClientOPCUARef() );
 
     // Trying to access other OPCUA server
     //connectOpcUa("opc.tcp://address:port"); // example opc.tcp://lappc-f578l:48080
-    int connection_result_Drive = helper.connectOpcUa_Drive("opc.tcp://10.200.100.105:48011"); //This is Drive OPCUA. Old = opc.tcp://10.1.8.3:48010
-    int connection_result_Relay = helper.connectOpcUa_Relay("opc.tcp://10.1.10.5:4845");       //This is Central Dish Cabinet Relay. Used for toggling SG camera power. Old = opc.tcp://10.1.8.3:48010
-    int connection_result_ECC = helper.connectOpcUa_ECC("opc.tcp://10.1.4.66:4841");           //This is ECC OPCUA.
+    int connection_result_DataBroker = helper.connectOpcUa_DataBroker("opc.tcp://10.1.12.1:48030"); //DataBroker OPCUA
+    int connection_result_Drive = helper.connectOpcUa_Drive("opc.tcp://10.200.100.105:48011");      //Drive OPCUA
+    //int connection_result_ECC = helper.connectOpcUa_ECC("opc.tcp://10.1.4.66:4841");                //ECC OPCUA
+    //int connection_result_Relay = helper.connectOpcUa_Relay("opc.tcp://10.1.10.5:4845");            //Central Dish Cabinet Relay. Used for toggling SG camera power.
 
-    cout << "Drive status OPCUA: " << connection_result_Drive << endl;
-    cout << "Central dish cabinet relay status OPCUA: " << connection_result_Relay << endl;
-    cout << "ECC status OPCUA: " << connection_result_ECC << endl;
-    cout << "After start finished!" << endl;
+    LOG_DEBUG << "DataBroker status OPCUA: " << connection_result_DataBroker;
+    LOG_DEBUG << "Drive status OPCUA: " << connection_result_Drive;
+    //LOG_DEBUG << "Central dish cabinet relay status OPCUA: " << connection_result_Relay;
+    //LOG_DEBUG << "ECC status OPCUA: " << connection_result_ECC;
+
+    // Creating datapoint monitor that will notify us when the subscribed datapoints change.
+    DatapointMonitor *dp_monitor = new DatapointMonitor(this);
+    if (connection_result_DataBroker != connection_failure)
+    {
+        helper.get_client_DataBroker()->subscribe(
+            dp_monitor->getElements(),
+            dp_monitor->getNameSpaces(),
+            dp_monitor);
+    }
+    else
+    {
+        LOG_ERROR << "Cannot connect to DataBroker.";
+    }
+
+    DatapointMonitor *dp_monitor_drive = new DatapointMonitor(this);
+    if (connection_result_Drive != connection_failure)
+    {
+        helper.get_client_Drive()->subscribe(
+            dp_monitor_drive->getElements_drive(),
+            dp_monitor_drive->getNameSpaces_drive(),
+            dp_monitor_drive);
+    }
+    else
+    {
+        LOG_ERROR << "Cannot connect to Drive.";
+    }
+
+    LOG_DEBUG << "After start finished!";
 
     return ret;
 }
@@ -120,64 +150,39 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
             {
                 LOG_TRACE << "CDM::cdmAsynch() / GetMultipleImages";
 
-                helper.acquire_Azimuth();
-                helper.acquire_Zenith();
-                helper.acquire_RA();
-                helper.acquire_DEC();
-                helper.acquire_LED_intensity();
-                helper.acquire_OARL_state();
-                helper.acquire_drive_status_in_motion();
-                helper.acquire_drive_status_in_parking_position();
-                helper.acquire_drive_status_parked();
-                helper.acquire_drive_status_tracking_in_progress();
-
                 boost::trim_right(subChaine2);
                 m_Thread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
 
-                //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str())); 
+                //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str()));
             }
 
             if (subChaine1.compare("GetMultipleImagesStacked") == 0)
             {
                 LOG_TRACE << "CDM::cdmAsynch() / GetMultipleImagesStacked";
 
-                helper.acquire_Azimuth();
-                helper.acquire_Zenith();
-                helper.acquire_RA();
-                helper.acquire_DEC();
-                helper.acquire_LED_intensity();
-                helper.acquire_OARL_state();
-                helper.acquire_drive_status_in_motion();
-                helper.acquire_drive_status_in_parking_position();
-                helper.acquire_drive_status_parked();
-                helper.acquire_drive_status_tracking_in_progress();
-                helper.acquire_StarName();
-
                 boost::trim_right(subChaine2);
                 m_Thread->cmdGetMultipleImagesStacked(datapointName, nameSpace, atoi(subChaine2.c_str()));
 
-                //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str())); 
+                //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str()));
             }
 
             if (subChaine1.compare("StartCDM") == 0)
             {
                 LOG_TRACE << "CDM::cdmAsynch() / StartCDM";
 
-
                 std::string datapointName = "Unit_CDM.AuxControl.FSM.Configure";
-                int nameSpace = 2; 
-                m_Thread->cmdConfigure(datapointName, 
-                                           nameSpace, 
-                                           216, // nPixelClock 
-                                           50, // exposure
-                                           10, // fps
-                                           0, // gain
-                                           "IS_CM_MONO8" // pixel_format
-                                           );
+                int nameSpace = 2;
+                m_Thread->cmdConfigure(datapointName,
+                                       nameSpace,
+                                       216,          // nPixelClock
+                                       50,           // exposure
+                                       10,           // fps
+                                       0,            // gain
+                                       "IS_CM_MONO8" // pixel_format
+                );
 
                 m_Thread->cmdStartCDM(datapointName, nameSpace);
             }
-
         }
     }
     // example here do nothing but wait
@@ -215,18 +220,18 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 camera.Connect();
 
                 std::string datapointName = "Unit_CDM.AuxControl.FSM.Configure";
-                int nameSpace = 2; 
+                int nameSpace = 2;
                 //Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, std::string pixel_format="IS_CM_MONO8");
                 //m_Thread->cmdConfigure(datapointName, nameSpace, 216, 50, 10, 0, "IS_CM_SENSOR_RAW16");
-                m_Thread->cmdConfigure(datapointName, 
-                                           nameSpace, 
-                                           216, // nPixelClock 
-                                           50, // exposure
-                                           1, // fps
-                                           0, // gain
-                                           "IS_CM_MONO8" // pixel_format
-                                           );
-                
+                m_Thread->cmdConfigure(datapointName,
+                                       nameSpace,
+                                       216,          // nPixelClock
+                                       50,           // exposure
+                                       1,            // fps
+                                       0,            // gain
+                                       "IS_CM_MONO8" // pixel_format
+                );
+
                 /* Standby stuff and tests
 				// Checks if stanby is supported. Return 1 because it is supported.
 				ULONG ulValue = IS_GET_STATUS;
@@ -269,13 +274,13 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
                 std::vector<std::string> results;
                 boost::split(results, subChaine2, [](char c) { return c == ' '; });
-                
+
                 // Check that the input string is some sensible value
                 if (results[4] == "IS_CM_MONO8")
                 {
                     camera.iBitsPerPixel = 8;
                 }
-                else 
+                else
                 {
                     results[4] = "IS_CM_SENSOR_RAW16";
                     camera.iBitsPerPixel = 16;
@@ -283,9 +288,8 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
                 //Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, std::string pixel_format="IS_CM_MONO8");
                 std::string datapointName = "Unit_CDM.AuxControl.FSM.Configure";
-                int nameSpace = 2; 
+                int nameSpace = 2;
                 m_Thread->cmdConfigure(datapointName, nameSpace, stoi(results[0]), stod(results[1]), stod(results[2]), stoi(results[3]), results[4]);
-
             }
 
             if (subChaine1.compare("AddComment") == 0)
@@ -295,36 +299,23 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 // TODO: Make some parsing/safety checks. best inside Comment function.
                 boost::trim_right(subChaine2);
                 CDM::AddComment(subChaine2);
-                //helper.set_StarName(subChaine2);
 
-                //SetDatapointThread *m_SetDatapointThread_comment = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, subChaine2); 
+                //SetDatapointThread *m_SetDatapointThread_comment = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, subChaine2);
             }
 
             if (subChaine1.compare("GetImage") == 0)
             {
                 LOG_TRACE << "CDM::cdm() / GetImage";
-                
-                helper.acquire_StarName();
-                helper.acquire_Azimuth();
-                helper.acquire_Zenith();
-                helper.acquire_RA();
-                helper.acquire_DEC();
-                helper.acquire_LED_intensity();
-                helper.acquire_OARL_state();
-                helper.acquire_drive_status_in_motion();
-                helper.acquire_drive_status_in_parking_position();
-                helper.acquire_drive_status_parked();
-                helper.acquire_drive_status_tracking_in_progress();
-                
 
                 camera.GetImage(getDataAccessClientOPCUARef()); // pushes the image to the datapoint inside the function
+
+                LOG_DEBUG << "Finished GetImage";
 
                 /* vector<unsigned char> displayImage = camera.GetImage();
                 int m_nameSpace = 2;
                 string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
                 SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(getDataAccessClientOPCUARef(), temString, m_nameSpace, displayImage); //pushes the image to the datapoint
                 */
-                
             }
 
             if (subChaine1.compare("StopGetMultipleImages") == 0)
@@ -347,13 +338,130 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
     return ret;
 }
 
+int CDM::UpdateTestValues(float newvalue)
+{
+    LOG_DEBUG << "UpdateTestValue: " << newvalue;
+    return 0;
+}
+
+int CDM::UpdateRAValue(double newvalue)
+{
+    LOG_DEBUG << "UpdateRAValue: " << newvalue;
+    helper.SetRA(newvalue);
+    return 0;
+}
+
+int CDM::UpdateDecValue(double newvalue)
+{
+    LOG_DEBUG << "UpdateDecValue: " << newvalue;
+    helper.SetDec(newvalue);
+    return 0;
+}
+
+int CDM::UpdateAzValue(double newvalue)
+{
+    LOG_DEBUG << "UpdateAzValue: " << newvalue;
+    helper.SetAz(newvalue);
+    return 0;
+}
+int CDM::UpdateZdValue(double newvalue)
+{
+    LOG_DEBUG << "UpdateZdValue: " << newvalue;
+    helper.SetZd(newvalue);
+    return 0;
+}
+
+int CDM::UpdateAzOffsetValue(double newvalue)
+{
+    LOG_DEBUG << "UpdateAzOfssetValue: " << newvalue;
+    helper.SetAzOffset(newvalue);
+    return 0;
+}
+
+int CDM::UpdateZdOffsetValue(double newvalue)
+{
+    LOG_DEBUG << "UpdateZdOfssetValue: " << newvalue;
+    helper.SetZdOffset(newvalue);
+    return 0;
+}
+
+int CDM::UpdateSourceValue(string newvalue)
+{
+    LOG_DEBUG << "UpdateSourceValue: " << newvalue;
+    helper.SetSource(newvalue);
+    return 0;
+}
+
+int CDM::UpdateOARLValue(bool newvalue)
+{
+    LOG_DEBUG << "UpdateOARLValue: " << newvalue;
+    helper.SetOARL(newvalue);
+    return 0;
+}
+
+int CDM::UpdateLEDsValue(bool newvalue)
+{
+    LOG_DEBUG << "UpdateLEDsValue: " << newvalue;
+    helper.SetLEDs(newvalue);
+    return 0;
+}
+
+int CDM::UpdateLED01Value(int newvalue)
+{
+    LOG_DEBUG << "UpdateLED01Value: " << newvalue;
+    helper.SetLED01(newvalue);
+    return 0;
+}
+
+int CDM::UpdateShutterValue(int newvalue)
+{
+    LOG_DEBUG << "UpdateShutterValue: " << newvalue;
+    helper.SetShutter(newvalue);
+    return 0;
+}
+
+int CDM::UpdateSISValue(int newvalue)
+{
+    LOG_DEBUG << "UpdateSISValue: " << newvalue;
+    helper.SetSIS(newvalue);
+    return 0;
+}
+
+int CDM::UpdateDriveInMotionValue(bool newvalue)
+{
+    LOG_DEBUG << "UpdateDriveInMotionValue: " << newvalue;
+    helper.SetDriveInMotion(newvalue);
+    return 0;
+}
+
+int CDM::UpdateDriveInParkingPosValue(bool newvalue)
+{
+    LOG_DEBUG << "UpdateDriveInParkingPosValue: " << newvalue;
+    helper.SetDriveInParkingPos(newvalue);
+    return 0;
+}
+
+int CDM::UpdateDriveParkedValue(bool newvalue)
+{
+    LOG_DEBUG << "UpdateDriveParkedValue: " << newvalue;
+    helper.SetDriveParked(newvalue);
+    return 0;
+}
+
+int CDM::UpdateDriveTrackingValue(bool newvalue)
+{
+    LOG_DEBUG << "UpdateDriveTrackingValue: " << newvalue;
+    helper.SetDriveTracking(newvalue);
+    return 0;
+}
+
+
 int CDM::AddComment(std::string comment)
 {
     cout << "Comment is: " << comment << endl;
-    
-    helper.set_Comment(comment);
-    SetDatapointThread *m_SetDatapointThread_comment = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, comment); 
 
+    helper.set_Comment(comment);
+    SetDatapointThread *m_SetDatapointThread_comment = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.comment.comment_v", 2, comment);
 }
 
 int CDM::close()

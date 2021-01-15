@@ -17,6 +17,7 @@
 #include "pluginsBase.h"	//TODO: move this to .h file? Was in .cpp before
 #include "lappThread.h" // needed for MOS
 #include "AsynchronousThread.h"
+#include "DatapointMonitor.h"
 
 #include <boost/algorithm/string.hpp>
 //#include <boost/bimap.hpp>
@@ -39,6 +40,41 @@ public:
     int set(const std::string& chaine, int commandStringAck, std::vector<boost::any>& tabValue);
 
     int AddComment(std::string comment);
+
+
+    int UpdateTestValues(float newvalue);
+    
+    int UpdateRAValue(double newvalue);
+    int UpdateDecValue(double newvalue);
+    int UpdateAzValue(double newvalue);
+    int UpdateZdValue(double newvalue);
+    int UpdateAzOffsetValue(double newvalue);
+    int UpdateZdOffsetValue(double newvalue);
+    int UpdateSourceValue(std::string newvalue);
+    int UpdateOARLValue(bool newvalue);
+    int UpdateLEDsValue(bool newvalue);
+    int UpdateLED01Value(int newvalue);
+    int UpdateShutterValue(int newvalue);
+    int UpdateSISValue(int newvalue);
+
+    int UpdateDriveInMotionValue(bool newvalue);
+    int UpdateDriveInParkingPosValue(bool newvalue);
+    int UpdateDriveParkedValue(bool newvalue);
+    int UpdateDriveTrackingValue(bool newvalue);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 private:
 

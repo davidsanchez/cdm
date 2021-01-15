@@ -40,147 +40,6 @@ string Helper::UTC_time()
 }
  */
 
-double Helper::acquire_RA()
-{
-    std::string finalnode = "Drive.DriveControl.RA_Telescope.RA_Telescope_v";
-    int nameSpace = 2;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    float element = 0;
-    
-    if (m_clientOpcUaRef_Drive != NULL)
-        Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    RA = element;
-    LOG_DEBUG << "RA: " << element << std::endl;
-}
-
-double Helper::acquire_DEC()
-{
-    std::string finalnode = "Drive.DriveControl.Dec_Telescope.Dec_Telescope_v";
-    int nameSpace = 2;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    float element = 0;
-    if (m_clientOpcUaRef_Drive != NULL)
-        Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    DEC = element;
-	LOG_DEBUG << "DEC: " << element << std::endl;
-}
-
-double Helper::acquire_Azimuth()
-{
-    std::string finalnode = "Drive.DriveControl.CurrentPosition.azimuth_position.azimuth_position_v";
-    int nameSpace = 2;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    float element = 0;
-    if (m_clientOpcUaRef_Drive != NULL)
-        Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    azimuth = element;
-	LOG_DEBUG << "Azimuth: " << element << std::endl;
-}
-
-double Helper::acquire_Zenith()
-{
-    std::string finalnode = "Drive.DriveControl.CurrentPosition.zenithangle_position.zenithangle_position_v";
-    int nameSpace = 2;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    float element = 0;
-    if (m_clientOpcUaRef_Drive != NULL)
-        Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    zenith = element;
-	LOG_DEBUG << "Zenith: " << element << std::endl;
-}
-
-int Helper::acquire_LED_intensity()
-{
-    std::string finalnode = "ECC_LST.ECC.Monitoring.LEDPositions.Led_01.Led_01_v";
-    int nameSpace = 2;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    int element = 0;
-    if(m_clientOpcUaRef_ECC!=NULL)
-        Helper::m_clientOpcUaRef_ECC->getDatapoint(finalnode, nameSpace, element);
-    LED_intensity = element;
-	LOG_DEBUG << "LED_intensity: " << element << std::endl;
-}
-
-bool Helper::acquire_OARL_state()
-{
-    std::string finalnode = "PLC 400 Server.CPU 414-3 PNDP.DB_IO_Module1_DishCenter.OARL_On";
-    int nameSpace = 7;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    bool element = 0;
-    if(m_clientOpcUaRef_Relay!=NULL)
-        Helper::m_clientOpcUaRef_Relay->getDatapoint(finalnode, nameSpace, element);
-    OARL_state = element;
-	LOG_DEBUG << "OARL status: " << element << std::endl;
-}
-
-bool Helper::acquire_drive_status_in_motion()
-{
-    std::string finalnode = "Drive.DriveControl.Status.Status_In_Motion.Status_In_Motion_v";
-    int nameSpace = 2;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    bool element = 0;
-    
-    if (m_clientOpcUaRef_Drive != NULL)
-        Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    drive_status_in_motion = element;
-	LOG_DEBUG << "Drive status of In Motion: " << element << std::endl;
-}
-
-bool Helper::acquire_drive_status_in_parking_position()
-{
-    std::string finalnode = "Drive.DriveControl.Status.Status_In_Parking_Position.Status_In_Parking_Position_v";
-    int nameSpace = 2;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    bool element = 0;
-    
-    if (m_clientOpcUaRef_Drive != NULL)
-        Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    drive_status_in_parking_position = element;
-	LOG_DEBUG << "Drive status of In Parking Position: " << element << std::endl;
-
-}
-
-bool Helper::acquire_drive_status_parked()
-{
-    std::string finalnode = "Drive.DriveControl.Status.Status_Parked.Status_Parked_v";
-    int nameSpace = 2;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    bool element = 0;
-    
-    if (m_clientOpcUaRef_Drive != NULL)
-        Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    drive_status_parked = element;
-	LOG_DEBUG << "Drive status of Parked: " << element << std::endl;
-
-}
-
-bool Helper::acquire_drive_status_tracking_in_progress()
-{
-    std::string finalnode = "Drive.DriveControl.Status.Status_Tracking_In_Progress.Status_Tracking_In_Progress_v";
-    int nameSpace = 2;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    bool element = 0;
-    
-    if (m_clientOpcUaRef_Drive != NULL)
-        Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    drive_status_tracking_in_progress = element;
-	LOG_DEBUG << "Drive status of Tracking In Progress: " << element << std::endl;
-
-}
-
-string Helper::acquire_StarName()
-{
-    std::string finalnode = "Drive.DriveControl.SourceName.SourceName_v";
-    int nameSpace = 2;
-    //short int element; //(change with the good type of the datapoint float/int/string/.....)
-    string element = "";
-    if(m_clientOpcUaRef_Drive!=NULL)
-        Helper::m_clientOpcUaRef_Drive->getDatapoint(finalnode, nameSpace, element);
-    set_StarName(element);
-	LOG_DEBUG << "StarName: " << element << std::endl;
-	return element;
-}
-
 int Helper::connectOpcUa_Drive(std::string url)
 {
     LOG_TRACE << "Helper::connectOpcUa_Drive()";
@@ -222,6 +81,47 @@ int Helper::connectOpcUa_Drive(std::string url)
 }
 
 
+int Helper::connectOpcUa_DataBroker(std::string url)
+{
+    LOG_TRACE << "Helper::connectOpcUa_DataBroker()";
+	int ret = 0;
+
+	std::string pluginClass = "ptr_Plugin";
+	DynamicLoader *pluginsLoader;
+
+	std::string pluginFile = API_LIB_PATH;
+	char *pPath;
+	pPath = getenv("MOS_PATH");
+	if (pPath != NULL)
+	{
+		pluginFile = pPath;
+		pluginFile += "/../lib/libDataAccessClientOPCUA.so";
+	}
+
+	pluginsLoader = new DynamicLoader(pluginFile, pluginClass);
+	m_clientOpcUaRef_DataBroker = pluginsLoader->load();
+	if (m_clientOpcUaRef_DataBroker == NULL)
+	{
+		ret = 1;
+	}
+	else
+	{
+		int cpt = 0;
+		int flag = 0;
+		do
+		{
+			ret = m_clientOpcUaRef_DataBroker->connect(url, NULL);
+			flag = ret;
+			if (cpt == 3)
+				flag = 0;
+			cpt++;
+		} while (flag == -1);
+	}
+	return ret;
+}
+
+
+/* 
 int Helper::connectOpcUa_Relay(std::string url)
 {
     LOG_TRACE << "Helper::connectOpcUa_Relay()";
@@ -301,4 +201,4 @@ int Helper::connectOpcUa_ECC(std::string url)
 	}
 	return ret;
 }
-
+ */

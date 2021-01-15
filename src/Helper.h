@@ -155,8 +155,8 @@ private:
         isString = 4,
         isVectorByte = 5,
         isVectorString = 6,
-        isVectorDouble = 7, 
-        isVectorFloat = 8 
+        isVectorDouble = 7,
+        isVectorFloat = 8
     };
     varType m_varType = varType::isNULL;
 };
@@ -174,26 +174,15 @@ public:
     //void set_OPCUAref(DataAccessClientOPCUA*);
 
     // declare a  new method
-    double acquire_RA();
-    double acquire_DEC();
-    double acquire_Azimuth();
-    double acquire_Zenith();
-    int acquire_LED_intensity();
-    bool acquire_OARL_state();
-    bool acquire_drive_status_in_motion();
-    bool acquire_drive_status_in_parking_position();
-    bool acquire_drive_status_parked();
-    bool acquire_drive_status_tracking_in_progress();
-    std::string acquire_StarName();
 
     double get_RA() { return Helper::RA; }
-    double get_DEC() { return Helper::DEC; }
+    double get_DEC() { return Helper::Dec; }
     double get_Azimuth() { return Helper::azimuth; }
     double get_Zenith() { return Helper::zenith; }
     //double get_exposure() { return Helper::exposure; }
     double get_OffsetAzimuth() { return Helper::offset_azimuth; }
     double get_OffsetZenith() { return Helper::offset_zenith; }
-    int get_LED_intensity() { return Helper::LED_intensity; }
+    int get_LED_intensity() { return Helper::LED01_intensity; }
     bool get_OARL_state() { return Helper::OARL_state; }
     bool get_Drive_status_in_motion() { return Helper::drive_status_in_motion; }
     bool get_Drive_status_in_parking_position() { return Helper::drive_status_in_parking_position; }
@@ -208,21 +197,100 @@ public:
     std::string get_fitsPath() { return Helper::fitsPath; }
     std::string get_remoteImagePathPrefix() { return Helper::remoteImagePathPrefix; }
 
-    void set_StarName(std::string StarName_tmp)
-    {
-        Helper::StarName = StarName_tmp;
-        std::cout << "StarName is: " << get_StarName() << std::endl;
-    }
-
     void set_Comment(std::string Comment_tmp)
     {
         Helper::Comment = Comment_tmp;
         std::cout << "Comment is: " << get_Comment() << std::endl;
     }
 
+    int connectOpcUa_DataBroker(std::string url);
     int connectOpcUa_Drive(std::string url);
-    int connectOpcUa_Relay(std::string url);
-    int connectOpcUa_ECC(std::string url);
+    //int connectOpcUa_Relay(std::string url);
+    //int connectOpcUa_ECC(std::string url);
+
+    DataAccessClientOPCUA *get_client_DataBroker() { return m_clientOpcUaRef_DataBroker; }
+    DataAccessClientOPCUA *get_client_Drive() { return m_clientOpcUaRef_Drive; }
+
+    int SetRA(double newvalue)
+    {
+        RA = newvalue;
+        return 0;
+    }
+    int SetDec(double newvalue)
+    {
+        Dec = newvalue;
+        return 0;
+    }
+    int SetAz(double newvalue)
+    {
+        azimuth = newvalue;
+        return 0;
+    }
+    int SetZd(double newvalue)
+    {
+        zenith = newvalue;
+        return 0;
+    }
+    int SetAzOffset(double newvalue)
+    {
+        offset_azimuth = newvalue;
+        return 0;
+    }
+    int SetZdOffset(double newvalue)
+    {
+        offset_zenith = newvalue;
+        return 0;
+    }
+    int SetSource(std::string newvalue)
+    {
+        StarName = newvalue;
+        return 0;
+    }
+    int SetOARL(bool newvalue)
+    {
+        OARL_state = newvalue;
+        return 0;
+    }
+    int SetLEDs(bool newvalue)
+    {
+        LEDs_state = newvalue;
+        return 0;
+    }
+    int SetLED01(int newvalue)
+    {
+        LED01_intensity = newvalue;
+        return 0;
+    }
+    int SetShutter(int newvalue)
+    {
+        shutter_state = newvalue;
+        return 0;
+    }
+    int SetSIS(int newvalue)
+    {
+        SIS_state = newvalue;
+        return 0;
+    }
+    int SetDriveInMotion(bool newvalue)
+    {
+        drive_status_in_motion = newvalue;
+        return 0;
+    }
+    int SetDriveInParkingPos(bool newvalue)
+    {
+        drive_status_in_parking_position = newvalue;
+        return 0;
+    }
+    int SetDriveParked(bool newvalue)
+    {
+        drive_status_parked = newvalue;
+        return 0;
+    }
+    int SetDriveTracking(bool newvalue)
+    {
+        drive_status_tracking_in_progress = newvalue;
+        return 0;
+    }
 
     long int unix_timestamp();
     std::string UTC_time();
@@ -234,17 +302,21 @@ private:
     DataAccessClientOPCUA *m_clientOpcUaRef_Drive = NULL;
     DataAccessClientOPCUA *m_clientOpcUaRef_Relay = NULL;
     DataAccessClientOPCUA *m_clientOpcUaRef_ECC = NULL;
+    DataAccessClientOPCUA *m_clientOpcUaRef_DataBroker = NULL;
 
     //DataAccessClientOPCUA* m_clientOpcUaRef_this=NULL;
 
-    int LED_intensity = 0;
+    int LED01_intensity = 0;
     bool OARL_state = 0;
-    double zenith = 0;
-    double azimuth = 0;
+    bool LEDs_state = 0;
+    int shutter_state = 0;
+    int SIS_state = 0;
+    double zenith = -999;
+    double azimuth = -999;
     double offset_azimuth = 0;
     double offset_zenith = 0;
-    double RA = 0;
-    double DEC = 0;
+    double RA = -999;
+    double Dec = -999;
     bool drive_status_in_motion = 0;
     bool drive_status_in_parking_position = 0;
     bool drive_status_parked = 0;
