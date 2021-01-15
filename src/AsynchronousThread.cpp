@@ -298,6 +298,10 @@ void *AsynchronousThread::run(void *params)
 
             if (m_cmdConfigure == 1)
             {
+                // Checks the current FSM state so we can return to that state after Configure is done.
+                int FSM_state;
+                m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
+
                 // Puts the FSM.transition to 1
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 1);
 
@@ -318,9 +322,6 @@ void *AsynchronousThread::run(void *params)
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.gain.gain_v", 2, boost::any_cast<int>((configure_settings[3])));
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, boost::any_cast<string>(configure_settings[4]));
 
-                // Puts the FSM.transition back to 0
-                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
-
                 // you can put the outputs arguments in this place to inform the server
                 temString = m_datapointName + "._OutputArguments._Val_Retour";
                 tempValue = "command Open : c'est bon c'est fini : JL ";
@@ -337,6 +338,14 @@ void *AsynchronousThread::run(void *params)
 
                 // reset the command
                 m_cmdConfigure = 0;
+
+                // Puts the FSM.transition back to 0
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
+
+                // Puts the FSM.state back to the initial one if the state was Ready(1) or Tpoint(3)
+                if((FSM_state == 1) || (FSM_state == 3))
+                    m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
+
             }
         }
     }
