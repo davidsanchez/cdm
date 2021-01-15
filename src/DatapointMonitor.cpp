@@ -29,7 +29,7 @@ void DatapointMonitor::dataChange(std::vector<std::string> listElements, std::ve
         List of values of the changed data points
     */
 
-    CheckRAUpdate(listElements, listValues);
+    CheckRaUpdate(listElements, listValues);
     CheckDecUpdate(listElements, listValues);
     CheckAzUpdate(listElements, listValues);
     CheckZdUpdate(listElements, listValues);
@@ -46,6 +46,9 @@ void DatapointMonitor::dataChange(std::vector<std::string> listElements, std::ve
     CheckDriveInparkingPosUpdate(listElements, listValues);
     CheckDriveParkedUpdate(listElements, listValues);
     CheckDriveTrackingUpdate(listElements, listValues);
+    CheckDriveRaTargetUpdate(listElements, listValues);
+    CheckDriveDecTargetUpdate(listElements, listValues);
+
 }
 
 std::vector<std::string> DatapointMonitor::getElements()
@@ -84,6 +87,8 @@ std::vector<std::string> DatapointMonitor::getElements_drive()
     elements.push_back(this->drive_inparkinpos_var_name);
     elements.push_back(this->drive_parked_var_name);
     elements.push_back(this->drive_tracking_var_name);
+    elements.push_back(this->drive_ra_target_var_name);
+    elements.push_back(this->drive_dec_target_var_name);
 
     return elements;
 }
@@ -122,7 +127,7 @@ std::vector<int> DatapointMonitor::getNameSpaces_drive()
     return namespaces;
 }
 
-void DatapointMonitor::CheckRAUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
+void DatapointMonitor::CheckRaUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
     /*!
     Checks if the RA data point was changed 
@@ -144,7 +149,7 @@ void DatapointMonitor::CheckRAUpdate(std::vector<std::string> listElements, std:
         target_index = ra_iterator - listElements.begin();
 
         double ra_value = std::stod(listValues[target_index]);
-        caller->UpdateRAValue(ra_value);
+        caller->UpdateRaValue(ra_value);
     }
 }
 
@@ -547,5 +552,58 @@ void DatapointMonitor::CheckDriveTrackingUpdate(std::vector<std::string> listEle
         bool drive_value;
         istringstream(listValues[target_index]) >> std::boolalpha >> drive_value;
         caller->UpdateDriveTrackingValue(drive_value);
+    }
+}
+
+
+void DatapointMonitor::CheckDriveRaTargetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
+{
+    /*!
+    Checks if the RA target data point was changed 
+    and reports the update to the "caller" object in such a case.
+
+    @param listElements
+        List of changed data points
+    @param listValues
+        List of values of the changed data points
+    */
+
+    int target_index;
+
+    auto ra_iterator = std::find(listElements.begin(), listElements.end(), this->drive_ra_target_var_name);
+
+    if (ra_iterator != listElements.end())
+    {
+        // RA data point updated, acting
+        target_index = ra_iterator - listElements.begin();
+
+        double drive_ra_value = std::stod(listValues[target_index]);
+        caller->UpdateDriveRaTargetValue(drive_ra_value);
+    }
+}
+
+void DatapointMonitor::CheckDriveDecTargetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
+{
+    /*!
+    Checks if the Dec target data point was changed 
+    and reports the update to the "caller" object in such a case.
+
+    @param listElements
+        List of changed data points
+    @param listValues
+        List of values of the changed data points
+    */
+
+    int target_index;
+
+    auto dec_iterator = std::find(listElements.begin(), listElements.end(), this->drive_dec_target_var_name);
+
+    if (dec_iterator != listElements.end())
+    {
+        // Dec data point updated, acting
+        target_index = dec_iterator - listElements.begin();
+
+        double drive_dec_value = std::stod(listValues[target_index]);
+        caller->UpdateDriveDecTargetValue(drive_dec_value);
     }
 }

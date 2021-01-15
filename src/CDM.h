@@ -41,7 +41,7 @@ public:
 
     int AddComment(std::string comment);
 
-    int UpdateRAValue(double newvalue);
+    int UpdateRaValue(double newvalue);
     int UpdateDecValue(double newvalue);
     int UpdateAzValue(double newvalue);
     int UpdateZdValue(double newvalue);
@@ -58,19 +58,8 @@ public:
     int UpdateDriveInParkingPosValue(bool newvalue);
     int UpdateDriveParkedValue(bool newvalue);
     int UpdateDriveTrackingValue(bool newvalue);
-
-
-
-
-
-
-
-
-
-
-
-
-
+    int UpdateDriveRaTargetValue(double newvalue);
+    int UpdateDriveDecTargetValue(double newvalue);
 
 
 private:

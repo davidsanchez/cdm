@@ -43,9 +43,11 @@ private:
     const std::string drive_inparkinpos_var_name = "Drive.DriveControl.Status.Status_In_Parking_Position.Status_In_Parking_Position_v"; 
     const std::string drive_parked_var_name = "Drive.DriveControl.Status.Status_Parked.Status_Parked_v"; 
     const std::string drive_tracking_var_name = "Drive.DriveControl.Status.Status_Tracking_In_Progress.Status_Tracking_In_Progress_v"; 
+    const std::string drive_ra_target_var_name = "Drive.DriveControl.RA_Target.RA_Target_v"; 
+    const std::string drive_dec_target_var_name = "Drive.DriveControl.Dec_Target.Dec_Target_v"; 
 
 
-    void CheckRAUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
+    void CheckRaUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckDecUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckAzUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckZdUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
@@ -63,6 +65,8 @@ private:
     void CheckDriveInparkingPosUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckDriveParkedUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckDriveTrackingUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
+    void CheckDriveRaTargetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
+    void CheckDriveDecTargetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
 
 };
 

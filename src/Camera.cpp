@@ -167,7 +167,7 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
     streamObj << std::fixed;
     streamObj << std::setprecision(4);
     streamObj << helper.unix_timestamp();
-    streamObj << "-STAR=";
+    streamObj << "-TARGET=";
     streamObj << helper.get_StarName();
     streamObj << "-EXP=";
     streamObj << std::setprecision(0);
@@ -176,12 +176,8 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
     streamObj << helper.get_Zenith();
     streamObj << "-AZ=";
     streamObj << helper.get_Azimuth();
-    // streamObj << "-OFFZD=";
-    // streamObj << helper.get_OffsetZenith();
-    // streamObj << "-OFFAZ=";
-    // streamObj << helper.get_OffsetAzimuth();
     streamObj << "-LED=";
-    streamObj << helper.get_LED_intensity();
+    streamObj << helper.get_LED01_intensity();
     streamObj << "-OARL=";
     streamObj << helper.get_OARL_state();
     streamObj << "-parked=";
@@ -293,26 +289,31 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
     else
         LOG_ERROR << "Check pixel format" << endl;
 
-    pFits->pHDU().addKey("RA", helper.get_RA(), "Right Ascension");
-    pFits->pHDU().addKey("DEC", helper.get_DEC(), "Declination");
+    pFits->pHDU().addKey("RA_LST", helper.get_Ra_drive(), "Drive Right Ascension");
+    pFits->pHDU().addKey("DEC_LST", helper.get_Dec_drive(), "Drive Declination");
+    pFits->pHDU().addKey("RA_TRGT", helper.get_Ra_target(), "Target Right Ascension");
+    pFits->pHDU().addKey("DEC_TRGT", helper.get_Dec_target(), "Target Declination");
     pFits->pHDU().addKey("EPOCH", "2000.0", "Epoch");
     pFits->pHDU().addKey("EQUINOX", "2000.0", "Equinox");
     //pFits->pHDU().addKey("SECPIX_SG", 18.56, "Arcsec per pixel"); TODO: Add this information for CDM
 
     pFits->pHDU().addKey("EXPOSURE", Camera::get_exposure(), "Total Exposure Time in miliseconds");
-    pFits->pHDU().addKey("TIME", helper.unix_timestamp(), "Unix epoch time in seconds");
-    pFits->pHDU().addKey("UTC", currentDateTime(), "UTC time");
+    pFits->pHDU().addKey("UNIXTIME", helper.unix_timestamp(), "Unix epoch time in seconds");
+    pFits->pHDU().addKey("DATETIME", currentDateTime(), "UTC time");
 
     pFits->pHDU().addKey("LAT", 28.7573, "Latitude: Location:ORM");
     pFits->pHDU().addKey("LONG", 17.8850, "Longitude: Location:ORM");
     pFits->pHDU().addKey("ZENITH", helper.get_Zenith(), "Zenith, in degrees");
     pFits->pHDU().addKey("AZIMUTH", helper.get_Azimuth(), "Azimuth, in degrees");
 
-    //pFits->pHDU().addKey("OFFZEN", CDM::get_OffsetZenith(), "Offset of Zenith, in degrees");
-    //pFits->pHDU().addKey("OFFAZ", CDM::get_OffsetAzimuth(), "Offset of Azimuth, in degrees");
+    pFits->pHDU().addKey("OFFZEN", helper.get_OffsetZenith(), "Offset of Zenith, in degrees");
+    pFits->pHDU().addKey("OFFAZ", helper.get_OffsetAzimuth(), "Offset of Azimuth, in degrees");
     pFits->pHDU().addKey("OBJECT", helper.get_StarName(), "Star name");
-    pFits->pHDU().addKey("LED", helper.get_LED_intensity(), "LED01 intensity");
+    pFits->pHDU().addKey("LEDS", helper.get_LEDs_state(), "LEDs state");
+    pFits->pHDU().addKey("LED01", helper.get_LED01_intensity(), "LED01 intensity");
     pFits->pHDU().addKey("OARL", helper.get_OARL_state(), "OARL status");
+    pFits->pHDU().addKey("SHUTTER", helper.get_Shutter_state(), "Shutter status");
+    pFits->pHDU().addKey("SIS", helper.get_SIS_state(), "SIS status");
     pFits->pHDU().addKey("INMOTION", helper.get_Drive_status_in_motion(), "Drive status - In Motion");
     pFits->pHDU().addKey("PARKED", helper.get_Drive_status_parked(), "Drive status - Parked");
     pFits->pHDU().addKey("PARKINGP", helper.get_Drive_status_in_parking_position(), "Drive status - In Parking Position");

@@ -338,17 +338,17 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
     return ret;
 }
 
-int CDM::UpdateRAValue(double newvalue)
+int CDM::UpdateRaValue(double newvalue)
 {
     LOG_DEBUG << "UpdateRAValue: " << newvalue;
-    helper.SetRA(newvalue);
+    helper.SetRaDrive(newvalue);
     return 0;
 }
 
 int CDM::UpdateDecValue(double newvalue)
 {
     LOG_DEBUG << "UpdateDecValue: " << newvalue;
-    helper.SetDec(newvalue);
+    helper.SetDecDrive(newvalue);
     return 0;
 }
 
@@ -448,6 +448,22 @@ int CDM::UpdateDriveTrackingValue(bool newvalue)
     helper.SetDriveTracking(newvalue);
     return 0;
 }
+
+
+int CDM::UpdateDriveRaTargetValue(double newvalue)
+{
+    LOG_DEBUG << "UpdateDriveRaTargetValue: " << newvalue;
+    helper.SetRaTarget(newvalue);
+    return 0;
+}
+
+int CDM::UpdateDriveDecTargetValue(double newvalue)
+{
+    LOG_DEBUG << "UpdateDriveDecTargetValue: " << newvalue;
+    helper.SetDecTarget(newvalue);
+    return 0;
+}
+
 
 
 int CDM::AddComment(std::string comment)

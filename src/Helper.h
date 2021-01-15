@@ -175,15 +175,20 @@ public:
 
     // declare a  new method
 
-    double get_RA() { return Helper::RA; }
-    double get_DEC() { return Helper::Dec; }
+    double get_Ra_drive() { return Helper::Ra_drive; }
+    double get_Dec_drive() { return Helper::Dec_drive; }
+    double get_Ra_target() { return Helper::Ra_target; }
+    double get_Dec_target() { return Helper::Dec_target; }
     double get_Azimuth() { return Helper::azimuth; }
     double get_Zenith() { return Helper::zenith; }
     //double get_exposure() { return Helper::exposure; }
     double get_OffsetAzimuth() { return Helper::offset_azimuth; }
     double get_OffsetZenith() { return Helper::offset_zenith; }
-    int get_LED_intensity() { return Helper::LED01_intensity; }
+    int get_LEDs_state() { return Helper::LEDs_state; }
+    int get_LED01_intensity() { return Helper::LED01_intensity; }
     bool get_OARL_state() { return Helper::OARL_state; }
+    int get_Shutter_state() { return Helper::shutter_state; }
+    int get_SIS_state() { return Helper::SIS_state; }
     bool get_Drive_status_in_motion() { return Helper::drive_status_in_motion; }
     bool get_Drive_status_in_parking_position() { return Helper::drive_status_in_parking_position; }
     bool get_Drive_status_parked() { return Helper::drive_status_parked; }
@@ -211,14 +216,24 @@ public:
     DataAccessClientOPCUA *get_client_DataBroker() { return m_clientOpcUaRef_DataBroker; }
     DataAccessClientOPCUA *get_client_Drive() { return m_clientOpcUaRef_Drive; }
 
-    int SetRA(double newvalue)
+    int SetRaDrive(double newvalue)
     {
-        RA = newvalue;
+        Ra_drive = newvalue;
         return 0;
     }
-    int SetDec(double newvalue)
+    int SetDecDrive(double newvalue)
     {
-        Dec = newvalue;
+        Dec_drive = newvalue;
+        return 0;
+    }
+    int SetRaTarget(double newvalue)
+    {
+        Ra_target = newvalue;
+        return 0;
+    }
+    int SetDecTarget(double newvalue)
+    {
+        Dec_target = newvalue;
         return 0;
     }
     int SetAz(double newvalue)
@@ -315,8 +330,10 @@ private:
     double azimuth = -999;
     double offset_azimuth = 0;
     double offset_zenith = 0;
-    double RA = -999;
-    double Dec = -999;
+    double Ra_drive = -999;
+    double Dec_drive = -999;
+    double Ra_target = -999;
+    double Dec_target = -999;
     bool drive_status_in_motion = 0;
     bool drive_status_in_parking_position = 0;
     bool drive_status_parked = 0;
