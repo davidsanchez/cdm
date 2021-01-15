@@ -338,12 +338,6 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
     return ret;
 }
 
-int CDM::UpdateTestValues(float newvalue)
-{
-    LOG_DEBUG << "UpdateTestValue: " << newvalue;
-    return 0;
-}
-
 int CDM::UpdateRAValue(double newvalue)
 {
     LOG_DEBUG << "UpdateRAValue: " << newvalue;

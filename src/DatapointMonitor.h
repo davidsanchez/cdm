@@ -25,8 +25,6 @@ private:
 
     CDM *caller;
 
-    const std::string test_var_name = "Unit_SB.SecurityBrokerControl.Power.CameraMain.Frame_I3.Frame_I3_v"; 
-
     const std::string ra_tel_var_name = "Unit_SB.SecurityBrokerControl.Drive.RA_Telescope.RA_Telescope_v"; 
     const std::string dec_tel_var_name = "Unit_SB.SecurityBrokerControl.Drive.Dec_Telescope.Dec_Telescope_v"; 
     const std::string az_var_name = "Unit_SB.SecurityBrokerControl.Drive.Az.Az_v"; 
@@ -47,8 +45,6 @@ private:
     const std::string drive_tracking_var_name = "Drive.DriveControl.Status.Status_Tracking_In_Progress.Status_Tracking_In_Progress_v"; 
 
 
-    void CheckTestUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
-    
     void CheckRAUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckDecUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckAzUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);

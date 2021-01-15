@@ -41,9 +41,6 @@ public:
 
     int AddComment(std::string comment);
 
-
-    int UpdateTestValues(float newvalue);
-    
     int UpdateRAValue(double newvalue);
     int UpdateDecValue(double newvalue);
     int UpdateAzValue(double newvalue);
