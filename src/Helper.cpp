@@ -15,31 +15,6 @@ long int Helper::unix_timestamp()
 	return now;
 }
 
-string Helper::UTC_time()
-{
-	// current date/time based on current system
-	time_t now = time(0);
-	// convert now to string form
-	char *dt = ctime(&now);
-	cout << "The local date and time is: " << dt << endl;
-
-	// convert now to tm struct for UTC
-	tm *gmtm = gmtime(&now);
-	dt = asctime(gmtm);
-	cout << "The UTC date and time is: " << dt << endl;
-
-	return dt;
-}
-
-/* int Helper::publish_datapoint(std::string datapoint_name, int nameSpace, int data )
-{
-    //SetDatapointThread *m_SetDatapointThread_tmp = new SetDatapointThread(Helper::m_clientOpcUaRef_this, datapoint_name, nameSpace, data);
-
-    //SetDatapointThread *m_SetDatapointThread_tmp = new SetDatapointThread(getDataAccessClientOPCUARef(), datapoint_name, nameSpace, data);
-
-}
- */
-
 int Helper::connectOpcUa_Drive(std::string url)
 {
     LOG_TRACE << "Helper::connectOpcUa_Drive()";

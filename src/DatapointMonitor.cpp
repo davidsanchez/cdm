@@ -1,7 +1,7 @@
 #include "DatapointMonitor.h"
 #include "CDM.h"
-#include "Logging.h"
-#include <boost/lexical_cast.hpp>
+
+//#include "Logging.h"
 
 DatapointMonitor::DatapointMonitor(CDM *caller)
 {
@@ -459,7 +459,6 @@ void DatapointMonitor::CheckDriveInMotionUpdate(std::vector<std::string> listEle
         // drive data point updated, acting
         target_index = drive_iterator - listElements.begin();
 
-        //LOG_DEBUG << listValues[target_index];
         // Converts the string to bool value.
         bool drive_value;
         istringstream(listValues[target_index]) >> std::boolalpha >> drive_value;

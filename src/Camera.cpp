@@ -301,7 +301,7 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
 
     pFits->pHDU().addKey("EXPOSURE", Camera::get_exposure(), "Total Exposure Time in miliseconds");
     pFits->pHDU().addKey("TIME", helper.unix_timestamp(), "Unix epoch time in seconds");
-    pFits->pHDU().addKey("UTC", helper.UTC_time(), "UTC time");
+    pFits->pHDU().addKey("UTC", currentDateTime(), "UTC time");
 
     pFits->pHDU().addKey("LAT", 28.7573, "Latitude: Location:ORM");
     pFits->pHDU().addKey("LONG", 17.8850, "Longitude: Location:ORM");
