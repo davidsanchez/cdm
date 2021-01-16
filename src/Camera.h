@@ -42,6 +42,9 @@ public:
     double get_exposure() {return Camera::exposure_setting;}
     int get_master_gain() {return Camera::master_gain_setting;}
     std::string writeFITSImage(cv::Mat image, int n_stack = 1);  
+
+    double get_temperature_value();
+    std::string get_temperature_status();
     
 
 //private:

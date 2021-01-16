@@ -449,7 +449,6 @@ int CDM::UpdateDriveTrackingValue(bool newvalue)
     return 0;
 }
 
-
 int CDM::UpdateDriveRaTargetValue(double newvalue)
 {
     LOG_DEBUG << "UpdateDriveRaTargetValue: " << newvalue;
@@ -463,8 +462,6 @@ int CDM::UpdateDriveDecTargetValue(double newvalue)
     helper.SetDecTarget(newvalue);
     return 0;
 }
-
-
 
 int CDM::AddComment(std::string comment)
 {
@@ -493,10 +490,33 @@ int CDM::close()
     return ret;
 }
 
-int CDM::get(const std::string &chaine, int commandStringAck, std::vector<boost::any> &tabValue)
+int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::any> &tabValue)
 {
     //LOG_TRACE << "CDM::get()";
+    //LOG_TRACE << "Chain: " << chain;
+
+    // Usually you would push_back to the tabValue vector and they would be automatically updated in the OPCUA server.
+    // But there is some bug that crashes the program when resizing that vector and the chain is empty.
+    // So as a workaround using setDatapoint.
+
     int ret = 0;
+    double return_value_double = 0;
+    string return_value_string = "";
+
+    if (chain.find("get_temperatureValue") != std::string::npos)
+    {
+        return_value_double = camera.get_temperature_value();
+        LOG_DEBUG << "Camera temperature value is: " << return_value_double << endl;
+        getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.CDM.temperatureValue.temperatureValue_v", 2, return_value_double);
+    }
+    else if (chain.find("get_temperatureStatus") != std::string::npos)
+    {
+        return_value_string = camera.get_temperature_status();
+        LOG_DEBUG << "Camera temperature status is: " << return_value_string << endl;
+        tabValue.resize(0);
+        tabValue.push_back(return_value_string);
+    }
+
     return ret;
 }
 

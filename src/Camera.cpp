@@ -106,7 +106,6 @@ std::string currentDateTimeMs()
     return stream.str();
 }
 
-
 std::string currentEpochTime()
 {
     unsigned long int now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -318,7 +317,7 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
     pFits->pHDU().addKey("PARKED", helper.get_Drive_status_parked(), "Drive status - Parked");
     pFits->pHDU().addKey("PARKINGP", helper.get_Drive_status_in_parking_position(), "Drive status - In Parking Position");
     pFits->pHDU().addKey("TRACKING", helper.get_Drive_status_tracking_in_progress(), "Drive status - Tracking In Progress");
-    
+
     //     pFits->pHDU().addKey("GAMMA", gamma_value, "Gamma");
     pFits->pHDU().addKey("GAIN", Camera::get_master_gain(), "Gain");
     pFits->pHDU().addKey("INFO", helper.get_Comment(), "Additional image info");
@@ -373,6 +372,14 @@ int Camera::Connect()
     iWidth = rectAOI.s32Width;
     iHeight = rectAOI.s32Height;
     LOG_INFO << "Image size is " << iWidth << "x" << iHeight << std::endl;
+
+    // Check does the camera support reporting temperature status
+    INT nFeatures = 0;
+    is_DeviceFeature(hCam, IS_DEVICE_FEATURE_CMD_GET_SUPPORTED_FEATURES, &nFeatures, sizeof(nFeatures));
+    if ((nFeatures & IS_DEVICE_FEATURE_CAP_TEMPERATURE_STATUS) == IS_DEVICE_FEATURE_CAP_TEMPERATURE_STATUS)
+    {
+        LOG_INFO << "Camera supports monitoring of camera temperature status";
+    }
 }
 
 int Camera::Disconnect()
@@ -1195,7 +1202,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
     SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
-// Make a FITS image
+    // Make a FITS image
     std::string imageName = writeFITSImage(accumulated_images, i_images_taken);
     std::string filePath = helper.get_fitsPath() + imageName;
     std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
@@ -1396,4 +1403,59 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
 
     //return "Message status"; //TODO: You should return errors here.
     return return_values;
+}
+
+double Camera::get_temperature_value()
+{
+    // Checks if the camera is connected.
+    if (hCam != (HIDS)0)
+    {
+        // Get the camera temperature value
+        double fTemperature = 0;
+        nRet = is_DeviceFeature(hCam, IS_DEVICE_FEATURE_CMD_GET_TEMPERATURE,
+                                (void *)&fTemperature, sizeof(fTemperature));
+        LOG_INFO << "Camera temperature: " << fTemperature;
+        return fTemperature;
+    }
+
+    else
+    {
+        LOG_DEBUG << "Camera not connected.";
+        return 0;
+    }
+}
+
+string Camera::get_temperature_status()
+{
+    // Checks if the camera is connected.
+    if (hCam != (HIDS)0)
+    {
+        // Query the temperature status
+        INT nTemperatureStatus = 0;
+        string temperatureStatus = "";
+        is_DeviceFeature(hCam, IS_DEVICE_FEATURE_CMD_GET_TEMPERATURE_STATUS, &nTemperatureStatus, sizeof(nTemperatureStatus));
+        if (nTemperatureStatus == TEMPERATURE_CONTROL_STATUS_CRITICAL)
+        {
+            LOG_FATAL << "Temperature status: Critical";
+            temperatureStatus = "Critical";
+        }
+        else if (nTemperatureStatus == TEMPERATURE_CONTROL_STATUS_WARNING)
+        {
+            LOG_WARNING << "Temperature status: Warning";
+            temperatureStatus = "Warning";
+        }
+        else if (nTemperatureStatus == TEMPERATURE_CONTROL_STATUS_NORMAL)
+        {
+            LOG_INFO << "Temperature status: Normal";
+            temperatureStatus = "Normal";
+        }
+
+        return temperatureStatus;
+    }
+
+    else
+    {
+        LOG_DEBUG << "Camera not connected.";
+        return "Camera not connected";
+    }
 }

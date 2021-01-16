@@ -113,6 +113,14 @@
                                 <Cmd>StopGetMultipleImages</Cmd>
                         </Instruction>
                         <Instruction>
+                                <Name>get_temperatureValue_Instruction</Name>
+                                <Cmd>get_temperatureValue</Cmd>
+                        </Instruction>
+                        <Instruction>
+                                <Name>get_temperatureStatus_Instruction</Name>
+                                <Cmd>get_temperatureStatus</Cmd>
+                        </Instruction>
+                        <Instruction>
                                 <Name>get_swVersion_Instruction</Name>
                                 <Cmd>TBD</Cmd>
                         </Instruction>
@@ -794,294 +802,338 @@
                                                 </DeviceInstruction>
                                         </Method>
                                 </SimpleDatapoint>
-                </CompoundDatapoint>
+                        </CompoundDatapoint>
 
-                <SimpleDatapoint>
-                        <!-- <Info>
+                        <SimpleDatapoint>
+                                <Name>temperatureValue</Name>
+                                <Type>double</Type>
+                                <!-- <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity> -->
+                                <MonitoringRate>5</MonitoringRate>
+                                <DefaultValue>0</DefaultValue>
+                                <Description>Camera temperature value</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <Argument>
+                                                <Name>value_return</Name>
+                                                <Type>double</Type>
+                                                <Access>Output</Access>
+                                        </Argument>
+                                        <DeviceInstruction>
+                                                <Value>get_temperatureValue_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <Name>temperatureStatus</Name>
+                                <Type>string</Type>
+                                <!-- <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity> -->
+                                <MonitoringRate>5</MonitoringRate>
+                                <DefaultValue>0</DefaultValue>
+                                <Description>Camera temperature status</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <Argument>
+                                                <Name>value_return</Name>
+                                                <Type>string</Type>
+                                                <Access>Output</Access>
+                                        </Argument>
+                                        <DeviceInstruction>
+                                                <Value>get_temperatureStatus_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                        <Name>swVersion</Name>
-                        <Type>string</Type>
-                        <ArraySize>0</ArraySize>
-                        <Multiplicity>1</Multiplicity>
-                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                        <DefaultValue>1.0</DefaultValue>
-                        <Description>Software version</Description>
-                        <Historizing>1</Historizing>
-                        <Method>
-                                <Name>get</Name>
-                                <DeviceInstruction>
-                                        <Value>get_swVersion_Instruction</Value>
-                                </DeviceInstruction>
-                        </Method>
-                </SimpleDatapoint>
-                <SimpleDatapoint>
-                        <!-- <Info>
+                                <Name>swVersion</Name>
+                                <Type>string</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>1.0</DefaultValue>
+                                <Description>Software version</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_swVersion_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                        <Name>libVersion</Name>
-                        <Type>string</Type>
-                        <ArraySize>0</ArraySize>
-                        <Multiplicity>1</Multiplicity>
-                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                        <DefaultValue>1.0</DefaultValue>
-                        <Description>Version of the CDM library</Description>
-                        <Historizing>1</Historizing>
-                        <Method>
-                                <Name>get</Name>
-                                <DeviceInstruction>
-                                        <Value>get_libVersion_Instruction</Value>
-                                </DeviceInstruction>
-                        </Method>
-                </SimpleDatapoint>
-                <SimpleDatapoint>
-                        <!-- <Info>
+                                <Name>libVersion</Name>
+                                <Type>string</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>1.0</DefaultValue>
+                                <Description>Version of the CDM library</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_libVersion_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                        <Name>status</Name>
-                        <Type>string</Type>
-                        <ArraySize>0</ArraySize>
-                        <Multiplicity>1</Multiplicity>
-                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                        <DefaultValue>No status</DefaultValue>
-                        <Description>CDM internal camera status</Description>
-                        <Historizing>1</Historizing>
-                        <Method>
-                                <Name>get</Name>
-                                <DeviceInstruction>
-                                        <Value>get_status_Instruction</Value>
-                                </DeviceInstruction>
-                        </Method>
-                </SimpleDatapoint>
+                                <Name>status</Name>
+                                <Type>string</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>No status</DefaultValue>
+                                <Description>CDM internal camera status</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_status_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
 
-                <SimpleDatapoint>
-                        <!-- <Info>
+                        <SimpleDatapoint>
+                                <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                        <Name>image</Name>
-                        <Type>byteString</Type>
-                        <ArraySize>0</ArraySize>
-                        <Multiplicity>1</Multiplicity>
-                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                        <DefaultValue>0</DefaultValue>
-                        <Description>Compressed image displaying circle fit</Description>
-                        <Historizing>1</Historizing>
-                        <Method>
-                                <Name>get</Name>
-                                <DeviceInstruction>
-                                        <Value>get_image_Instruction</Value>
-                                </DeviceInstruction>
-                        </Method>
-                </SimpleDatapoint>
-                <SimpleDatapoint>
-                        <!-- <Info>
+                                <Name>image</Name>
+                                <Type>byteString</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>0</DefaultValue>
+                                <Description>Compressed image displaying circle fit</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_image_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                        <Name>imagePath</Name>
-                        <Type>string</Type>
-                        <ArraySize>500</ArraySize>
-                        <Multiplicity>1</Multiplicity>
-                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                        <DefaultValue>0</DefaultValue>
-                        <Description>Full .fits image path</Description>
-                        <Historizing>1</Historizing>
-                        <Method>
-                                <Name>get</Name>
-                                <DeviceInstruction>
-                                        <Value>get_imagePath_Instruction</Value>
-                                </DeviceInstruction>
-                        </Method>
-                </SimpleDatapoint>
-                <SimpleDatapoint>
-                        <!-- <Info>
+                                <Name>imagePath</Name>
+                                <Type>string</Type>
+                                <ArraySize>500</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>0</DefaultValue>
+                                <Description>Full .fits image path</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_imagePath_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                        <Name>imagePath_cat</Name>
-                        <Type>string</Type>
-                        <ArraySize>0</ArraySize>
-                        <Multiplicity>1</Multiplicity>
-                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                        <DefaultValue>0</DefaultValue>
-                        <Description>Concatenated Full .fits image path</Description>
-                        <Historizing>1</Historizing>
-                        <Method>
-                                <Name>get</Name>
-                                <DeviceInstruction>
-                                        <Value>get_imagePath_Instruction</Value>
-                                </DeviceInstruction>
-                        </Method>
-                </SimpleDatapoint>
-                <SimpleDatapoint>
-                        <!-- <Info>
+                                <Name>imagePath_cat</Name>
+                                <Type>string</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>0</DefaultValue>
+                                <Description>Concatenated Full .fits image path</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_imagePath_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                        <Name>imageName</Name>
-                        <Type>string</Type>
-                        <ArraySize>0</ArraySize>
-                        <Multiplicity>1</Multiplicity>
-                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                        <DefaultValue>0</DefaultValue>
-                        <Description>Name of the .fits image</Description>
-                        <Historizing>1</Historizing>
-                        <Method>
-                                <Name>get</Name>
-                                <DeviceInstruction>
-                                        <Value>get_imageName_Instruction</Value>
-                                </DeviceInstruction>
-                        </Method>
-                </SimpleDatapoint>
-                <SimpleDatapoint>
-                        <!-- <Info>
+                                <Name>imageName</Name>
+                                <Type>string</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>0</DefaultValue>
+                                <Description>Name of the .fits image</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_imageName_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                        <Name>pixelClock</Name>
-                        <Type>int32</Type>
-                        <ArraySize>0</ArraySize>
-                        <Multiplicity>1</Multiplicity>
-                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                        <DefaultValue>216</DefaultValue>
-                        <Description>CDM sensor refresh rate</Description>
-                        <Historizing>1</Historizing>
-                        <Method>
-                                <Name>get</Name>
-                                <DeviceInstruction>
-                                        <Value>get_pixelClock_Instruction</Value>
-                                </DeviceInstruction>
-                        </Method>
-                </SimpleDatapoint>
-                <SimpleDatapoint>
-                        <!-- <Info>
+                                <Name>pixelClock</Name>
+                                <Type>int32</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>216</DefaultValue>
+                                <Description>CDM sensor refresh rate</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_pixelClock_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                        <Name>exposure</Name>
-                        <Type>double</Type>
-                        <ArraySize>0</ArraySize>
-                        <Multiplicity>1</Multiplicity>
-                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                        <DefaultValue>100</DefaultValue>
-                        <Description>CDM sensor exposure time</Description>
-                        <Historizing>1</Historizing>
-                        <Method>
-                                <Name>get</Name>
-                                <DeviceInstruction>
-                                        <Value>get_exposure_Instruction</Value>
-                                </DeviceInstruction>
-                        </Method>
-                </SimpleDatapoint>
-                <SimpleDatapoint>
-                        <!-- <Info>
+                                <Name>exposure</Name>
+                                <Type>double</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>100</DefaultValue>
+                                <Description>CDM sensor exposure time</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_exposure_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                        <Name>gain</Name>
-                        <Type>int32</Type>
-                        <ArraySize>0</ArraySize>
-                        <Multiplicity>1</Multiplicity>
-                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                        <DefaultValue>1</DefaultValue>
-                        <Description>CDM camera gain</Description>
-                        <Historizing>1</Historizing>
-                        <Method>
-                                <Name>get</Name>
-                                <DeviceInstruction>
-                                        <Value>get_gain_Instruction</Value>
-                                </DeviceInstruction>
-                        </Method>
-                </SimpleDatapoint>
-                <SimpleDatapoint>
-                        <!-- <Info>
+                                <Name>gain</Name>
+                                <Type>int32</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>1</DefaultValue>
+                                <Description>CDM camera gain</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_gain_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                        <Name>FPS</Name>
-                        <Type>double</Type>
-                        <ArraySize>0</ArraySize>
-                        <Multiplicity>1</Multiplicity>
-                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                        <DefaultValue>1</DefaultValue>
-                        <Description>CDM frames per second</Description>
-                        <Historizing>1</Historizing>
-                        <Method>
-                                <Name>get</Name>
-                                <DeviceInstruction>
-                                        <Value>get_FPS_Instruction</Value>
-                                </DeviceInstruction>
-                        </Method>
-                </SimpleDatapoint>
-                <SimpleDatapoint>
-                        <!-- <Info>
+                                <Name>FPS</Name>
+                                <Type>double</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>1</DefaultValue>
+                                <Description>CDM frames per second</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_FPS_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                        <Name>pixelFormat</Name>
-                        <Type>string</Type>
-                        <ArraySize>0</ArraySize>
-                        <Multiplicity>1</Multiplicity>
-                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                        <DefaultValue>0</DefaultValue>
-                        <Description>CDM image pixel format</Description>
-                        <Historizing>1</Historizing>
-                        <Method>
-                                <Name>get</Name>
-                                <DeviceInstruction>
-                                        <Value>get_pixelFormat_Instruction</Value>
-                                </DeviceInstruction>
-                        </Method>
-                </SimpleDatapoint>
-                <SimpleDatapoint>
-                        <!-- <Info>
+                                <Name>pixelFormat</Name>
+                                <Type>string</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>0</DefaultValue>
+                                <Description>CDM image pixel format</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_pixelFormat_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                        <Name>numIntegrateImage</Name>
-                        <Type>int32</Type>
-                        <ArraySize>0</ArraySize>
-                        <Multiplicity>1</Multiplicity>
-                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                        <DefaultValue>1</DefaultValue>
-                        <Description>Number of images to integrate (for taking Tpoints)</Description>
-                        <Historizing>1</Historizing>
-                        <Method>
-                                <Name>get</Name>
-                                <DeviceInstruction>
-                                        <Value>get_numIntegrateImage_Instruction</Value>
-                                </DeviceInstruction>
-                        </Method>
-                </SimpleDatapoint>
-                <SimpleDatapoint>
-                        <!-- <Info>
+                                <Name>numIntegrateImage</Name>
+                                <Type>int32</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>1</DefaultValue>
+                                <Description>Number of images to integrate (for taking Tpoints)</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_numIntegrateImage_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                        <Name>comment</Name>
-                        <Type>string</Type>
-                        <ArraySize>0</ArraySize>
-                        <Multiplicity>1</Multiplicity>
-                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                        <DefaultValue>0</DefaultValue>
-                        <Description>This will be added to the filename and in the image header</Description>
-                        <Historizing>1</Historizing>
-                        <Method>
-                                <Name>get</Name>
-                                <DeviceInstruction>
-                                        <Value>get_comment_Instruction</Value>
-                                </DeviceInstruction>
-                        </Method>
-                </SimpleDatapoint>
-                <SimpleDatapoint>
-                        <!-- <Info>
+                                <Name>comment</Name>
+                                <Type>string</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>0</DefaultValue>
+                                <Description>This will be added to the filename and in the image header</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_comment_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
+                        <SimpleDatapoint>
+                                <!-- <Info>
                                 <Config>0</Config>
                         </Info> -->
-                        <Name>nImagesGet</Name>
-                        <Type>int32</Type>
-                        <ArraySize>0</ArraySize>
-                        <Multiplicity>1</Multiplicity>
-                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                        <DefaultValue>0</DefaultValue>
-                        <Description>Number of images to take with GetMultipleImages</Description>
-                        <Historizing>1</Historizing>
-                        <Method>
-                                <Name>get</Name>
-                                <DeviceInstruction>
-                                        <Value>get_nImagesGet_Instruction</Value>
-                                </DeviceInstruction>
-                        </Method>
-                </SimpleDatapoint>
+                                <Name>nImagesGet</Name>
+                                <Type>int32</Type>
+                                <ArraySize>0</ArraySize>
+                                <Multiplicity>1</Multiplicity>
+                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                <DefaultValue>0</DefaultValue>
+                                <Description>Number of images to take with GetMultipleImages</Description>
+                                <Historizing>1</Historizing>
+                                <Method>
+                                        <Name>get</Name>
+                                        <DeviceInstruction>
+                                                <Value>get_nImagesGet_Instruction</Value>
+                                        </DeviceInstruction>
+                                </Method>
+                        </SimpleDatapoint>
 
                 </CompoundDatapoint>
 
