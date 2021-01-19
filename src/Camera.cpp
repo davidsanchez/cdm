@@ -204,7 +204,7 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
 
     if (n_stack > 1)
         streamObj << "-stack=" << n_stack;
-    streamObj << ".fits";
+    streamObj << ".fits.gz";
 
     stream_fitsPath << streamObj.str();
     stream_remoteImagePath << streamObj.str();
