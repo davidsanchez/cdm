@@ -619,7 +619,7 @@
                         <CompoundDatapoint>
                                 <Name>Circle</Name>
                                 <SimpleDatapoint>
-                                        <Name>Circle_x</Name>
+                                        <Name>circle_x</Name>
                                         <Type>double</Type>
                                         <ArraySize>10</ArraySize>
                                         <Multiplicity>1</Multiplicity>
@@ -635,7 +635,7 @@
                                         </Method>
                                 </SimpleDatapoint>
                                 <SimpleDatapoint>
-                                        <Name>Circle_y</Name>
+                                        <Name>circle_y</Name>
                                         <Type>double</Type>
                                         <ArraySize>10</ArraySize>
                                         <Multiplicity>1</Multiplicity>
@@ -651,7 +651,7 @@
                                         </Method>
                                 </SimpleDatapoint>
                                 <SimpleDatapoint>
-                                        <Name>Circle_R</Name>
+                                        <Name>circle_R</Name>
                                         <Type>double</Type>
                                         <ArraySize>10</ArraySize>
                                         <Multiplicity>1</Multiplicity>
@@ -667,7 +667,7 @@
                                         </Method>
                                 </SimpleDatapoint>
                                 <SimpleDatapoint>
-                                        <Name>Circle_RMS</Name>
+                                        <Name>circle_RMS</Name>
                                         <Type>double</Type>
                                         <ArraySize>10</ArraySize>
                                         <Multiplicity>1</Multiplicity>
@@ -687,7 +687,7 @@
                                         <!-- <Info>
                                         <Config>0</Config>
                                 </Info> -->
-                                        <Name>circle_stddev_x</Name>
+                                        <Name>circle_x_stddev</Name>
                                         <Type>double</Type>
                                         <ArraySize>0</ArraySize>
                                         <Multiplicity>1</Multiplicity>
@@ -698,7 +698,7 @@
                                         <Method>
                                                 <Name>get</Name>
                                                 <DeviceInstruction>
-                                                        <Value>get_circle_stddev_x_Instruction</Value>
+                                                        <Value>get_circle_x_stddev_Instruction</Value>
                                                 </DeviceInstruction>
                                         </Method>
                                 </SimpleDatapoint>
@@ -707,7 +707,7 @@
                                         <!-- <Info>
                                         <Config>0</Config>
                                 </Info> -->
-                                        <Name>circle_stddev_y</Name>
+                                        <Name>circle_y_stddev</Name>
                                         <Type>double</Type>
                                         <ArraySize>0</ArraySize>
                                         <Multiplicity>1</Multiplicity>
@@ -718,7 +718,7 @@
                                         <Method>
                                                 <Name>get</Name>
                                                 <DeviceInstruction>
-                                                        <Value>get_circle_stddev_y_Instruction</Value>
+                                                        <Value>get_circle_y_stddev_Instruction</Value>
                                                 </DeviceInstruction>
                                         </Method>
                                 </SimpleDatapoint>
@@ -727,7 +727,7 @@
                                         <!-- <Info>
                                         <Config>0</Config>
                                 </Info> -->
-                                        <Name>circle_stddev_R</Name>
+                                        <Name>circle_R_stddev</Name>
                                         <Type>double</Type>
                                         <ArraySize>0</ArraySize>
                                         <Multiplicity>1</Multiplicity>
@@ -738,7 +738,7 @@
                                         <Method>
                                                 <Name>get</Name>
                                                 <DeviceInstruction>
-                                                        <Value>get_circle_stddev_R_Instruction</Value>
+                                                        <Value>get_circle_R_stddev_Instruction</Value>
                                                 </DeviceInstruction>
                                         </Method>
                                 </SimpleDatapoint>
@@ -747,7 +747,7 @@
                                         <!-- <Info>
                                         <Config>0</Config>
                                 </Info> -->
-                                        <Name>circle_stddev_RMS</Name>
+                                        <Name>circle_RMS_stddev</Name>
                                         <Type>double</Type>
                                         <ArraySize>0</ArraySize>
                                         <Multiplicity>1</Multiplicity>
@@ -758,7 +758,7 @@
                                         <Method>
                                                 <Name>get</Name>
                                                 <DeviceInstruction>
-                                                        <Value>get_circle_stddev_RMS_Instruction</Value>
+                                                        <Value>get_circle_RMS_stddev_Instruction</Value>
                                                 </DeviceInstruction>
                                         </Method>
                                 </SimpleDatapoint>

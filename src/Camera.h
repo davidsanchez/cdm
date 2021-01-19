@@ -80,21 +80,18 @@ public:
     ( "IS_CM_SENSOR_RAW8", IS_CM_SENSOR_RAW8 )
     ( "IS_CM_SENSOR_RAW16", IS_CM_SENSOR_RAW16 );
 
-    const std::string datapointName_circle_x = "Unit_CDM.AuxControl.CDM.Circle.Circle_x.Circle_x_v";
-    const std::string datapointName_circle_y = "Unit_CDM.AuxControl.CDM.Circle.Circle_y.Circle_y_v";
-    const std::string datapointName_circle_R = "Unit_CDM.AuxControl.CDM.Circle.Circle_R.Circle_R_v";
-    const std::string datapointName_circle_RMS = "Unit_CDM.AuxControl.CDM.Circle.Circle_RMS.Circle_RMS_v";
+    const std::string datapointName_circle_x = "Unit_CDM.AuxControl.CDM.Circle.circle_x.circle_x_v";
+    const std::string datapointName_circle_y = "Unit_CDM.AuxControl.CDM.Circle.circle_y.circle_y_v";
+    const std::string datapointName_circle_R = "Unit_CDM.AuxControl.CDM.Circle.circle_R.circle_R_v";
+    const std::string datapointName_circle_RMS = "Unit_CDM.AuxControl.CDM.Circle.circle_RMS.circle_RMS_v";
     const std::string datapointName_displacement_x = "Unit_CDM.AuxControl.CDM.Displacement.displacement_x.displacement_x_v";
     const std::string datapointName_displacement_y = "Unit_CDM.AuxControl.CDM.Displacement.displacement_y.displacement_y_v";
     const std::string datapointName_rotation = "Unit_CDM.AuxControl.CDM.Displacement.rotation.rotation_v";
 
-    const std::string datapointName_circle_x_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_stddev_x.circle_stddev_x_v";
-    const std::string datapointName_circle_y_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_stddev_y.circle_stddev_y_v";
-    const std::string datapointName_circle_R_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_stddev_R.circle_stddev_R_v";
-    const std::string datapointName_circle_RMS_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_stddev_RMS.circle_stddev_RMS_v";
-
-
-
+    const std::string datapointName_circle_x_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_x_stddev.circle_x_stddev_v";
+    const std::string datapointName_circle_y_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_y_stddev.circle_y_stddev_v";
+    const std::string datapointName_circle_R_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_R_stddev.circle_R_stddev_v";
+    const std::string datapointName_circle_RMS_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_RMS_stddev.circle_RMS_stddev_v";
 
 
     const int nLED = 12;

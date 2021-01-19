@@ -96,6 +96,7 @@
 		<StateCondition>2</StateCondition>
 		<StateCondition>3</StateCondition>
 		<StateCondition>4</StateCondition>
+		<StateCondition>6</StateCondition>
 		<FinalTransition>5</FinalTransition>
 		<AutomaticChangeTransition>true</AutomaticChangeTransition>
 	</TransitionFSM>
