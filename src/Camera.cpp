@@ -321,6 +321,8 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
     //     pFits->pHDU().addKey("GAMMA", gamma_value, "Gamma");
     pFits->pHDU().addKey("GAIN", Camera::get_master_gain(), "Gain");
     pFits->pHDU().addKey("INFO", helper.get_Comment(), "Additional image info");
+    pFits->pHDU().addKey("CAMTVAL", Camera::get_temperature_value, "Camera temperature value");
+    pFits->pHDU().addKey("CAMTSTAT", Camera::get_temperature_status, "Camera temperature status");
     pFits->pHDU().addKey("STACK", n_stack, "Number of stacked images");
 
     LOG_DEBUG << pFits->pHDU() << std::endl;
