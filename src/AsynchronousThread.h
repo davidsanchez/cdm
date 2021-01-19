@@ -37,6 +37,7 @@ public:
     int cmdGetMultipleImages(std::string datapointName, int nameSpace, int n_images);
     int cmdGetMultipleImagesStacked(std::string datapointName, int nameSpace, int n_images);
     int cmdStartCDM(std::string datapointName, int nameSpace);
+    int cmdStartStream(std::string datapointName, int nameSpace);
     int cmdConfigure(std::string datapointName, int nameSpace, int nPixelClock, double exposure, double fps, int gain, std::string pixel_format);
 
 private:
@@ -46,6 +47,7 @@ private:
     int m_cmdGetMultipleImages;
     int m_cmdGetMultipleImagesStacked;
     int m_cmdStartCDM;
+    int m_cmdStartStream;
     int m_cmdConfigure;
 	int m_cmdMeteo;
     int m_nameSpace;

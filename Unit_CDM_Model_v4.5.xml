@@ -75,6 +75,19 @@
                                 <Cmd>StopCDM</Cmd>
                         </Instruction>
                         <Instruction>
+                                <Name>StartStream_Instruction</Name>
+                                <Cmd>StartStream</Cmd>
+                                <Asynchronous>
+                                        <Enable>true</Enable>
+                                        <TimeOut>2</TimeOut>
+                                        <EndInstruction></EndInstruction>
+                                </Asynchronous>
+                        </Instruction>
+                        <Instruction>
+                                <Name>StopStream_Instruction</Name>
+                                <Cmd>StopStream</Cmd>
+                        </Instruction>
+                        <Instruction>
                                 <Name>Error_Instruction</Name>
                                 <Cmd>Error</Cmd>
                         </Instruction>
@@ -325,6 +338,18 @@
                         <NameFSM>StopCDM</NameFSM>
                         <DeviceInstruction>
                                 <Value>StopCDM_Instruction</Value>
+                        </DeviceInstruction>
+                </FSM>
+                <FSM>
+                        <NameFSM>StartStream</NameFSM>
+                        <DeviceInstruction>
+                                <Value>StartStream_Instruction</Value>
+                        </DeviceInstruction>
+                </FSM>
+                <FSM>
+                        <NameFSM>StopStream</NameFSM>
+                        <DeviceInstruction>
+                                <Value>StopStream_Instruction</Value>
                         </DeviceInstruction>
                 </FSM>
                 <FSM>

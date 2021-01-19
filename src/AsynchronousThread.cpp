@@ -26,6 +26,7 @@ AsynchronousThread::AsynchronousThread(DataAccessClientOPCUA *dataAccessClientOP
     m_cmdGetMultipleImagesStacked = 0;
     m_cmdConfigure = 0;
     m_cmdStartCDM = 0;
+    m_cmdStartStream = 0;
     m_cmdMeteo = 0;
     m_dataAccessClientOPCUA = dataAccessClientOPCUA;
 }
@@ -90,6 +91,15 @@ int AsynchronousThread::cmdStartCDM(std::string datapointName, int nameSpace)
     return ret;
 }
 
+int AsynchronousThread::cmdStartStream(std::string datapointName, int nameSpace)
+{
+    int ret = 0;
+    m_cmdStartStream = true;
+    m_datapointName = datapointName;
+    m_nameSpace = nameSpace;
+    return ret;
+}
+
 int AsynchronousThread::cmdConfigure(std::string datapointName, int nameSpace, int nPixelClock, double exposure, double fps, int gain, std::string pixel_format)
 {
     int ret = 0;
@@ -118,7 +128,7 @@ void *AsynchronousThread::run(void *params)
     {
         if (m_pause == false)
         {
-			//LOG_TRACE << "In Async thread";
+            //LOG_TRACE << "In Async thread";
             usleep(1000000);
 
             if (m_cmdGetMultipleImages == 1)
@@ -257,6 +267,43 @@ void *AsynchronousThread::run(void *params)
                 cout << "End of cdmStartCDM inside AsynchronousThread.cpp" << endl;
             }
 
+            if (m_cmdStartStream == 1)
+            {
+                cout << "In AsynchronousThread: cmdStartStream" << endl;
+                // Puts the FSM.state to 6
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 6);
+
+                // inform that the command is in progress
+                temString = m_datapointName + "._InProgressBar";
+                t = 1;
+                m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
+
+                // ****************** here put the code for Start who take a long time to execute ***************
+                camera.StartStream(m_dataAccessClientOPCUA);
+
+                // you can put the outputs arguments in this place to inform the server
+                temString = m_datapointName + "._OutputArguments._Val_Retour";
+                tempValue = "command Open : c'est bon c'est fini : JL ";
+                m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, tempValue);
+
+                // inform that the command is done
+                temString = m_datapointName + "._Done";
+                m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, true);
+
+                // inform that the command is not in progress
+                temString = m_datapointName + "._InProgressBar";
+                t = 0;
+                m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
+
+                // reset the command
+                m_cmdStartStream = 0;
+
+                // Puts the FSM.state back to 1
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 1);
+
+                cout << "End of cdmStartStream inside AsynchronousThread.cpp" << endl;
+            }
+
             if (m_cmdMeteo == 1)
             {
                 vector<float> meteo_val = meteo.Update_sensor();
@@ -267,31 +314,31 @@ void *AsynchronousThread::run(void *params)
 
                 vector<string> ws_data = meteo.Update_WS();
 
-				// The logger will write first the date and time automatically before the these datapoints.
-				// We don't make a loop to store this because in each loop the logger would automatically put endl.
+                // The logger will write first the date and time automatically before the these datapoints.
+                // We don't make a loop to store this because in each loop the logger would automatically put endl.
                 // Although You could bypass that by redefining the logger format.
 
                 LOG_ENV << meteo_val[0] << " " // sensor - temperature
                         << meteo_val[1] << " " // sensor - humidity relative
                         << meteo_val[2] << " " // sensor - humidity absolute in g/m^3
-                        << meteo_val[3] << " " // sensor - pressure in hPa 
-                        << ws_data[0] << " " // MAGIC WS - time
-                        << ws_data[1] << " " // MAGIC WS - date
-                        << ws_data[2] << " " // MAGIC WS - temperature
-                        << ws_data[3] << " " // MAGIC WS - pressure
-                        << ws_data[4] << " " // MAGIC WS - average wind direction
-                        << ws_data[5] << " " // MAGIC WS - humidity
-                        << ws_data[6] << " " // MAGIC WS - wind speed
-                        << ws_data[7] << " " // MAGIC WS - wind gusts
-                        << ws_data[8] << " " // MAGIC WS - average wind speed
-                        << ws_data[9] << " " // MAGIC WS - current wind direction
-                        << ws_data[10] << " " // MAGIC WS - Unknown, maybe some internal temperature.
-                        << ws_data[11] << " " // MAGIC WS - TNG dust
-                        << ws_data[12] << " " // MAGIC WS - TNG seeing
-                        << ws_data[13] << " " // MAGIC WS - rain
-                        << ws_data[14] << " " // MAGIC WS - rain statistics
-                        << ws_data[15] // MAGIC WS - Status
-                        ;
+                        << meteo_val[3] << " " // sensor - pressure in hPa
+                        << ws_data[0] << " "   // MAGIC WS - time
+                        << ws_data[1] << " "   // MAGIC WS - date
+                        << ws_data[2] << " "   // MAGIC WS - temperature
+                        << ws_data[3] << " "   // MAGIC WS - pressure
+                        << ws_data[4] << " "   // MAGIC WS - average wind direction
+                        << ws_data[5] << " "   // MAGIC WS - humidity
+                        << ws_data[6] << " "   // MAGIC WS - wind speed
+                        << ws_data[7] << " "   // MAGIC WS - wind gusts
+                        << ws_data[8] << " "   // MAGIC WS - average wind speed
+                        << ws_data[9] << " "   // MAGIC WS - current wind direction
+                        << ws_data[10] << " "  // MAGIC WS - Unknown, maybe some internal temperature.
+                        << ws_data[11] << " "  // MAGIC WS - TNG dust
+                        << ws_data[12] << " "  // MAGIC WS - TNG seeing
+                        << ws_data[13] << " "  // MAGIC WS - rain
+                        << ws_data[14] << " "  // MAGIC WS - rain statistics
+                        << ws_data[15]         // MAGIC WS - Status
+                    ;
 
                 usleep(9000000);
             }
@@ -343,9 +390,8 @@ void *AsynchronousThread::run(void *params)
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
 
                 // Puts the FSM.state back to the initial one if the state was Ready(1) or Tpoint(3)
-                if((FSM_state == 1) || (FSM_state == 3))
+                if ((FSM_state == 1) || (FSM_state == 3))
                     m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
-
             }
         }
     }

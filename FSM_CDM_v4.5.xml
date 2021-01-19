@@ -78,6 +78,18 @@
 		<AutomaticChangeTransition>true</AutomaticChangeTransition>
 	</TransitionFSM>
 	<TransitionFSM>
+		<Name>StartStream</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>6</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>StopStream</Name>
+		<StateCondition>6</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
 		<Name>Error</Name>
 		<StateCondition>0</StateCondition>
 		<StateCondition>1</StateCondition>

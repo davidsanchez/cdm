@@ -37,7 +37,8 @@ public:
     void StopGetMultipleImages();
     int StartCDM(DataAccessClientOPCUA* myclient);
     int StopCDM();
-
+    int StartStream(DataAccessClientOPCUA* myclient);
+    int StopStream();
 
     double get_exposure() {return Camera::exposure_setting;}
     int get_master_gain() {return Camera::master_gain_setting;}

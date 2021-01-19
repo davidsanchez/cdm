@@ -183,6 +183,27 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
                 m_Thread->cmdStartCDM(datapointName, nameSpace);
             }
+
+            if (subChaine1.compare("StartStream") == 0)
+            {
+                LOG_TRACE << "CDM::cdmAsynch() / StartStream";
+
+                std::string datapointName = "Unit_CDM.AuxControl.FSM.Configure";
+                int nameSpace = 2;
+
+                /* 
+                m_Thread->cmdConfigure(datapointName,
+                                       nameSpace,
+                                       216,          // nPixelClock
+                                       50,           // exposure
+                                       1,           // fps
+                                       0,            // gain
+                                       "IS_CM_MONO8" // pixel_format
+                ); 
+                */
+
+                m_Thread->cmdStartStream(datapointName, nameSpace);
+            }
         }
     }
     // example here do nothing but wait
@@ -330,6 +351,12 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 LOG_TRACE << "CDM::cdm() / StopCDM";
                 camera.StopCDM();
             }
+
+            if (subChaine1.compare("StopStream") == 0)
+            {
+                LOG_TRACE << "CDM::cdm() / StopStream";
+                camera.StopStream();
+            }
         }
     }
     // example here do nothing but wait
@@ -340,7 +367,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
 int CDM::UpdateRaValue(double newvalue)
 {
-    LOG_DEBUG << "UpdateRAValue: " << newvalue;
+    LOG_DEBUG << "UpdateRaValue: " << newvalue;
     helper.SetRaDrive(newvalue);
     return 0;
 }
