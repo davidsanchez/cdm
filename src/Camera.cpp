@@ -698,6 +698,47 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
             i_images_taken++;
 
+            // TODO: Optimize this?
+            LOG_DATA 
+                    << circle_results[0] * px2arcsec
+                    << circle_results[1] * px2arcsec
+                    << circle_results[2] * px2arcsec
+                    << circle_results[3] * px2arcsec
+                    << displacement_results[0] * px2arcsec
+                    << displacement_results[1] * px2arcsec
+                    << displacement_results[2] * px2arcsec
+                    << led_x_results[0] * px2arcsec
+                    << led_x_results[1] * px2arcsec
+                    << led_x_results[2] * px2arcsec
+                    << led_x_results[3] * px2arcsec
+                    << led_x_results[4] * px2arcsec
+                    << led_x_results[5] * px2arcsec
+                    << led_x_results[6] * px2arcsec
+                    << led_x_results[7] * px2arcsec
+                    << led_x_results[8] * px2arcsec
+                    << led_x_results[9] * px2arcsec
+                    << led_x_results[10] * px2arcsec
+                    << led_x_results[11] * px2arcsec
+                    << led_y_results[0] * px2arcsec
+                    << led_y_results[1] * px2arcsec
+                    << led_y_results[2] * px2arcsec
+                    << led_y_results[3] * px2arcsec
+                    << led_y_results[4] * px2arcsec
+                    << led_y_results[5] * px2arcsec
+                    << led_y_results[6] * px2arcsec
+                    << led_y_results[7] * px2arcsec
+                    << led_y_results[8] * px2arcsec
+                    << led_y_results[9] * px2arcsec
+                    << led_y_results[10] * px2arcsec
+                    << led_y_results[11] * px2arcsec
+                    << oarl_x_results[0] * px2arcsec
+                    << oarl_x_results[1] * px2arcsec
+                    << oarl_y_results[0] * px2arcsec
+                    << oarl_y_results[1] * px2arcsec 
+                    ;
+                    
+
+
             //TODO: Time this process!
             if (i_images_taken % array_size == 0)
             {
@@ -707,7 +748,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
                 //TODO: Time this transpose!
                 // We transpose the arrays so instead of grouping it by time first we group it by LEDs/OARLs first.
-                // So before we had a rows for one timeslices containing different LED information and after the transpose we have rows for each LED containing information for different timeslices.
+                // So before we had a rows for one timeslice containing different LED information and after the transpose we have rows for each LED containing information for different timeslices.
 
                 LED_x = transpose(LED_x);
                 LED_y = transpose(LED_y);
@@ -756,7 +797,6 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 myclient->setDatapoint(datapointName_circle_y_stddev, m_nameSpace, calculateStdDev(circle_y));
                 myclient->setDatapoint(datapointName_circle_R_stddev, m_nameSpace, calculateStdDev(circle_R));
                 myclient->setDatapoint(datapointName_circle_RMS_stddev, m_nameSpace, calculateStdDev(circle_RMS));
-               
 
                 // Push the image here
                 std::chrono::steady_clock::time_point begin_getimage = std::chrono::steady_clock::now();
