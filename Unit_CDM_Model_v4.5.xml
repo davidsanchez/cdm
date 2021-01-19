@@ -558,6 +558,22 @@
                                                 </DeviceInstruction>
                                         </Method>
                                 </SimpleDatapoint>
+                                <SimpleDatapoint>
+                                        <Name>OARL_x_mean</Name>
+                                        <Type>double</Type>
+                                        <ArraySize>10</ArraySize>
+                                        <Multiplicity>1</Multiplicity>
+                                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                        <DefaultValue>0</DefaultValue>
+                                        <Description>Mean OARL x coo. positions in CDM camera.</Description>
+                                        <Historizing>1</Historizing>
+                                        <Method>
+                                                <Name>get</Name>
+                                                <DeviceInstruction>
+                                                        <Value>get_mean_OARL_x_Instruction</Value>
+                                                </DeviceInstruction>
+                                        </Method>
+                                </SimpleDatapoint>
                         </CompoundDatapoint>
 
                         <CompoundDatapoint>
@@ -578,6 +594,22 @@
                                                 <Name>get</Name>
                                                 <DeviceInstruction>
                                                         <Value>get_OARL_y_Instruction</Value>
+                                                </DeviceInstruction>
+                                        </Method>
+                                </SimpleDatapoint>
+                                <SimpleDatapoint>
+                                        <Name>OARL_y_mean</Name>
+                                        <Type>double</Type>
+                                        <ArraySize>10</ArraySize>
+                                        <Multiplicity>1</Multiplicity>
+                                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                        <DefaultValue>0</DefaultValue>
+                                        <Description>Mean OARL y coo. positions in CDM camera.</Description>
+                                        <Historizing>1</Historizing>
+                                        <Method>
+                                                <Name>get</Name>
+                                                <DeviceInstruction>
+                                                        <Value>get_mean_OARL_y_Instruction</Value>
                                                 </DeviceInstruction>
                                         </Method>
                                 </SimpleDatapoint>
@@ -829,50 +861,149 @@
                                 </SimpleDatapoint>
                         </CompoundDatapoint>
 
-                        <SimpleDatapoint>
-                                <Name>temperatureValue</Name>
-                                <Type>double</Type>
-                                <!-- <ArraySize>0</ArraySize>
-                                <Multiplicity>1</Multiplicity>
-                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity> -->
-                                <MonitoringRate>5</MonitoringRate>
-                                <DefaultValue>0</DefaultValue>
-                                <Description>Camera temperature value</Description>
-                                <Historizing>1</Historizing>
-                                <Method>
-                                        <Name>get</Name>
-                                        <Argument>
-                                                <Name>value_return</Name>
-                                                <Type>double</Type>
-                                                <Access>Output</Access>
-                                        </Argument>
-                                        <DeviceInstruction>
-                                                <Value>get_temperatureValue_Instruction</Value>
-                                        </DeviceInstruction>
-                                </Method>
-                        </SimpleDatapoint>
-                        <SimpleDatapoint>
-                                <Name>temperatureStatus</Name>
-                                <Type>string</Type>
-                                <!-- <ArraySize>0</ArraySize>
-                                <Multiplicity>1</Multiplicity>
-                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity> -->
-                                <MonitoringRate>5</MonitoringRate>
-                                <DefaultValue>0</DefaultValue>
-                                <Description>Camera temperature status</Description>
-                                <Historizing>1</Historizing>
-                                <Method>
-                                        <Name>get</Name>
-                                        <Argument>
-                                                <Name>value_return</Name>
-                                                <Type>string</Type>
-                                                <Access>Output</Access>
-                                        </Argument>
-                                        <DeviceInstruction>
-                                                <Value>get_temperatureStatus_Instruction</Value>
-                                        </DeviceInstruction>
-                                </Method>
-                        </SimpleDatapoint>
+                        <CompoundDatapoint>
+                                <Name>Camera</Name>
+                                <SimpleDatapoint>
+                                        <Name>temperatureValue</Name>
+                                        <Type>double</Type>
+                                        <!-- <ArraySize>0</ArraySize>
+                                        <Multiplicity>1</Multiplicity>
+                                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity> -->
+                                        <MonitoringRate>5</MonitoringRate>
+                                        <DefaultValue>0</DefaultValue>
+                                        <Description>Camera temperature value</Description>
+                                        <Historizing>1</Historizing>
+                                        <Method>
+                                                <Name>get</Name>
+                                                <Argument>
+                                                        <Name>value_return</Name>
+                                                        <Type>double</Type>
+                                                        <Access>Output</Access>
+                                                </Argument>
+                                                <DeviceInstruction>
+                                                        <Value>get_temperatureValue_Instruction</Value>
+                                                </DeviceInstruction>
+                                        </Method>
+                                </SimpleDatapoint>
+                                <SimpleDatapoint>
+                                        <Name>temperatureStatus</Name>
+                                        <Type>string</Type>
+                                        <!-- <ArraySize>0</ArraySize>
+                                        <Multiplicity>1</Multiplicity>
+                                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity> -->
+                                        <MonitoringRate>5</MonitoringRate>
+                                        <DefaultValue>0</DefaultValue>
+                                        <Description>Camera temperature status</Description>
+                                        <Historizing>1</Historizing>
+                                        <Method>
+                                                <Name>get</Name>
+                                                <Argument>
+                                                        <Name>value_return</Name>
+                                                        <Type>string</Type>
+                                                        <Access>Output</Access>
+                                                </Argument>
+                                                <DeviceInstruction>
+                                                        <Value>get_temperatureStatus_Instruction</Value>
+                                                </DeviceInstruction>
+                                        </Method>
+                                </SimpleDatapoint>
+                                <SimpleDatapoint>
+                                        <!-- <Info>
+                                        <Config>0</Config>
+                                </Info> -->
+                                        <Name>pixelClock</Name>
+                                        <Type>int32</Type>
+                                        <ArraySize>0</ArraySize>
+                                        <Multiplicity>1</Multiplicity>
+                                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                        <DefaultValue>216</DefaultValue>
+                                        <Description>CDM sensor refresh rate</Description>
+                                        <Historizing>1</Historizing>
+                                        <Method>
+                                                <Name>get</Name>
+                                                <DeviceInstruction>
+                                                        <Value>get_pixelClock_Instruction</Value>
+                                                </DeviceInstruction>
+                                        </Method>
+                                </SimpleDatapoint>
+                                <SimpleDatapoint>
+                                        <!-- <Info>
+                                        <Config>0</Config>
+                                </Info> -->
+                                        <Name>exposure</Name>
+                                        <Type>double</Type>
+                                        <ArraySize>0</ArraySize>
+                                        <Multiplicity>1</Multiplicity>
+                                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                        <DefaultValue>100</DefaultValue>
+                                        <Description>CDM sensor exposure time</Description>
+                                        <Historizing>1</Historizing>
+                                        <Method>
+                                                <Name>get</Name>
+                                                <DeviceInstruction>
+                                                        <Value>get_exposure_Instruction</Value>
+                                                </DeviceInstruction>
+                                        </Method>
+                                </SimpleDatapoint>
+                                <SimpleDatapoint>
+                                        <!-- <Info>
+                                        <Config>0</Config>
+                                </Info> -->
+                                        <Name>gain</Name>
+                                        <Type>int32</Type>
+                                        <ArraySize>0</ArraySize>
+                                        <Multiplicity>1</Multiplicity>
+                                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                        <DefaultValue>1</DefaultValue>
+                                        <Description>CDM camera gain</Description>
+                                        <Historizing>1</Historizing>
+                                        <Method>
+                                                <Name>get</Name>
+                                                <DeviceInstruction>
+                                                        <Value>get_gain_Instruction</Value>
+                                                </DeviceInstruction>
+                                        </Method>
+                                </SimpleDatapoint>
+                                <SimpleDatapoint>
+                                        <!-- <Info>
+                                        <Config>0</Config>
+                                </Info> -->
+                                        <Name>FPS</Name>
+                                        <Type>double</Type>
+                                        <ArraySize>0</ArraySize>
+                                        <Multiplicity>1</Multiplicity>
+                                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                        <DefaultValue>1</DefaultValue>
+                                        <Description>CDM frames per second</Description>
+                                        <Historizing>1</Historizing>
+                                        <Method>
+                                                <Name>get</Name>
+                                                <DeviceInstruction>
+                                                        <Value>get_FPS_Instruction</Value>
+                                                </DeviceInstruction>
+                                        </Method>
+                                </SimpleDatapoint>
+                                <SimpleDatapoint>
+                                        <!-- <Info>
+                                        <Config>0</Config>
+                                </Info> -->
+                                        <Name>pixelFormat</Name>
+                                        <Type>string</Type>
+                                        <ArraySize>0</ArraySize>
+                                        <Multiplicity>1</Multiplicity>
+                                        <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
+                                        <DefaultValue>0</DefaultValue>
+                                        <Description>CDM image pixel format</Description>
+                                        <Historizing>1</Historizing>
+                                        <Method>
+                                                <Name>get</Name>
+                                                <DeviceInstruction>
+                                                        <Value>get_pixelFormat_Instruction</Value>
+                                                </DeviceInstruction>
+                                        </Method>
+                                </SimpleDatapoint>
+                        </CompoundDatapoint>
+
                         <SimpleDatapoint>
                                 <!-- <Info>
                                 <Config>0</Config>
@@ -902,7 +1033,7 @@
                                 <Multiplicity>1</Multiplicity>
                                 <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
                                 <DefaultValue>1.0</DefaultValue>
-                                <Description>Version of the CDM library</Description>
+                                <Description>Version of the camera library</Description>
                                 <Historizing>1</Historizing>
                                 <Method>
                                         <Name>get</Name>
@@ -1007,101 +1138,7 @@
                                         </DeviceInstruction>
                                 </Method>
                         </SimpleDatapoint>
-                        <SimpleDatapoint>
-                                <!-- <Info>
-                                <Config>0</Config>
-                        </Info> -->
-                                <Name>pixelClock</Name>
-                                <Type>int32</Type>
-                                <ArraySize>0</ArraySize>
-                                <Multiplicity>1</Multiplicity>
-                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                                <DefaultValue>216</DefaultValue>
-                                <Description>CDM sensor refresh rate</Description>
-                                <Historizing>1</Historizing>
-                                <Method>
-                                        <Name>get</Name>
-                                        <DeviceInstruction>
-                                                <Value>get_pixelClock_Instruction</Value>
-                                        </DeviceInstruction>
-                                </Method>
-                        </SimpleDatapoint>
-                        <SimpleDatapoint>
-                                <!-- <Info>
-                                <Config>0</Config>
-                        </Info> -->
-                                <Name>exposure</Name>
-                                <Type>double</Type>
-                                <ArraySize>0</ArraySize>
-                                <Multiplicity>1</Multiplicity>
-                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                                <DefaultValue>100</DefaultValue>
-                                <Description>CDM sensor exposure time</Description>
-                                <Historizing>1</Historizing>
-                                <Method>
-                                        <Name>get</Name>
-                                        <DeviceInstruction>
-                                                <Value>get_exposure_Instruction</Value>
-                                        </DeviceInstruction>
-                                </Method>
-                        </SimpleDatapoint>
-                        <SimpleDatapoint>
-                                <!-- <Info>
-                                <Config>0</Config>
-                        </Info> -->
-                                <Name>gain</Name>
-                                <Type>int32</Type>
-                                <ArraySize>0</ArraySize>
-                                <Multiplicity>1</Multiplicity>
-                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                                <DefaultValue>1</DefaultValue>
-                                <Description>CDM camera gain</Description>
-                                <Historizing>1</Historizing>
-                                <Method>
-                                        <Name>get</Name>
-                                        <DeviceInstruction>
-                                                <Value>get_gain_Instruction</Value>
-                                        </DeviceInstruction>
-                                </Method>
-                        </SimpleDatapoint>
-                        <SimpleDatapoint>
-                                <!-- <Info>
-                                <Config>0</Config>
-                        </Info> -->
-                                <Name>FPS</Name>
-                                <Type>double</Type>
-                                <ArraySize>0</ArraySize>
-                                <Multiplicity>1</Multiplicity>
-                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                                <DefaultValue>1</DefaultValue>
-                                <Description>CDM frames per second</Description>
-                                <Historizing>1</Historizing>
-                                <Method>
-                                        <Name>get</Name>
-                                        <DeviceInstruction>
-                                                <Value>get_FPS_Instruction</Value>
-                                        </DeviceInstruction>
-                                </Method>
-                        </SimpleDatapoint>
-                        <SimpleDatapoint>
-                                <!-- <Info>
-                                <Config>0</Config>
-                        </Info> -->
-                                <Name>pixelFormat</Name>
-                                <Type>string</Type>
-                                <ArraySize>0</ArraySize>
-                                <Multiplicity>1</Multiplicity>
-                                <StartNumberingMultiplicity>1</StartNumberingMultiplicity>
-                                <DefaultValue>0</DefaultValue>
-                                <Description>CDM image pixel format</Description>
-                                <Historizing>1</Historizing>
-                                <Method>
-                                        <Name>get</Name>
-                                        <DeviceInstruction>
-                                                <Value>get_pixelFormat_Instruction</Value>
-                                        </DeviceInstruction>
-                                </Method>
-                        </SimpleDatapoint>
+
                         <SimpleDatapoint>
                                 <!-- <Info>
                                 <Config>0</Config>
@@ -1245,7 +1282,5 @@
                         </SimpleDatapoint>
 
                 </CompoundDatapoint>
-
-
         </SimpleDevice>
 </OPCUA>

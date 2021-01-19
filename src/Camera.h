@@ -88,6 +88,15 @@ public:
     const std::string datapointName_displacement_y = "Unit_CDM.AuxControl.CDM.Displacement.displacement_y.displacement_y_v";
     const std::string datapointName_rotation = "Unit_CDM.AuxControl.CDM.Displacement.rotation.rotation_v";
 
+    const std::string datapointName_circle_x_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_stddev_x.circle_stddev_x_v";
+    const std::string datapointName_circle_y_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_stddev_y.circle_stddev_y_v";
+    const std::string datapointName_circle_R_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_stddev_R.circle_stddev_R_v";
+    const std::string datapointName_circle_RMS_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_stddev_RMS.circle_stddev_RMS_v";
+
+
+
+
+
     const int nLED = 12;
     const int nOARL = 2;
 
@@ -135,6 +144,15 @@ public:
         "Unit_CDM.AuxControl.CDM.OARL_y.OARL_y_1.OARL_y_1_v", 
         "Unit_CDM.AuxControl.CDM.OARL_y.OARL_y_2.OARL_y_2_v", 
     };
+
+    std::string datapointName_OARL_x_mean = "Unit_CDM.AuxControl.CDM.OARL_x.OARL_x_mean.OARL_x_mean_v";
+    std::string datapointName_OARL_y_mean = "Unit_CDM.AuxControl.CDM.OARL_y.OARL_y_mean.OARL_y_mean_v";
+
+    std::string datapointName_timestamp_UTC = "Unit_CDM.AuxControl.CDM.timestamp.timestamp_UTC.timestamp_UTC_v";
+    std::string datapointName_timestamp_epoch = "Unit_CDM.AuxControl.CDM.timestamp.timestamp_epoch.timestamp_epoch_v";
+
+
+
    
 
 };

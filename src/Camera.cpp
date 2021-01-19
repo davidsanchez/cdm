@@ -136,6 +136,20 @@ vector<vector<double>> transpose(vector<vector<double>> &A)
     return r;
 }
 
+double calculateStdDev(vector<double> v)
+{
+    double sum = std::accumulate(std::begin(v), std::end(v), 0.0);
+    double m = sum / v.size();
+
+    double accum = 0.0;
+    std::for_each(std::begin(v), std::end(v), [&](const double d) {
+        accum += (d - m) * (d - m);
+    });
+
+    double stdev = sqrt(accum / (v.size() - 1));
+    return stdev;
+}
+
 std::string Camera::writeFITSImage(Mat image, int n_stack)
 {
     LOG_TRACE << "Camera::writeFITSImage()";
@@ -321,8 +335,8 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
     //     pFits->pHDU().addKey("GAMMA", gamma_value, "Gamma");
     pFits->pHDU().addKey("GAIN", Camera::get_master_gain(), "Gain");
     pFits->pHDU().addKey("INFO", helper.get_Comment(), "Additional image info");
-    pFits->pHDU().addKey("CAMTVAL", Camera::get_temperature_value, "Camera temperature value");
-    pFits->pHDU().addKey("CAMTSTAT", Camera::get_temperature_status, "Camera temperature status");
+    pFits->pHDU().addKey("CAMTVAL", Camera::get_temperature_value(), "Camera temperature value");
+    pFits->pHDU().addKey("CAMTSTAT", Camera::get_temperature_status(), "Camera temperature status");
     pFits->pHDU().addKey("STACK", n_stack, "Number of stacked images");
 
     LOG_DEBUG << pFits->pHDU() << std::endl;
@@ -532,11 +546,11 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
         nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
         std::chrono::steady_clock::time_point begin_loop_after_image = std::chrono::steady_clock::now();
 
-        string epoch_time = currentEpochTime();
-        //cout << epoch_time << endl;
-
         if (nRet == IS_SUCCESS)
         {
+            timestamp_UTC.push_back(currentDateTimeMs());
+            timestamp_epoch.push_back(currentEpochTime());
+
             auto tp_start = std::chrono::high_resolution_clock::now();
 
             // Mat src, dst;
@@ -724,15 +738,27 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                     myclient->setDatapoint(datapointName_OARL_y_arrays[i], m_nameSpace, OARL_y[i]);
                 }
 
-                // TODO: Publish timestamps!
-                // TODO: Publish OARL_mean!
-                // TODO: Check what else you need to publish!
+                // Adding values from the second vector to the first (inplace)
+                std::transform(OARL_x[0].begin(), OARL_x[0].end(), OARL_x[1].begin(), OARL_x[0].begin(), std::plus<double>());
+                std::transform(OARL_y[0].begin(), OARL_y[0].end(), OARL_y[1].begin(), OARL_y[0].begin(), std::plus<double>());
+                // Taking an average of the previously computed value
+                std::transform(OARL_x[0].begin(), OARL_x[0].end(), OARL_x[0].begin(), std::bind(std::divides<double>(), std::placeholders::_1, 2.0));
+                std::transform(OARL_y[0].begin(), OARL_y[0].end(), OARL_y[0].begin(), std::bind(std::divides<double>(), std::placeholders::_1, 2.0));
+                // Publish the value
+                myclient->setDatapoint(datapointName_OARL_x_mean, m_nameSpace, OARL_x[0]);
+                myclient->setDatapoint(datapointName_OARL_y_mean, m_nameSpace, OARL_y[0]);
 
-                // TODO: Draw a circle arund the fitted LEDs
-                // TODO: Put date and time on the image itself?
+                myclient->setDatapoint(datapointName_timestamp_UTC, m_nameSpace, timestamp_UTC);
+                myclient->setDatapoint(datapointName_timestamp_epoch, m_nameSpace, timestamp_epoch);
+
+                // Publish stddev values
+                myclient->setDatapoint(datapointName_circle_x_stddev, m_nameSpace, calculateStdDev(circle_x));
+                myclient->setDatapoint(datapointName_circle_y_stddev, m_nameSpace, calculateStdDev(circle_y));
+                myclient->setDatapoint(datapointName_circle_R_stddev, m_nameSpace, calculateStdDev(circle_R));
+                myclient->setDatapoint(datapointName_circle_RMS_stddev, m_nameSpace, calculateStdDev(circle_RMS));
+               
 
                 // Push the image here
-
                 std::chrono::steady_clock::time_point begin_getimage = std::chrono::steady_clock::now();
                 published_image = myimage.GetImageToPublish(currentDateTime());
                 myclient->setDatapoint("Unit_CDM.AuxControl.CDM.image.image_v", m_nameSpace, published_image);
@@ -759,6 +785,9 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 LED_y.clear();
                 OARL_x.clear();
                 OARL_y.clear();
+
+                timestamp_UTC.clear();
+                timestamp_epoch.clear();
 
                 std::chrono::steady_clock::time_point end_publish = std::chrono::steady_clock::now();
                 LOG_INFO << "Time difference [Publishing results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_publish - begin_publish).count() << "[ms]" << std::endl;
@@ -957,7 +986,6 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
             int m_nameSpace = 2;
             published_image = myimage.GetImageToPublish(currentDateTime());
             myclient->setDatapoint("Unit_CDM.AuxControl.CDM.image.image_v", m_nameSpace, published_image);
-
         }
 
         else if (nRet == IS_CAPTURE_STATUS)
@@ -1223,8 +1251,6 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     // TODO: also publish the images without saving to disk first
     // TODO: also publish the vector of image paths
 
-    //helper.publish_datapoint("Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, 4);
-
     return v_image_paths;
 }
 
@@ -1464,7 +1490,6 @@ int Camera::StopStream()
     b_keep_taking = 0;
 }
 
-
 void Camera::GetImage(DataAccessClientOPCUA *myclient)
 {
     LOG_TRACE << "Camera::GetImage()";
@@ -1543,7 +1568,6 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     // Get current pixel clock
     nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_GET, (void *)&nPixelClock, sizeof(nPixelClock));
     LOG_INFO << "IS_PIXELCLOCK_CMD_GET returned " << nRet << ". The current pixel clock is = " << nPixelClock << std::endl;
-    //SetDatapointThread *m_SetDatapointThread_pixel_clock = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelClock.pixelClock_v", 2, nPixelClock);
     return_values.push_back(nPixelClock);
 
     // Set frame rate
@@ -1552,7 +1576,6 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     LOG_INFO << "SetFrameRate returned " << nRet << ". New framerate = " << new_fps << std::endl;
     is_SetFrameRate(hCam, IS_GET_FRAMERATE, &fps);
     LOG_INFO << "Applied framerate " << fps << " fps." << std::endl;
-    //SetDatapointThread *m_SetDatapointThread_fps = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.FPS.FPS_v", 2, fps);
     return_values.push_back(fps);
 
     // Set exposure
@@ -1564,7 +1587,6 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     LOG_INFO << "Set exposure is: " << exposure << std::endl;
     is_Exposure(hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, (void *)&current_exposure, sizeof(current_exposure));
     LOG_INFO << "Current exposure is: " << current_exposure << std::endl;
-    //SetDatapointThread *m_SetDatapointThread_exposure = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.exposure.exposure_v", 2, current_exposure);
     return_values.push_back(current_exposure);
     Camera::exposure_setting = current_exposure;
 
@@ -1572,7 +1594,6 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     LOG_INFO << "Gain to be set is: " << gain << std::endl;
     is_SetHardwareGain(hCam, gain, 14, 0, 32); // Master, red, green, blue
     int master_gain = is_SetHardwareGain(hCam, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER);
-    //SetDatapointThread *m_SetDatapointThread_gain = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.gain.gain_v", 2, master_gain);
     return_values.push_back(master_gain);
     Camera::master_gain_setting = master_gain;
     LOG_INFO << "Gain set is: " << master_gain << std::endl;
@@ -1587,7 +1608,6 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     LOG_INFO << "SetColorMode returned " << nRet << std::endl;
     nRet = is_SetColorMode(hCam, IS_GET_COLOR_MODE);
     LOG_INFO << "GetColorMode returned " << pixel_formats.right.at(nRet) << std::endl;
-    //SetDatapointThread *m_SetDatapointThread_pixel_format = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.pixelFormat.pixelFormat_v", 2, pixel_formats.right.at(nRet));
     return_values.push_back(pixel_formats.right.at(nRet));
 
     if (pixel_format == "IS_CM_SENSOR_RAW16")
