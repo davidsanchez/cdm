@@ -415,7 +415,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 {
     LOG_TRACE << "Camera::StartCDM()";
 
-    //
+    /*   //
     // Temporary used for testing purposes. Delete later.
     //
 
@@ -482,7 +482,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
     //
     // End of temporary block
-    //
+    // */
 
     b_keep_taking = 1;
     int array_size = 10;
@@ -506,6 +506,9 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
+
+    Mat m1;
+    vector<uchar> published_image;
 
     vector<double> circle_x;
     vector<double> circle_y;
@@ -579,10 +582,31 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
             // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
             // This is to be done for incoming camera image or Fake camera image from fits file.
+            /* 
             std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
             ImageAnalysis myimage(m1, "Horizontal", 1, iBitsPerPixel);
             std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-            LOG_INFO << "Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+            LOG_INFO << "Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl; 
+            */
+
+            if (iBitsPerPixel == 8)
+                m1 = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
+
+            else if (iBitsPerPixel == 16)
+                m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+
+            else
+            {
+                LOG_ERROR << "Check bitdepth!" << endl;
+                m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+            }
+
+            std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+            // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
+            // This is to be done for incoming camera image or Fake camera image from fits file.
+            ImageAnalysis myimage(m1, "Horizontal", 1, iBitsPerPixel);
+            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+            LOG_INFO << "Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl; 
 
             //ImageAnalysis myimage(src);
             begin = std::chrono::steady_clock::now();
@@ -699,45 +723,45 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             i_images_taken++;
 
             // TODO: Optimize this?
-            LOG_DATA 
-                    << circle_results[0] * px2arcsec
-                    << circle_results[1] * px2arcsec
-                    << circle_results[2] * px2arcsec
-                    << circle_results[3] * px2arcsec
-                    << displacement_results[0] * px2arcsec
-                    << displacement_results[1] * px2arcsec
-                    << displacement_results[2] * px2arcsec
-                    << led_x_results[0] * px2arcsec
-                    << led_x_results[1] * px2arcsec
-                    << led_x_results[2] * px2arcsec
-                    << led_x_results[3] * px2arcsec
-                    << led_x_results[4] * px2arcsec
-                    << led_x_results[5] * px2arcsec
-                    << led_x_results[6] * px2arcsec
-                    << led_x_results[7] * px2arcsec
-                    << led_x_results[8] * px2arcsec
-                    << led_x_results[9] * px2arcsec
-                    << led_x_results[10] * px2arcsec
-                    << led_x_results[11] * px2arcsec
-                    << led_y_results[0] * px2arcsec
-                    << led_y_results[1] * px2arcsec
-                    << led_y_results[2] * px2arcsec
-                    << led_y_results[3] * px2arcsec
-                    << led_y_results[4] * px2arcsec
-                    << led_y_results[5] * px2arcsec
-                    << led_y_results[6] * px2arcsec
-                    << led_y_results[7] * px2arcsec
-                    << led_y_results[8] * px2arcsec
-                    << led_y_results[9] * px2arcsec
-                    << led_y_results[10] * px2arcsec
-                    << led_y_results[11] * px2arcsec
-                    << oarl_x_results[0] * px2arcsec
-                    << oarl_x_results[1] * px2arcsec
-                    << oarl_y_results[0] * px2arcsec
-                    << oarl_y_results[1] * px2arcsec 
-                    ;
-                    
-
+            LOG_DATA
+            //cout
+                << setprecision(10) 
+                << circle_results[0] * px2arcsec << " "
+                << circle_results[1] * px2arcsec << " "
+                << circle_results[2] * px2arcsec << " "
+                << circle_results[3] * px2arcsec << " "
+                << displacement_results[0] * px2arcsec << " "
+                << displacement_results[1] * px2arcsec << " "
+                << displacement_results[2] * px2arcsec << " "
+                << led_x_results[0] * px2arcsec << " "
+                << led_x_results[1] * px2arcsec << " "
+                << led_x_results[2] * px2arcsec << " "
+                << led_x_results[3] * px2arcsec << " "
+                << led_x_results[4] * px2arcsec << " "
+                << led_x_results[5] * px2arcsec << " "
+                << led_x_results[6] * px2arcsec << " "
+                << led_x_results[7] * px2arcsec << " "
+                << led_x_results[8] * px2arcsec << " "
+                << led_x_results[9] * px2arcsec << " "
+                << led_x_results[10] * px2arcsec << " "
+                << led_x_results[11] * px2arcsec << " "
+                << led_y_results[0] * px2arcsec << " "
+                << led_y_results[1] * px2arcsec << " "
+                << led_y_results[2] * px2arcsec << " "
+                << led_y_results[3] * px2arcsec << " "
+                << led_y_results[4] * px2arcsec << " "
+                << led_y_results[5] * px2arcsec << " "
+                << led_y_results[6] * px2arcsec << " "
+                << led_y_results[7] * px2arcsec << " "
+                << led_y_results[8] * px2arcsec << " "
+                << led_y_results[9] * px2arcsec << " "
+                << led_y_results[10] * px2arcsec << " "
+                << led_y_results[11] * px2arcsec << " "
+                << oarl_x_results[0] * px2arcsec << " "
+                << oarl_x_results[1] * px2arcsec << " "
+                << oarl_y_results[0] * px2arcsec << " "
+                << oarl_y_results[1] * px2arcsec
+                << endl << endl; //
 
             //TODO: Time this process!
             if (i_images_taken % array_size == 0)
@@ -909,7 +933,8 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
 int Camera::StartStream(DataAccessClientOPCUA *myclient)
 {
-    LOG_TRACE << "Camera::StartStream()";
+    /*  
+   LOG_TRACE << "Camera::StartStream()";
 
     //
     // Temporary used for testing purposes. Delete later.
@@ -978,7 +1003,8 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
 
     //
     // End of temporary block
-    //
+    // 
+    */
 
     b_keep_taking = 1;
 
@@ -1002,6 +1028,9 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
     int loop_image_count = 0;
     int64_t duration_count = 0;
 
+    Mat m1;
+    vector<uchar> published_image;
+
     while (b_keep_taking == 1)
     {
 
@@ -1015,6 +1044,22 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
         {
             // Vertical flipping of image so it is upright when read from stored old fits files.
             //ImageAnalysis myimage(m1, "Vertical", 0);
+
+            // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
+            // This is to be done for incoming camera image or Fake camera image from fits file.
+            //ImageAnalysis myimage(m1, "Horizontal", 1, iBitsPerPixel);
+
+            if (iBitsPerPixel == 8)
+                m1 = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
+
+            else if (iBitsPerPixel == 16)
+                m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+
+            else
+            {
+                LOG_ERROR << "Check bitdepth!" << endl;
+                m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+            }
 
             // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
             // This is to be done for incoming camera image or Fake camera image from fits file.
