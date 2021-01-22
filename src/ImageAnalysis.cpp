@@ -114,8 +114,8 @@ void ImageAnalysis::CalculateDisplacements()
     // Checks if the OARLs are properly detected.
     if (this->oarl_x[0] > 0 && this->oarl_x[1] > 0)
     {
-        oarl_x_mean = this->oarl_x[0] + this->oarl_x[1];
-        oarl_y_mean = this->oarl_y[0] + this->oarl_y[1];
+        oarl_x_mean = (this->oarl_x[0] + this->oarl_x[1])/2.0;
+        oarl_y_mean = (this->oarl_y[0] + this->oarl_y[1])/2.0;
         displacement_x = oarl_x_mean - this->circle_a;
         displacement_y = oarl_y_mean - this->circle_b;
     }

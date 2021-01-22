@@ -524,6 +524,9 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     vector<vector<double>> OARL_x;
     vector<vector<double>> OARL_y;
 
+    vector<double> OARL_mean_x;
+    vector<double> OARL_mean_y;
+
     vector<string> timestamp_UTC;
     vector<string> timestamp_epoch;
 
@@ -542,6 +545,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
         vector<double> led_y_results;
         vector<double> oarl_x_results;
         vector<double> oarl_y_results;
+        vector<double> oarl_mean_results;
 
         // Use is_LockSeqBuf when processing image?
 
@@ -606,7 +610,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             // This is to be done for incoming camera image or Fake camera image from fits file.
             ImageAnalysis myimage(m1, "Horizontal", 1, iBitsPerPixel);
             std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-            LOG_INFO << "Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl; 
+            LOG_INFO << "Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
             //ImageAnalysis myimage(src);
             begin = std::chrono::steady_clock::now();
@@ -622,7 +626,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             oarl_x_results = myimage.GetOARLxResults();
             oarl_y_results = myimage.GetOARLyResults();
             displacement_results = myimage.GetDisplacementResults();
-            //GetOARLmeanResults();
+            oarl_mean_results = myimage.GetOARLmeanResults();
 
             circle_x.push_back(circle_results[0]);
             circle_y.push_back(circle_results[1]);
@@ -637,6 +641,9 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             LED_y.push_back(led_y_results);
             OARL_x.push_back(oarl_x_results);
             OARL_y.push_back(oarl_y_results);
+
+            OARL_mean_x.push_back(oarl_mean_results[0]);
+            OARL_mean_y.push_back(oarl_mean_results[1]);
 
             end = std::chrono::steady_clock::now();
             LOG_INFO << "Time difference [Getting image results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
@@ -724,12 +731,14 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
             // TODO: Optimize this?
             LOG_DATA
-            //cout
-                << setprecision(10) 
+                //cout
+                << setprecision(10)
                 << circle_results[0] * px2arcsec << " "
                 << circle_results[1] * px2arcsec << " "
                 << circle_results[2] * px2arcsec << " "
                 << circle_results[3] * px2arcsec << " "
+                << oarl_mean_results[0] * px2arcsec << " "
+                << oarl_mean_results[1] * px2arcsec << " "
                 << displacement_results[0] * px2arcsec << " "
                 << displacement_results[1] * px2arcsec << " "
                 << displacement_results[2] * px2arcsec << " "
@@ -761,7 +770,8 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 << oarl_x_results[1] * px2arcsec << " "
                 << oarl_y_results[0] * px2arcsec << " "
                 << oarl_y_results[1] * px2arcsec
-                << endl << endl; //
+                << endl
+                << endl; //
 
             //TODO: Time this process!
             if (i_images_taken % array_size == 0)
@@ -802,6 +812,9 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                     myclient->setDatapoint(datapointName_OARL_x_arrays[i], m_nameSpace, OARL_x[i]);
                     myclient->setDatapoint(datapointName_OARL_y_arrays[i], m_nameSpace, OARL_y[i]);
                 }
+                
+                /* No need to calculate the OARL mean values here. 
+                   They are calculated in inside the ImageAnalysis class
 
                 // Adding values from the second vector to the first (inplace)
                 std::transform(OARL_x[0].begin(), OARL_x[0].end(), OARL_x[1].begin(), OARL_x[0].begin(), std::plus<double>());
@@ -809,9 +822,11 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 // Taking an average of the previously computed value
                 std::transform(OARL_x[0].begin(), OARL_x[0].end(), OARL_x[0].begin(), std::bind(std::divides<double>(), std::placeholders::_1, 2.0));
                 std::transform(OARL_y[0].begin(), OARL_y[0].end(), OARL_y[0].begin(), std::bind(std::divides<double>(), std::placeholders::_1, 2.0));
+                 */
+
                 // Publish the value
-                myclient->setDatapoint(datapointName_OARL_x_mean, m_nameSpace, OARL_x[0]);
-                myclient->setDatapoint(datapointName_OARL_y_mean, m_nameSpace, OARL_y[0]);
+                myclient->setDatapoint(datapointName_OARL_x_mean, m_nameSpace, OARL_mean_x);
+                myclient->setDatapoint(datapointName_OARL_y_mean, m_nameSpace, OARL_mean_y);
 
                 myclient->setDatapoint(datapointName_timestamp_UTC, m_nameSpace, timestamp_UTC);
                 myclient->setDatapoint(datapointName_timestamp_epoch, m_nameSpace, timestamp_epoch);
@@ -849,6 +864,9 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 LED_y.clear();
                 OARL_x.clear();
                 OARL_y.clear();
+
+                OARL_mean_x.clear();
+                OARL_mean_y.clear();
 
                 timestamp_UTC.clear();
                 timestamp_epoch.clear();
