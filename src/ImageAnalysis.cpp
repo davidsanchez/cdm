@@ -17,6 +17,57 @@
 
 using namespace cv;
 
+ImageAnalysis::ImageAnalysis(Mat image, std::string image_flip, int image_transpose, int iBitsPerPixel)
+    {
+        int flip_code;
+        if (image_flip == "Vertical")
+            flip_code = 0;
+        else if (image_flip == "Horizontal")
+            flip_code = 1;
+        else if (image_flip == "Both")
+            flip_code = -1;
+        else if (image_flip == "None")
+            flip_code = -999;
+        else
+            flip_code = -999;
+
+        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+        // TODO: decide on pointer or copying.
+        this->image = image.clone(); //copying
+        //this->image = image; //pointer
+        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+        LOG_DEBUG << "Time difference [Clone] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+
+        if (image_transpose != 0)
+        {
+            std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+            transpose(this->image, this->image);
+            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+            LOG_DEBUG << "Time difference [Transpose] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+        }
+        if (flip_code != -999)
+        {
+            std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+            flip(this->image, this->image, flip_code);
+            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+            LOG_DEBUG << "Time difference [Flip] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+        }
+        
+        // Converting image if needed
+        begin = std::chrono::steady_clock::now();
+        if (iBitsPerPixel == 16)
+            this->image.convertTo(this->image, CV_8UC1, 1 / 256.0); //TODO: try with 16bit images
+        end = std::chrono::steady_clock::now();
+        LOG_DEBUG << "Time difference [Convert] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+
+        // To remove the noise
+        //TODO: these values for 8bit. Decide for 16bit values.
+        begin = std::chrono::steady_clock::now();
+        cv::threshold(this->image, this->image, 10, 255, THRESH_TOZERO);
+        end = std::chrono::steady_clock::now();
+        LOG_DEBUG << "Time difference [Threshold] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+    };
+
 int ImageAnalysis::Draw()
 {
     LOG_TRACE << "ImageAnalysis::Draw()";
