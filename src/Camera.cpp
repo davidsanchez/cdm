@@ -106,6 +106,18 @@ std::string currentDateTimeMs()
     return stream.str();
 }
 
+std::string currentDateTimeMsFilename()
+{
+    using namespace boost::posix_time;
+    ptime current_time = boost::posix_time::microsec_clock::universal_time();
+    time_facet *facet = new time_facet("%Y%m%d_%H%M%s");
+    std::stringstream stream;
+    stream.imbue(std::locale(std::locale::classic(), facet));
+    stream << current_time;
+    return stream.str();
+}
+
+
 std::string currentEpochTime()
 {
     unsigned long int now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -115,6 +127,32 @@ std::string currentEpochTime()
 
     std::string result = to_string(part1) + "." + to_string(part2);
     return result;
+}
+
+string UTC_date_short()
+{
+	char buffer [80];
+	// current date/time based on current system
+	time_t now = time(0);
+	// convert now to tm struct for UTC
+	tm *gmtm = gmtime(&now);
+	strftime (buffer,80,"%Y%m%d", gmtm);
+	//puts(buffer);
+
+	return buffer;
+}
+
+string UTC_time_short()
+{
+	char buffer [80];
+	// current date/time based on current system
+	time_t now = time(0);
+	// convert now to tm struct for UTC
+	tm *gmtm = gmtime(&now);
+	strftime (buffer,80,"%H%M%S", gmtm);
+	//puts(buffer);
+
+	return buffer;
 }
 
 vector<vector<double>> transpose(vector<vector<double>> &A)
@@ -180,6 +218,8 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
     streamObj << std::fixed;
     streamObj << std::setprecision(4);
     streamObj << helper.unix_timestamp();
+    streamObj << "_";
+    streamObj << currentDateTimeMsFilename();
     streamObj << "-TARGET=";
     streamObj << helper.get_StarName();
     streamObj << "-EXP=";
@@ -812,7 +852,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                     myclient->setDatapoint(datapointName_OARL_x_arrays[i], m_nameSpace, OARL_x[i]);
                     myclient->setDatapoint(datapointName_OARL_y_arrays[i], m_nameSpace, OARL_y[i]);
                 }
-                
+
                 /* No need to calculate the OARL mean values here. 
                    They are calculated in inside the ImageAnalysis class
 
