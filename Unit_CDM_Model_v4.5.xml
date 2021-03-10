@@ -278,8 +278,8 @@
                                 <Type>int32</Type>
                                 <Access>Input</Access>
                                 <Range>
-                                        <Min>1</Min>
-                                        <Max>300</Max>
+                                        <Min>96</Min>
+                                        <Max>432</Max>
                                 </Range>
                         </Argument>
                         <Argument>
@@ -287,8 +287,8 @@
                                 <Type>double</Type>
                                 <Access>Input</Access>
                                 <Range>
-                                        <Min>1</Min>
-                                        <Max>1000000</Max>
+                                        <Min>0.01</Min>
+                                        <Max>1000</Max>
                                 </Range>
                         </Argument>
                         <Argument>
