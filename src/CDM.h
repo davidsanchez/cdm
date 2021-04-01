@@ -61,6 +61,11 @@ public:
     int UpdateDriveRaTargetValue(double newvalue);
     int UpdateDriveDecTargetValue(double newvalue);
 
+    int UpdateAuxDMEastBottomValue(bool newvalue);
+    int UpdateAuxDMEastTopValue(bool newvalue);
+    int UpdateAuxDMWestBottomValue(bool newvalue);
+    int UpdateAuxDMWestTopValue(bool newvalue);
+
 
 private:
 

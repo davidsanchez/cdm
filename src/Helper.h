@@ -193,6 +193,10 @@ public:
     bool get_Drive_status_in_parking_position() { return Helper::drive_status_in_parking_position; }
     bool get_Drive_status_parked() { return Helper::drive_status_parked; }
     bool get_Drive_status_tracking_in_progress() { return Helper::drive_status_tracking_in_progress; }
+    bool get_Aux_status_DM_East_Bottom() { return Helper::aux_status_DM_East_Bottom; }
+    bool get_Aux_status_DM_East_Top() { return Helper::aux_status_DM_East_Top; }
+    bool get_Aux_status_DM_West_Bottom() { return Helper::aux_status_DM_West_Bottom; }
+    bool get_Aux_status_DM_West_Top() { return Helper::aux_status_DM_West_Top; }
 
     int get_nImagesGet() { return Helper::nImagesGet; }
     int set_nImagesGet(int nImagesGet) { Helper::nImagesGet = nImagesGet; }
@@ -210,11 +214,13 @@ public:
 
     int connectOpcUa_DataBroker(std::string url);
     int connectOpcUa_Drive(std::string url);
+    int connectOpcUa_Aux(std::string url);
     //int connectOpcUa_Relay(std::string url);
     //int connectOpcUa_ECC(std::string url);
 
     DataAccessClientOPCUA *get_client_DataBroker() { return m_clientOpcUaRef_DataBroker; }
     DataAccessClientOPCUA *get_client_Drive() { return m_clientOpcUaRef_Drive; }
+    DataAccessClientOPCUA *get_client_Aux() { return m_clientOpcUaRef_Aux; }
 
     int SetRaDrive(double newvalue)
     {
@@ -300,12 +306,34 @@ public:
     {
         drive_status_parked = newvalue;
         return 0;
-    }
+    }    
     int SetDriveTracking(bool newvalue)
     {
         drive_status_tracking_in_progress = newvalue;
         return 0;
     }
+
+    int SetAuxDMEastBottom(bool newvalue)
+    {
+        aux_status_DM_East_Bottom = newvalue;
+        return 0;
+    }
+        int SetAuxDMEastTop(bool newvalue)
+    {
+        aux_status_DM_East_Top = newvalue;
+        return 0;
+    }
+    int SetAuxDMWestBottom(bool newvalue)
+    {
+        aux_status_DM_West_Bottom = newvalue;
+        return 0;
+    }
+        int SetAuxDMWestTop(bool newvalue)
+    {
+        aux_status_DM_West_Top = newvalue;
+        return 0;
+    }
+
 
     long int unix_timestamp();
     std::string UTC_time();
@@ -318,6 +346,7 @@ private:
     DataAccessClientOPCUA *m_clientOpcUaRef_Relay = NULL;
     DataAccessClientOPCUA *m_clientOpcUaRef_ECC = NULL;
     DataAccessClientOPCUA *m_clientOpcUaRef_DataBroker = NULL;
+    DataAccessClientOPCUA *m_clientOpcUaRef_Aux = NULL;
 
     //DataAccessClientOPCUA* m_clientOpcUaRef_this=NULL;
 
@@ -338,6 +367,10 @@ private:
     bool drive_status_in_parking_position = 0;
     bool drive_status_parked = 0;
     bool drive_status_tracking_in_progress = 0;
+    bool aux_status_DM_East_Bottom = 0;
+    bool aux_status_DM_East_Top = 0;
+    bool aux_status_DM_West_Bottom = 0;
+    bool aux_status_DM_West_Top = 0;
     int nImagesGet = 1;
 
     std::string StarName = "";

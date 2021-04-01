@@ -95,6 +95,45 @@ int Helper::connectOpcUa_DataBroker(std::string url)
 	return ret;
 }
 
+int Helper::connectOpcUa_Aux(std::string url)
+{
+    LOG_TRACE << "Helper::connectOpcUa_Aux()";
+	int ret = 0;
+
+	std::string pluginClass = "ptr_Plugin";
+	DynamicLoader *pluginsLoader;
+
+	std::string pluginFile = API_LIB_PATH;
+	char *pPath;
+	pPath = getenv("MOS_PATH");
+	if (pPath != NULL)
+	{
+		pluginFile = pPath;
+		pluginFile += "/../lib/libDataAccessClientOPCUA.so";
+	}
+
+	pluginsLoader = new DynamicLoader(pluginFile, pluginClass);
+	m_clientOpcUaRef_Aux = pluginsLoader->load();
+	if (m_clientOpcUaRef_Aux == NULL)
+	{
+		ret = 1;
+	}
+	else
+	{
+		int cpt = 0;
+		int flag = 0;
+		do
+		{
+			ret = m_clientOpcUaRef_Aux->connect(url, NULL);
+			//ret = m_clientOpcUaRef_Aux->connect(url);
+			flag = ret;
+			if (cpt == 3)
+				flag = 0;
+			cpt++;
+		} while (flag == -1);
+	}
+	return ret;
+}
 
 /* 
 int Helper::connectOpcUa_Relay(std::string url)

@@ -241,7 +241,12 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
     streamObj << helper.get_Drive_status_in_motion();
     streamObj << "-tracking=";
     streamObj << helper.get_Drive_status_tracking_in_progress();
-
+    streamObj << "-DM=";
+    streamObj << helper.get_Aux_status_DM_East_Bottom();
+    streamObj << helper.get_Aux_status_DM_East_Top();
+    streamObj << helper.get_Aux_status_DM_West_Bottom();
+    streamObj << helper.get_Aux_status_DM_West_Top();
+    
     if (n_stack > 1)
         streamObj << "-stack=" << n_stack;
     streamObj << ".fits.gz";
@@ -378,6 +383,11 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
     pFits->pHDU().addKey("CAMTVAL", Camera::get_temperature_value(), "Camera temperature value");
     pFits->pHDU().addKey("CAMTSTAT", Camera::get_temperature_status(), "Camera temperature status");
     pFits->pHDU().addKey("STACK", n_stack, "Number of stacked images");
+
+    pFits->pHDU().addKey("DM_E_bot", helper.get_Aux_status_DM_East_Bottom(), "DM East Bottom");
+    pFits->pHDU().addKey("DM_E_top", helper.get_Aux_status_DM_East_Top(), "DM East Top");
+    pFits->pHDU().addKey("DM_W_bot", helper.get_Aux_status_DM_West_Bottom(), "DM West Bottom");
+    pFits->pHDU().addKey("DM_W_top", helper.get_Aux_status_DM_West_Top(), "DM West Top");
 
     LOG_DEBUG << pFits->pHDU() << std::endl;
 

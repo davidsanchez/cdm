@@ -19,7 +19,9 @@ public:
     std::vector<std::string> getElements_drive();
     std::vector<int> getNameSpaces_drive();
 
-    
+    // TODO: Temporary until all aux datapoints added to DataBroker
+    std::vector<std::string> getElements_aux();
+    std::vector<int> getNameSpaces_aux();
 
 private:
 
@@ -46,6 +48,11 @@ private:
     const std::string drive_ra_target_var_name = "Drive.DriveControl.RA_Target.RA_Target_v"; 
     const std::string drive_dec_target_var_name = "Drive.DriveControl.Dec_Target.Dec_Target_v"; 
 
+    // These datapoints are in Aux only currently
+    const std::string aux_DMEastBottom_var_name = "Auxiliary.AuxControl.DM_East_Bottom.Status.Status_v"; 
+    const std::string aux_DMEastTop_var_name = "Auxiliary.AuxControl.DM_East_Top.Status.Status_v"; 
+    const std::string aux_DMWestBottom_var_name = "Auxiliary.AuxControl.DM_West_Bottom.Status.Status_v"; 
+    const std::string aux_DMWestTop_var_name = "Auxiliary.AuxControl.DM_West_Top.Status.Status_v"; 
 
     void CheckRaUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckDecUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
@@ -68,6 +75,11 @@ private:
     void CheckDriveRaTargetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckDriveDecTargetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
 
+    // These datapoints are in Aux only currently
+    void CheckAuxDMEastBottomUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
+    void CheckAuxDMEastTopUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
+    void CheckAuxDMWestBottomUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
+    void CheckAuxDMWestTopUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
 };
 
 #endif //DATAPOINTMONITOR_H_

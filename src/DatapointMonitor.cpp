@@ -49,6 +49,10 @@ void DatapointMonitor::dataChange(std::vector<std::string> listElements, std::ve
     CheckDriveRaTargetUpdate(listElements, listValues);
     CheckDriveDecTargetUpdate(listElements, listValues);
 
+    CheckAuxDMEastBottomUpdate(listElements, listValues);
+    CheckAuxDMEastTopUpdate(listElements, listValues);
+    CheckAuxDMWestBottomUpdate(listElements, listValues);
+    CheckAuxDMWestTopUpdate(listElements, listValues);
 }
 
 std::vector<std::string> DatapointMonitor::getElements()
@@ -93,6 +97,22 @@ std::vector<std::string> DatapointMonitor::getElements_drive()
     return elements;
 }
 
+std::vector<std::string> DatapointMonitor::getElements_aux()
+{
+    /*!
+    Returns the monitored MOS data points list.
+    */
+
+    std::vector<std::string> elements;
+
+    elements.push_back(this->aux_DMEastBottom_var_name);
+    elements.push_back(this->aux_DMEastTop_var_name);
+    elements.push_back(this->aux_DMWestBottom_var_name);
+    elements.push_back(this->aux_DMWestTop_var_name);
+
+    return elements;
+}
+
 std::vector<int> DatapointMonitor::getNameSpaces()
 {
     /*!
@@ -119,6 +139,23 @@ std::vector<int> DatapointMonitor::getNameSpaces_drive()
     std::vector<int> namespaces;
 
     auto elements = getElements_drive();
+
+    // TODO: No need for a for loop. You can initialize it with 2 with desired size.
+    for (int i = 0; i < elements.size(); i++)
+        namespaces.push_back(2);
+
+    return namespaces;
+}
+
+std::vector<int> DatapointMonitor::getNameSpaces_aux()
+{
+    /*!
+    Returns the monitored MOS data points name spaces list.
+    */
+
+    std::vector<int> namespaces;
+
+    auto elements = getElements_aux();
 
     // TODO: No need for a for loop. You can initialize it with 2 with desired size.
     for (int i = 0; i < elements.size(); i++)
@@ -605,5 +642,121 @@ void DatapointMonitor::CheckDriveDecTargetUpdate(std::vector<std::string> listEl
 
         double drive_dec_value = std::stod(listValues[target_index]);
         caller->UpdateDriveDecTargetValue(drive_dec_value);
+    }
+}
+
+
+void DatapointMonitor::CheckAuxDMEastBottomUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
+{
+    /*!
+    Checks if the Aux DM East Bottom data point was changed 
+    and reports the update to the "caller" object in such a case.
+
+    @param listElements
+        List of changed data points
+    @param listValues
+        List of values of the changed data points
+    */
+
+    int target_index;
+
+    auto aux_iterator = std::find(listElements.begin(), listElements.end(), this->aux_DMEastBottom_var_name);
+
+    if (aux_iterator != listElements.end())
+    {
+        // aux data point updated, acting
+        target_index = aux_iterator - listElements.begin();
+
+        // Converts the string to bool value.
+        bool aux_value;
+        istringstream(listValues[target_index]) >> std::boolalpha >> aux_value;
+        caller->UpdateAuxDMEastBottomValue(aux_value);
+    }
+}
+
+
+void DatapointMonitor::CheckAuxDMEastTopUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
+{
+    /*!
+    Checks if the Aux DM East Top data point was changed 
+    and reports the update to the "caller" object in such a case.
+
+    @param listElements
+        List of changed data points
+    @param listValues
+        List of values of the changed data points
+    */
+
+    int target_index;
+
+    auto aux_iterator = std::find(listElements.begin(), listElements.end(), this->aux_DMEastTop_var_name);
+
+    if (aux_iterator != listElements.end())
+    {
+        // aux data point updated, acting
+        target_index = aux_iterator - listElements.begin();
+
+        // Converts the string to bool value.
+        bool aux_value;
+        istringstream(listValues[target_index]) >> std::boolalpha >> aux_value;
+        caller->UpdateAuxDMEastTopValue(aux_value);
+    }
+}
+
+
+void DatapointMonitor::CheckAuxDMWestBottomUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
+{
+    /*!
+    Checks if the Aux DM West Bottom data point was changed 
+    and reports the update to the "caller" object in such a case.
+
+    @param listElements
+        List of changed data points
+    @param listValues
+        List of values of the changed data points
+    */
+
+    int target_index;
+
+    auto aux_iterator = std::find(listElements.begin(), listElements.end(), this->aux_DMWestBottom_var_name);
+
+    if (aux_iterator != listElements.end())
+    {
+        // aux data point updated, acting
+        target_index = aux_iterator - listElements.begin();
+
+        // Converts the string to bool value.
+        bool aux_value;
+        istringstream(listValues[target_index]) >> std::boolalpha >> aux_value;
+        caller->UpdateAuxDMWestBottomValue(aux_value);
+    }
+}
+
+
+void DatapointMonitor::CheckAuxDMWestTopUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
+{
+    /*!
+    Checks if the Aux DM West Top data point was changed 
+    and reports the update to the "caller" object in such a case.
+
+    @param listElements
+        List of changed data points
+    @param listValues
+        List of values of the changed data points
+    */
+
+    int target_index;
+
+    auto aux_iterator = std::find(listElements.begin(), listElements.end(), this->aux_DMWestTop_var_name);
+
+    if (aux_iterator != listElements.end())
+    {
+        // aux data point updated, acting
+        target_index = aux_iterator - listElements.begin();
+
+        // Converts the string to bool value.
+        bool aux_value;
+        istringstream(listValues[target_index]) >> std::boolalpha >> aux_value;
+        caller->UpdateAuxDMWestTopValue(aux_value);
     }
 }
