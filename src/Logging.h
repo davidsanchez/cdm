@@ -35,6 +35,7 @@ typedef boost::log::sources::severity_channel_logger_mt< boost::log::trivial::se
 
 #define LOG_ENV BOOST_LOG_CHANNEL_SEV(my_logger::get(), "env", boost::log::trivial::fatal)
 #define LOG_DATA BOOST_LOG_CHANNEL_SEV(my_logger::get(), "data", boost::log::trivial::fatal)
+#define LOG_SETTINGS BOOST_LOG_CHANNEL_SEV(my_logger::get(), "settings", boost::log::trivial::fatal)
 
 
 //declares a global logger with a custom initialization

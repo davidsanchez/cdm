@@ -38,7 +38,7 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
     logging::add_file_log(
         keywords::file_name = "/home/lstoperator/log/active_data.log",                                   //active filename
         keywords::target_file_name = "/home/lstoperator/log/saved/target_data_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
-        keywords::auto_flush = true,                                                                    //writes messages immediately to file. Should be used only for debug.
+        keywords::auto_flush = true,                                                                     //writes messages immediately to file. Should be used only for debug.
         //keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%",
         keywords::format = "%TimeStamp% %Message%",
         keywords::time_based_rotation = sinks::file::rotation_at_time_point(7, 30, 0), // hour, minute, second
@@ -46,6 +46,17 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
         keywords::enable_final_rotation = false,                                       //If this is false the active file won't be moved to target_file on program closure. If true a new target_file will be created on program closure.
         keywords::filter = a_channel == "data");
 
+    logging::add_file_log(
+        keywords::file_name = "/home/lstoperator/log/active_settings.log",                                   //active filename
+        keywords::target_file_name = "/home/lstoperator/log/saved/target_settings_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
+        keywords::auto_flush = true,                                                                    //writes messages immediately to file. Should be used only for debug.
+        //keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%",
+        keywords::format = "%TimeStamp% %Message%",
+        keywords::time_based_rotation = sinks::file::rotation_at_time_point(7, 30, 0), // hour, minute, second
+        keywords::open_mode = std::ios_base::out | std::ios_base::app,                 //Apends data to the log instead of overwriting.
+        keywords::enable_final_rotation = false,                                       //If this is false the active file won't be moved to target_file on program closure. If true a new target_file will be created on program closure.
+        keywords::filter = a_channel == "settings");
+        
     logging::add_console_log(
         //std::cout,
         std::clog,

@@ -117,7 +117,6 @@ std::string currentDateTimeMsFilename()
     return stream.str();
 }
 
-
 std::string currentEpochTime()
 {
     unsigned long int now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -131,28 +130,28 @@ std::string currentEpochTime()
 
 string UTC_date_short()
 {
-	char buffer [80];
-	// current date/time based on current system
-	time_t now = time(0);
-	// convert now to tm struct for UTC
-	tm *gmtm = gmtime(&now);
-	strftime (buffer,80,"%Y%m%d", gmtm);
-	//puts(buffer);
+    char buffer[80];
+    // current date/time based on current system
+    time_t now = time(0);
+    // convert now to tm struct for UTC
+    tm *gmtm = gmtime(&now);
+    strftime(buffer, 80, "%Y%m%d", gmtm);
+    //puts(buffer);
 
-	return buffer;
+    return buffer;
 }
 
 string UTC_time_short()
 {
-	char buffer [80];
-	// current date/time based on current system
-	time_t now = time(0);
-	// convert now to tm struct for UTC
-	tm *gmtm = gmtime(&now);
-	strftime (buffer,80,"%H%M%S", gmtm);
-	//puts(buffer);
+    char buffer[80];
+    // current date/time based on current system
+    time_t now = time(0);
+    // convert now to tm struct for UTC
+    tm *gmtm = gmtime(&now);
+    strftime(buffer, 80, "%H%M%S", gmtm);
+    //puts(buffer);
 
-	return buffer;
+    return buffer;
 }
 
 vector<vector<double>> transpose(vector<vector<double>> &A)
@@ -246,7 +245,7 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
     streamObj << helper.get_Aux_status_DM_East_Top();
     streamObj << helper.get_Aux_status_DM_West_Bottom();
     streamObj << helper.get_Aux_status_DM_West_Top();
-    
+
     if (n_stack > 1)
         streamObj << "-stack=" << n_stack;
     streamObj << ".fits.gz";
@@ -923,6 +922,36 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
                 std::chrono::steady_clock::time_point end_publish = std::chrono::steady_clock::now();
                 LOG_INFO << "Time difference [Publishing results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_publish - begin_publish).count() << "[ms]" << std::endl;
+
+                // Write settings information to log file.
+                LOG_SETTINGS
+                    << helper.get_Zenith() << " "
+                    << helper.get_Azimuth() << " "
+                    << helper.get_LED01_intensity() << " "
+                    << helper.get_OARL_state() << " "
+                    << helper.get_Shutter_state() << " "
+                    << helper.get_SIS_state() << " "
+                    << helper.get_Drive_status_in_motion() << " "
+                    << helper.get_Drive_status_parked() << " "
+                    << helper.get_Drive_status_in_parking_position() << " "
+                    << helper.get_Drive_status_tracking_in_progress() << " "
+                    << helper.get_StarName() << " "
+
+                    << Camera::get_exposure() << " "
+                    << Camera::get_master_gain() << " "
+                    << Camera::get_temperature_value() << " "
+                    << Camera::get_temperature_status() << " "
+                    // Add FPS, Pixel format etc. here
+
+                    << helper.get_Aux_status_DM_East_Bottom() << " "
+                    << helper.get_Aux_status_DM_East_Top() << " "
+                    << helper.get_Aux_status_DM_West_Bottom() << " "
+                    << helper.get_Aux_status_DM_West_Top() << " "
+
+                    //<< helper.get_Comment() << " "
+
+                    << endl
+                    << endl; //
             }
         }
 
