@@ -224,6 +224,8 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
     streamObj << "-EXP=";
     streamObj << std::setprecision(0);
     streamObj << Camera::get_exposure();
+    streamObj << "-GAIN=";
+    streamObj << Camera::get_master_gain();
     streamObj << "-ZD=";
     streamObj << helper.get_Zenith();
     streamObj << "-AZ=";
