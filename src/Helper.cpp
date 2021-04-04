@@ -175,6 +175,7 @@ int Helper::connectOpcUa_Relay(std::string url)
 	}
 	return ret;
 }
+ */
 
 int Helper::connectOpcUa_ECC(std::string url)
 {
@@ -215,4 +216,4 @@ int Helper::connectOpcUa_ECC(std::string url)
 	}
 	return ret;
 }
- */
+

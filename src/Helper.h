@@ -216,11 +216,12 @@ public:
     int connectOpcUa_Drive(std::string url);
     int connectOpcUa_Aux(std::string url);
     //int connectOpcUa_Relay(std::string url);
-    //int connectOpcUa_ECC(std::string url);
+    int connectOpcUa_ECC(std::string url);
 
     DataAccessClientOPCUA *get_client_DataBroker() { return m_clientOpcUaRef_DataBroker; }
     DataAccessClientOPCUA *get_client_Drive() { return m_clientOpcUaRef_Drive; }
     DataAccessClientOPCUA *get_client_Aux() { return m_clientOpcUaRef_Aux; }
+    DataAccessClientOPCUA *get_client_ECC() { return m_clientOpcUaRef_ECC; }
 
     int SetRaDrive(double newvalue)
     {

@@ -23,6 +23,10 @@ public:
     std::vector<std::string> getElements_aux();
     std::vector<int> getNameSpaces_aux();
 
+    // TODO: Temporary until all ECC datapoints added to DataBroker
+    std::vector<std::string> getElements_ECC();
+    std::vector<int> getNameSpaces_ECC();
+
 private:
 
     CDM *caller;
@@ -35,7 +39,7 @@ private:
     const std::string zd_offset_var_name = "Unit_SB.SecurityBrokerControl.Drive.ZenithAngle_Offset.ZenithAngle_Offset_v"; 
     const std::string source_var_name = "Unit_SB.SecurityBrokerControl.Drive.SourceName.SourceName_v"; 
     const std::string oarl_var_name = "Unit_SB.SecurityBrokerControl.Auxiliary.OARL_Status.OARL_Status_v"; 
-    const std::string led01_var_name = "Unit_SB.SecurityBrokerControl.Camera.Led_01.Led_01_v"; 
+    //const std::string led01_var_name = "Unit_SB.SecurityBrokerControl.Camera.Led_01.Led_01_v"; 
     const std::string leds_var_name = "Unit_SB.SecurityBrokerControl.Camera.Led_Status.Led_Status_v"; 
     const std::string shutter_var_name = "Unit_SB.SecurityBrokerControl.Camera.Shutter_Status.Shutter_Status_v"; 
     const std::string sis_var_name = "Unit_SB.SecurityBrokerControl.Camera.SIS_Status.SIS_Status_v"; 
@@ -54,6 +58,9 @@ private:
     const std::string aux_DMWestBottom_var_name = "Auxiliary.AuxControl.DM_West_Bottom.Status.Status_v"; 
     const std::string aux_DMWestTop_var_name = "Auxiliary.AuxControl.DM_West_Top.Status.Status_v"; 
 
+    // These datapoints are in ECC because Safety Collector displays wrong value
+    const std::string led01_var_name = "ECC_LST.ECC.Monitoring.LEDPositions.Led_01.Led_01_v"; 
+
     void CheckRaUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckDecUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckAzUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
@@ -62,7 +69,7 @@ private:
     void CheckZdOffsetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckSourceUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckOARLUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
-    void CheckLED01Update(std::vector<std::string> listElements, std::vector<std::string> listValues);
+    //void CheckLED01Update(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckLEDsUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckShutterUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckSISUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
@@ -80,6 +87,9 @@ private:
     void CheckAuxDMEastTopUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckAuxDMWestBottomUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckAuxDMWestTopUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
+
+    // These datapoints are in ECC only currently
+    void CheckLED01Update(std::vector<std::string> listElements, std::vector<std::string> listValues);
 };
 
 #endif //DATAPOINTMONITOR_H_
