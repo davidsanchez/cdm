@@ -1730,7 +1730,11 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
         remoteImagePath = "Error";
     }
 
+    std::vector<std::string> publish_remoteImagePath; 
+    publish_remoteImagePath.push_back(remoteImagePath.c_str());
+    SetDatapointThread *m_SetDatapointThread_remote_path = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, publish_remoteImagePath); //Updates the imagePath
     SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
+    SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imagePath_cat.imagePath_cat_v", 2, remoteImagePath.c_str()); //Updates the imagePath_cat
 
     // Free the allocated buffer
     if (pcImageMemory != NULL)
