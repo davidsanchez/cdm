@@ -358,8 +358,6 @@ void *AsynchronousThread::run(void *params)
                 int m = time.time_of_day().minutes();
                 int s = time.time_of_day().seconds();
 
-                std::cout << h << " " << m << " " << s << std::endl;
-
                 // Forces the log rotation in the morning. 
                 // The log are already setup to rotate at 7:30 but there needs to be something written to log for it to rotate.
                 if ((h == 7) && (m == 30) && (s == 2))
