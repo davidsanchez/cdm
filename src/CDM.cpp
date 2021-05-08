@@ -73,10 +73,13 @@ int CDM::afterStart()
     std::string resultCall;
     m_Thread = new AsynchronousThread(getDataAccessClientOPCUARef());
     m_ThreadMeteo = new AsynchronousThread(getDataAccessClientOPCUARef());
+    m_ThreadLogRestart = new AsynchronousThread(getDataAccessClientOPCUARef());
 
     ret = m_Thread->startRun();
     int ret2 = m_ThreadMeteo->startRun();
     m_ThreadMeteo->cmdStartMeteo();
+    int ret3 = m_ThreadLogRestart->startRun();
+    m_ThreadLogRestart->cmdLogRestart();
 
     //helper.set_OPCUAref( getDataAccessClientOPCUARef() );
 

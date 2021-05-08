@@ -34,6 +34,7 @@ public:
     void resume();
     int startRun();
     int cmdStartMeteo();
+    int cmdLogRestart();
     int cmdGetMultipleImages(std::string datapointName, int nameSpace, int n_images);
     int cmdGetMultipleImagesStacked(std::string datapointName, int nameSpace, int n_images);
     int cmdStartCDM(std::string datapointName, int nameSpace);
@@ -50,6 +51,7 @@ private:
     int m_cmdStartStream;
     int m_cmdConfigure;
 	int m_cmdMeteo;
+    int m_cmdLogRestart;
     int m_nameSpace;
     std::string m_datapointName;
     DataAccessClientOPCUA *m_dataAccessClientOPCUA;

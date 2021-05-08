@@ -72,6 +72,7 @@ private:
     std::string element_opcua_cdm_image = "MOS_Server.CDM.Image.Image_v";
     AsynchronousThread *m_Thread;
     AsynchronousThread *m_ThreadMeteo;
+    AsynchronousThread *m_ThreadLogRestart;
 
 
 };

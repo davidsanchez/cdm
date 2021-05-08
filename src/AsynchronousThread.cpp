@@ -62,6 +62,13 @@ int AsynchronousThread::cmdStartMeteo()
     return ret;
 }
 
+int AsynchronousThread::cmdLogRestart()
+{
+    int ret = 0;
+    m_cmdLogRestart = true;
+    return ret;
+}
+
 int AsynchronousThread::cmdGetMultipleImages(std::string datapointName, int nameSpace, int n_images)
 {
     int ret = 0;
@@ -341,6 +348,29 @@ void *AsynchronousThread::run(void *params)
                     ;
 
                 usleep(9000000);
+            }
+
+            if (m_cmdLogRestart == 1)
+            {
+                // Get current UTC time
+                boost::posix_time::ptime time = boost::posix_time::second_clock::universal_time();
+                int h = time.time_of_day().hours();
+                int m = time.time_of_day().minutes();
+                int s = time.time_of_day().seconds();
+
+                std::cout << h << " " << m << " " << s << std::endl;
+
+                // Forces the log rotation in the morning. 
+                // The log are already setup to rotate at 7:30 but there needs to be something written to log for it to rotate.
+                if ((h == 7) && (m == 30) && (s == 2))
+                {
+                    cout << "Log rotation time." << endl;
+                    LOG_ENV << " ";
+                    LOG_TRACE << " ";
+                    LOG_DATA << " ";
+                    LOG_SETTINGS << " ";
+                    
+                }
             }
 
             if (m_cmdConfigure == 1)
