@@ -87,15 +87,9 @@ int CDM::afterStart()
     //connectOpcUa("opc.tcp://address:port"); // example opc.tcp://lappc-f578l:48080
     int connection_result_DataBroker = helper.connectOpcUa_DataBroker("opc.tcp://10.1.12.1:48030"); //DataBroker OPCUA
     int connection_result_Drive = helper.connectOpcUa_Drive("opc.tcp://10.200.100.105:48011");      //Drive OPCUA
-    int connection_result_Aux = helper.connectOpcUa_Aux("opc.tcp://10.200.100.105:48020");          //Aux OPCUA
-    int connection_result_ECC = helper.connectOpcUa_ECC("opc.tcp://10.1.4.66:4841");                //ECC OPCUA
-    //int connection_result_Relay = helper.connectOpcUa_Relay("opc.tcp://10.1.10.5:4845");            //Central Dish Cabinet Relay. Used for toggling SG camera power.
 
     LOG_DEBUG << "DataBroker status OPCUA: " << connection_result_DataBroker;
     LOG_DEBUG << "Drive status OPCUA: " << connection_result_Drive;
-    LOG_DEBUG << "Aux status OPCUA: " << connection_result_Aux;
-    //LOG_DEBUG << "Central dish cabinet relay status OPCUA: " << connection_result_Relay;
-    LOG_DEBUG << "ECC status OPCUA: " << connection_result_ECC;
 
     // Creating datapoint monitor that will notify us when the subscribed datapoints change.
     DatapointMonitor *dp_monitor = new DatapointMonitor(this);
@@ -122,32 +116,6 @@ int CDM::afterStart()
     else
     {
         LOG_ERROR << "Cannot connect to Drive.";
-    }
-
-    DatapointMonitor *dp_monitor_aux = new DatapointMonitor(this);
-    if (connection_result_Aux != connection_failure)
-    {
-        helper.get_client_Aux()->subscribe(
-            dp_monitor_aux->getElements_aux(),
-            dp_monitor_aux->getNameSpaces_aux(),
-            dp_monitor_aux);
-    }
-    else
-    {
-        LOG_ERROR << "Cannot connect to Aux.";
-    }
-
-    DatapointMonitor *dp_monitor_ECC = new DatapointMonitor(this);
-    if (connection_result_ECC != connection_failure)
-    {
-        helper.get_client_ECC()->subscribe(
-            dp_monitor_ECC->getElements_ECC(),
-            dp_monitor_ECC->getNameSpaces_ECC(),
-            dp_monitor_ECC);
-    }
-    else
-    {
-        LOG_ERROR << "Cannot connect to ECC.";
     }
 
     LOG_DEBUG << "After start finished!";
@@ -568,8 +536,6 @@ int CDM::close()
 
     // Close connection
     /* m_clientOpcUaRef_Drive->disconnect();
-	m_clientOpcUaRef_Relay->disconnect();
-	m_clientOpcUaRef_ECC->disconnect();
     */
     return ret;
 }

@@ -74,6 +74,5 @@ private:
     AsynchronousThread *m_ThreadMeteo;
     AsynchronousThread *m_ThreadLogRestart;
 
-
 };
 #endif //  CDM_H_

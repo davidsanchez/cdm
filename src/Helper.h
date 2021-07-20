@@ -214,14 +214,9 @@ public:
 
     int connectOpcUa_DataBroker(std::string url);
     int connectOpcUa_Drive(std::string url);
-    int connectOpcUa_Aux(std::string url);
-    //int connectOpcUa_Relay(std::string url);
-    int connectOpcUa_ECC(std::string url);
 
     DataAccessClientOPCUA *get_client_DataBroker() { return m_clientOpcUaRef_DataBroker; }
     DataAccessClientOPCUA *get_client_Drive() { return m_clientOpcUaRef_Drive; }
-    DataAccessClientOPCUA *get_client_Aux() { return m_clientOpcUaRef_Aux; }
-    DataAccessClientOPCUA *get_client_ECC() { return m_clientOpcUaRef_ECC; }
 
     int SetRaDrive(double newvalue)
     {
@@ -344,10 +339,7 @@ private:
 
     // declare a new attribute
     DataAccessClientOPCUA *m_clientOpcUaRef_Drive = NULL;
-    DataAccessClientOPCUA *m_clientOpcUaRef_Relay = NULL;
-    DataAccessClientOPCUA *m_clientOpcUaRef_ECC = NULL;
     DataAccessClientOPCUA *m_clientOpcUaRef_DataBroker = NULL;
-    DataAccessClientOPCUA *m_clientOpcUaRef_Aux = NULL;
 
     //DataAccessClientOPCUA* m_clientOpcUaRef_this=NULL;
 
