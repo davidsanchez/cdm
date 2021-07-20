@@ -65,6 +65,7 @@ add_library(
         Circle/data.h
         Logging.cpp
         DatapointMonitor.cpp
+        ControllerCB_changeStatus.cpp
         #ImageFITS.cpp
         )
 

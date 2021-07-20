@@ -4,6 +4,7 @@
 #include <ctime>
 
 #include "Logging.h"
+#include "ControllerCB_changeStatus.h"
 
 using namespace std;
 
@@ -17,7 +18,9 @@ long int Helper::unix_timestamp()
 
 int Helper::connectOpcUa_Drive(std::string url)
 {
-    LOG_TRACE << "Helper::connectOpcUa_Drive()";
+    ControllerCB_changeStatus *drive_CB = new ControllerCB_changeStatus("Drive");
+	
+	LOG_TRACE << "Helper::connectOpcUa_Drive()";
 	int ret = 0;
 
 	std::string pluginClass = "ptr_Plugin";
@@ -44,7 +47,8 @@ int Helper::connectOpcUa_Drive(std::string url)
 		int flag = 0;
 		do
 		{
-			ret = m_clientOpcUaRef_Drive->connect(url, NULL);
+			ret = m_clientOpcUaRef_Drive->connect(url, drive_CB);
+			//ret = m_clientOpcUaRef_Drive->connect(url, NULL);
 			//ret = m_clientOpcUaRef_Drive->connect(url);
 			flag = ret;
 			if (cpt == 3)
@@ -58,6 +62,9 @@ int Helper::connectOpcUa_Drive(std::string url)
 
 int Helper::connectOpcUa_DataBroker(std::string url)
 {
+
+	ControllerCB_changeStatus *dataBroker_CB = new ControllerCB_changeStatus("DataBroker");
+
     LOG_TRACE << "Helper::connectOpcUa_DataBroker()";
 	int ret = 0;
 
@@ -85,7 +92,8 @@ int Helper::connectOpcUa_DataBroker(std::string url)
 		int flag = 0;
 		do
 		{
-			ret = m_clientOpcUaRef_DataBroker->connect(url, NULL);
+			ret = m_clientOpcUaRef_Drive->connect(url, dataBroker_CB);
+			//ret = m_clientOpcUaRef_DataBroker->connect(url, NULL);
 			flag = ret;
 			if (cpt == 3)
 				flag = 0;
