@@ -30,7 +30,8 @@ void ControllerCB_changeStatus::message(int serverStatus)
     {
     case Disconnected:
         message = server_name + " Connection status changed to Disconnected";
-        cout << message << endl;
+        LOG_WARNING << message;
+
         subscriptionNeeded = true;
         if (m_pluginRefServer != NULL)
         {
@@ -40,12 +41,16 @@ void ControllerCB_changeStatus::message(int serverStatus)
         break;
     case Connected:
         message = server_name + " Connection status changed to Connected";
-        cout << message << endl;
-        
+        LOG_WARNING << message;        
+
         if(server_name == "DataBroker")
             {this->cdm->subscribe_DataBroker();}
         else if (server_name == "Drive")
             {this->cdm->subscribe_Drive();}
+        else
+        {
+            LOG_ERROR << "Unknown server name. Cannot subscribe.";        
+        }
 
         if (m_pluginRefServer != NULL)
         {
@@ -58,7 +63,8 @@ void ControllerCB_changeStatus::message(int serverStatus)
         //break;
     case ConnectionWarningWatchdogTimeout:
         message = server_name + " Connection status changed to ConnectionWarningWatchdogTimeout";
-        cout << message << endl;
+        LOG_WARNING << message;
+        
         subscriptionNeeded = false;
         if (m_pluginRefServer != NULL)
         {
@@ -69,7 +75,8 @@ void ControllerCB_changeStatus::message(int serverStatus)
     case ConnectionErrorApiReconnect:
         //printf("Connection status changed to ConnectionErrorApiReconnect\n");
         message = server_name + " Connection status changed to ConnectionErrorApiReconnect";
-        cout << message << endl;
+        LOG_WARNING << message;
+        
         subscriptionNeeded = true;
         if (m_pluginRefServer != NULL)
         {
@@ -80,7 +87,8 @@ void ControllerCB_changeStatus::message(int serverStatus)
     case ServerShutdown:
         //printf("Connection status changed to ServerShutdown\n");
         message = server_name + " Connection status changed to ServerShutdown";
-        cout << message << endl;
+        LOG_WARNING << message;
+        
         subscriptionNeeded = true;
         if (m_pluginRefServer != NULL)
         {
@@ -91,7 +99,8 @@ void ControllerCB_changeStatus::message(int serverStatus)
     case NewSessionCreated:
         //printf("Connection status changed to NewSessionCreated\n");
         message = server_name + " Connection status changed to NewSessionCreated";
-        cout << message << endl;
+        LOG_WARNING << message;
+        
         subscriptionNeeded = false;
         if (m_pluginRefServer != NULL)
         {
