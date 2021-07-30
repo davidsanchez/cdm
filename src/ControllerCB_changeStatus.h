@@ -3,6 +3,8 @@
 
 #include "CB_changeStatus.h"
 
+#include "CDM.h"
+
 enum ServerStatus
 {
     Disconnected, /*!< The connection to the server is deactivated by the user of the client API. */
@@ -20,7 +22,7 @@ class Config;
 class ControllerCB_changeStatus : public CB_changeStatus
 {
   public:
-    ControllerCB_changeStatus(std::string server_name);
+    ControllerCB_changeStatus(std::string server_name, CDM*);
 
     ~ControllerCB_changeStatus()
     {
@@ -37,6 +39,7 @@ class ControllerCB_changeStatus : public CB_changeStatus
     Controller *m_controller;
     bool subscriptionNeeded;
     std::string server_name;
+    CDM *cdm;
 
 
 };

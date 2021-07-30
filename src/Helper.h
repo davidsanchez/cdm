@@ -4,9 +4,14 @@
 #include "lappThread.h" // needed for MOS
 #include "pluginsBase.h"
 
+#include "DatapointMonitor.h"
+
 class DataAccessClientOPCUA;
 class PluginsBase;
 class AsynchronousThread;
+
+class CDM;
+
 class SetDatapointThread : public LAPPThread
 {
 public:
@@ -212,11 +217,12 @@ public:
         std::cout << "Comment is: " << get_Comment() << std::endl;
     }
 
-    int connectOpcUa_DataBroker(std::string url);
-    int connectOpcUa_Drive(std::string url);
+    int connectOpcUa_DataBroker(std::string url, CDM *cdm);
+    int connectOpcUa_Drive(std::string url, CDM *cdm);
 
     DataAccessClientOPCUA *get_client_DataBroker() { return m_clientOpcUaRef_DataBroker; }
     DataAccessClientOPCUA *get_client_Drive() { return m_clientOpcUaRef_Drive; }
+
 
     int SetRaDrive(double newvalue)
     {

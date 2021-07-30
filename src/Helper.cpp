@@ -1,10 +1,14 @@
 #include <Helper.h>
-#include <string>
-#include <iostream>
-#include <ctime>
 
-#include "Logging.h"
+#include <ctime>
+#include <iostream>
+#include <string>
+
 #include "ControllerCB_changeStatus.h"
+#include "Logging.h"
+
+#include "CDM.h"
+
 
 using namespace std;
 
@@ -16,9 +20,9 @@ long int Helper::unix_timestamp()
 	return now;
 }
 
-int Helper::connectOpcUa_Drive(std::string url)
+int Helper::connectOpcUa_Drive(std::string url, CDM *cdm)
 {
-    ControllerCB_changeStatus *drive_CB = new ControllerCB_changeStatus("Drive");
+    ControllerCB_changeStatus *drive_CB = new ControllerCB_changeStatus("Drive", cdm);
 	
 	LOG_TRACE << "Helper::connectOpcUa_Drive()";
 	int ret = 0;
@@ -60,10 +64,10 @@ int Helper::connectOpcUa_Drive(std::string url)
 }
 
 
-int Helper::connectOpcUa_DataBroker(std::string url)
+int Helper::connectOpcUa_DataBroker(std::string url, CDM *cdm)
 {
 
-	ControllerCB_changeStatus *dataBroker_CB = new ControllerCB_changeStatus("DataBroker");
+	ControllerCB_changeStatus *dataBroker_CB = new ControllerCB_changeStatus("DataBroker", cdm);
 
     LOG_TRACE << "Helper::connectOpcUa_DataBroker()";
 	int ret = 0;
@@ -92,7 +96,7 @@ int Helper::connectOpcUa_DataBroker(std::string url)
 		int flag = 0;
 		do
 		{
-			ret = m_clientOpcUaRef_Drive->connect(url, dataBroker_CB);
+			ret = m_clientOpcUaRef_DataBroker->connect(url, dataBroker_CB);
 			//ret = m_clientOpcUaRef_DataBroker->connect(url, NULL);
 			flag = ret;
 			if (cpt == 3)

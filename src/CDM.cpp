@@ -85,33 +85,25 @@ int CDM::afterStart()
 
     // Trying to access other OPCUA server
     //connectOpcUa("opc.tcp://address:port"); // example opc.tcp://lappc-f578l:48080
-    int connection_result_DataBroker = helper.connectOpcUa_DataBroker("opc.tcp://10.1.12.1:48030"); //DataBroker OPCUA
-    int connection_result_Drive = helper.connectOpcUa_Drive("opc.tcp://10.200.100.105:48011");      //Drive OPCUA
+    CDM::connection_result_DataBroker = helper.connectOpcUa_DataBroker("opc.tcp://10.1.12.1:48030", this); //DataBroker OPCUA
+    CDM:connection_result_Drive = helper.connectOpcUa_Drive("opc.tcp://10.200.100.105:48011", this);      //Drive OPCUA
 
     LOG_DEBUG << "DataBroker status OPCUA: " << connection_result_DataBroker;
     LOG_DEBUG << "Drive status OPCUA: " << connection_result_Drive;
 
     // Creating datapoint monitor that will notify us when the subscribed datapoints change.
-    DatapointMonitor *dp_monitor = new DatapointMonitor(this);
     if (connection_result_DataBroker != connection_failure)
     {
-        helper.get_client_DataBroker()->subscribe(
-            dp_monitor->getElements(),
-            dp_monitor->getNameSpaces(),
-            dp_monitor);
+       subscribe_DataBroker();
     }
     else
     {
         LOG_ERROR << "Cannot connect to DataBroker.";
     }
 
-    DatapointMonitor *dp_monitor_drive = new DatapointMonitor(this);
     if (connection_result_Drive != connection_failure)
     {
-        helper.get_client_Drive()->subscribe(
-            dp_monitor_drive->getElements_drive(),
-            dp_monitor_drive->getNameSpaces_drive(),
-            dp_monitor_drive);
+        subscribe_Drive();
     }
     else
     {
@@ -122,6 +114,60 @@ int CDM::afterStart()
 
     return ret;
 }
+
+int CDM::subscribe_DataBroker()
+{
+    if (CDM::connection_result_DataBroker != -1)
+    {
+        //delete CDM::dp_monitor_SG;
+        //CDM::dp_monitor_SG = new DatapointMonitor(this);
+        if (CDM::dp_monitor_DataBroker == NULL)
+        {
+            CDM::dp_monitor_DataBroker = new DatapointMonitor(this);
+            cout << "Subscribing to DataBroker datapoints 1." << endl;
+            helper.get_client_DataBroker()->subscribe(
+                CDM::dp_monitor_DataBroker->getElements(),
+                CDM::dp_monitor_DataBroker->getNameSpaces(),
+                CDM::dp_monitor_DataBroker);
+        }
+        else
+        {
+            cout << "Subscribing to DataBroker datapoints 2." << endl;
+            helper.get_client_DataBroker()->subscribe(
+                CDM::dp_monitor_DataBroker->getElements(),
+                CDM::dp_monitor_DataBroker->getNameSpaces(),
+                CDM::dp_monitor_DataBroker);
+        }
+    }
+}
+
+
+int CDM::subscribe_Drive()
+{
+    if (CDM::connection_result_Drive != -1)
+    {
+        //delete CDM::dp_monitor_SG;
+        //CDM::dp_monitor_SG = new DatapointMonitor(this);
+        if (CDM::dp_monitor_Drive == NULL)
+        {
+            CDM::dp_monitor_Drive = new DatapointMonitor(this);
+            cout << "Subscribing to Drive datapoints 1." << endl;
+            helper.get_client_Drive()->subscribe(
+                CDM::dp_monitor_Drive->getElements_drive(),
+                CDM::dp_monitor_Drive->getNameSpaces_drive(),
+                CDM::dp_monitor_Drive);
+        }
+        else
+        {
+            cout << "Subscribing to Drive datapoints 2." << endl;
+            helper.get_client_Drive()->subscribe(
+                CDM::dp_monitor_Drive->getElements_drive(),
+                CDM::dp_monitor_Drive->getNameSpaces_drive(),
+                CDM::dp_monitor_Drive);
+        }
+    }
+}
+
 
 int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::string &datapointName, int nameSpace, std::string &result)
 {

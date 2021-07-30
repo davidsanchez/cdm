@@ -66,6 +66,14 @@ public:
     int UpdateAuxDMWestBottomValue(bool newvalue);
     int UpdateAuxDMWestTopValue(bool newvalue);
 
+    DatapointMonitor *dp_monitor_DataBroker = NULL;
+    DatapointMonitor *dp_monitor_Drive = NULL;
+
+    int subscribe_DataBroker();
+    int subscribe_Drive();
+    int connection_result_DataBroker;
+    int connection_result_Drive;
+
 
 private:
 
