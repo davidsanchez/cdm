@@ -41,15 +41,19 @@ void ControllerCB_changeStatus::message(int serverStatus)
         break;
     case Connected:
         message = server_name + " Connection status changed to Connected";
-        LOG_WARNING << message;        
+        LOG_WARNING << message;
 
-        if(server_name == "DataBroker")
-            {this->cdm->subscribe_DataBroker();}
+        if (server_name == "DataBroker")
+        {
+            this->cdm->subscribe_DataBroker();
+        }
         else if (server_name == "Drive")
-            {this->cdm->subscribe_Drive();}
+        {
+            this->cdm->subscribe_Drive();
+        }
         else
         {
-            LOG_ERROR << "Unknown server name. Cannot subscribe.";        
+            LOG_ERROR << "Unknown server name. Cannot subscribe.";
         }
 
         if (m_pluginRefServer != NULL)
@@ -59,12 +63,12 @@ void ControllerCB_changeStatus::message(int serverStatus)
         }
         //m_controller->setCommunicationLossStatus(false);
         //if (subscriptionNeeded)
-            //m_controller->doSubscription(m_config);
+        //m_controller->doSubscription(m_config);
         //break;
     case ConnectionWarningWatchdogTimeout:
         message = server_name + " Connection status changed to ConnectionWarningWatchdogTimeout";
         LOG_WARNING << message;
-        
+
         subscriptionNeeded = false;
         if (m_pluginRefServer != NULL)
         {
@@ -76,7 +80,7 @@ void ControllerCB_changeStatus::message(int serverStatus)
         //printf("Connection status changed to ConnectionErrorApiReconnect\n");
         message = server_name + " Connection status changed to ConnectionErrorApiReconnect";
         LOG_WARNING << message;
-        
+
         subscriptionNeeded = true;
         if (m_pluginRefServer != NULL)
         {
@@ -88,7 +92,7 @@ void ControllerCB_changeStatus::message(int serverStatus)
         //printf("Connection status changed to ServerShutdown\n");
         message = server_name + " Connection status changed to ServerShutdown";
         LOG_WARNING << message;
-        
+
         subscriptionNeeded = true;
         if (m_pluginRefServer != NULL)
         {
@@ -100,7 +104,7 @@ void ControllerCB_changeStatus::message(int serverStatus)
         //printf("Connection status changed to NewSessionCreated\n");
         message = server_name + " Connection status changed to NewSessionCreated";
         LOG_WARNING << message;
-        
+
         subscriptionNeeded = false;
         if (m_pluginRefServer != NULL)
         {
