@@ -15,10 +15,6 @@ public:
     std::vector<std::string> getElements();
     std::vector<int> getNameSpaces();
 
-    // TODO: Temporary until all drive datapoints added to DataBroker
-    std::vector<std::string> getElements_drive();
-    std::vector<int> getNameSpaces_drive();
-
 private:
 
     CDM *caller;
@@ -40,16 +36,13 @@ private:
     const std::string drive_inparkinpos_var_name = "Unit_SB.SecurityBrokerControl.Drive.InParkingPosition.InParkingPosition_v"; 
     const std::string drive_parked_var_name = "Unit_SB.SecurityBrokerControl.Drive.Parked.Parked_v"; 
     const std::string drive_tracking_var_name = "Unit_SB.SecurityBrokerControl.Drive.TrackingInProgress.TrackingInProgress_v"; 
+    const std::string drive_ra_target_var_name = "Unit_SB.SecurityBrokerControl.Drive.RA_Target.RA_Target_v";
+    const std::string drive_dec_target_var_name = "Unit_SB.SecurityBrokerControl.Drive.Dec_Target.Dec_Target_v"; 
 
     const std::string aux_DMEastBottom_var_name = "Unit_SB.SecurityBrokerControl.Auxiliary.DM_East_Bottom_Status.DM_East_Bottom_Status_v"; 
     const std::string aux_DMEastTop_var_name = "Unit_SB.SecurityBrokerControl.Auxiliary.DM_East_Top_Status.DM_East_Top_Status_v"; 
     const std::string aux_DMWestBottom_var_name = "Unit_SB.SecurityBrokerControl.Auxiliary.DM_West_Bottom_Status.DM_West_Bottom_Status_v"; 
     const std::string aux_DMWestTop_var_name = "Unit_SB.SecurityBrokerControl.Auxiliary.DM_West_Top_Status.DM_West_Top_Status_v"; 
-
-
-    // These datapoints are in Drive only currently
-    const std::string drive_ra_target_var_name = "Drive.DriveControl.RA_Target.RA_Target_v"; 
-    const std::string drive_dec_target_var_name = "Drive.DriveControl.Dec_Target.Dec_Target_v"; 
 
 
     void CheckRaUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
@@ -69,15 +62,16 @@ private:
     void CheckDriveInparkingPosUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckDriveParkedUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckDriveTrackingUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
+    void CheckDriveRaTargetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
+    void CheckDriveDecTargetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
+
 
     void CheckAuxDMEastBottomUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckAuxDMEastTopUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckAuxDMWestBottomUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckAuxDMWestTopUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
 
-    // These datapoints are in Drive only currently
-    void CheckDriveRaTargetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
-    void CheckDriveDecTargetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
+
     
 };
 

@@ -22,7 +22,7 @@ class Config;
 class ControllerCB_changeStatus : public CB_changeStatus
 {
 public:
-    ControllerCB_changeStatus(std::string server_name, CDM *);
+    ControllerCB_changeStatus(CDM *);
 
     ~ControllerCB_changeStatus(){};
 
@@ -37,7 +37,6 @@ private:
     Config *m_config;
     Controller *m_controller;
     bool subscriptionNeeded;
-    std::string server_name;
     CDM *cdm;
 };
 

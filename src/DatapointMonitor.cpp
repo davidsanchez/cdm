@@ -46,14 +46,13 @@ void DatapointMonitor::dataChange(std::vector<std::string> listElements, std::ve
     CheckDriveInparkingPosUpdate(listElements, listValues);
     CheckDriveParkedUpdate(listElements, listValues);
     CheckDriveTrackingUpdate(listElements, listValues);
+    CheckDriveRaTargetUpdate(listElements, listValues);
+    CheckDriveDecTargetUpdate(listElements, listValues);
 
     CheckAuxDMEastBottomUpdate(listElements, listValues);
     CheckAuxDMEastTopUpdate(listElements, listValues);
     CheckAuxDMWestBottomUpdate(listElements, listValues);
     CheckAuxDMWestTopUpdate(listElements, listValues);
-
-    CheckDriveRaTargetUpdate(listElements, listValues);
-    CheckDriveDecTargetUpdate(listElements, listValues);
 
 }
 
@@ -82,25 +81,13 @@ std::vector<std::string> DatapointMonitor::getElements()
     elements.push_back(this->drive_inparkinpos_var_name);
     elements.push_back(this->drive_parked_var_name);
     elements.push_back(this->drive_tracking_var_name);
+    elements.push_back(this->drive_ra_target_var_name);
+    elements.push_back(this->drive_dec_target_var_name);
 
     elements.push_back(this->aux_DMEastBottom_var_name);
     elements.push_back(this->aux_DMEastTop_var_name);
     elements.push_back(this->aux_DMWestBottom_var_name);
     elements.push_back(this->aux_DMWestTop_var_name);
-
-    return elements;
-}
-
-std::vector<std::string> DatapointMonitor::getElements_drive()
-{
-    /*!
-    Returns the monitored MOS data points list.
-    */
-
-    std::vector<std::string> elements;
-
-    elements.push_back(this->drive_ra_target_var_name);
-    elements.push_back(this->drive_dec_target_var_name);
 
     return elements;
 }
@@ -115,23 +102,6 @@ std::vector<int> DatapointMonitor::getNameSpaces()
     std::vector<int> namespaces;
 
     auto elements = getElements();
-
-    // TODO: No need for a for loop. You can initialize it with 2 with desired size.
-    for (int i = 0; i < elements.size(); i++)
-        namespaces.push_back(2);
-
-    return namespaces;
-}
-
-std::vector<int> DatapointMonitor::getNameSpaces_drive()
-{
-    /*!
-    Returns the monitored MOS data points name spaces list.
-    */
-
-    std::vector<int> namespaces;
-
-    auto elements = getElements_drive();
 
     // TODO: No need for a for loop. You can initialize it with 2 with desired size.
     for (int i = 0; i < elements.size(); i++)

@@ -221,8 +221,6 @@ public:
     int connectOpcUa_Drive(std::string url, CDM *cdm);
 
     DataAccessClientOPCUA *get_client_DataBroker() { return m_clientOpcUaRef_DataBroker; }
-    DataAccessClientOPCUA *get_client_Drive() { return m_clientOpcUaRef_Drive; }
-
 
     int SetRaDrive(double newvalue)
     {
@@ -344,7 +342,6 @@ private:
     // Helper stuff
 
     // declare a new attribute
-    DataAccessClientOPCUA *m_clientOpcUaRef_Drive = NULL;
     DataAccessClientOPCUA *m_clientOpcUaRef_DataBroker = NULL;
 
     //DataAccessClientOPCUA* m_clientOpcUaRef_this=NULL;

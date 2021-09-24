@@ -10,12 +10,11 @@
 
 #include "Logging.h"
 
-ControllerCB_changeStatus::ControllerCB_changeStatus(std::string server_name, CDM *cdm)
+ControllerCB_changeStatus::ControllerCB_changeStatus(CDM *cdm)
 {
     m_controller = NULL;
     m_pluginRefServer = NULL;
     m_config = NULL;
-    this->server_name = server_name;
     this->cdm = cdm;
 }
 
@@ -29,7 +28,7 @@ void ControllerCB_changeStatus::message(int serverStatus)
     switch (serverStatus)
     {
     case Disconnected:
-        message = server_name + " Connection status changed to Disconnected";
+        message = "Connection status changed to Disconnected";
         LOG_WARNING << message;
 
         subscriptionNeeded = true;
@@ -40,21 +39,10 @@ void ControllerCB_changeStatus::message(int serverStatus)
         //m_controller->setCommunicationLossStatus(true);
         break;
     case Connected:
-        message = server_name + " Connection status changed to Connected";
+        message = "Connection status changed to Connected";
         LOG_WARNING << message;
 
-        if (server_name == "DataBroker")
-        {
-            this->cdm->subscribe_DataBroker();
-        }
-        else if (server_name == "Drive")
-        {
-            this->cdm->subscribe_Drive();
-        }
-        else
-        {
-            LOG_ERROR << "Unknown server name. Cannot subscribe.";
-        }
+        this->cdm->subscribe_DataBroker();
 
         if (m_pluginRefServer != NULL)
         {
@@ -66,7 +54,7 @@ void ControllerCB_changeStatus::message(int serverStatus)
         //m_controller->doSubscription(m_config);
         //break;
     case ConnectionWarningWatchdogTimeout:
-        message = server_name + " Connection status changed to ConnectionWarningWatchdogTimeout";
+        message = "Connection status changed to ConnectionWarningWatchdogTimeout";
         LOG_WARNING << message;
 
         subscriptionNeeded = false;
@@ -78,7 +66,7 @@ void ControllerCB_changeStatus::message(int serverStatus)
         break;
     case ConnectionErrorApiReconnect:
         //printf("Connection status changed to ConnectionErrorApiReconnect\n");
-        message = server_name + " Connection status changed to ConnectionErrorApiReconnect";
+        message = "Connection status changed to ConnectionErrorApiReconnect";
         LOG_WARNING << message;
 
         subscriptionNeeded = true;
@@ -90,7 +78,7 @@ void ControllerCB_changeStatus::message(int serverStatus)
         break;
     case ServerShutdown:
         //printf("Connection status changed to ServerShutdown\n");
-        message = server_name + " Connection status changed to ServerShutdown";
+        message = "Connection status changed to ServerShutdown";
         LOG_WARNING << message;
 
         subscriptionNeeded = true;
@@ -102,7 +90,7 @@ void ControllerCB_changeStatus::message(int serverStatus)
         break;
     case NewSessionCreated:
         //printf("Connection status changed to NewSessionCreated\n");
-        message = server_name + " Connection status changed to NewSessionCreated";
+        message = "Connection status changed to NewSessionCreated";
         LOG_WARNING << message;
 
         subscriptionNeeded = false;
