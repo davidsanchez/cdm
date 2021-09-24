@@ -257,7 +257,7 @@
                 <!--                        </Argument>
                 </HardwareConfig>
 -->
-                <FileFSMRef>FSM_CDM_v4.5.xml</FileFSMRef>
+                <FileFSMRef>FSM_CDM.xml</FileFSMRef>
                 <FSM>
                         <NameFSM>Connect</NameFSM>
                         <DeviceInstruction>

@@ -218,7 +218,6 @@ public:
     }
 
     int connectOpcUa_DataBroker(std::string url, CDM *cdm);
-    int connectOpcUa_Drive(std::string url, CDM *cdm);
 
     DataAccessClientOPCUA *get_client_DataBroker() { return m_clientOpcUaRef_DataBroker; }
 
