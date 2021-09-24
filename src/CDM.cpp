@@ -100,7 +100,6 @@ int CDM::afterStart()
         LOG_ERROR << "Cannot connect to DataBroker.";
     }
 
-
     LOG_DEBUG << "After start finished!";
 
     return ret;
@@ -116,17 +115,16 @@ int CDM::subscribe_DataBroker()
         if (CDM::dp_monitor_DataBroker == NULL)
         {
             CDM::dp_monitor_DataBroker = new DatapointMonitor(this);
-        }
-        
-        helper.get_client_DataBroker()->subscribe(
+
+            helper.get_client_DataBroker()->subscribe(
                 CDM::dp_monitor_DataBroker->getElements(),
                 CDM::dp_monitor_DataBroker->getNameSpaces(),
                 CDM::dp_monitor_DataBroker);
+        }
+
         helper.get_client_DataBroker()->startSubscribe();
     }
-
 }
-
 
 int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::string &datapointName, int nameSpace, std::string &result)
 {
