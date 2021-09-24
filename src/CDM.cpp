@@ -110,26 +110,21 @@ int CDM::subscribe_DataBroker()
 {
     if (CDM::connection_result_DataBroker != -1)
     {
+        cout << "Subscribing to DataBroker datapoints." << endl;
         //delete CDM::dp_monitor_SG;
         //CDM::dp_monitor_SG = new DatapointMonitor(this);
         if (CDM::dp_monitor_DataBroker == NULL)
         {
             CDM::dp_monitor_DataBroker = new DatapointMonitor(this);
-            cout << "Subscribing to DataBroker datapoints 1." << endl;
-            helper.get_client_DataBroker()->subscribe(
+        }
+        
+        helper.get_client_DataBroker()->subscribe(
                 CDM::dp_monitor_DataBroker->getElements(),
                 CDM::dp_monitor_DataBroker->getNameSpaces(),
                 CDM::dp_monitor_DataBroker);
-        }
-        else
-        {
-            cout << "Subscribing to DataBroker datapoints 2." << endl;
-            helper.get_client_DataBroker()->subscribe(
-                CDM::dp_monitor_DataBroker->getElements(),
-                CDM::dp_monitor_DataBroker->getNameSpaces(),
-                CDM::dp_monitor_DataBroker);
-        }
+        helper.get_client_DataBroker()->startSubscribe();
     }
+
 }
 
 
