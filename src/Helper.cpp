@@ -22,6 +22,8 @@ long int Helper::unix_timestamp()
 int Helper::connectOpcUa_DataBroker(std::string url, CDM *cdm)
 {
 
+    const int timeout = 5; // in seconds
+
     ControllerCB_changeStatus *dataBroker_CB = new ControllerCB_changeStatus(cdm);
 
     LOG_TRACE << "Helper::connectOpcUa_DataBroker()";
@@ -51,8 +53,8 @@ int Helper::connectOpcUa_DataBroker(std::string url, CDM *cdm)
         int flag = 0;
         do
         {
-            ret = m_clientOpcUaRef_DataBroker->connect(url, dataBroker_CB);
-            //ret = m_clientOpcUaRef_DataBroker->connect(url, NULL);
+            ret = m_clientOpcUaRef_DataBroker->connect(url, dataBroker_CB, timeout);
+            //ret = m_clientOpcUaRef_DataBroker->connect(url, dataBroker_CB);
             flag = ret;
             if (cpt == 3)
                 flag = 0;
