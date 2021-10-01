@@ -92,12 +92,14 @@ int CDM::afterStart()
     // Creating datapoint monitor that will notify us when the subscribed datapoints change.
     if (connection_result_DataBroker != connection_failure)
     {
+        LOG_DEBUG << "Connected to DataBroker.";
         // Subscription now happens in ControllerCB which calls the subscribe method.
         //subscribe_DataBroker();
     }
     else
     {
-        LOG_ERROR << "Cannot connect to DataBroker.";
+        LOG_ERROR << "Cannot connect to DataBroker!";
+        throw std::exception();
     }
 
     LOG_DEBUG << "After start finished!";

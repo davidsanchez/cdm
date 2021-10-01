@@ -54,7 +54,6 @@ int Helper::connectOpcUa_DataBroker(std::string url, CDM *cdm)
         do
         {
             ret = m_clientOpcUaRef_DataBroker->connect(url, dataBroker_CB, timeout);
-            //ret = m_clientOpcUaRef_DataBroker->connect(url, dataBroker_CB);
             flag = ret;
             if (cpt == 3)
                 flag = 0;
