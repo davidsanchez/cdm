@@ -1,0 +1,1 @@
+docker build -t cdm:v1  -f containers/Dockerfile  .
