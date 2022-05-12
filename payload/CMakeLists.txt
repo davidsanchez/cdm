@@ -42,7 +42,7 @@ MESSAGE( STATUS "==============================================" )
     link_directories(/usr/lib)
     link_directories(/usr/local/lib)
     link_directories(/usr/lib64)
-    link_directories(/home/cdmmgr//YoctoMeteo_cpp/Binaries/linux/64bits)
+    link_directories(/home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits)
 
 IF (UNIX)
     INCLUDE_DIRECTORIES()

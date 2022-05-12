@@ -27,13 +27,15 @@ RUN yum install -y \
     wget \
     curl \
     mc \
+    libusbx-devel \
     curl-devel \
     CCfits-devel \
     libxml2-devel \
     gdb-gdbserver \
-    boost-devel \
-    boost169-devel \
+    #boost-devel \
+    #boost169-devel \
     gedit \
+    vim \
      opencv  \
      opencv-devel  \
      opencv-python
@@ -58,25 +60,18 @@ USER root
 
 COPY payload/configurations/MOSStart.sh ./
 COPY payload/configurations/.bashrc .bashrc
-#USER cdmmgr
 
 ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
 
-#RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == \
-#systemd-tmpfiles-setup.service ] || rm -f $i; done); \
-#rm -f /lib/systemd/system/multi-user.target.wants/*;\
-#rm -f /etc/systemd/system/*.wants/*;\
-#rm -f /lib/systemd/system/local-fs.target.wants/*; \
-#rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
-#rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
-#rm -f /lib/systemd/system/basic.target.wants/*;\
-#rm -f /lib/systemd/system/anaconda.target.wants/*;
-#VOLUME [ "/sys/fs/cgroup" ]
-#CMD ["/usr/sbin/init"]
 RUN git clone https://gitlab-ci-token:58TWWXkdzsdrEhQFm-pG@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
 RUN git clone https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
+WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/
+RUN make
+WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
+RUN ln -s libyocto.so.1.0.1 libyocto.so
 
 
+WORKDIR /home/cdmmgr/
 #USER cdmmgr
 RUN mkdir ./cdm/build
 COPY  payload/CMakeLists.txt ./cdm/build
@@ -86,6 +81,15 @@ COPY  payload/CMakeLists.txt ./cdm/build
 
 COPY payload/ids-software-suite-linux-64-4.95.2-archive ./
 RUN yes | ./ueye_4.95.2.1886_amd64.run 
+COPY payload/ueye.h /usr/include/ueye.h
+RUN mkdir ./boost
+COPY payload/boost_1_79_0 ./boost
 
-WORKDIR /home/cdmmgr/cdm/build 
+WORKDIR /home/cdmmgr/boost
+RUN ./bootstrap.sh 
+#RUN  ./b2 install  --with=all
+
+WORKDIR /home/cdmmgr/cdm/build
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_9.3.0/
+
+WORKDIR /home/cdmmgr

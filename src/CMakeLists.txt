@@ -54,19 +54,19 @@ ENDIF (UNIX)
 add_library(
          ${PROJECT_NAME}
         SHARED
-        /usr/include/ueye.h
-        CDM.cpp
-        AsynchronousThread.cpp
-        Camera.cpp
-        Helper.cpp
-        Meteo.cpp
-        ImageAnalysis.cpp
-        Circle/mystuff.h
-        Circle/circle.h
-        Circle/data.h
-        Logging.cpp
-        DatapointMonitor.cpp
-        ControllerCB_changeStatus.cpp
+        #/usr/include/ueye.h
+        ../src/CDM.cpp
+        ../src/AsynchronousThread.cpp
+        ../src/Camera.cpp
+        ../src/Helper.cpp
+        ../src/Meteo.cpp
+        ../src/ImageAnalysis.cpp
+        ../src/Circle/mystuff.h
+        ../src/Circle/circle.h
+        ../src/Circle/data.h
+        ../src/Logging.cpp
+        ../src/DatapointMonitor.cpp
+        ../src/ControllerCB_changeStatus.cpp
         #ImageFITS.cpp
         )
 

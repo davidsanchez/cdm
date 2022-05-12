@@ -1,1 +1,1 @@
-docker build -t cdm:v1  -f containers/Dockerfile  .
+docker build -t cdm:v1.0  -f containers/Dockerfile  .
