@@ -38,6 +38,7 @@ RUN yum install -y \
     libatomic \
     vim \
     screen \
+    python-devel \
      opencv  \
      opencv-devel  \
      opencv-python
@@ -62,8 +63,8 @@ USER root
 
 COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
 COPY payload/configurations/MOS.conf /home/cdmmgr/MOS.conf
-RUN ["source /home/cdmmgr/MOS.conf"]
-COPY payload/configurations/.bashrc /home/cdmmgrbashrc
+#RUN ["source /home/cdmmgr/MOS.conf"]
+COPY payload/configurations/.bashrc /home/cdmmgr/.bashrc
 #TO BE FIXED
 
 ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
@@ -96,10 +97,13 @@ RUN mkdir ./boost
 COPY payload/boost_1_79_0 ./boost
 
 WORKDIR /home/cdmmgr/boost
-RUN ./bootstrap.sh 
-#RUN  sudo ./b2 install  --with=all
+RUN ./bootstrap.sh --with-python=python2.7
+RUN  ./b2 install  --with=all
 
 WORKDIR /home/cdmmgr/cdm/build
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_9.3.0/
+RUN make
 
 WORKDIR /home/cdmmgr
+
+CMD ["source /home/cdmmgr/MOS.conf"]

@@ -7,3 +7,4 @@ cd /home/cdmmgr/boost/
 cd /home/cdmmgr/cdm/build
 cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_9.3.0/
 make
+source /home/cdmmgr/MOS.conf
