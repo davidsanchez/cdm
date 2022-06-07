@@ -1,6 +1,6 @@
 #FROM centos:7
 
-FROM common-mos:v9
+FROM lst/common-mos:v9
 
 # Creating a cdmmgr user
 USER root
