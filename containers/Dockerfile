@@ -87,11 +87,11 @@ COPY  payload/CMakeLists.txt ./cdm/build
 #USER root
 
 
-#COPY payload/ids-software-suite-linux-64-4.95.2-archive ./
-#RUN yes | ./ueye_4.95.2.1886_amd64.run 
+COPY payload/uEye-Linux-4.90.06-64 ./
+RUN yes | ./ueyesdk-setup-4.90.06-usb-amd64.gz.run
 
-COPY payload/uEye-Linux-4.81-64-bit ./
-RUN yes | ./ueyesdk-setup-4.81-usb-amd64.gz.run
+#COPY payload/uEye-Linux-4.81-64-bit ./
+#RUN yes | ./ueyesdk-setup-4.81-usb-amd64.gz.run
 
 
 COPY payload/ueye.h /usr/include/ueye.h
