@@ -78,8 +78,8 @@ RUN ln -s libyocto.so.1.0.1 libyocto.so
 
 
 WORKDIR /home/cdmmgr/
-RUN mkdir ./log
-RUN mkdir ./log/saved
+#RUN mkdir ./log
+#RUN mkdir ./log/saved
 RUN mkdir ./cdm/build
 
 COPY  payload/CMakeLists.txt ./cdm/build

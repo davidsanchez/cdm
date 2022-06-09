@@ -6,4 +6,4 @@ tar -xvf boost_1_79_0.tar
 rm boost_1_79_0.tar
 cd ../
 
-docker build -t cdm:v2.0  -f containers/Dockerfile_Nuc  .
+docker build -t cdm:v1.0  -f containers/Dockerfile_Nuc  .
