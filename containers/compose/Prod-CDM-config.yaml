@@ -1,6 +1,7 @@
 version: '3.3'
 services:
   dev-cdm:
+    privileged: true
     hostname: dev-cdm
     container_name: "MOS-CDM-COMPOSE"
     image: "cdm:v1.0"
@@ -8,5 +9,9 @@ services:
 
     ports:
        - "48011:48011"
+    ipc: host
     volumes:
+
       - /home/shifter/david_tmp/log/:/home/cdmmgr/log
+      - /dev:/dev
+      - /var/run:/var/run
