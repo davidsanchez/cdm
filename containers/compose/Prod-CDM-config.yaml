@@ -15,3 +15,4 @@ services:
       - /home/shifter/david_tmp/log/:/home/cdmmgr/log
       - /dev:/dev
       - /var/run:/var/run
+      - /home/lstoperator/CDM/:/home/cdmmgr/output

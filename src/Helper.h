@@ -370,8 +370,8 @@ private:
 
     std::string StarName = "";
     std::string Comment = "";
-    std::string imagePath = "/home/lstoperator/CDM/images/";
-    std::string fitsPath = "/home/lstoperator/CDM/fits/";
+    std::string imagePath = "/home/cdmmgr/output/images/";
+    std::string fitsPath = "/home/cdmmgr/output/fits/";
     std::string remoteImagePathPrefix = "/fefs/home/lapp/CDM_Images/";
 };
 
