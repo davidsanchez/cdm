@@ -57,7 +57,7 @@ RUN mkdir -m 700 -p .ssh/
 USER root
 
 COPY --chown=cdmmgr:cdmmgr payload/configurations/id_rsa $HOME/.ssh/
-RUN chmod 600 .ssh/id_rsa
+RUN chmod 600 $HOME/.ssh/id_rsa
 
 
 
