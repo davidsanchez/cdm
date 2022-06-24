@@ -57,8 +57,8 @@ RUN mkdir -m 700 -p .ssh/
 USER root
 RUN mkdir  -p /root
 RUN mkdir -m 700 -p /root/.ssh/
-COPY  payload/configurations/id_rsa root/.ssh/
-
+COPY  payload/configurations/id_rsa /root/.ssh/
+RUN chmod 600  /root/.ssh/id_rsa
 
 RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_ed25519_key -t ed25519 -N ""
 RUN ssh-keygen -b 521 -f  /etc/ssh/ssh_host_ecdsa_key -t ecdsa -N ""
