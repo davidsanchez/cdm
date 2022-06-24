@@ -53,17 +53,19 @@ RUN mkdir -m 700 -p .ssh/
 #RUN mkdir -m 700 -p .ssh/
 #RUN chmod 640 .ssh/authorized_keys
 
-COPY --chown=cdmmgr:cdmmgr payload/configurations/id_rsa .ssh/
+
+USER root
+
+COPY --chown=cdmmgr:cdmmgr payload/configurations/id_rsa $HOME/.ssh/
 RUN chmod 600 .ssh/id_rsa
 
 
-USER root
+
 RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_ed25519_key -t ed25519 -N ""
 RUN ssh-keygen -b 521 -f  /etc/ssh/ssh_host_ecdsa_key -t ecdsa -N ""
 RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_rsa_key -t rsa -N ""
 
-
-USER root
+#USER root
 
 COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
 COPY payload/configurations/MOS.conf /home/cdmmgr/MOS.conf
@@ -112,6 +114,5 @@ RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_9.3.0/
 RUN make
 
 WORKDIR /home/cdmmgr
-USER cdmmgr
 
 CMD ["source /home/cdmmgr/MOS.conf"]
