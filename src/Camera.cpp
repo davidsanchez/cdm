@@ -1334,7 +1334,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
                 std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
 
                 char exec[300];
-                sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
+                sprintf(exec, "scp -o StrictHostKeyChecking=no %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
                 LOG_DEBUG << "Command is: " << exec << endl;
                 int scp_result = system(exec);
                 LOG_DEBUG << "Output of scp is: " << scp_result << endl;
