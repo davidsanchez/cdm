@@ -54,9 +54,7 @@ RUN mkdir -m 700 -p .ssh/
 #RUN chmod 640 .ssh/authorized_keys
 
 COPY payload/configurations/id_rsa .ssh/
-USER root
-RUN mkdir -m 700 -p /root/.ssh/
-RUN chmod 600 /root/.ssh/id_rsa
+RUN chmod 600 .ssh/id_rsa
 
 
 USER root
@@ -114,5 +112,6 @@ RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_9.3.0/
 RUN make
 
 WORKDIR /home/cdmmgr
+USER cdmmgr
 
 CMD ["source /home/cdmmgr/MOS.conf"]
