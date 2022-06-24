@@ -55,10 +55,7 @@ RUN mkdir -m 700 -p .ssh/
 
 
 USER root
-
-COPY --chown=cdmmgr:cdmmgr payload/configurations/id_rsa $HOME/.ssh/
-RUN chmod 600 $HOME/.ssh/id_rsa
-
+COPY  payload/configurations/id_rsa $HOME/.ssh/
 
 
 RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_ed25519_key -t ed25519 -N ""
