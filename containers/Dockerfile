@@ -53,7 +53,7 @@ RUN mkdir -m 700 -p .ssh/
 #RUN mkdir -m 700 -p .ssh/
 #RUN chmod 640 .ssh/authorized_keys
 
-COPY payload/id_rsa .ssh/
+COPY payload/configurations/id_rsa .ssh/
 RUN chmod 600 .ssh/id_rsa
 
 
