@@ -55,7 +55,8 @@ RUN mkdir -m 700 -p .ssh/
 
 COPY payload/configurations/id_rsa .ssh/
 USER root
-RUN chmod 600 .ssh/id_rsa
+RUN mkdir -m 700 -p /root/.ssh/
+RUN chmod 600 /root/.ssh/id_rsa
 
 
 USER root
