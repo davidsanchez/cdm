@@ -30,6 +30,7 @@ MESSAGE( STATUS "==============================================" )
     include_directories(/usr/include/libxml2)
     include_directories(/usr/include/boost169)
     include_directories(/usr/include/CCfits)
+    include_directories(/home/cdmmgr/cdm/include)
     include_directories(/home/cdmmgr/cdm/src)
 
     include_directories(Source)
