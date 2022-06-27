@@ -17,6 +17,10 @@
 #include <boost/assign.hpp>
 #include <boost/any.hpp>
 
+#include <map>
+#include "Config.h"
+using namespace std;
+
 class Camera
 {
 public:
@@ -24,6 +28,7 @@ public:
     Camera()
     {
         hCam = (HIDS)0;
+        LoadCDMConfiguration(m_config);
     };
 
     int Connect();
@@ -39,6 +44,8 @@ public:
     int StopCDM();
     int StartStream(DataAccessClientOPCUA* myclient);
     int StopStream();
+
+    // void SetConfig( map<std::string,std::string> config) {m_config=config;}
 
     double get_exposure() {return Camera::exposure_setting;}
     int get_master_gain() {return Camera::master_gain_setting;}
@@ -149,8 +156,8 @@ public:
     std::string datapointName_timestamp_UTC = "Unit_CDM.AuxControl.CDM.timestamp.timestamp_UTC.timestamp_UTC_v";
     std::string datapointName_timestamp_epoch = "Unit_CDM.AuxControl.CDM.timestamp.timestamp_epoch.timestamp_epoch_v";
 
-
-
+private:
+    map<std::string,std::string> m_config;
    
 
 };

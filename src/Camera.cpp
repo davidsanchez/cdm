@@ -1334,7 +1334,8 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
                 std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
 
                 char exec[300];
-                sprintf(exec, "scp -o StrictHostKeyChecking=no %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
+                sprintf(exec, "scp -o StrictHostKeyChecking=no %s %s", filePath.c_str(), m_config["OUT_FITS_BENDING"].c_str());
+                // sprintf(exec, "scp -o StrictHostKeyChecking=no %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
                 LOG_DEBUG << "Command is: " << exec << endl;
                 int scp_result = system(exec);
                 LOG_DEBUG << "Output of scp is: " << scp_result << endl;
@@ -1615,7 +1616,8 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
 
     char exec[300];
-    sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
+    sprintf(exec, "scp -o StrictHostKeyChecking=no %s %s", filePath.c_str(), m_config["OUT_FITS_BENDING"].c_str());
+    // sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
     LOG_DEBUG << "Command is: " << exec << endl;
     int scp_result = system(exec);
     LOG_DEBUG << "Output of scp is: " << scp_result << endl;
@@ -1716,7 +1718,8 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
 
     char exec[300];
-    sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
+    sprintf(exec, "scp -o StrictHostKeyChecking=no %s %s", filePath.c_str(), m_config["OUT_FITS_BENDING"].c_str());
+    // sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
     LOG_DEBUG << "Command is: " << exec << endl;
     int scp_result = system(exec);
     LOG_DEBUG << "Output of scp is: " << scp_result << endl;

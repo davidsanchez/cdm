@@ -69,6 +69,7 @@ add_library(
         ../src/Circle/circle.h
         ../src/Circle/data.h
         ../src/Logging.cpp
+        ../src/Config.cpp
         ../src/DatapointMonitor.cpp
         ../src/ControllerCB_changeStatus.cpp
         #ImageFITS.cpp

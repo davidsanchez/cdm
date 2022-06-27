@@ -3,6 +3,9 @@
 #include "Helper.h"
 #include "Logging.h"
 
+// #include <fstream>
+#include <map>
+
 #include <boost/any.hpp>
 
 using namespace std;
@@ -11,6 +14,31 @@ using namespace cv;
 // initialize object of Camera class
 Camera camera;
 Helper helper;
+
+#include "Config.h"
+
+// #define CONFIG_FILE_PATH  "/home/cdmmgr/cdm/config/CDM.config"
+// bool LoadCDMConfiguration( map<std::string,std::string> &config )
+// {
+//     std::ifstream in(CONFIG_FILE_PATH);
+//     if (!in.is_open()) 
+//     {
+//         LOG_ERROR <<"Config file not open "<<CONFIG_FILE_PATH;
+//         LOG_ERROR <<strerror(errno) ;
+//         return false;
+//     }
+
+//     std::string param,value;
+
+//     while (!in.eof())
+//     {
+//         in>>param>>value;
+//         config.insert(make_pair(param, value));
+//     }
+
+//     return true;
+// }
+
 
 int CDM::init(const std::string &chaine)
 {
@@ -40,6 +68,23 @@ int CDM::afterStart()
     // This method is automatically called by the program "MOS" after "MOS" server is launched and ready.
     int ret = 0;
     printf("\n***********************************\nIn CDM::afterStart\n***********************************\n");
+
+
+    // map<std::string,std::string> config;
+
+    bool conf = LoadCDMConfiguration(m_config);
+
+    // debug print the config
+    map<std::string, std::string>::iterator it;
+   for(it=m_config.begin(); it!=m_config.end(); ++it){
+      LOG_DEBUG << it->first << " => " << it->second << '\n';
+    }
+
+
+    // // set up config file of the camera object
+    // camera.SetConfig(m_config);
+
+
     // Mandatory always need
     ret = PluginsBase::afterStart();
 
@@ -71,8 +116,8 @@ int CDM::afterStart()
     }
 
     std::string resultCall;
-    m_Thread = new AsynchronousThread(getDataAccessClientOPCUARef());
-    m_ThreadMeteo = new AsynchronousThread(getDataAccessClientOPCUARef());
+    m_Thread =           new AsynchronousThread(getDataAccessClientOPCUARef());
+    m_ThreadMeteo =      new AsynchronousThread(getDataAccessClientOPCUARef());
     m_ThreadLogRestart = new AsynchronousThread(getDataAccessClientOPCUARef());
 
     ret = m_Thread->startRun();
@@ -85,7 +130,8 @@ int CDM::afterStart()
 
     // Trying to access other OPCUA server
     //connectOpcUa("opc.tcp://address:port"); // example opc.tcp://lappc-f578l:48080
-    CDM::connection_result_DataBroker = helper.connectOpcUa_DataBroker("opc.tcp://10.1.12.1:48030", this); //DataBroker OPCUA
+    // CDM::connection_result_DataBroker = helper.connectOpcUa_DataBroker("opc.tcp://10.1.12.1:48030", this); //DataBroker OPCUA
+    CDM::connection_result_DataBroker = helper.connectOpcUa_DataBroker(m_config["OPCUA"], this); //DataBroker OPCUA
 
     LOG_DEBUG << "DataBroker status OPCUA: " << connection_result_DataBroker;
 
