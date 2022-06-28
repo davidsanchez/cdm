@@ -74,8 +74,7 @@ COPY payload/configurations/.bashrc /home/cdmmgr/.bashrc
 
 ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
 
-RUN git clone https://gitlab-ci-token:58TWWXkdzsdrEhQFm-pG@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
-RUN git checkout RestructureCDM
+RUN git clone --single-branch --branch RestructureCDM https://gitlab-ci-token:58TWWXkdzsdrEhQFm-pG@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
 RUN git clone https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
 WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/
 RUN make
