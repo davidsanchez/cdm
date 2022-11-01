@@ -69,23 +69,37 @@ public:
 
     vector<vector<int>> rects_led{
         // double commented were not used in 6LED approach
-        { 769 , 3233 },
-        { 425 , 2624 },
-        { 420 , 1945 },
-        { 774 , 1345 },
-        { 1294 , 1019 },
-        { 2113 , 1019 },
-        { 2643 , 1345 },
-        { 2988 , 1940 },
-        { 2992 , 2619 },
-        { 2648 , 3224 },
-        { 1300 , 3546 },
-        { 2122 , 3544 },
+        // {809, 1679},  // second most left, upper
+        // {465, 2288},  // //most left, upper
+        // {460, 2967},  // //most left, lower
+        // {814, 3567},  // //second most left, lower
+        // {1334, 3893}, // //most bottom, left one
+        // {2153, 3893}, // most bottom, right one
+        // {2683, 3567}, // second most right, lower
+        // {3028, 2972}, // most right, lower
+        // {3032, 2293}, // defective one. most right, upper
+        // {2688, 1688}, // second most right, upper
+        // {1340, 1366}, // //uncovered new most top left
+        // {2162, 1368}  // //uncovered new most top right
+
+{ 769 , 1679 },
+{ 425 , 2288 },
+{ 420 , 2967 },
+{ 774 , 3567 },
+{ 1294 , 3893 },
+{ 2113 , 3893 },
+{ 2643 , 3567 },
+{ 2988 , 2972 },
+{ 2992 , 2293 },
+{ 2648 , 1688 },
+{ 1300 , 1366 },
+{ 2122 , 1368 },
+
     };
 
     vector<vector<int>> rects_oarl{
-        {1540, 4372},
-        {1986, 4367}};
+        {1500, 4372},
+        {1946, 4367}};
 };
 
 #endif //  ImageAnalysis_H_
