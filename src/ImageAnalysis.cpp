@@ -72,7 +72,7 @@ int ImageAnalysis::Draw()
 {
     LOG_TRACE << "ImageAnalysis::Draw()";
 
-    /*     for (int i = 0; i < this->rects_led.size(); i++)
+        for (int i = 0; i < this->rects_led.size(); i++)
     {
         cv::circle(this->image, Point(rects_led[i][0], rects_led[i][1]), roi_size_led, Scalar(65000), 10);
     }
@@ -80,7 +80,7 @@ int ImageAnalysis::Draw()
     for (int i = 0; i < this->rects_oarl.size(); i++)
     {
         cv::circle(this->image, Point(rects_oarl[i][0], rects_oarl[i][1]), roi_size_oarl, Scalar(65000), 10);
-    } */
+    } 
 
     cv::circle(this->image, Point(circle_a, circle_b), circle_r, Scalar(100), 2);
 }
