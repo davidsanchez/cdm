@@ -18,3 +18,5 @@ source /home/cdmmgr/MOS.conf
 
 alias ti='ls -lrth'
 
+crond
+crontab CDMCrontab

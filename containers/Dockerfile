@@ -70,7 +70,7 @@ COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
 COPY payload/configurations/MOS.conf /home/cdmmgr/MOS.conf
 #RUN ["source /home/cdmmgr/MOS.conf"]
 COPY payload/configurations/.bashrc /home/cdmmgr/.bashrc
-#TO BE FIXED
+COPY payload/configurations/.bashrc /home/cdmmgr/.bashrc
 
 ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
 
@@ -89,7 +89,8 @@ RUN mkdir ./output/fits
 RUN mkdir ./cdm/build
 
 COPY  payload/CMakeLists.txt ./cdm/build
-
+COPY payload/configurations/CDMCrontab /home/cdmmgr/
+COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
 #USER root
 
 
@@ -111,6 +112,15 @@ RUN  ./b2 install  --with=all
 WORKDIR /home/cdmmgr/cdm/build
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_9.3.0/
 RUN make
+
+RUN ["crond"]
+RUN chmod 777 -R /var/run/
+RUN chmod u+s /usr/bin/crontab
+
+USER root
+WORKDIR /root
+COPY payload/configurations/.bashrc .bashrc
+
 
 WORKDIR /home/cdmmgr
 
