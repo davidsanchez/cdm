@@ -6,5 +6,5 @@ if [ "$count" = 0 ]; then
         echo "No docker image"
         # cd /home/cdmmgr/cdm/
         # fuser -k -n tcp 48011
-        _cdm_start
+        docker-compose -f /home/shifter/david_tmp/cdm/containers/compose/Prod-CDM-config.yaml up -d
 fi
