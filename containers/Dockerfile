@@ -113,8 +113,8 @@ WORKDIR /home/cdmmgr/cdm/build
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_9.3.0/
 RUN make
 
-RUN rm /var/run/crond.pid
-RUN ["crond"]
+#RUN rm /var/run/crond.pid
+#RUN ["crond"]
 RUN chmod 777 -R /var/run/
 RUN chmod u+s /usr/bin/crontab
 
