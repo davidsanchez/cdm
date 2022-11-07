@@ -69,8 +69,8 @@ RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_rsa_key -t rsa -N ""
 COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
 COPY payload/configurations/MOS.conf /home/cdmmgr/MOS.conf
 #RUN ["source /home/cdmmgr/MOS.conf"]
-COPY payload/configurations/.bashrc /home/cdmmgr/.bashrc
-COPY payload/configurations/.bashrc /home/cdmmgr/.bashrc
+#COPY payload/configurations/.bashrc /home/cdmmgr/.bashrc
+#COPY payload/configurations/.bashrc /home/cdmmgr/.bashrc
 
 ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
 
