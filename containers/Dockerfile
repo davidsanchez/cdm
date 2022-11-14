@@ -115,8 +115,8 @@ RUN make
 
 #RUN rm /var/run/crond.pid
 #RUN ["crond"]
-RUN chmod 777 -R /var/run/
-RUN chmod u+s /usr/bin/crontab
+#RUN chmod 777 -R /var/run/
+#RUN chmod u+s /usr/bin/crontab
 
 USER root
 WORKDIR /root
@@ -126,3 +126,10 @@ COPY payload/configurations/.bashrc .bashrc
 WORKDIR /home/cdmmgr
 
 CMD ["source /home/cdmmgr/MOS.conf"]
+
+# Add the cron job
+RUN crontab -l | { cat; echo "* * * * * /home/cdmmgr/Run_cron_CDM.sh > /home/cdmmgr/cdm/CDM_log.txt 2>&1"; } | crontab -
+# Run the command on container startup
+CMD cron
+
+#CMD ["MOS_Device -d /home/cdmmgr/cdm/Unit_CDM_Model.xml -p 48011 -i"]
