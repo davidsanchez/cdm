@@ -126,7 +126,7 @@ WORKDIR /home/cdmmgr
 #CMD ["source /home/cdmmgr/MOS.conf"]
 
 # Add the cron job
-RUN crontab -l | { cat; echo "* * * * * /home/cdmmgr/Run_cron_CDM.sh > /home/cdmmgr/cdm/CDM_log.txt 2>&1"; } | crontab -
+#RUN crontab -l | { cat; echo "* * * * * /home/cdmmgr/Run_cron_CDM.sh > /home/cdmmgr/cdm/CDM_log.txt 2>&1"; } | crontab -
 # Run the command on container startup
 #CMD ["cron","-f", "-l", "2"]
 
