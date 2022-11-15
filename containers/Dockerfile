@@ -8,7 +8,7 @@ RUN groupadd -g 1003 cdmmgr && \
     useradd -g 1002 -u 1003 -d /home/cdmmgr -m -s /bin/bash cdmmgr
  
 RUN yum clean all && yum update -y 
-RUN yum install -y cronie && yum install -y sudo
+RUN yum install -y cronie && yum install -y sudo && rm -rf /etc/cron.*/*
 
 RUN yum install -y git
 # Installing the development software
@@ -72,7 +72,6 @@ COPY payload/configurations/MOS.conf /home/cdmmgr/MOS.conf
 #COPY payload/configurations/.bashrc /home/cdmmgr/.bashrc
 #COPY payload/configurations/.bashrc /home/cdmmgr/.bashrc
 
-ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
 
 RUN git clone --single-branch --branch RestructureCDM https://gitlab-ci-token:58TWWXkdzsdrEhQFm-pG@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
 RUN git clone https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
@@ -125,11 +124,11 @@ COPY payload/configurations/.bashrc .bashrc
 
 WORKDIR /home/cdmmgr
 
-CMD ["source /home/cdmmgr/MOS.conf"]
+#CMD ["source /home/cdmmgr/MOS.conf"]
 
 # Add the cron job
 RUN crontab -l | { cat; echo "* * * * * /home/cdmmgr/Run_cron_CDM.sh > /home/cdmmgr/cdm/CDM_log.txt 2>&1"; } | crontab -
 # Run the command on container startup
-CMD cron
+#CMD ["cron","-f", "-l", "2"]
 
-#CMD ["MOS_Device -d /home/cdmmgr/cdm/Unit_CDM_Model.xml -p 48011 -i"]
+ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]

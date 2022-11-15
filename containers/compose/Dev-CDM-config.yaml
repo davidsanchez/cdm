@@ -3,7 +3,7 @@ services:
   dev-cdm:
     hostname: dev-cdm
     container_name: "MOS-CDM-COMPOSE"
-    image: "cdm:v2.0"
+    image: "cdm:v4.0"
     # restart: unless-stopped
 
     ports:

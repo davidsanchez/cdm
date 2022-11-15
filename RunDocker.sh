@@ -9,5 +9,5 @@ if [ "$count" = 0 ]; then
         docker-compose -f /home/shifter/david_tmp/cdm/containers/compose/Prod-CDM-config.yaml up -d
 
         sleep 2
-        docker exec -dit MOS-CDM-COMPOSE bash 
+        docker exec -dt MOS-CDM-COMPOSE crond 
 fi
