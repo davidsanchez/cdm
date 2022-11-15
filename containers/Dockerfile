@@ -88,7 +88,6 @@ RUN mkdir ./output/fits
 RUN mkdir ./cdm/build
 
 COPY  payload/CMakeLists.txt ./cdm/build
-COPY payload/configurations/CDMCrontab /home/cdmmgr/
 COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
 #USER root
 
