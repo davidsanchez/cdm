@@ -1,3 +1,4 @@
+#pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
 #include "ControllerCB_changeStatus.h"
 
 #include "pluginsBase.h"
@@ -139,4 +140,5 @@ int ControllerCB_changeStatus::SubscribePLCDataPoints()
     // 	}
     // }
     // return ret;
+    return 0;
 }

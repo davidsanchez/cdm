@@ -18,7 +18,6 @@ long int Helper::unix_timestamp()
     return now;
 }
 
-
 int Helper::connectOpcUa_DataBroker(std::string url, CDM *cdm)
 {
 

@@ -14,11 +14,21 @@
 #include "Circle/CircleFitByTaubin.cpp"
 
 #include "Logging.h"
+#include "Config.h"
 
 using namespace cv;
 
 ImageAnalysis::ImageAnalysis(Mat image, std::string image_flip, int image_transpose, int iBitsPerPixel)
     {
+
+        // Load config
+        LoadCDMConfiguration(m_config);
+
+        roi_size_led = stoi(m_config["roi_size_led"]);
+        roi_size_oarl  = stoi(m_config["roi_size_oarl"]);
+        rects_led = LoadLedLoc();
+        rects_oarl = LoadOARLLoc();
+
         int flip_code;
         if (image_flip == "Vertical")
             flip_code = 0;
@@ -68,16 +78,16 @@ ImageAnalysis::ImageAnalysis(Mat image, std::string image_flip, int image_transp
         LOG_DEBUG << "Time difference [Threshold] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
     };
 
-int ImageAnalysis::Draw()
+void ImageAnalysis::Draw()
 {
     LOG_TRACE << "ImageAnalysis::Draw()";
 
-        for (int i = 0; i < this->rects_led.size(); i++)
+        for (unsigned int i = 0; i < this->rects_led.size(); i++)
     {
         cv::circle(this->image, Point(rects_led[i][0], rects_led[i][1]), roi_size_led, Scalar(65000), 10);
     }
 
-    for (int i = 0; i < this->rects_oarl.size(); i++)
+    for (unsigned int i = 0; i < this->rects_oarl.size(); i++)
     {
         cv::circle(this->image, Point(rects_oarl[i][0], rects_oarl[i][1]), roi_size_oarl, Scalar(65000), 10);
     } 
@@ -85,7 +95,7 @@ int ImageAnalysis::Draw()
     cv::circle(this->image, Point(circle_a, circle_b), circle_r, Scalar(100), 2);
 }
 
-int ImageAnalysis::SaveImage(std::string ImagePath)
+void ImageAnalysis::SaveImage(std::string ImagePath)
 {
     LOG_TRACE << "ImageAnalysis::SaveImage()";
     cv::imwrite(ImagePath, this->image);
@@ -196,7 +206,7 @@ void ImageAnalysis::CalculateSpotsLED()
     vector<double> barycenter_x;
     vector<double> barycenter_y;
 
-    for (int i = 0; i < this->rects_led.size(); i++)
+    for (unsigned int i = 0; i < this->rects_led.size(); i++)
     {
         //Create the rectangle ROI
         cv::Rect roi(rects_led[i][0] - roi_size_led / 2., rects_led[i][1] - roi_size_led / 2., roi_size_led, roi_size_led);
@@ -254,7 +264,7 @@ void ImageAnalysis::CalculateSpotsOARL()
     vector<double> barycenter_x;
     vector<double> barycenter_y;
 
-    for (int i = 0; i < this->rects_oarl.size(); i++)
+    for (unsigned int i = 0; i < this->rects_oarl.size(); i++)
     {
         //Create the rectangle ROI
         cv::Rect roi(rects_oarl[i][0] - roi_size_oarl / 2., rects_oarl[i][1] - roi_size_oarl / 2., roi_size_oarl, roi_size_oarl);
@@ -325,6 +335,7 @@ vector<uchar> ImageAnalysis::GetImageToPublish(string inputText)
 
 int ImageAnalysis::StoreResults()
 {
+    return 0;
 }
 
 std::string ImageAnalysis::PrintResults()

@@ -1,8 +1,11 @@
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
+
 #include "CDM.h"
 #include "Camera.h"
 #include "Helper.h"
 #include "Logging.h"
-
+#include "Config.h"
 // #include <fstream>
 #include <map>
 
@@ -15,7 +18,7 @@ using namespace cv;
 Camera camera;
 Helper helper;
 
-#include "Config.h"
+
 
 // #define CONFIG_FILE_PATH  "/home/cdmmgr/cdm/config/CDM.config"
 // bool LoadCDMConfiguration( map<std::string,std::string> &config )

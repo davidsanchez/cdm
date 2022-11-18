@@ -6,4 +6,4 @@ tar -xvf boost_1_79_0.tar
 rm boost_1_79_0.tar
 cd ../
 
-docker build -t cdm:v4.0  -f containers/Dockerfile  .
+docker build -t cdm:v5.0  -f containers/Dockerfile  .

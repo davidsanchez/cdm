@@ -7,6 +7,7 @@
  *      https://www.yoctopuce.com/EN/doc/reference/yoctolib-cpp-EN.html
  *
  *********************************************************************/
+#pragma GCC diagnostic ignored "-Wunused-function"
 #ifndef Meteo_H_
 #define Meteo_H_
 
@@ -16,6 +17,8 @@
 #include "yocto_temperature.h"
 
 #include <curl/curl.h>
+
+
 
 using namespace std;
 
@@ -57,8 +60,10 @@ private:
     CURLcode res;
     struct MemoryStruct chunk;
 
-    const string MAGIC_WS_address = "http://www.magic.iac.es/site/weather/WSssdata.txt";
-    const int n_MAGIC_WS_datapoints = 16; // Number of datapoints on the MAGIC weather website
+    string MAGIC_WS_address;// = "http://www.magic.iac.es/site/weather/WSssdata.txt";
+    int n_MAGIC_WS_datapoints;// = 16; // Number of datapoints on the MAGIC weather website
+
+    map<std::string,std::string> m_config;
 };
 
 #endif //  Meteo_H_

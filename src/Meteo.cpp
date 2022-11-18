@@ -18,6 +18,7 @@
 
 #include "Logging.h"
 #include "Meteo.h"
+#include "Config.h"
 
 using namespace std;
 
@@ -45,6 +46,13 @@ WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
 
 Meteo::Meteo()
 {
+
+    // Load config
+    LoadCDMConfiguration(m_config);
+
+    MAGIC_WS_address = m_config["MAGIC_WS_address"];
+    n_MAGIC_WS_datapoints  = stoi(m_config["n_MAGIC_WS_datapoints"]);
+
     // Setup the API to use local USB devices
     if (yRegisterHub("usb", errmsg) != YAPI_SUCCESS)
     {

@@ -8,6 +8,7 @@
 
 #include <chrono>
 
+#include "Config.h"
 // TODO: Remove this later and use explicit namespaces
 using namespace cv;
 using namespace std;
@@ -18,8 +19,8 @@ public:
     //Need a constructor
     ImageAnalysis(Mat image, std::string image_flip = "None", int image_transpose = 0, int iBitsPerPixel=8);
 
-    int Draw();
-    int SaveImage(std::string ImagePath);
+    void Draw();
+    void SaveImage(std::string ImagePath);
     int StoreResults();
     std::string PrintResults();
     vector<uchar> GetImageToPublish(std::string inputText);
@@ -46,8 +47,8 @@ public:
 
     Mat image;
     double px2arcsec = 7.35;
-    int roi_size_led = 40;  // Integration region in pixels for LEDs. Check if big enough.
-    int roi_size_oarl = 60; // Integration region in pixels for OARL. Check if big enough.
+    int roi_size_led;// = 40;  // Integration region in pixels for LEDs. Check if big enough.
+    int roi_size_oarl;// = 60; // Integration region in pixels for OARL. Check if big enough.
 
     double circle_a = 0;
     double circle_b = 0;
@@ -67,39 +68,11 @@ public:
 
     vector<double> led_result;
 
-    vector<vector<int>> rects_led{
-        // double commented were not used in 6LED approach
-        // {809, 1679},  // second most left, upper
-        // {465, 2288},  // //most left, upper
-        // {460, 2967},  // //most left, lower
-        // {814, 3567},  // //second most left, lower
-        // {1334, 3893}, // //most bottom, left one
-        // {2153, 3893}, // most bottom, right one
-        // {2683, 3567}, // second most right, lower
-        // {3028, 2972}, // most right, lower
-        // {3032, 2293}, // defective one. most right, upper
-        // {2688, 1688}, // second most right, upper
-        // {1340, 1366}, // //uncovered new most top left
-        // {2162, 1368}  // //uncovered new most top right
+    vector<vector<int>> rects_led;// = LoadLedLoc();
 
-{ 769 , 1679 },
-{ 425 , 2288 },
-{ 420 , 2967 },
-{ 774 , 3567 },
-{ 1294 , 3893 },
-{ 2113 , 3893 },
-{ 2643 , 3567 },
-{ 2988 , 2972 },
-{ 2992 , 2293 },
-{ 2648 , 1688 },
-{ 1300 , 1366 },
-{ 2122 , 1368 },
+    vector<vector<int>> rects_oarl;// = LoadOARLLoc();
 
-    };
-
-    vector<vector<int>> rects_oarl{
-        {1500, 4372},
-        {1946, 4367}};
+    map<std::string,std::string> m_config;
 };
 
 #endif //  ImageAnalysis_H_

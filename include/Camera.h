@@ -1,3 +1,4 @@
+#pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
 #ifndef Camera_H_
 #define Camera_H_
 
