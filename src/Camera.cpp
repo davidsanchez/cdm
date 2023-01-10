@@ -1,4 +1,3 @@
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <Camera.h>
 
 #include <boost/date_time.hpp>
@@ -278,8 +277,8 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
         return "-1"; //TODO: KLUDGE, should return just -1?
     }
 
-    // long &vectorLength = naxes[0];
-    //long &numberOfRows = naxes[1];
+    long &vectorLength = naxes[0];
+    long &numberOfRows = naxes[1];
     long nelements(1);
     long fpixel(1);
 
@@ -401,9 +400,7 @@ int Camera::Connect()
 {
     LOG_TRACE << "Camera::Connect()";
 
-    // nRet = is_InitCamera(&hCam, NULL); DEPRE
-    is_ImageQueue(hCam, IS_IMAGE_QUEUE_CMD_INIT, NULL, 0);
-
+    nRet = is_InitCamera(&hCam, NULL);
     LOG_DEBUG << "InitCamera returned " << nRet << std::endl;
     if (nRet != IS_SUCCESS)
     {
@@ -460,8 +457,7 @@ int Camera::Disconnect()
 
     // Disables the hCam camera handle and releases the data structures and memory areas taken up by the uEye camera
     is_ExitCamera(hCam);
-    // hCam = NULL;
-    delete &hCam;
+    hCam = NULL;
 }
 
 // TODO: merge GetMultipleImages, GetMultipleImagesStacked and StartCDM into one function?
@@ -554,8 +550,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
         pcImageMemory_arr[i] = pcImageMemory;
         nMemoryId_arr[i] = nMemoryId;
     }
-    // is_InitImageQueue(hCam, 0); DEPRE
-    is_ImageQueue(hCam, IS_IMAGE_QUEUE_CMD_INIT, NULL, 0);
+    is_InitImageQueue(hCam, 0);
 
     nRet = is_CaptureVideo(hCam, IS_WAIT);
     LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
@@ -588,12 +583,12 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
     while (b_keep_taking == 1)
     {
-        //std::chrono::steady_clock::time_point begin_loop = std::chrono::steady_clock::now();
+        std::chrono::steady_clock::time_point begin_loop = std::chrono::steady_clock::now();
 
-        // double circle_stddev_R;
-        // double circle_stddev_RMS;
-        // double circle_stddev_x;
-        // double circle_stddev_y;
+        double circle_stddev_R;
+        double circle_stddev_RMS;
+        double circle_stddev_x;
+        double circle_stddev_y;
 
         vector<double> circle_results;
         vector<double> displacement_results;
@@ -606,7 +601,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
         // Use is_LockSeqBuf when processing image?
 
         char *pBuffer = NULL;
-        nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId); 
+        nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
         std::chrono::steady_clock::time_point begin_loop_after_image = std::chrono::steady_clock::now();
 
         if (nRet == IS_SUCCESS)
@@ -967,7 +962,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             LOG_WARNING << "Camera::StartCDM() / IS_CAPTURE_STATUS";
 
             UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
-            is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
+            INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
 
             LOG_WARNING << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
             LOG_WARNING << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
@@ -1020,8 +1015,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
     LOG_DEBUG << "is_StopLiveVideo result: " << nRet << endl;
 
-    nRet = is_ImageQueue(hCam, IS_IMAGE_QUEUE_CMD_EXIT, NULL, 0);
-    // nRet = is_ExitImageQueue(hCam); DEPRE
+    nRet = is_ExitImageQueue(hCam);
     LOG_DEBUG << "is_ExitImageQueue: " << nRet << endl;
 
     nRet = is_ClearSequence(hCam);
@@ -1125,14 +1119,13 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
         pcImageMemory_arr[i] = pcImageMemory;
         nMemoryId_arr[i] = nMemoryId;
     }
-    // is_InitImageQueue(hCam, 0); DEPRE
-    is_ImageQueue(hCam, IS_IMAGE_QUEUE_CMD_INIT, NULL, 0);
-    
+    is_InitImageQueue(hCam, 0);
+
     nRet = is_CaptureVideo(hCam, IS_WAIT);
     LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
 
-    // int loop_image_count = 0;
-    // int64_t duration_count = 0;
+    int loop_image_count = 0;
+    int64_t duration_count = 0;
 
     Mat m1;
     vector<uchar> published_image;
@@ -1184,7 +1177,7 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
             LOG_WARNING << "Camera::StartCDM() / IS_CAPTURE_STATUS";
 
             UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
-            is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
+            INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
 
             LOG_WARNING << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
             LOG_WARNING << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
@@ -1237,8 +1230,7 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
     nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
     LOG_DEBUG << "is_StopLiveVideo result: " << nRet << endl;
 
-    nRet = is_ImageQueue(hCam, IS_IMAGE_QUEUE_CMD_EXIT, NULL, 0);
-    // nRet = is_ExitImageQueue(hCam); DEPRE
+    nRet = is_ExitImageQueue(hCam);
     LOG_DEBUG << "is_ExitImageQueue: " << nRet << endl;
 
     nRet = is_ClearSequence(hCam);
@@ -1273,8 +1265,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
         pcImageMemory_arr[i] = pcImageMemory;
         nMemoryId_arr[i] = nMemoryId;
     }
-    // is_InitImageQueue(hCam, 0); DEPRE
-    is_ImageQueue(hCam, IS_IMAGE_QUEUE_CMD_INIT, NULL, 0);
+    is_InitImageQueue(hCam, 0);
 
     nRet = is_CaptureVideo(hCam, IS_WAIT);
     LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
@@ -1334,11 +1325,9 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
                 int m_nameSpace = 2;
                 string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
                 //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
-                SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
-                // SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
+                SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
-                SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken + 1); //Updates the number of images taken
-                // SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken + 1); //Updates the number of images taken
+                SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken + 1); //Updates the number of images taken
 
                 std::string imageName = writeFITSImage(src);
                 std::string filePath = helper.get_fitsPath() + imageName;
@@ -1361,8 +1350,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
                 }
 
                 v_image_paths.push_back(remoteImagePath);
-                SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
-                // SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
+                SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
 
                 auto tp_stop = std::chrono::high_resolution_clock::now();
                 auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
@@ -1384,8 +1372,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
             LOG_WARNING << "Camera::GetMultipleImages() / IS_CAPTURE_STATUS";
 
             UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
-            // INT nRet2 = 
-            is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
+            INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
 
             LOG_WARNING << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
             LOG_WARNING << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
@@ -1432,8 +1419,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
     LOG_DEBUG << "is_StopLiveVideo result: " << nRet << endl;
 
-    nRet = is_ImageQueue(hCam, IS_IMAGE_QUEUE_CMD_EXIT, NULL, 0);
-    // nRet = is_ExitImageQueue(hCam); DEPRE
+    nRet = is_ExitImageQueue(hCam);
     LOG_DEBUG << "is_ExitImageQueue: " << nRet << endl;
 
     nRet = is_ClearSequence(hCam);
@@ -1474,8 +1460,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
         pcImageMemory_arr[i] = pcImageMemory;
         nMemoryId_arr[i] = nMemoryId;
     }
-    // is_InitImageQueue(hCam, 0); DEPRE
-    is_ImageQueue(hCam, IS_IMAGE_QUEUE_CMD_INIT, NULL, 0);
+    is_InitImageQueue(hCam, 0);
 
     nRet = is_CaptureVideo(hCam, IS_WAIT);
     LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
@@ -1535,11 +1520,9 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
                 int m_nameSpace = 2;
                 string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
                 //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
-                SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
-                // SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
+                SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
-                SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken + 1); //Updates the number of images taken
-                // SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken + 1); //Updates the number of images taken
+                SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken + 1); //Updates the number of images taken
 
                 // Accumulate images. In OpenCV_v2 input has to be 8bit or 32bit?
                 //Conversion from CV_32 to CV_64 should be automatic (TODO: verify)
@@ -1566,8 +1549,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
             LOG_WARNING << "Camera::GetMultipleImagesStacked() / IS_CAPTURE_STATUS";
 
             UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
-            // INT nRet2 = 
-            is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
+            INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
 
             LOG_WARNING << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
             LOG_WARNING << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
@@ -1626,8 +1608,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     cv::imencode(".png", accumulated_images_dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
     int m_nameSpace = 2;
     string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
-    SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
-    // SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
+    SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
     // Make a FITS image
     std::string imageName = writeFITSImage(accumulated_images, i_images_taken);
@@ -1651,8 +1632,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     }
 
     v_image_paths.push_back(remoteImagePath);
-    SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
-    // SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
+    SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
 
     // Free the OpenCV memory?
     // Free the allocated memories
@@ -1660,8 +1640,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
     LOG_DEBUG << "is_StopLiveVideo result: " << nRet << endl;
 
-    nRet = is_ImageQueue(hCam, IS_IMAGE_QUEUE_CMD_EXIT, NULL, 0);
-    // nRet = is_ExitImageQueue(hCam); DEPRE
+    nRet = is_ExitImageQueue(hCam);
     LOG_DEBUG << "is_ExitImageQueue: " << nRet << endl;
 
     nRet = is_ClearSequence(hCam);
@@ -1732,8 +1711,7 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
 
     int m_nameSpace = 2;
     string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
-    SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
-    // SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
+    SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
     std::string imageName = writeFITSImage(src);
     std::string filePath = helper.get_fitsPath() + imageName;
@@ -1757,8 +1735,7 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
 
     std::vector<std::string> publish_remoteImagePath; 
     publish_remoteImagePath.push_back(remoteImagePath.c_str());
-    SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, publish_remoteImagePath); //Updates the imagePath
-    // SetDatapointThread *m_SetDatapointThread_remote_path = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, publish_remoteImagePath); //Updates the imagePath
+    SetDatapointThread *m_SetDatapointThread_remote_path = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, publish_remoteImagePath); //Updates the imagePath
     SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
     SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imagePath_cat.imagePath_cat_v", 2, remoteImagePath.c_str()); //Updates the imagePath_cat
 
