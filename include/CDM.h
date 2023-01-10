@@ -20,6 +20,9 @@
 #include "DatapointMonitor.h"
 
 #include <boost/algorithm/string.hpp>
+
+#include <map>
+
 //#include <boost/bimap.hpp>
 //#include <boost/assign.hpp>
 
@@ -78,6 +81,9 @@ private:
     AsynchronousThread *m_Thread;
     AsynchronousThread *m_ThreadMeteo;
     AsynchronousThread *m_ThreadLogRestart;
+
+    map<std::string,std::string> m_config;
+
 
 };
 #endif //  CDM_H_

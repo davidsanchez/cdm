@@ -1,3 +1,4 @@
+#pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
 #include "DatapointMonitor.h"
 #include "CDM.h"
 
@@ -104,7 +105,7 @@ std::vector<int> DatapointMonitor::getNameSpaces()
     auto elements = getElements();
 
     // TODO: No need for a for loop. You can initialize it with 2 with desired size.
-    for (int i = 0; i < elements.size(); i++)
+    for (unsigned int i = 0; i < elements.size(); i++)
         namespaces.push_back(2);
 
     return namespaces;

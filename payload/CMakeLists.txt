@@ -1,6 +1,9 @@
 project(CDM)
 cmake_minimum_required(VERSION 2.8)
 SET(CMAKE_DEBUG_POSTFIX "d")
+
+SET(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wunused-variable")
+
 if ( EXISTS ${MOS_PATH} )
     #SET(MOS_PATH "_X86")
 else()
@@ -11,6 +14,7 @@ else()
     #SET(MOS_PATH "/MOS_test.1.3/")
     SET(MOS_PATH "/MOS_v9.3.0/")
 endif()
+
 
 if ( EXISTS ${CMAKE_INSTALL_PREFIX} )
     #SET(CMAKE_INSTALL_PREFIX "..")
@@ -30,6 +34,7 @@ MESSAGE( STATUS "==============================================" )
     include_directories(/usr/include/libxml2)
     include_directories(/usr/include/boost169)
     include_directories(/usr/include/CCfits)
+    include_directories(/home/cdmmgr/cdm/include)
     include_directories(/home/cdmmgr/cdm/src)
 
     include_directories(Source)
@@ -68,6 +73,7 @@ add_library(
         ../src/Circle/circle.h
         ../src/Circle/data.h
         ../src/Logging.cpp
+        ../src/Config.cpp
         ../src/DatapointMonitor.cpp
         ../src/ControllerCB_changeStatus.cpp
         #ImageFITS.cpp

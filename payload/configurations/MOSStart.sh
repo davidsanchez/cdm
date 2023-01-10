@@ -9,9 +9,12 @@ echo "Starting ssh server ..."
 /usr/sbin/sshd -D &
 
 # ADD MOS setup
-#source ./MOS.conf
+source /home/cdmmgr/MOS.conf
+#rm /var/run/crond.pid
 #crond
-#crontab OPCUACrontab
+#crontab -l |
+
+{ cat; echo "* * * * * /home/cdmmgr/Run_cron_CDM.sh > /home/cdmmgr/cdm/CDM_log.txt 2>&1"; } | crontab -
 
 tail -f /dev/null
 

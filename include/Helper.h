@@ -1,3 +1,5 @@
+#pragma GCC diagnostic ignored "-Wreturn-type"
+#pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
 #ifndef Helper_H_
 #define Helper_H_
 
@@ -204,7 +206,7 @@ public:
     bool get_Aux_status_DM_West_Top() { return Helper::aux_status_DM_West_Top; }
 
     int get_nImagesGet() { return Helper::nImagesGet; }
-    int set_nImagesGet(int nImagesGet) { Helper::nImagesGet = nImagesGet; }
+    void set_nImagesGet(int nImagesGet) { Helper::nImagesGet = nImagesGet; }
     std::string get_StarName() { return Helper::StarName; }
     std::string get_Comment() { return Helper::Comment; }
 
