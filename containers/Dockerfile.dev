@@ -64,7 +64,7 @@ COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
 COPY payload/configurations/MOS.conf /home/cdmmgr/MOS.conf
 
 
-RUN git clone https://gitlab-ci-token:58TWWXkdzsdrEhQFm-pG@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
+RUN git clone --branch NewDevel https://gitlab-ci-token:58TWWXkdzsdrEhQFm-pG@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
 
 # DL and build Yocto meteo
 RUN git clone https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
