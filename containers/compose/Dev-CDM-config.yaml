@@ -1,12 +1,18 @@
 version: '3.3'
 services:
   dev-cdm:
+    privileged: true
     hostname: dev-cdm
     container_name: "MOS-CDM-COMPOSE"
-    image: "cdm:v5.0"
+    image: "cdm:dev"
     # restart: unless-stopped
 
     ports:
        - "48011:48011"
+    ipc: host
     volumes:
-      - ../../../cdm/:/home/cdmmgr/cdm
+
+      - /home/lstoperator/log/:/home/cdmmgr/log
+      - /dev:/dev
+      - /var/run:/var/run
+      - /home/lstoperator/CDM/:/home/cdmmgr/output

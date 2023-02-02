@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+  dev-cdm:
+    hostname: dev-cdm
+    container_name: "MOS-CDM-COMPOSE"
+    image: "cdm:latest"
+    # restart: unless-stopped
+
+    ports:
+       - "48011:48011"
+    volumes:
+      - ../../../cdm/:/home/cdmmgr/cdm
