@@ -10,7 +10,7 @@ using namespace std;
 // #define N 2
 #define CONFIG_FILE_PATH  "/home/cdmmgr/cdm/config/CDM.config"
 #define LEDLOC_FILE_PATH  "/home/cdmmgr/cdm/config/LedLoc.config"
-#define OARLLOC_FILE_PATH  "/home/cdmmgr/cdm/config/ORALLoc.config"
+#define OARLLOC_FILE_PATH  "/home/cdmmgr/cdm/config/OARLLoc.config"
 
 bool LoadCDMConfiguration( map<std::string,std::string> &config )
 {
