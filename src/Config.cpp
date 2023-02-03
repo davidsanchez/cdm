@@ -58,8 +58,7 @@ bool LoadCDMConfiguration( map<std::string,std::string> &config )
         std::vector<int> v;
         v.push_back(px);
         v.push_back(py);
-        // push back above one-dimensional vector
-        matrix.push_back(v);
+        matrix.push_back(v); 
     }
 
     return matrix;
