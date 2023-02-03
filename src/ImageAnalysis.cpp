@@ -22,7 +22,7 @@ ImageAnalysis::ImageAnalysis(Mat image, map<std::string,std::string> config, std
     {
 
         // Load config
-        LoadCDMConfiguration(m_config);
+        // LoadCDMConfiguration(m_config);
 
         roi_size_led = stoi(m_config["roi_size_led"]);
         roi_size_oarl  = stoi(m_config["roi_size_oarl"]);
