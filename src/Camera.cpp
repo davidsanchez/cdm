@@ -659,7 +659,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
             // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
             // This is to be done for incoming camera image or Fake camera image from fits file.
-            ImageAnalysis myimage(m1, "Horizontal", 1, iBitsPerPixel);
+            ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
             std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
             LOG_INFO << "Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
@@ -1162,7 +1162,7 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
 
             // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
             // This is to be done for incoming camera image or Fake camera image from fits file.
-            ImageAnalysis myimage(m1, "Horizontal", 1, iBitsPerPixel);
+            ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
 
             is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
             i_images_taken++;

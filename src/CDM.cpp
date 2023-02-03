@@ -76,7 +76,7 @@ int CDM::afterStart()
     // map<std::string,std::string> config;
 
     bool conf = LoadCDMConfiguration(m_config);
-
+    camera.SetConfig(m_config);
     // debug print the config
     map<std::string, std::string>::iterator it;
    for(it=m_config.begin(); it!=m_config.end(); ++it){

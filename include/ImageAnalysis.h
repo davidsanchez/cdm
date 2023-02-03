@@ -17,7 +17,7 @@ class ImageAnalysis
 {
 public:
     //Need a constructor
-    ImageAnalysis(Mat image, std::string image_flip = "None", int image_transpose = 0, int iBitsPerPixel=8);
+    ImageAnalysis(Mat image, map<std::string,std::string> config, std::string image_flip = "None", int image_transpose = 0, int iBitsPerPixel=8);
 
     void Draw();
     void SaveImage(std::string ImagePath);

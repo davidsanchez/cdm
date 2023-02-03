@@ -18,7 +18,7 @@
 
 using namespace cv;
 
-ImageAnalysis::ImageAnalysis(Mat image, std::string image_flip, int image_transpose, int iBitsPerPixel)
+ImageAnalysis::ImageAnalysis(Mat image, map<std::string,std::string> config, std::string image_flip, int image_transpose, int iBitsPerPixel)
     {
 
         // Load config
