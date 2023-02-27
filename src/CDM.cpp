@@ -282,32 +282,6 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 
                 SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.FSM.transition", 2, 0);
 
-
-                /* Standby stuff and tests
-				// Checks if stanby is supported. Return 1 because it is supported.
-				ULONG ulValue = IS_GET_STATUS;
-				ULONG nRetu = is_CameraStatus(hCam, IS_STANDBY_SUPPORTED, ulValue);
-				cout << nRetu << endl;
-				// Check the status of standby. Return 0 because currently not in standby.
-				ulValue = IS_GET_STATUS;
-				nRetu = is_CameraStatus(hCam, IS_STANDBY, ulValue);
-				cout << nRetu << endl;
-				// Activates standby. Returns 0 because command was successfully executed.
-				ulValue = 1;
-				nRetu = is_CameraStatus(hCam, IS_STANDBY, ulValue);
-				cout << nRetu << endl;	
-				// Check the status of standby. Return 1 because currently in standby.
-				ulValue = IS_GET_STATUS;
-				nRetu = is_CameraStatus(hCam, IS_STANDBY, ulValue);
-				cout << nRetu << endl;			
-				// Deactivates standby. Returns 0 because command was successfully executed.
-				ulValue = 0;
-				nRetu = is_CameraStatus(hCam, IS_STANDBY, ulValue);
-				cout << nRetu << endl;
-				// Check the status of standby. Return 0 because currently not in standby.
-				ulValue = IS_GET_STATUS;
-				nRetu = is_CameraStatus(hCam, IS_STANDBY, ulValue);
-				cout << nRetu << endl; */
             }
 
             if (subChaine1.compare("Disconnect") == 0)
@@ -420,6 +394,10 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
     // example here do nothing but wait
     //sleep(3);
 
+    // DAVID
+    int FSM_state;
+    getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
+    LOG_TRACE << "End of CDM::cdm(), State of the CDM : "<<FSM_state<<endl;
     return ret;
 }
 
