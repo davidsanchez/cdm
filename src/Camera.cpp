@@ -948,6 +948,7 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
 vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCUA *myclient)
 {
     LOG_TRACE << "Camera::GetMultipleImages()";
+    LOG_TRACE << "Number of images to be taken "<<n_images<<endl;
 
     b_keep_taking = 1;
 
@@ -977,6 +978,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     {
         // Use is_LockSeqBuf when processing image?
 
+        LOG_TRACE << "Number of images taken "<<i_images_taken<<" over "<<n_images<<endl;
         char *pBuffer = NULL;
         nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
 

@@ -395,9 +395,10 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
     //sleep(3);
 
     // DAVID
-    int FSM_state;
-    getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
-    LOG_TRACE << "End of CDM::cdm(), State of the CDM : "<<FSM_state<<endl;
+    // int FSM_state;
+    // getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
+    LOG_TRACE << "End of CDM::cdm() "<<endl;
+    // LOG_TRACE << "End of CDM::cdm(), State of the CDM : "<<FSM_state<<endl;
     return ret;
 }
 
