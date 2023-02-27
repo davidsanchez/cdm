@@ -20,69 +20,7 @@ using namespace CCfits;
 using namespace std;
 using namespace cv;
 
-/* 
-const std::string currentDateTime()
-{
-    char fmt[64], buf[64];
-    struct timeval tv;
-    struct tm *tm;
 
-    gettimeofday(&tv, NULL);
-    tm = localtime(&tv.tv_sec);
-    strftime(fmt, sizeof fmt, "%Y-%m-%d %H:%M:%S.%%06u", tm);
-    snprintf(buf, sizeof buf, fmt, tv.tv_usec);
-    //cout << buf << endl;
-    return buf;
-}
-
-std::string currentDateTime()
-{
-    timeval curTime;
-    gettimeofday(&curTime, NULL);
-    int milli = curTime.tv_usec / 1000;
-
-    char buffer[80];
-    strftime(buffer, 80, "%Y-%m-%d %H:%M:%S", localtime(&curTime.tv_sec));
-
-    char currentTime[84] = "";
-    sprintf(currentTime, "%s:%03d", buffer, milli);
-    //printf("%s \n", currentTime);
-    return currentTime;
-}
-
-std::string currentDateTime()
-{
-    namespace pt = boost::posix_time;
-    pt::ptime current_date_microseconds = pt::microsec_clock::universal_time();
-    long milliseconds = current_date_microseconds.time_of_day().total_milliseconds();
-    pt::time_duration current_time_milliseconds = pt::milliseconds(milliseconds);
-    pt::ptime current_date_milliseconds(current_date_microseconds.date(),
-                                        current_time_milliseconds);
-
-    pt::time_facet *facet = new pt::time_facet("%Y-%m-%d %H:%M:%s");
-    cout.imbue(locale(cout.getloc(), facet));
-    //std::cout << "Microseconds: " << current_date_microseconds
-    //         << " Milliseconds: " << current_date_milliseconds << std::endl;
-    const std::string str_time = pt::to_simple_string(current_date_milliseconds);
-    //std::cout << pt::to_iso_string(current_date_milliseconds) << std::endl;
-    //std::cout << pt::to_iso_extended_string(current_date_milliseconds) << std::endl;
-
-    std::stringstream stream;
-    stream.imbue(std::locale(std::locale::classic(), facet));
-    stream << current_date_milliseconds;
-    return stream.str();
-}
-
-std::string currentDateTime()
-{
-    std::string isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
-    std::string date = isoString.substr(0, 8);
-    std::string time = isoString.substr(9, 20);
-    //cout << isoString << endl;
-    //cout << date << " " << time << endl;
-    return date + " " +  time;
-}
- */
 
 std::string currentDateTime()
 {
@@ -390,8 +328,8 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
     pFits->pHDU().addKey("DM_W_bot", helper.get_Aux_status_DM_West_Bottom(), "DM West Bottom");
     pFits->pHDU().addKey("DM_W_top", helper.get_Aux_status_DM_West_Top(), "DM West Top");
 
-    LOG_DEBUG << pFits->pHDU() << std::endl;
-
+    //LOG_DEBUG << pFits->pHDU() << std::endl;
+    LOG_TRACE << "End of Camera::writeFITSImage()"<< endl;
     //return remoteImagePath;
     return fileName;
 }
@@ -447,6 +385,8 @@ int Camera::Connect()
     {
         LOG_INFO << "Camera supports monitoring of camera temperature status";
     }
+
+    LOG_TRACE << "End of Camera::Connect()"<< endl;
 }
 
 int Camera::Disconnect()
@@ -458,6 +398,8 @@ int Camera::Disconnect()
     // Disables the hCam camera handle and releases the data structures and memory areas taken up by the uEye camera
     is_ExitCamera(hCam);
     hCam = NULL;
+
+    LOG_TRACE << "End of Camera::Disconnect()"<< endl;
 }
 
 // TODO: merge GetMultipleImages, GetMultipleImagesStacked and StartCDM into one function?
@@ -465,75 +407,6 @@ int Camera::Disconnect()
 int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 {
     LOG_TRACE << "Camera::StartCDM()";
-
-    /*   //
-    // Temporary used for testing purposes. Delete later.
-    //
-
-    //std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/test/1604897067-STAR=Mothallah-EXP=49.9945-ZD=62.9105-AZ=290.7250-OFFZD=0.0000-OFFAZ=0.0000-LED=20-OARL=1.fits", Read, true));
-    //std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/test/1608676057-STAR=-EXP=1000-ZD=62-AZ=33-LED=20-OARL=1-parked=0-parkingPos=0-inMotion=1-tracking=0.fits", Read, true));
-    std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/test/Fake_camera_image_8bit.fits", Read, true));
-
-    Mat m1;
-    vector<uchar> published_image;
-    PHDU &image = pInfile->pHDU();
-
-    if (iBitsPerPixel == 16)
-    {
-        LOG_DEBUG << "Bits per pixel = 16" << endl;
-        std::valarray<uint16_t> contents;
-        // read all user-specifed, coordinate, and checksum keys in the image
-        image.readAllKeys();
-        image.read(contents);
-        //std::cout << image << std::endl; // this doesn't print the data, just header info.
-
-        long ax1(image.axis(0));
-        long ax2(image.axis(1));
-        LOG_DEBUG << "Ax1: " << ax1 << endl;
-        LOG_DEBUG << "Ax2: " << ax2 << endl;
-
-        std::vector<uint16_t> myvec(begin(contents), end(contents));
-        Mat m2 = cv::Mat(ax2, ax1, CV_16UC1, myvec.data());
-        m2.copyTo(m1);
-    }
-
-    else if (iBitsPerPixel == 8)
-    {
-        LOG_DEBUG << "Bits per pixel = 8" << endl;
-        std::valarray<uchar> contents;
-        // read all user-specifed, coordinate, and checksum keys in the image
-        image.readAllKeys();
-        image.read(contents);
-        //std::cout << image << std::endl; // this doesn't print the data, just header info.
-
-        long ax1(image.axis(0));
-        long ax2(image.axis(1));
-        LOG_DEBUG << "Ax1: " << ax1 << endl;
-        LOG_DEBUG << "Ax2: " << ax2 << endl;
-
-        std::vector<uchar> myvec(begin(contents), end(contents));
-        Mat m2 = cv::Mat(ax2, ax1, CV_8UC1, myvec.data());
-        m2.copyTo(m1);
-    }
-    else
-    {
-        LOG_ERROR << "Check bits per pixel. Current value not 8 or 16." << endl;
-    }
-
-    //cv::imwrite("/home/lstoperator/CDM/images/mytest.png", m1);
-    LOG_DEBUG << "Rows: " << m1.rows << endl;
-    LOG_DEBUG << "Cols: " << m1.cols << endl;
-
-    // ImageAnalysis myimage(m1);
-    // myimage.CalculateCircle();
-    // myimage.Draw();
-    // //myimage.StoreResults();
-    // myimage.SaveImage("/home/lstoperator/CDM/images/mytest_8bit.png");
-    // return 0;
-
-    //
-    // End of temporary block
-    // */
 
     b_keep_taking = 1;
     int array_size = 10;
@@ -611,39 +484,6 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
             auto tp_start = std::chrono::high_resolution_clock::now();
 
-            // Mat src, dst;
-            // if (iBitsPerPixel == 8)
-            //     src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
-            // else if (iBitsPerPixel == 16)
-            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-            // else if (iBitsPerPixel == 12)
-            // {
-            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-            //     src = 16 * src;
-            // }
-            // else if (iBitsPerPixel == 10)
-            // {
-            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-            //     src = 64 * src;
-            // }
-            // else
-            // {
-            //     cout << "Check bitdepth!" << endl;
-            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-            // }
-
-            // Vertical flipping of image so it is upright when read from stored old fits files.
-            //ImageAnalysis myimage(m1, "Vertical", 0);
-
-            // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
-            // This is to be done for incoming camera image or Fake camera image from fits file.
-            /* 
-            std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-            ImageAnalysis myimage(m1, "Horizontal", 1, iBitsPerPixel);
-            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-            LOG_INFO << "Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl; 
-            */
-
             if (iBitsPerPixel == 8)
                 m1 = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
 
@@ -699,72 +539,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             end = std::chrono::steady_clock::now();
             LOG_INFO << "Time difference [Getting image results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
-            // Mat src, dst;
 
-            // if (iBitsPerPixel == 8)
-            //     src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
-
-            // else if (iBitsPerPixel == 16)
-            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-
-            // else if (iBitsPerPixel == 12)
-            // {
-            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-            //     src = 16 * src;
-            // }
-
-            // else if (iBitsPerPixel == 10)
-            // {
-            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-            //     src = 64 * src;
-            // }
-
-            // else
-            // {
-            //     cout << "Check bitdepth!" << endl;
-            //     src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-            // }
-
-            // // Transpose + Flip = 90 deg rotation
-            // transpose(src, src);
-            // flip(src, src, 1);
-
-            // std::vector<int> compression_params;
-            // compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
-            // compression_params.push_back(0);
-            // resize(src, dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
-
-            // vector<unsigned char> data;
-            // cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
-
-            // int m_nameSpace = 2;
-            // string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
-            // //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
-            // SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
-
-            // SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken + 1); //Updates the number of images taken
-
-            // std::string imageName = writeFITSImage(src);
-            // std::string filePath = helper.get_fitsPath() + imageName;
-            // std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
-
-            // char exec[300];
-            // sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
-            // cout << "Command is: " << exec << endl;
-            // int scp_result = system(exec);
-            // cout << "Output of scp is: " << scp_result << endl;
-            // if (scp_result == 0)
-            // {
-            //     std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
-            // }
-            // else
-            // {
-            //     cout << "There was a problem while copying the image!" << endl;
-            //     remoteImagePath = "Error";
-            // }
-
-            // v_image_paths.push_back(remoteImagePath);
-            // SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName); //Updates the imageName
 
             auto tp_stop = std::chrono::high_resolution_clock::now();
             auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
@@ -896,10 +671,6 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 std::chrono::steady_clock::time_point end_getimage = std::chrono::steady_clock::now();
                 LOG_INFO << "Time difference [Get image for publishing] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_getimage - begin_getimage).count() << "[ms]" << std::endl;
 
-                //SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, m_datapointName, m_nameSpace, circle_x);
-                //delete m_SetDatapointThread; // crashes
-                //SetDatapointThread m_SetDatapointThread(myclient, m_datapointName, m_nameSpace, circle_x); //Causes first 2 vector cells to have weird values! TODO: Ask JeanLuc about this.
-
                 // TODO: Delete DatapointThreads or make an object on stack! Or just use setDatapoint if it is quick enough.
 
                 circle_x.clear();
@@ -1027,83 +798,12 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
         LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
     }
 
-    LOG_TRACE << "Finished StartCDM" << endl;
+    LOG_TRACE << "End of Camera::StartCDM()"<< endl;
 }
 
 int Camera::StartStream(DataAccessClientOPCUA *myclient)
 {
-    /*  
-   LOG_TRACE << "Camera::StartStream()";
-
-    //
-    // Temporary used for testing purposes. Delete later.
-    //
-
-    //std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/test/1604897067-STAR=Mothallah-EXP=49.9945-ZD=62.9105-AZ=290.7250-OFFZD=0.0000-OFFAZ=0.0000-LED=20-OARL=1.fits", Read, true));
-    //std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/test/1608676057-STAR=-EXP=1000-ZD=62-AZ=33-LED=20-OARL=1-parked=0-parkingPos=0-inMotion=1-tracking=0.fits", Read, true));
-    std::auto_ptr<FITS> pInfile(new FITS("/home/lstoperator/CDM/fits/test/Fake_camera_image_8bit.fits", Read, true));
-
-    Mat m1;
-    vector<uchar> published_image;
-    PHDU &image = pInfile->pHDU();
-
-    if (iBitsPerPixel == 16)
-    {
-        LOG_DEBUG << "Bits per pixel = 16" << endl;
-        std::valarray<uint16_t> contents;
-        // read all user-specifed, coordinate, and checksum keys in the image
-        image.readAllKeys();
-        image.read(contents);
-        //std::cout << image << std::endl; // this doesn't print the data, just header info.
-
-        long ax1(image.axis(0));
-        long ax2(image.axis(1));
-        LOG_DEBUG << "Ax1: " << ax1 << endl;
-        LOG_DEBUG << "Ax2: " << ax2 << endl;
-
-        std::vector<uint16_t> myvec(begin(contents), end(contents));
-        Mat m2 = cv::Mat(ax2, ax1, CV_16UC1, myvec.data());
-        m2.copyTo(m1);
-    }
-
-    else if (iBitsPerPixel == 8)
-    {
-        LOG_DEBUG << "Bits per pixel = 8" << endl;
-        std::valarray<uchar> contents;
-        // read all user-specifed, coordinate, and checksum keys in the image
-        image.readAllKeys();
-        image.read(contents);
-        //std::cout << image << std::endl; // this doesn't print the data, just header info.
-
-        long ax1(image.axis(0));
-        long ax2(image.axis(1));
-        LOG_DEBUG << "Ax1: " << ax1 << endl;
-        LOG_DEBUG << "Ax2: " << ax2 << endl;
-
-        std::vector<uchar> myvec(begin(contents), end(contents));
-        Mat m2 = cv::Mat(ax2, ax1, CV_8UC1, myvec.data());
-        m2.copyTo(m1);
-    }
-    else
-    {
-        LOG_ERROR << "Check bits per pixel. Current value not 8 or 16." << endl;
-    }
-
-    //cv::imwrite("/home/lstoperator/CDM/images/mytest.png", m1);
-    LOG_DEBUG << "Rows: " << m1.rows << endl;
-    LOG_DEBUG << "Cols: " << m1.cols << endl;
-
-    // ImageAnalysis myimage(m1);
-    // myimage.CalculateCircle();
-    // myimage.Draw();
-    // //myimage.StoreResults();
-    // myimage.SaveImage("/home/lstoperator/CDM/images/mytest_8bit.png");
-    // return 0;
-
-    //
-    // End of temporary block
-    // 
-    */
+    LOG_TRACE << "Camera::StartStream()";
 
     b_keep_taking = 1;
 
@@ -1242,7 +942,7 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
         LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
     }
 
-    LOG_TRACE << "Finished StartStream" << endl;
+     LOG_TRACE << "End of Camera::StartStream()"<< endl;
 }
 
 vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCUA *myclient)
@@ -1431,7 +1131,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
         LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
     }
 
-    LOG_DEBUG << "Finished GetMultipleImages" << endl;
+    LOG_TRACE << "End of Camera::GetMultipleImages()"<<endl;
 
     // TODO: also publish the images without saving to disk first
     // TODO: also publish the vector of image paths
@@ -1652,7 +1352,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
         LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
     }
 
-    LOG_DEBUG << "Finished GetMultipleImages" << endl;
+    LOG_TRACE << "End of Camera::GetMultipleImagesStacked()" << endl;
 
     return v_image_paths;
 }
@@ -1744,6 +1444,8 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
         is_FreeImageMem(hCam, pcImageMemory, nMemoryId);
     pcImageMemory = NULL;
 
+
+    LOG_TRACE << "End of Camera::GetImage()"<<endl;
     return;
 }
 
@@ -1817,6 +1519,9 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     //Call destructors?
 
     //return "Message status"; //TODO: You should return errors here.
+
+    LOG_TRACE << "End of Camera::Configure()"<<endl;
+
     return return_values;
 }
 
@@ -1829,7 +1534,7 @@ double Camera::get_temperature_value()
         double fTemperature = 0;
         nRet = is_DeviceFeature(hCam, IS_DEVICE_FEATURE_CMD_GET_TEMPERATURE,
                                 (void *)&fTemperature, sizeof(fTemperature));
-        LOG_INFO << "Camera temperature: " << fTemperature;
+        //LOG_INFO << "Camera temperature: " << fTemperature;
         return fTemperature;
     }
 
@@ -1861,7 +1566,7 @@ string Camera::get_temperature_status()
         }
         else if (nTemperatureStatus == TEMPERATURE_CONTROL_STATUS_NORMAL)
         {
-            LOG_INFO << "Temperature status: Normal";
+            //LOG_INFO << "Temperature status: Normal";
             temperatureStatus = "Normal";
         }
 

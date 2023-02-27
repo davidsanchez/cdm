@@ -20,28 +20,6 @@ Helper helper;
 
 
 
-// #define CONFIG_FILE_PATH  "/home/cdmmgr/cdm/config/CDM.config"
-// bool LoadCDMConfiguration( map<std::string,std::string> &config )
-// {
-//     std::ifstream in(CONFIG_FILE_PATH);
-//     if (!in.is_open()) 
-//     {
-//         LOG_ERROR <<"Config file not open "<<CONFIG_FILE_PATH;
-//         LOG_ERROR <<strerror(errno) ;
-//         return false;
-//     }
-
-//     std::string param,value;
-
-//     while (!in.eof())
-//     {
-//         in>>param>>value;
-//         config.insert(make_pair(param, value));
-//     }
-
-//     return true;
-// }
-
 
 int CDM::init(const std::string &chaine)
 {
@@ -59,6 +37,7 @@ int CDM::init(const std::string &chaine)
     PluginsBase::init(chaine);
 
     return ret;
+    LOG_TRACE << "End of CDM::init()"<<endl;
 }
 
 int CDM::afterStart()
@@ -111,11 +90,7 @@ int CDM::afterStart()
              it++)
         {
             printf("elementControl = %s\n", it->c_str());
-        } /*
- 		for (std::vector<std::string>::iterator it = m_listControl.begin(); it != m_listControl.end();
-                        it++) {
-			printf("elementControl = %s\n",it->c_str());
- 		}*/
+        } 
     }
 
     std::string resultCall;
@@ -132,8 +107,6 @@ int CDM::afterStart()
     //helper.set_OPCUAref( getDataAccessClientOPCUARef() );
 
     // Trying to access other OPCUA server
-    //connectOpcUa("opc.tcp://address:port"); // example opc.tcp://lappc-f578l:48080
-    // CDM::connection_result_DataBroker = helper.connectOpcUa_DataBroker("opc.tcp://10.1.12.1:48030", this); //DataBroker OPCUA
     CDM::connection_result_DataBroker = helper.connectOpcUa_DataBroker(m_config["OPCUA"], this); //DataBroker OPCUA
 
     LOG_DEBUG << "DataBroker status OPCUA: " << connection_result_DataBroker;
@@ -152,11 +125,8 @@ int CDM::afterStart()
     }
 
     getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
-    //SetDatapointThread *m_SetDatapointThread_state = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.FSM.state", 2, 0);
 
-
-    LOG_DEBUG << "After start finished!";
-
+    LOG_TRACE << "End of CDM::afterStart()"<<endl;
     return ret;
 }
 
