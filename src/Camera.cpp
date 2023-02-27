@@ -978,7 +978,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     {
         // Use is_LockSeqBuf when processing image?
 
-        LOG_TRACE << "Number of images taken "<<i_images_taken<<" over "<<n_images<<endl;
+        LOG_TRACE << "Number of images taken "<<i_images_taken+1<<" over "<<n_images<<endl;
         char *pBuffer = NULL;
         nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
 
@@ -1144,6 +1144,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessClientOPCUA *myclient)
 {
     LOG_TRACE << "Camera::GetMultipleImagesStacked()";
+    LOG_TRACE << "Number of images to be taken "<<n_images<<endl;
 
     b_keep_taking = 1;
     cv::Mat accumulated_images = cv::Mat::zeros(iWidth, iHeight, CV_64FC1); // contains accumulated images. Height and width are reversed as the camera images are rotated 90 deg after taking.
@@ -1173,6 +1174,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     while ((i_images_taken < n_images) && (b_keep_taking == 1))
     {
         // Use is_LockSeqBuf when processing image?
+        LOG_TRACE << "Number of images taken "<<i_images_taken+1<<" over "<<n_images<<endl;
 
         char *pBuffer = NULL;
         nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
