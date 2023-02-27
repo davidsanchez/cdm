@@ -94,7 +94,7 @@ string UTC_time_short()
 
 vector<vector<double>> transpose(vector<vector<double>> &A)
 {
-    LOG_TRACE << "Camera::transpose()";
+    LOG_TRACE << "Camera::transpose()"<<endl;
 
     int rows = A.size();
     if (rows == 0)
@@ -127,7 +127,7 @@ double calculateStdDev(vector<double> v)
 
 std::string Camera::writeFITSImage(Mat image, int n_stack)
 {
-    LOG_TRACE << "Camera::writeFITSImage()";
+    LOG_TRACE << "Camera::writeFITSImage()"<<endl;
 
     //TODO: should also send image data type to this method, now assume 8bit
 
@@ -336,7 +336,7 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
 
 int Camera::Connect()
 {
-    LOG_TRACE << "Camera::Connect()";
+    LOG_TRACE << "Camera::Connect()"<<endl;
 
     nRet = is_InitCamera(&hCam, NULL);
     LOG_DEBUG << "InitCamera returned " << nRet << std::endl;
@@ -383,7 +383,7 @@ int Camera::Connect()
     is_DeviceFeature(hCam, IS_DEVICE_FEATURE_CMD_GET_SUPPORTED_FEATURES, &nFeatures, sizeof(nFeatures));
     if ((nFeatures & IS_DEVICE_FEATURE_CAP_TEMPERATURE_STATUS) == IS_DEVICE_FEATURE_CAP_TEMPERATURE_STATUS)
     {
-        LOG_INFO << "Camera supports monitoring of camera temperature status";
+        LOG_INFO << "Camera supports monitoring of camera temperature status"<<endl;
     }
 
     LOG_TRACE << "End of Camera::Connect()"<< endl;
@@ -391,7 +391,7 @@ int Camera::Connect()
 
 int Camera::Disconnect()
 {
-    LOG_TRACE << "Camera::Disconnect()";
+    LOG_TRACE << "Camera::Disconnect()"<<endl;
 
     // You should release the reserved images in memory here. Like OpenCV Mat and IDS images
 
@@ -406,7 +406,7 @@ int Camera::Disconnect()
 
 int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 {
-    LOG_TRACE << "Camera::StartCDM()";
+    LOG_TRACE << "Camera::StartCDM()"<<endl;
 
     b_keep_taking = 1;
     int array_size = 10;
@@ -730,7 +730,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
         else if (nRet == IS_CAPTURE_STATUS)
         {
-            LOG_WARNING << "Camera::StartCDM() / IS_CAPTURE_STATUS";
+            LOG_WARNING << "Camera::StartCDM() / IS_CAPTURE_STATUS"<<endl;
 
             UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
             INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
@@ -803,7 +803,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
 int Camera::StartStream(DataAccessClientOPCUA *myclient)
 {
-    LOG_TRACE << "Camera::StartStream()";
+    LOG_TRACE << "Camera::StartStream()"<<endl;
 
     b_keep_taking = 1;
 
@@ -874,7 +874,7 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
 
         else if (nRet == IS_CAPTURE_STATUS)
         {
-            LOG_WARNING << "Camera::StartCDM() / IS_CAPTURE_STATUS";
+            LOG_WARNING << "Camera::StartCDM() / IS_CAPTURE_STATUS"<<endl;
 
             UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
             INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
@@ -947,7 +947,7 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
 
 vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCUA *myclient)
 {
-    LOG_TRACE << "Camera::GetMultipleImages()";
+    LOG_TRACE << "Camera::GetMultipleImages()"<<endl;
     LOG_TRACE << "Number of images to be taken "<<n_images<<endl;
 
     b_keep_taking = 1;
@@ -1071,7 +1071,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 
         else if (nRet == IS_CAPTURE_STATUS)
         {
-            LOG_WARNING << "Camera::GetMultipleImages() / IS_CAPTURE_STATUS";
+            LOG_WARNING << "Camera::GetMultipleImages() / IS_CAPTURE_STATUS"<<endl;
 
             UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
             INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
@@ -1143,7 +1143,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 
 vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessClientOPCUA *myclient)
 {
-    LOG_TRACE << "Camera::GetMultipleImagesStacked()";
+    LOG_TRACE << "Camera::GetMultipleImagesStacked()"<<endl;
     LOG_TRACE << "Number of images to be taken "<<n_images<<endl;
 
     b_keep_taking = 1;
@@ -1250,7 +1250,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
 
         else if (nRet == IS_CAPTURE_STATUS)
         {
-            LOG_WARNING << "Camera::GetMultipleImagesStacked() / IS_CAPTURE_STATUS";
+            LOG_WARNING << "Camera::GetMultipleImagesStacked() / IS_CAPTURE_STATUS"<<endl;
 
             UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
             INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
@@ -1364,25 +1364,25 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
 // TODO: these multiple methods are redundant. Use only 1.
 void Camera::StopGetMultipleImages()
 {
-    LOG_TRACE << "Camera::StopGetMultipleImages()";
+    LOG_TRACE << "Camera::StopGetMultipleImages()"<<endl;
     b_keep_taking = 0;
 }
 
 int Camera::StopCDM()
 {
-    LOG_TRACE << "Camera::StopCDM()";
+    LOG_TRACE << "Camera::StopCDM()"<<endl;
     b_keep_taking = 0;
 }
 
 int Camera::StopStream()
 {
-    LOG_TRACE << "Camera::StopStream()";
+    LOG_TRACE << "Camera::StopStream()"<<endl;
     b_keep_taking = 0;
 }
 
 void Camera::GetImage(DataAccessClientOPCUA *myclient)
 {
-    LOG_TRACE << "Camera::GetImage()";
+    LOG_TRACE << "Camera::GetImage()"<<endl;
 
     nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
     LOG_DEBUG << "Status is_AllocImageMem" << nRet;
@@ -1455,7 +1455,7 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
 
 std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, double fps, int gain, string pixel_format)
 {
-    LOG_TRACE << "Camera::Configure()";
+    LOG_TRACE << "Camera::Configure()"<<endl;
 
     std::vector<boost::any> return_values;
 
@@ -1544,7 +1544,7 @@ double Camera::get_temperature_value()
 
     else
     {
-        LOG_DEBUG << "Camera not connected.";
+        LOG_DEBUG << "Camera not connected."<<endl;
         return 0;
     }
 }
@@ -1560,17 +1560,17 @@ string Camera::get_temperature_status()
         is_DeviceFeature(hCam, IS_DEVICE_FEATURE_CMD_GET_TEMPERATURE_STATUS, &nTemperatureStatus, sizeof(nTemperatureStatus));
         if (nTemperatureStatus == TEMPERATURE_CONTROL_STATUS_CRITICAL)
         {
-            LOG_FATAL << "Temperature status: Critical";
+            LOG_FATAL << "Temperature status: Critical"<<endl;
             temperatureStatus = "Critical";
         }
         else if (nTemperatureStatus == TEMPERATURE_CONTROL_STATUS_WARNING)
         {
-            LOG_WARNING << "Temperature status: Warning";
+            LOG_WARNING << "Temperature status: Warning"<<endl;
             temperatureStatus = "Warning";
         }
         else if (nTemperatureStatus == TEMPERATURE_CONTROL_STATUS_NORMAL)
         {
-            //LOG_INFO << "Temperature status: Normal";
+            //LOG_INFO << "Temperature status: Normal"<<endl;
             temperatureStatus = "Normal";
         }
 
@@ -1579,7 +1579,7 @@ string Camera::get_temperature_status()
 
     else
     {
-        LOG_DEBUG << "Camera not connected.";
+        LOG_DEBUG << "Camera not connected."<<endl;
         return "Camera not connected";
     }
 }
