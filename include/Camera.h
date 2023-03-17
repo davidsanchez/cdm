@@ -29,7 +29,7 @@ public:
     Camera()
     {
         hCam = (HIDS)0;
-        LoadCDMConfiguration(m_config);
+        // LoadCDMConfiguration(m_config);
     };
 
     int Connect();
@@ -46,7 +46,7 @@ public:
     int StartStream(DataAccessClientOPCUA* myclient);
     int StopStream();
 
-    // void SetConfig( map<std::string,std::string> config) {m_config=config;}
+    void SetConfig( map<std::string,std::string> config) {m_config=config;}
 
     double get_exposure() {return Camera::exposure_setting;}
     int get_master_gain() {return Camera::master_gain_setting;}

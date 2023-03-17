@@ -18,11 +18,12 @@
 
 using namespace cv;
 
-ImageAnalysis::ImageAnalysis(Mat image, std::string image_flip, int image_transpose, int iBitsPerPixel)
+ImageAnalysis::ImageAnalysis(Mat image, map<std::string,std::string> config, std::string image_flip, int image_transpose, int iBitsPerPixel)
     {
 
         // Load config
-        LoadCDMConfiguration(m_config);
+        // LoadCDMConfiguration(m_config);
+        m_config = config;
 
         roi_size_led = stoi(m_config["roi_size_led"]);
         roi_size_oarl  = stoi(m_config["roi_size_oarl"]);

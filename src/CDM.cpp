@@ -20,28 +20,6 @@ Helper helper;
 
 
 
-// #define CONFIG_FILE_PATH  "/home/cdmmgr/cdm/config/CDM.config"
-// bool LoadCDMConfiguration( map<std::string,std::string> &config )
-// {
-//     std::ifstream in(CONFIG_FILE_PATH);
-//     if (!in.is_open()) 
-//     {
-//         LOG_ERROR <<"Config file not open "<<CONFIG_FILE_PATH;
-//         LOG_ERROR <<strerror(errno) ;
-//         return false;
-//     }
-
-//     std::string param,value;
-
-//     while (!in.eof())
-//     {
-//         in>>param>>value;
-//         config.insert(make_pair(param, value));
-//     }
-
-//     return true;
-// }
-
 
 int CDM::init(const std::string &chaine)
 {
@@ -59,6 +37,7 @@ int CDM::init(const std::string &chaine)
     PluginsBase::init(chaine);
 
     return ret;
+    LOG_TRACE << "End of CDM::init()"<<endl;
 }
 
 int CDM::afterStart()
@@ -76,7 +55,7 @@ int CDM::afterStart()
     // map<std::string,std::string> config;
 
     bool conf = LoadCDMConfiguration(m_config);
-
+    camera.SetConfig(m_config);
     // debug print the config
     map<std::string, std::string>::iterator it;
    for(it=m_config.begin(); it!=m_config.end(); ++it){
@@ -111,11 +90,7 @@ int CDM::afterStart()
              it++)
         {
             printf("elementControl = %s\n", it->c_str());
-        } /*
- 		for (std::vector<std::string>::iterator it = m_listControl.begin(); it != m_listControl.end();
-                        it++) {
-			printf("elementControl = %s\n",it->c_str());
- 		}*/
+        } 
     }
 
     std::string resultCall;
@@ -132,8 +107,6 @@ int CDM::afterStart()
     //helper.set_OPCUAref( getDataAccessClientOPCUARef() );
 
     // Trying to access other OPCUA server
-    //connectOpcUa("opc.tcp://address:port"); // example opc.tcp://lappc-f578l:48080
-    // CDM::connection_result_DataBroker = helper.connectOpcUa_DataBroker("opc.tcp://10.1.12.1:48030", this); //DataBroker OPCUA
     CDM::connection_result_DataBroker = helper.connectOpcUa_DataBroker(m_config["OPCUA"], this); //DataBroker OPCUA
 
     LOG_DEBUG << "DataBroker status OPCUA: " << connection_result_DataBroker;
@@ -152,11 +125,8 @@ int CDM::afterStart()
     }
 
     getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
-    //SetDatapointThread *m_SetDatapointThread_state = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.FSM.state", 2, 0);
 
-
-    LOG_DEBUG << "After start finished!";
-
+    LOG_TRACE << "End of CDM::afterStart()"<<endl;
     return ret;
 }
 
@@ -312,32 +282,6 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 
                 SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.FSM.transition", 2, 0);
 
-
-                /* Standby stuff and tests
-				// Checks if stanby is supported. Return 1 because it is supported.
-				ULONG ulValue = IS_GET_STATUS;
-				ULONG nRetu = is_CameraStatus(hCam, IS_STANDBY_SUPPORTED, ulValue);
-				cout << nRetu << endl;
-				// Check the status of standby. Return 0 because currently not in standby.
-				ulValue = IS_GET_STATUS;
-				nRetu = is_CameraStatus(hCam, IS_STANDBY, ulValue);
-				cout << nRetu << endl;
-				// Activates standby. Returns 0 because command was successfully executed.
-				ulValue = 1;
-				nRetu = is_CameraStatus(hCam, IS_STANDBY, ulValue);
-				cout << nRetu << endl;	
-				// Check the status of standby. Return 1 because currently in standby.
-				ulValue = IS_GET_STATUS;
-				nRetu = is_CameraStatus(hCam, IS_STANDBY, ulValue);
-				cout << nRetu << endl;			
-				// Deactivates standby. Returns 0 because command was successfully executed.
-				ulValue = 0;
-				nRetu = is_CameraStatus(hCam, IS_STANDBY, ulValue);
-				cout << nRetu << endl;
-				// Check the status of standby. Return 0 because currently not in standby.
-				ulValue = IS_GET_STATUS;
-				nRetu = is_CameraStatus(hCam, IS_STANDBY, ulValue);
-				cout << nRetu << endl; */
             }
 
             if (subChaine1.compare("Disconnect") == 0)
@@ -450,6 +394,11 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
     // example here do nothing but wait
     //sleep(3);
 
+    // DAVID
+    // int FSM_state;
+    // getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
+    LOG_TRACE << "End of CDM::cdm() "<<endl;
+    // LOG_TRACE << "End of CDM::cdm(), State of the CDM : "<<FSM_state<<endl;
     return ret;
 }
 
