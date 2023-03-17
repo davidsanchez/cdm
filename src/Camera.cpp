@@ -1047,8 +1047,19 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
                 }
                 else
                 {
-                    LOG_ERROR << "There was a problem while copying the image!" << endl;
+                    LOG_ERROR << "There was a problem while copying the image! RETRYING" << endl;
+                    sprintf(exec, "scp -o StrictHostKeyChecking=no %s %s", filePath.c_str(), m_config["OUT_FITS_BENDING"].c_str());
+                    scp_result = system(exec);
+                    if (scp_result == 0)
+                    {
+                       std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
+                    }
+                    else
+                    {
+                    LOG_ERROR << "There was a problem while copying the image! ABORTING" << endl;
                     remoteImagePath = "Error";
+                    }
+
                 }
 
                 v_image_paths.push_back(remoteImagePath);
