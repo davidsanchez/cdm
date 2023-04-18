@@ -1032,11 +1032,13 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
                 SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken + 1); //Updates the number of images taken
 
                 std::string imageName = writeFITSImage(src);
+
+                /*
+                REMOVE COPY BY CDM AND CHANGE THE FILE PUSH ON THE DATABROKER
                 std::string filePath = helper.get_fitsPath() + imageName;
                 std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
 
-                /*
-                REMOVE SCP 
+
                 char exec[300];
                 sprintf(exec, "scp -o StrictHostKeyChecking=no %s %s", filePath.c_str(), m_config["OUT_FITS_BENDING"].c_str());
                 // sprintf(exec, "scp -o StrictHostKeyChecking=no %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
@@ -1063,10 +1065,9 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
                     }
 
                 }
-                */
 
-                
-                v_image_paths.push_back(imageName.c_str());
+                */
+                v_image_paths.push_back(imageName);
                 SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
 
                 auto tp_stop = std::chrono::high_resolution_clock::now();
@@ -1331,11 +1332,12 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
 
     // Make a FITS image
     std::string imageName = writeFITSImage(accumulated_images, i_images_taken);
-    // std::string filePath = helper.get_fitsPath() + imageName;
-    // std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
 
     /*
-    REMOVE SCP 
+    REMOVE COPY BY CDM AND CHANGE THE FILE PUSH ON THE DATABROKER
+    std::string filePath = helper.get_fitsPath() + imageName;
+    std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
+
     char exec[300];
     sprintf(exec, "scp -o StrictHostKeyChecking=no %s %s", filePath.c_str(), m_config["OUT_FITS_BENDING"].c_str());
     // sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
@@ -1351,9 +1353,10 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
         LOG_ERROR << "There was a problem while copying the image!" << endl;
         remoteImagePath = "Error";
     }
+
     */
 
-    v_image_paths.push_back(imageName.c_str());
+    v_image_paths.push_back(imageName);
     SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
 
     // Free the OpenCV memory?
@@ -1436,11 +1439,11 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
     std::string imageName = writeFITSImage(src);
-    // std::string filePath = helper.get_fitsPath() + imageName;
-    // std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
-
     /*
-    REMOVE SCP 
+    REMOVE COPY BY CDM AND CHANGE THE FILE PUSH ON THE DATABROKER
+    std::string filePath = helper.get_fitsPath() + imageName;
+    std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
+
     char exec[300];
     sprintf(exec, "scp -o StrictHostKeyChecking=no %s %s", filePath.c_str(), m_config["OUT_FITS_BENDING"].c_str());
     // sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
@@ -1456,13 +1459,13 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
         LOG_ERROR << "There was a problem while copying the image!" << endl;
         remoteImagePath = "Error";
     }
-    */
 
-    v_image_paths.push_back(imageName.c_str()); 
+    */
+    std::vector<std::string> publish_remoteImagePath; 
     publish_remoteImagePath.push_back(imageName.c_str());
     SetDatapointThread *m_SetDatapointThread_remote_path = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, publish_remoteImagePath); //Updates the imagePath
     SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
-    SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imagePath_cat.imagePath_cat_v", 2, remoteImagePath.c_str()); //Updates the imagePath_cat
+    SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imagePath_cat.imagePath_cat_v", 2, imageName.c_str()); //Updates the imagePath_cat
 
     // Free the allocated buffer
     if (pcImageMemory != NULL)
