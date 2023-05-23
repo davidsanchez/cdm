@@ -16,7 +16,7 @@ DatapointMonitor::DatapointMonitor(CDM *caller)
     this->caller = caller;
 }
 
-void DatapointMonitor::dataChange(std::vector<std::string> listElements, std::vector<std::string> listValues)
+void DatapointMonitor::dataChange(std::vector<std::string> listElements, std::vector<std::string> listValues, std::vector<int> listQuality)
 {
     /*!
     This method is executed on OPC-UA data change. 

@@ -6,10 +6,10 @@ if [ "$count" = 0 ]; then
         echo "No docker image"
         # cd /home/cdmmgr/cdm/
         # fuser -k -n tcp 48011
-        docker-compose -f /home/shifter/Docker/cdm/containers/compose/Prod-CDM-config.yaml up -d
+        docker-compose -f /home/shifter/Docker/cdm/containers/compose/Dev-CDM-config.yaml up -d
 
         sleep 2
-        docker exec -dt $PROCESS  rm /var/run/crond.pid
+        docker exec -dt MOS-CDM-COMPOSE  rm /var/run/crond.pid
         sleep 2
-        docker exec -dt $PROCESS crond 
+        docker exec -dt MOS-CDM-COMPOSE crond 
 fi

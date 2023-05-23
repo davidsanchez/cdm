@@ -18,7 +18,7 @@
 
 #include <curl/curl.h>
 
-
+#include "Config.h"
 
 using namespace std;
 

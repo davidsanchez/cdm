@@ -1,6 +1,6 @@
 #FROM centos:7
 
-FROM lst/common-mos:v9
+FROM lst/common-mos:v11
 
 # Creating a cdmmgr user
 USER root
@@ -95,7 +95,7 @@ RUN ./bootstrap.sh --with-python=python2.7
 RUN  ./b2 install  --with=all
 
 WORKDIR /home/cdmmgr/cdm/build
-RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_9.3.0/
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_11.0.0/
 RUN make
 
 USER root
