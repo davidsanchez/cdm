@@ -344,7 +344,6 @@ void *AsynchronousThread::run(void *params)
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.Sensor.humidity_absolute.humidity_absolute_v", 2, meteo_val[2]);
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.Sensor.pressure.pressure_v", 2, meteo_val[3]);
 
-                vector<string> ws_data = meteo.Update_WS();
 
                 // The logger will write first the date and time automatically before the these datapoints.
                 // We don't make a loop to store this because in each loop the logger would automatically put endl.
@@ -353,23 +352,7 @@ void *AsynchronousThread::run(void *params)
                 LOG_ENV << meteo_val[0] << " " // sensor - temperature
                         << meteo_val[1] << " " // sensor - humidity relative
                         << meteo_val[2] << " " // sensor - humidity absolute in g/m^3
-                        << meteo_val[3] << " " // sensor - pressure in hPa
-                        << ws_data[0] << " "   // MAGIC WS - time
-                        << ws_data[1] << " "   // MAGIC WS - date
-                        << ws_data[2] << " "   // MAGIC WS - temperature
-                        << ws_data[3] << " "   // MAGIC WS - pressure
-                        << ws_data[4] << " "   // MAGIC WS - average wind direction
-                        << ws_data[5] << " "   // MAGIC WS - humidity
-                        << ws_data[6] << " "   // MAGIC WS - wind speed
-                        << ws_data[7] << " "   // MAGIC WS - wind gusts
-                        << ws_data[8] << " "   // MAGIC WS - average wind speed
-                        << ws_data[9] << " "   // MAGIC WS - current wind direction
-                        << ws_data[10] << " "  // MAGIC WS - Unknown, maybe some internal temperature.
-                        << ws_data[11] << " "  // MAGIC WS - TNG dust
-                        << ws_data[12] << " "  // MAGIC WS - TNG seeing
-                        << ws_data[13] << " "  // MAGIC WS - rain
-                        << ws_data[14] << " "  // MAGIC WS - rain statistics
-                        << ws_data[15]         // MAGIC WS - Status
+                        << meteo_val[3]  // sensor - pressure in hPa
                     ;
 
                 usleep(9000000);
