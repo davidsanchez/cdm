@@ -126,6 +126,19 @@ int CDM::afterStart()
 
     getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
 
+    int quality = 0; // (0= Good, 1=Uncertain, 2 = Bad)
+    std::string methodToCall = "Unit_CDM.AuxControl.SetDPQuality";
+    std::string completeNodeName = "AuxControl";
+            
+    boost::any completeNodeNameAny = completeNodeName;
+            
+    std::vector<boost::any> callRequest;
+    callRequest.push_back(completeNodeNameAny);
+    callRequest.push_back(quality);
+    int res = getDataAccessClientOPCUARef()->callMethod(methodToCall, 4, callRequest, resultCall);
+    LOG_TRACE << methodToCall << "  method call result = " << res << endl;
+    //getDataAccessClientOPCUARef()->setDPQuality("CDM", 1);
+
     LOG_TRACE << "End of CDM::afterStart()"<<endl;
     return ret;
 }

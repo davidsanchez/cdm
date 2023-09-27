@@ -97,7 +97,7 @@ RUN  ./b2 install  --with=all
 
 WORKDIR /home/cdmmgr/cdm/build
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_11.0.0/
-RUN make
+#RUN make
 
 USER root
 WORKDIR /root
