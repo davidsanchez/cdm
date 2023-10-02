@@ -14,7 +14,7 @@ using namespace std;
 
 bool LoadCDMConfiguration( map<std::string,std::string> &config )
 {
-    LOG_DEBUG<<"Reading config file "<<CONFIG_FILE_PATH;
+    //LOG_DEBUG<<"Reading config file "<<CONFIG_FILE_PATH;
     std::ifstream in(CONFIG_FILE_PATH);
     if (!in.is_open()) 
     {
@@ -28,7 +28,7 @@ bool LoadCDMConfiguration( map<std::string,std::string> &config )
     while (!in.eof())
     {
         in>>param>>value;
-        LOG_DEBUG<<"LoadCDMConfiguration "<<param<<" "<<param;
+        //LOG_DEBUG<<"LoadCDMConfiguration "<<param<<" "<<param;
         config.insert(make_pair(param, value));
     }
 
@@ -38,7 +38,7 @@ bool LoadCDMConfiguration( map<std::string,std::string> &config )
 
  std::vector<std::vector<int>>  LoadLedLoc()
 {
-    LOG_DEBUG<<"Reading config file "<<LEDLOC_FILE_PATH;
+    //LOG_DEBUG<<"Reading config file "<<LEDLOC_FILE_PATH;
     std::ifstream in(LEDLOC_FILE_PATH);
     if (!in.is_open()) 
     {
@@ -54,7 +54,7 @@ bool LoadCDMConfiguration( map<std::string,std::string> &config )
     while (!in.eof())
     {
         in>>px>>py;
-        LOG_DEBUG<<"LoadLedLoc "<<px<<" "<<py;
+        //LOG_DEBUG<<"LoadLedLoc "<<px<<" "<<py;
         std::vector<int> v;
         v.push_back(px);
         v.push_back(py);
@@ -67,7 +67,7 @@ bool LoadCDMConfiguration( map<std::string,std::string> &config )
 
  std::vector<std::vector<int>>  LoadOARLLoc()
 {
-    LOG_DEBUG<<"Reading config file "<<OARLLOC_FILE_PATH;
+    //LOG_DEBUG<<"Reading config file "<<OARLLOC_FILE_PATH;
     std::ifstream in(OARLLOC_FILE_PATH);
     if (!in.is_open()) 
     {
@@ -83,7 +83,7 @@ bool LoadCDMConfiguration( map<std::string,std::string> &config )
     while (!in.eof())
     {
         in>>px>>py;
-        LOG_DEBUG<<"LoadOARLLoc "<<px<<" "<<py;
+        //LOG_DEBUG<<"LoadOARLLoc "<<px<<" "<<py;
         std::vector<int> v;
         v.push_back(px);
         v.push_back(py);
