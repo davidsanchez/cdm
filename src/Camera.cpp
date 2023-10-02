@@ -501,13 +501,13 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             // This is to be done for incoming camera image or Fake camera image from fits file.
             ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
             std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-            LOG_INFO << "Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+            LOG_IMAGE << "Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
             //ImageAnalysis myimage(src);
             begin = std::chrono::steady_clock::now();
             myimage.CalculateImage();
             end = std::chrono::steady_clock::now();
-            LOG_INFO << "Time difference [CalculateImage] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+            LOG_IMAGE << "Time difference [CalculateImage] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
             begin = std::chrono::steady_clock::now();
 
@@ -537,7 +537,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             OARL_mean_y.push_back(oarl_mean_results[1]);
 
             end = std::chrono::steady_clock::now();
-            LOG_INFO << "Time difference [Getting image results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+            LOG_IMAGE << "Time difference [Getting image results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
 
 
@@ -559,6 +559,8 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             LOG_DATA
                 //cout
                 << setprecision(10)
+                << helper.get_Zenith() << " "
+                << helper.get_Azimuth() << " "
                 << circle_results[0] * px2arcsec << " "
                 << circle_results[1] * px2arcsec << " "
                 << circle_results[2] * px2arcsec << " "
@@ -604,7 +606,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             {
                 std::chrono::steady_clock::time_point begin_publish = std::chrono::steady_clock::now();
 
-                LOG_INFO << "Gathered " << array_size << " images:" << endl;
+                LOG_IMAGE << "Gathered " << array_size << " images:" << endl;
 
                 //TODO: Time this transpose!
                 // We transpose the arrays so instead of grouping it by time first we group it by LEDs/OARLs first.
@@ -669,7 +671,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 myclient->setDatapoint("Unit_CDM.AuxControl.CDM.image.image_v", m_nameSpace, published_image);
                 myclient->setDatapoint("Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", m_nameSpace, (int)i_images_taken);
                 std::chrono::steady_clock::time_point end_getimage = std::chrono::steady_clock::now();
-                LOG_INFO << "Time difference [Get image for publishing] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_getimage - begin_getimage).count() << "[ms]" << std::endl;
+                LOG_IMAGE << "Time difference [Get image for publishing] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_getimage - begin_getimage).count() << "[ms]" << std::endl;
 
                 // TODO: Delete DatapointThreads or make an object on stack! Or just use setDatapoint if it is quick enough.
 
@@ -694,7 +696,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 timestamp_epoch.clear();
 
                 std::chrono::steady_clock::time_point end_publish = std::chrono::steady_clock::now();
-                LOG_INFO << "Time difference [Publishing results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_publish - begin_publish).count() << "[ms]" << std::endl;
+                LOG_IMAGE << "Time difference [Publishing results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_publish - begin_publish).count() << "[ms]" << std::endl;
 
                 // Write settings information to log file.
                 LOG_SETTINGS
@@ -776,7 +778,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
         std::chrono::steady_clock::time_point end_loop = std::chrono::steady_clock::now();
         //LOG_INFO << "Time difference [One loop] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop).count() << "[ms]" << std::endl;
 
-        LOG_INFO << "Time difference [One loop after image] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop_after_image).count() << "[ms]" << std::endl;
+        LOG_IMAGE << "Time difference [One loop after image] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop_after_image).count() << "[ms]" << std::endl;
 
     } // while (b_keep_taking == 1)
 
@@ -920,7 +922,7 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
         std::chrono::steady_clock::time_point end_loop = std::chrono::steady_clock::now();
         //LOG_INFO << "Time difference [One loop] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop).count() << "[ms]" << std::endl;
 
-        LOG_INFO << "Time difference [One loop after image] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop_after_image).count() << "[ms]" << std::endl;
+        LOG_IMAGE << "Time difference [One loop after image] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop_after_image).count() << "[ms]" << std::endl;
 
     } // while (b_keep_taking == 1)
 
