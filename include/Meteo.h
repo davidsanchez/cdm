@@ -16,9 +16,6 @@
 #include "yocto_pressure.h"
 #include "yocto_temperature.h"
 
-#include <curl/curl.h>
-
-
 
 using namespace std;
 
@@ -40,7 +37,6 @@ public:
     ~Meteo();
 
     vector<float> Update_sensor(); // Gets the data from the sensor.
-    vector<string> Update_WS();  // Gets the data from MAGIC Weather Station.
     
     float get_temperature() { return tsensor->get_currentValue(); }
     float get_humidity_relative() { return hsensor->get_currentValue(); }
@@ -55,15 +51,6 @@ private:
     float temperature, humidity_abs, humidity_rel, pressure;
     vector<float> val{0, 0, 0, 0};
 
-    // CURL stuff to get the MAGIC Weather Station data.
-    CURL *curl_handle;
-    CURLcode res;
-    struct MemoryStruct chunk;
-
-    string MAGIC_WS_address;// = "http://www.magic.iac.es/site/weather/WSssdata.txt";
-    int n_MAGIC_WS_datapoints;// = 16; // Number of datapoints on the MAGIC weather website
-
-    map<std::string,std::string> m_config;
 };
 
 #endif //  Meteo_H_

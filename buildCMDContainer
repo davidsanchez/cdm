@@ -1,9 +1,0 @@
-wget -N https://boostorg.jfrog.io/artifactory/main/release/1.79.0/source/boost_1_79_0.tar.gz 
-cp boost_1_79_0.tar.gz  payload/
-gunzip payload/boost_1_79_0.tar.gz 
-cd payload
-tar -xvf boost_1_79_0.tar
-rm boost_1_79_0.tar
-cd ../
-
-docker build -t cdm:v5.0  -f containers/Dockerfile  .

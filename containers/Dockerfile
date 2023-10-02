@@ -1,6 +1,6 @@
 #FROM centos:7
 
-FROM lst/common-mos:v9
+FROM lst/common-mos:v11
 
 # Creating a cdmmgr user
 USER root
@@ -64,7 +64,7 @@ COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
 COPY payload/configurations/MOS.conf /home/cdmmgr/MOS.conf
 
 
-RUN git clone https://gitlab-ci-token:58TWWXkdzsdrEhQFm-pG@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
+RUN git clone --branch FixGUI https://gitlab-ci-token:58TWWXkdzsdrEhQFm-pG@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
 
 # DL and build Yocto meteo
 RUN git clone https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
@@ -95,7 +95,7 @@ RUN ./bootstrap.sh --with-python=python2.7
 RUN  ./b2 install  --with=all
 
 WORKDIR /home/cdmmgr/cdm/build
-RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_9.3.0/
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_11.0.0/
 RUN make
 
 USER root
