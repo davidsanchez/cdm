@@ -797,7 +797,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     for (int i = 0; i < n_allocated_memories; i++)
     {
         nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
-        LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
+        //LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
     }
 
     LOG_TRACE << "End of Camera::StartCDM()"<< endl;
@@ -941,7 +941,7 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
     for (int i = 0; i < n_allocated_memories; i++)
     {
         nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
-        LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
+        //LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
     }
 
      LOG_TRACE << "End of Camera::StartStream()"<< endl;
@@ -1148,7 +1148,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     for (int i = 0; i < n_allocated_memories; i++)
     {
         nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
-        LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
+        //LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
     }
 
     LOG_TRACE << "End of Camera::GetMultipleImages()"<<endl;
@@ -1376,7 +1376,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     for (int i = 0; i < n_allocated_memories; i++)
     {
         nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
-        LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
+        //LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
     }
 
     LOG_TRACE << "End of Camera::GetMultipleImagesStacked()" << endl;
