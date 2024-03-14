@@ -417,150 +417,150 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
 int CDM::UpdateRaValue(double newvalue)
 {
-    LOG_DEBUG << "UpdateRaValue: " << newvalue;
+    //LOG_DEBUG << "UpdateRaValue: " << newvalue;
     helper.SetRaDrive(newvalue);
     return 0;
 }
 
 int CDM::UpdateDecValue(double newvalue)
 {
-    LOG_DEBUG << "UpdateDecValue: " << newvalue;
+    //LOG_DEBUG << "UpdateDecValue: " << newvalue;
     helper.SetDecDrive(newvalue);
     return 0;
 }
 
 int CDM::UpdateAzValue(double newvalue)
 {
-    LOG_DEBUG << "UpdateAzValue: " << newvalue;
+    //LOG_DEBUG << "UpdateAzValue: " << newvalue;
     helper.SetAz(newvalue);
     return 0;
 }
 int CDM::UpdateZdValue(double newvalue)
 {
-    LOG_DEBUG << "UpdateZdValue: " << newvalue;
+    //LOG_DEBUG << "UpdateZdValue: " << newvalue;
     helper.SetZd(newvalue);
     return 0;
 }
 
 int CDM::UpdateAzOffsetValue(double newvalue)
 {
-    LOG_DEBUG << "UpdateAzOfssetValue: " << newvalue;
+    //LOG_DEBUG << "UpdateAzOfssetValue: " << newvalue;
     helper.SetAzOffset(newvalue);
     return 0;
 }
 
 int CDM::UpdateZdOffsetValue(double newvalue)
 {
-    LOG_DEBUG << "UpdateZdOfssetValue: " << newvalue;
+    //LOG_DEBUG << "UpdateZdOfssetValue: " << newvalue;
     helper.SetZdOffset(newvalue);
     return 0;
 }
 
 int CDM::UpdateSourceValue(string newvalue)
 {
-    LOG_DEBUG << "UpdateSourceValue: " << newvalue;
+    //LOG_DEBUG << "UpdateSourceValue: " << newvalue;
     helper.SetSource(newvalue);
     return 0;
 }
 
 int CDM::UpdateOARLValue(bool newvalue)
 {
-    LOG_DEBUG << "UpdateOARLValue: " << newvalue;
+    //LOG_DEBUG << "UpdateOARLValue: " << newvalue;
     helper.SetOARL(newvalue);
     return 0;
 }
 
 int CDM::UpdateLEDsValue(bool newvalue)
 {
-    LOG_DEBUG << "UpdateLEDsValue: " << newvalue;
+    //LOG_DEBUG << "UpdateLEDsValue: " << newvalue;
     helper.SetLEDs(newvalue);
     return 0;
 }
 
 int CDM::UpdateLED01Value(int newvalue)
 {
-    LOG_DEBUG << "UpdateLED01Value: " << newvalue;
+    //LOG_DEBUG << "UpdateLED01Value: " << newvalue;
     helper.SetLED01(newvalue);
     return 0;
 }
 
 int CDM::UpdateShutterValue(int newvalue)
 {
-    LOG_DEBUG << "UpdateShutterValue: " << newvalue;
+    //LOG_DEBUG << "UpdateShutterValue: " << newvalue;
     helper.SetShutter(newvalue);
     return 0;
 }
 
 int CDM::UpdateSISValue(int newvalue)
 {
-    LOG_DEBUG << "UpdateSISValue: " << newvalue;
+    //LOG_DEBUG << "UpdateSISValue: " << newvalue;
     helper.SetSIS(newvalue);
     return 0;
 }
 
 int CDM::UpdateDriveInMotionValue(bool newvalue)
 {
-    LOG_DEBUG << "UpdateDriveInMotionValue: " << newvalue;
+    //LOG_DEBUG << "UpdateDriveInMotionValue: " << newvalue;
     helper.SetDriveInMotion(newvalue);
     return 0;
 }
 
 int CDM::UpdateDriveInParkingPosValue(bool newvalue)
 {
-    LOG_DEBUG << "UpdateDriveInParkingPosValue: " << newvalue;
+    //LOG_DEBUG << "UpdateDriveInParkingPosValue: " << newvalue;
     helper.SetDriveInParkingPos(newvalue);
     return 0;
 }
 
 int CDM::UpdateDriveParkedValue(bool newvalue)
 {
-    LOG_DEBUG << "UpdateDriveParkedValue: " << newvalue;
+    //LOG_DEBUG << "UpdateDriveParkedValue: " << newvalue;
     helper.SetDriveParked(newvalue);
     return 0;
 }
 
 int CDM::UpdateDriveTrackingValue(bool newvalue)
 {
-    LOG_DEBUG << "UpdateDriveTrackingValue: " << newvalue;
+    //LOG_DEBUG << "UpdateDriveTrackingValue: " << newvalue;
     helper.SetDriveTracking(newvalue);
     return 0;
 }
 
 int CDM::UpdateDriveRaTargetValue(double newvalue)
 {
-    LOG_DEBUG << "UpdateDriveRaTargetValue: " << newvalue;
+    //LOG_DEBUG << "UpdateDriveRaTargetValue: " << newvalue;
     helper.SetRaTarget(newvalue);
     return 0;
 }
 
 int CDM::UpdateDriveDecTargetValue(double newvalue)
 {
-    LOG_DEBUG << "UpdateDriveDecTargetValue: " << newvalue;
+    //LOG_DEBUG << "UpdateDriveDecTargetValue: " << newvalue;
     helper.SetDecTarget(newvalue);
     return 0;
 }
 
 int CDM::UpdateAuxDMEastBottomValue(bool newvalue)
 {
-    LOG_DEBUG << "UpdateAuxDMEastBottomValue: " << newvalue;
+    //LOG_DEBUG << "UpdateAuxDMEastBottomValue: " << newvalue;
     helper.SetAuxDMEastBottom(newvalue);
     return 0;
 }
 int CDM::UpdateAuxDMEastTopValue(bool newvalue)
 {
-    LOG_DEBUG << "UpdateAuxDMEastTopValue: " << newvalue;
+    //LOG_DEBUG << "UpdateAuxDMEastTopValue: " << newvalue;
     helper.SetAuxDMEastTop(newvalue);
     return 0;
 }
 int CDM::UpdateAuxDMWestBottomValue(bool newvalue)
 {
-    LOG_DEBUG << "UpdateAuxDMWestBottomValue: " << newvalue;
+    //LOG_DEBUG << "UpdateAuxDMWestBottomValue: " << newvalue;
     helper.SetAuxDMWestBottom(newvalue);
     return 0;
 }
 int CDM::UpdateAuxDMWestTopValue(bool newvalue)
 {
-    LOG_DEBUG << "UpdateAuxDMWestTopValue: " << newvalue;
+    //LOG_DEBUG << "UpdateAuxDMWestTopValue: " << newvalue;
     helper.SetAuxDMWestTop(newvalue);
     return 0;
 }
