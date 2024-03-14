@@ -3,17 +3,15 @@ services:
   dev-cdm:
     privileged: true
     hostname: dev-cdm
-    container_name: "MOS-CDM-DEV"
-    image: "cdm:dev"
+    container_name: "MOS-CDM-COMPOSE"
+    image: "cdm:test"
     # restart: unless-stopped
 
     ports:
-        - "48011:48011"
+       - "48011:48011"
     ipc: host
     volumes:
-      - /home/shifter/Docker/cdm:/home/cdmmgr/cdm
       - /home/lstoperator/log/:/home/cdmmgr/log
       - /dev:/dev
       - /var/run:/var/run
       - /home/lstoperator/CDM/:/home/cdmmgr/output
-      - /home/shifter/Docker/cdm/:/home/cdmmgr/cdm

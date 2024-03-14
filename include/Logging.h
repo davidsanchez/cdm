@@ -27,6 +27,7 @@ typedef boost::log::sources::severity_channel_logger_mt< boost::log::trivial::se
 
 #define LOG_TRACE BOOST_LOG_CHANNEL_SEV(my_logger::get(), "all", boost::log::trivial::trace)
 #define LOG_DEBUG BOOST_LOG_CHANNEL_SEV(my_logger::get(), "debug", boost::log::trivial::debug)
+#define LOG_IMAGE BOOST_LOG_CHANNEL_SEV(my_logger::get(), "image", boost::log::trivial::info)
 #define LOG_INFO BOOST_LOG_CHANNEL_SEV(my_logger::get(), "all", boost::log::trivial::info)
 #define LOG_WARNING BOOST_LOG_CHANNEL_SEV(my_logger::get(), "all", boost::log::trivial::warning)
 #define LOG_ERROR BOOST_LOG_CHANNEL_SEV(my_logger::get(), "all", boost::log::trivial::error)

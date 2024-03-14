@@ -4,16 +4,16 @@ SET(CMAKE_DEBUG_POSTFIX "d")
 
 SET(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wunused-variable")
 
-if ( EXISTS ${MOS_PATH} )
+#if ( EXISTS ${MOS_PATH} )
     #SET(MOS_PATH "_X86")
-else()
+#else()
     #SET(MOS_PATH "/MOS")
     #SET(MOS_PATH "/MOS_v4.0.2/")
     #SET(MOS_PATH "/MOS_v5.0.1/")
     #SET(MOS_PATH "/MOS_v7.0.0/")
     #SET(MOS_PATH "/MOS_test.1.3/")
-    SET(MOS_PATH "/MOS_v9.3.0/")
-endif()
+#    SET(MOS_PATH "/MOS_v11.0.0/")
+#endif()
 
 
 if ( EXISTS ${CMAKE_INSTALL_PREFIX} )

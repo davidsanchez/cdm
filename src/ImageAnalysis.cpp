@@ -81,7 +81,7 @@ ImageAnalysis::ImageAnalysis(Mat image, map<std::string,std::string> config, std
 
 void ImageAnalysis::Draw()
 {
-    LOG_TRACE << "ImageAnalysis::Draw()";
+    //LOG_TRACE << "ImageAnalysis::Draw()";
 
         for (unsigned int i = 0; i < this->rects_led.size(); i++)
     {
@@ -98,13 +98,13 @@ void ImageAnalysis::Draw()
 
 void ImageAnalysis::SaveImage(std::string ImagePath)
 {
-    LOG_TRACE << "ImageAnalysis::SaveImage()";
+    //LOG_TRACE << "ImageAnalysis::SaveImage()";
     cv::imwrite(ImagePath, this->image);
 }
 
 void ImageAnalysis::CalculateImage()
 {
-    LOG_TRACE << "ImageAnalysis::CalculateImage()";
+    //LOG_TRACE << "ImageAnalysis::CalculateImage()";
     CalculateCircle();
     CalculateSpotsOARL();
     CalculateDisplacements();
@@ -112,7 +112,7 @@ void ImageAnalysis::CalculateImage()
 
 void ImageAnalysis::CalculateCircle()
 {
-    LOG_TRACE << "ImageAnalysis::CalculateCircle()";
+    //LOG_TRACE << "ImageAnalysis::CalculateCircle()";
 
     CalculateSpotsLED();
     vector<double> led_positions_x = this->led_x;
@@ -166,7 +166,7 @@ void ImageAnalysis::CalculateCircle()
 
 void ImageAnalysis::CalculateDisplacements()
 {
-    LOG_TRACE << "ImageAnalysis::CalculateDisplacement()";
+    //LOG_TRACE << "ImageAnalysis::CalculateDisplacement()";
 
     double oarl_x_mean;
     double oarl_y_mean;
@@ -197,7 +197,7 @@ void ImageAnalysis::CalculateDisplacements()
 
 void ImageAnalysis::CalculateSpotsLED()
 {
-    LOG_TRACE << "ImageAnalysis::CalculateSpotsLED()";
+    //LOG_TRACE << "ImageAnalysis::CalculateSpotsLED()";
 
     // Calculates the center of spots for LED.
     // Returns vector of centers of spots.
@@ -255,7 +255,7 @@ void ImageAnalysis::CalculateSpotsLED()
 
 void ImageAnalysis::CalculateSpotsOARL()
 {
-    LOG_TRACE << "ImageAnalysis::CalculateSpotsOARL()";
+    //LOG_TRACE << "ImageAnalysis::CalculateSpotsOARL()";
 
     // Calculates the center of spots for OARL.
     // Returns vector of centers of spots.
@@ -308,7 +308,7 @@ void ImageAnalysis::CalculateSpotsOARL()
 
 vector<uchar> ImageAnalysis::GetImageToPublish(string inputText)
 {
-    LOG_TRACE << "ImageAnalysis::GetImageToPublish()";
+    //LOG_TRACE << "ImageAnalysis::GetImageToPublish()";
 
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     // INTER_NEAREST is the fastest algorithm but has the worst quality results.
@@ -325,11 +325,11 @@ vector<uchar> ImageAnalysis::GetImageToPublish(string inputText)
             8                                                                 // Line type
     );
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    LOG_INFO << "Time difference [Get image for publishing - resize] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+    LOG_IMAGE << "Time difference [Get image for publishing - resize] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
     begin = std::chrono::steady_clock::now();
     cv::imencode(".png", resized_image, published_image, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
     end = std::chrono::steady_clock::now();
-    LOG_INFO << "Time difference [Get image for publishing - imencode] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+    LOG_IMAGE << "Time difference [Get image for publishing - imencode] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
     return published_image;
 }
@@ -341,7 +341,7 @@ int ImageAnalysis::StoreResults()
 
 std::string ImageAnalysis::PrintResults()
 {
-    LOG_TRACE << "ImageAnalysis::PrintResults()";
+    //LOG_TRACE << "ImageAnalysis::PrintResults()";
 
     //cout << circle_a << " " << circle_b << " " << circle_r << " " << circle_s << endl;
     std::ostringstream stream;
