@@ -94,7 +94,7 @@ string UTC_time_short()
 
 vector<vector<double>> transpose(vector<vector<double>> &A)
 {
-    LOG_TRACE << "Camera::transpose()"<<endl;
+    //LOG_TRACE << "Camera::transpose()"<<endl;
 
     int rows = A.size();
     if (rows == 0)

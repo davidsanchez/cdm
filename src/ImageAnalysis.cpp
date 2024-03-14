@@ -220,7 +220,7 @@ void ImageAnalysis::CalculateSpotsLED()
         {
             //TODO: Raise some warning! Or just report number of found LEDs always
             // LED is skipped in this case.
-            LOG_ERROR << "ROI Moment normalization of LED " << i << " is 0." << endl;
+            //LOG_ERROR << "ROI Moment normalization of LED " << i << " is 0." << endl;
             barycenter_x.push_back(-1); // sets to -1 if the LED not detected
             barycenter_y.push_back(-1); // sets to -1 if the LED not detected
 
@@ -278,7 +278,7 @@ void ImageAnalysis::CalculateSpotsOARL()
         {
             //TODO: Raise some warning! Or just report number of found OARLs always
             // OARL is skipped in this case.
-            LOG_ERROR << "ROI Moment normalization of OARL " << i << " is 0." << endl;
+            //LOG_ERROR << "ROI Moment normalization of OARL " << i << " is 0." << endl;
             barycenter_x.push_back(-1); // sets to -1 if the OARL not detected
             barycenter_y.push_back(-1); // sets to -1 if the OARL not detected
 
