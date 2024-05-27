@@ -64,10 +64,10 @@ COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
 COPY payload/configurations/MOS.conf /home/cdmmgr/MOS.conf
 
 
-#RUN git clone --branch RemoveMagicWS https://gitlab-ci-token:58TWWXkdzsdrEhQFm-pG@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
+RUN git clone  -b main https://gitlab-ci-token:58TWWXkdzsdrEhQFm-pG@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
 
 # DL and build Yocto meteo
-RUN git clone https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
+RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
 WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/
 RUN make
 WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
@@ -75,7 +75,6 @@ RUN ln -s libyocto.so.1.0.1 libyocto.so
 
 
 WORKDIR /home/cdmmgr/
-RUN mkdir ./cdm
 RUN mkdir ./output
 RUN mkdir ./output/images
 RUN mkdir ./output/fits
@@ -95,9 +94,9 @@ WORKDIR /home/cdmmgr/boost
 RUN ./bootstrap.sh --with-python=python2.7
 RUN  ./b2 install  --with=all
 
-#WORKDIR /home/cdmmgr/cdm/build
-#RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_11.0.0/
-#RUN make
+WORKDIR /home/cdmmgr/cdm/build
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_11.0.0/
+RUN make
 
 USER root
 WORKDIR /root
