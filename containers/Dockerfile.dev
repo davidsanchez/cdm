@@ -93,6 +93,7 @@ COPY payload/boost_1_79_0 ./boost
 WORKDIR /home/cdmmgr/boost
 RUN ./bootstrap.sh --with-python=python2.7
 RUN  ./b2 install  --with=all
+REMOVE -r /home/cdmmgr/boost
 
 WORKDIR /home/cdmmgr/cdm/build
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_11.0.0/
