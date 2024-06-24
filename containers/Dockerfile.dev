@@ -29,9 +29,9 @@ RUN yum install -y \
     mc \
     libusbx-devel \
     curl-devel \
-    CCfits-devel \
     libxml2-devel \
     gdb-gdbserver \
+        CCfits-devel \
     #boost-devel \
     #boost169-devel \
     gedit \
