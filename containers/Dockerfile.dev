@@ -31,7 +31,7 @@ RUN yum install -y \
     curl-devel \
     libxml2-devel \
     gdb-gdbserver \
-        CCfits-devel \
+    CCfits-devel \
     #boost-devel \
     #boost169-devel \
     gedit \
@@ -42,6 +42,8 @@ RUN yum install -y \
      opencv  \
      opencv-devel  \
      opencv-python
+
+RUN yum install -y  CCfits-devel
 
 USER cdmmgr
 WORKDIR /home/cdmmgr
