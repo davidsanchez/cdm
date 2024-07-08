@@ -14,9 +14,9 @@ cdmDB = "CDM_LST1_fit.csv"
 
 CDM_Period_DB = pd.read_csv(cdmDB, index_col=0, parse_dates=True)
 
-y = "2024"#datetime.now().year
-m = "06"#datetime.now().month
-d = "16"#datetime.now().day
+y = datetime.now().year
+m = datetime.now().month
+d = datetime.now().day
 
 name = str(y)+"-"+str(m).zfill(2)+"-"+str(d).zfill(2)
 cal = Cal.Calibrator()
@@ -43,11 +43,11 @@ print("Reading CSV DB file")
 cal.fit_res_x = [CDM_Period_DB["p0_x"][-1],CDM_Period_DB["p1_x"][-1],CDM_Period_DB["p2_x"][-1]]
 cal.fit_res_y = [CDM_Period_DB["p0_y"][-1],CDM_Period_DB["p1_y"][-1],CDM_Period_DB["p2_y"][-1]]
 plt = cal.plot_y_zd_fit(out_folder,name,write=True)
-plt.show()
+#plt.show()
 
 fig = cal.plot_residual(out_folder,name,write=True)
-fig.show()
+#fig.show()
 
 fig = cal.plot_resdual_distribution(out_folder,name,write=True)
-fig.show()
+#fig.show()
 os.system("rm "+work_folder+"/*")
