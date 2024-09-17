@@ -192,7 +192,6 @@ public:
     double get_OffsetAzimuth() { return Helper::offset_azimuth; }
     double get_OffsetZenith() { return Helper::offset_zenith; }
     int get_LEDs_state() { return Helper::LEDs_state; }
-    int get_LED01_intensity() { return Helper::LED01_intensity; }
     bool get_OARL_state() { return Helper::OARL_state; }
     int get_Shutter_state() { return Helper::shutter_state; }
     int get_SIS_state() { return Helper::SIS_state; }
@@ -278,11 +277,6 @@ public:
         LEDs_state = newvalue;
         return 0;
     }
-    int SetLED01(int newvalue)
-    {
-        LED01_intensity = newvalue;
-        return 0;
-    }
     int SetShutter(int newvalue)
     {
         shutter_state = newvalue;
@@ -347,7 +341,6 @@ private:
 
     //DataAccessClientOPCUA* m_clientOpcUaRef_this=NULL;
 
-    int LED01_intensity = 0;
     bool OARL_state = 0;
     bool LEDs_state = 0;
     int shutter_state = 0;

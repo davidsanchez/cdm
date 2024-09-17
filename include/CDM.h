@@ -53,7 +53,7 @@ public:
     int UpdateSourceValue(std::string newvalue);
     int UpdateOARLValue(bool newvalue);
     int UpdateLEDsValue(bool newvalue);
-    int UpdateLED01Value(int newvalue);
+    //int UpdateLED01Value(int newvalue);
     int UpdateShutterValue(int newvalue);
     int UpdateSISValue(int newvalue);
 

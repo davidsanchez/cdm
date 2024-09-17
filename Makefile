@@ -18,6 +18,9 @@ dev-image:
 	@echo 'Creating development Docker image for CDM...'
 	docker build  -f containers/Dockerfile.dev . --tag cdm:dev
 
+test-image:
+	@echo 'Creating development Docker image for CDM...'
+	docker build  -f containers/Dockerfile.test . --tag cdm:test
 
 
 clean:

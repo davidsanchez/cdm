@@ -39,7 +39,6 @@ void DatapointMonitor::dataChange(std::vector<std::string> listElements, std::ve
     CheckSourceUpdate(listElements, listValues);
     CheckOARLUpdate(listElements, listValues);
     CheckLEDsUpdate(listElements, listValues);
-    CheckLED01Update(listElements, listValues);
     CheckShutterUpdate(listElements, listValues);
     CheckSISUpdate(listElements, listValues);
 
@@ -73,7 +72,6 @@ std::vector<std::string> DatapointMonitor::getElements()
     elements.push_back(this->zd_offset_var_name);
     elements.push_back(this->source_var_name);
     elements.push_back(this->oarl_var_name);
-    elements.push_back(this->led01_var_name);
     elements.push_back(this->leds_var_name);
     elements.push_back(this->shutter_var_name);
     elements.push_back(this->sis_var_name);
@@ -347,32 +345,6 @@ void DatapointMonitor::CheckLEDsUpdate(std::vector<std::string> listElements, st
         bool leds_value;
         istringstream(listValues[target_index]) >> std::boolalpha >> leds_value;
         caller->UpdateLEDsValue(leds_value);
-    }
-}
-
-void DatapointMonitor::CheckLED01Update(std::vector<std::string> listElements, std::vector<std::string> listValues)
-{
-    /*!
-    Checks if the LED01 data point was changed 
-    and reports the update to the "caller" object in such a case.
-
-    @param listElements
-        List of changed data points
-    @param listValues
-        List of values of the changed data points
-    */
-
-    int target_index;
-
-    auto led01_iterator = std::find(listElements.begin(), listElements.end(), this->led01_var_name);
-
-    if (led01_iterator != listElements.end())
-    {
-        // LED01 data point updated, acting
-        target_index = led01_iterator - listElements.begin();
-
-        int led01_value = std::stoi(listValues[target_index]);
-        caller->UpdateLED01Value(led01_value);
     }
 }
 

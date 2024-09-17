@@ -477,13 +477,6 @@ int CDM::UpdateLEDsValue(bool newvalue)
     return 0;
 }
 
-int CDM::UpdateLED01Value(int newvalue)
-{
-    //LOG_DEBUG << "UpdateLED01Value: " << newvalue;
-    helper.SetLED01(newvalue);
-    return 0;
-}
-
 int CDM::UpdateShutterValue(int newvalue)
 {
     //LOG_DEBUG << "UpdateShutterValue: " << newvalue;

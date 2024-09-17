@@ -2,8 +2,15 @@
 
 FROM lst/common-mos:v12
 
-# Creating a cdmmgr user
+
 USER root
+# legacy mirror for centOS
+RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/CentOS-*.repo
+RUN sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/CentOS-*.repo
+RUN sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/CentOS-*.repo
+
+# Creating a cdmmgr user
+
 RUN groupadd -g 1003 cdmmgr && \
     useradd -g 1002 -u 1003 -d /home/cdmmgr -m -s /bin/bash cdmmgr
  

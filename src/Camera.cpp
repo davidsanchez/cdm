@@ -169,7 +169,7 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
     streamObj << "-AZ=";
     streamObj << helper.get_Azimuth();
     streamObj << "-LED=";
-    streamObj << helper.get_LED01_intensity();
+    streamObj << helper.get_LEDs_state();
     streamObj << "-OARL=";
     streamObj << helper.get_OARL_state();
     streamObj << "-parked=";
@@ -307,7 +307,7 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
     pFits->pHDU().addKey("OFFAZ", helper.get_OffsetAzimuth(), "Offset of Azimuth, in degrees");
     pFits->pHDU().addKey("OBJECT", helper.get_StarName(), "Star name");
     pFits->pHDU().addKey("LEDS", helper.get_LEDs_state(), "LEDs state");
-    pFits->pHDU().addKey("LED01", helper.get_LED01_intensity(), "LED01 intensity");
+    //pFits->pHDU().addKey("LED01", helper.get_LED01_intensity(), "LED01 intensity");
     pFits->pHDU().addKey("OARL", helper.get_OARL_state(), "OARL status");
     pFits->pHDU().addKey("SHUTTER", helper.get_Shutter_state(), "Shutter status");
     pFits->pHDU().addKey("SIS", helper.get_SIS_state(), "SIS status");
@@ -702,7 +702,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 LOG_SETTINGS
                     << helper.get_Zenith() << " "
                     << helper.get_Azimuth() << " "
-                    << helper.get_LED01_intensity() << " "
+                    << helper.get_LEDs_state() << " "
                     << helper.get_OARL_state() << " "
                     << helper.get_Shutter_state() << " "
                     << helper.get_SIS_state() << " "
@@ -1019,9 +1019,9 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
                 flip(src, src, 1);
 
                 std::vector<int> compression_params;
-                compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+                compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
                 compression_params.push_back(0);
-                resize(src, dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
+                resize(src, dst, cv::Size(0, 0), 0.15, 0.15, cv::INTER_AREA);
 
                 vector<unsigned char> data;
                 cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
@@ -1232,9 +1232,9 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
                 flip(src, src, 1);
 
                 std::vector<int> compression_params;
-                compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+                compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
                 compression_params.push_back(0);
-                resize(src, dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
+                resize(src, dst, cv::Size(0, 0), 0.15, 0.15, cv::INTER_AREA);
 
                 vector<unsigned char> data;
                 cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
@@ -1323,9 +1323,9 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     // Publish the final image
     Mat accumulated_images_dst;
     std::vector<int> compression_params;
-    compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+    compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
     compression_params.push_back(0);
-    resize(accumulated_images, accumulated_images_dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
+    resize(accumulated_images, accumulated_images_dst, cv::Size(0, 0), 0.15, 0.15, cv::INTER_AREA);
     vector<unsigned char> data;
     cv::imencode(".png", accumulated_images_dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
     int m_nameSpace = 2;
@@ -1429,9 +1429,9 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     flip(src, src, 1);
 
     std::vector<int> compression_params;
-    compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+    compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
     compression_params.push_back(0);
-    resize(src, dst, cv::Size(0, 0), 0.15, 0.15, CV_INTER_AREA);
+    resize(src, dst, cv::Size(0, 0), 0.15, 0.15, cv::INTER_AREA);
 
     vector<unsigned char> data;
     cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
