@@ -11,7 +11,7 @@ services:
         - "48011:48011"
     ipc: host
     volumes:
-      - /home/shifter/Docker/cdm:/home/cdmmgr/cdm
+      #- /home/shifter/Docker/cdm:/home/cdmmgr/cdm
       - /home/lstoperator/log/:/home/cdmmgr/log
       - /dev:/dev
       - /var/run:/var/run
