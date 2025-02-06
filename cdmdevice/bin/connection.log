@@ -1,0 +1,119 @@
+Info : 2025-02-04.15:08:13 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-04.15:08:13 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-04.15:08:13 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-04.15:08:13 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-04.15:31:52 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-04.15:31:52 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-04.15:31:52 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-04.15:31:52 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-04.15:31:52 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-04.15:31:52 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-04.15:32:44 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-04.15:32:44 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-04.15:32:44 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-04.15:32:44 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-04.15:32:44 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-04.15:32:44 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-04.15:36:01 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-04.15:36:01 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-04.15:36:01 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-04.15:36:01 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-04.15:37:22 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-04.15:37:22 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-04.15:37:22 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-04.15:37:22 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-04.15:37:22 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-04.15:37:22 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.07:14:00 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.07:14:00 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.07:14:00 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.07:14:00 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.07:14:00 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.07:14:00 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.07:15:25 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.07:15:25 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.07:15:25 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.07:15:25 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.07:15:25 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.07:15:25 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.07:54:42 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.07:54:42 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.07:54:42 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.07:54:42 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.07:54:42 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.07:54:42 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.07:55:27 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.07:55:27 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.07:57:42 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.07:57:42 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.07:57:42 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.07:57:42 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.07:57:42 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.07:57:42 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.07:57:47 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.07:57:47 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.08:01:16 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:01:16 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.08:01:16 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:01:16 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.08:01:16 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:01:16 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.08:01:20 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:01:20 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.08:03:44 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:03:44 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.08:03:44 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:03:44 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.08:03:44 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:03:44 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.08:03:46 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:03:46 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.08:06:25 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:06:25 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.08:06:25 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:06:25 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.08:06:25 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:06:25 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.08:06:25 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:06:25 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.08:17:55 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:17:55 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.08:17:55 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:17:55 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.08:17:55 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:17:55 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.08:17:55 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:17:55 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.08:28:20 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:28:20 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.08:28:20 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:28:20 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.08:28:20 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:28:20 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.08:28:20 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:28:20 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.08:34:20 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:34:20 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.08:34:20 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:34:20 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.08:34:20 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:34:20 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.08:34:23 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:34:23 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.08:36:01 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:36:01 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.08:36:01 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:36:01 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.08:36:01 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:36:01 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.08:36:03 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.08:36:03 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.09:04:54 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.09:04:54 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ Info : 2025-02-05.09:04:54 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.09:04:54 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.09:04:54 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.09:04:54 : logonSessionUser Autorisation to connect the OPCUA server for user MOS 
+ Info : 2025-02-05.09:04:55 : MyServerCallback::logonSessionUser
+ 	Info : 2025-02-05.09:04:55 : logonSessionUser success with  OpcUa_UserTokenType_Anonymous
+ 

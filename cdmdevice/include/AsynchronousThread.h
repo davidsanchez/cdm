@@ -40,6 +40,8 @@ public:
     int cmdStartCDM(std::string datapointName, int nameSpace);
     int cmdStartStream(std::string datapointName, int nameSpace);
     int cmdConfigure(std::string datapointName, int nameSpace, int nPixelClock, double exposure, double fps, int gain, std::string pixel_format);
+    std::string  searchDatapoint (string element);
+
 
 private:
     int m_stop;
@@ -70,6 +72,7 @@ private:
     double fps;
     int gain;
     std::string pixel_format;
+    Config *cdm_config;
 };
 
 #endif //__ASYNCHRONOUSCONTROLLER_H__

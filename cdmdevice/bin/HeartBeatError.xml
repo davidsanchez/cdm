@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PLC_Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://lappweb.in2p3.fr/~panazol/xsd/v2_0_0/dict_device.xsd">
+    <GeneralInfo>
+        <OPCUA_Address>opc.tcp://drivemosserver:48011</OPCUA_Address>
+        <RootName>Drive</RootName>
+    </GeneralInfo>
+
+    <Methods>
+    </Methods>
+
+    <Elements>
+        <Element>
+            <Name>HeartBeatError</Name>
+            <Description></Description>
+            <NameSpace>2</NameSpace>
+            <NodeId>Diagnostics._Error_Heart_Beat</NodeId>
+            <NameSpaceL2>2</NameSpaceL2>
+            <NodeRootL2>Drive.Diagnostics.</NodeRootL2>
+            <NodeIdL2>_Error_Heart_Beat</NodeIdL2>
+            <Type>BOOL</Type>
+            <Subscribe>y</Subscribe>
+            <Subscribe_L2></Subscribe_L2>
+            <Traitement>y</Traitement>
+            <Log>n</Log>
+        </Element>
+        <Element>
+            <Name>HeartBeatEnabled</Name>
+            <Description></Description>
+            <NameSpace>2</NameSpace>
+            <NodeId>Diagnostics._Enable_Heart_Beat</NodeId>
+            <NameSpaceL2>2</NameSpaceL2>
+            <NodeRootL2>Drive.Diagnostics.</NodeRootL2>
+            <NodeIdL2>_Error_Heart_Beat</NodeIdL2>
+            <Type>BOOL</Type>
+            <Subscribe>n</Subscribe>
+            <Subscribe_L2></Subscribe_L2>
+            <Traitement>n</Traitement>
+            <Log>n</Log>
+        </Element>        
+    </Elements>
+
+    <Commands>
+    </Commands>
+</PLC_Config>

@@ -13,7 +13,7 @@ fi
 # fi
 
 # ADD MOS setup
-source /home/cdmmgr/MOS.conf
+source /home/mosmgr/MOS.conf
 
 alias ti='ls -lrth'
 

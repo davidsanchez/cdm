@@ -9,7 +9,7 @@ echo "Starting ssh server ..."
 /usr/sbin/sshd -D &
 
 # ADD MOS setup
-source /home/cdmmgr/MOS.conf
+source /home/mosmgr/MOS.conf
 #rm /var/run/crond.pid
 #crond
 #crontab -l |

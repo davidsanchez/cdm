@@ -1,6 +1,7 @@
 #FROM centos:7
 
-FROM lst/common-mos:v11
+#FROM lst/common-mos:v11
+FROM lst/mos:v12.4.3
 
 # Creating a cdmmgr user
 USER root
@@ -61,42 +62,43 @@ RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_rsa_key -t rsa -N ""
 
 
 COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
-COPY payload/configurations/MOS.conf /home/cdmmgr/MOS.conf
+#COPY payload/configurations/MOS.conf /home/cdmmgr/MOS.conf
 
+COPY cdm_mount/ /home/cdmmgr/
 
-RUN git clone  https://gitlab-ci-token:zvXByVdyyoLTMbrW-n_u@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
+#RUN git clone  https://gitlab-ci-token:zvXByVdyyoLTMbrW-n_u@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
 
 # DL and build Yocto meteo
-RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
-WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/
-RUN make
-WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
-RUN ln -s libyocto.so.1.0.1 libyocto.so
+#RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
+#WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/
+#RUN make
+#WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
+#RUN ln -s libyocto.so.1.0.1 libyocto.so
 
 
-WORKDIR /home/cdmmgr/
-RUN mkdir ./output
-RUN mkdir ./output/images
-RUN mkdir ./output/fits
-RUN mkdir ./cdm/build
+#WORKDIR /home/cdmmgr/
+#RUN mkdir ./output
+#RUN mkdir ./output/images
+#RUN mkdir ./output/fits
+#RUN mkdir ./cdm/build
 
-COPY  payload/CMakeLists.txt ./cdm/build
+#COPY  payload/CMakeLists.txt ./cdm/build
 COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
 
-COPY payload/uEye-Linux-4.90.06-64 ./
-RUN yes | ./ueyesdk-setup-4.90.06-usb-amd64.gz.run
+#COPY payload/uEye-Linux-4.90.06-64 ./
+#RUN yes | ./ueyesdk-setup-4.90.06-usb-amd64.gz.run
 
-COPY payload/ueye.h /usr/include/ueye.h
-RUN mkdir ./boost
-COPY payload/boost_1_79_0 ./boost
+#COPY payload/ueye.h /usr/include/ueye.h
+#RUN mkdir ./boost
+#COPY payload/boost_1_79_0 ./boost
 
-WORKDIR /home/cdmmgr/boost
-RUN ./bootstrap.sh --with-python=python2.7
-RUN  ./b2 install  --with=all
+#WORKDIR /home/cdmmgr/boost
+#RUN ./bootstrap.sh --with-python=python2.7
+#RUN  ./b2 install  --with=all
 
-WORKDIR /home/cdmmgr/cdm/build
-RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.2.0/
-RUN make
+#WORKDIR /home/cdmmgr/cdm/build
+#RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
+#RUN make
 
 USER root
 WORKDIR /root

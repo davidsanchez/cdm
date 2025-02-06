@@ -26,6 +26,9 @@
 //#include <boost/bimap.hpp>
 //#include <boost/assign.hpp>
 
+#include "Controller.h"
+
+//class CDM : public Controller
 class CDM : public PluginsBase
 {
 public:
@@ -34,6 +37,9 @@ public:
     int cmd(const std::string& chaine, int commandStringAck, std::string& result);
 
     // new virtual methods appears with the version 3.0 of MOS
+    //void searchDatapoint (string element, string &nodeIdL1, int &namespaceL1);
+    std::string  searchDatapoint (string element);
+
     int afterStart();
     int cmdAsynch(const std::string& command, int commandStringAck, const std::string& datapointName, int nameSpace,
                   std::string& result);
@@ -83,6 +89,7 @@ private:
     AsynchronousThread *m_ThreadLogRestart;
 
     map<std::string,std::string> m_config;
+    Config *cdm_config;
 
 
 };

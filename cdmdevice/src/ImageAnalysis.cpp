@@ -14,7 +14,7 @@
 #include "Circle/CircleFitByTaubin.cpp"
 
 #include "Logging.h"
-#include "Config.h"
+#include "Config1.h"
 
 using namespace cv;
 

@@ -5,10 +5,10 @@
 #include "Camera.h"
 #include "Helper.h"
 #include "Logging.h"
+#include "Config1.h"
 #include "Config.h"
 // #include <fstream>
 #include <map>
-
 #include <boost/any.hpp>
 
 using namespace std;
@@ -19,11 +19,33 @@ Camera camera;
 Helper helper;
 
 
+// a rajouter pour fichier mapping des Datapoints 
+#define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
+
+
+std::string  CDM::searchDatapoint (string element)
+{
+        ListElement *myElement = NULL;
+        std::string rootElement = "";
+        std::string nodeIdL1 = "";
+
+        myElement = cdm_config->searchElement(element);
+        rootElement = cdm_config->getRootName() + ".";
+        if (myElement)
+        {
+		nodeIdL1 = rootElement + myElement->NodeId;
+                return(nodeIdL1);
+        }
+        return("");
+}
 
 
 int CDM::init(const std::string &chaine)
 {
     LOG_TRACE << "CDM::init()";
+
+    // a rajouter pour recuperer les infos du fichier mapping des datapoints
+    cdm_config = new Config(CDM_CONFIGURATION_NAME,"");
 
     // You can overwrite this method if you want but not mandatory because the class pluginsInterfaceImpl already implement it:)
     // but becarefull, you have to call before doing  your bussiness, call the father method (the father class) ( PluginsInterfaceImpl::init())
@@ -44,6 +66,8 @@ int CDM::afterStart()
 {
     LOG_TRACE << "CDM::afterStart()";
     const int connection_failure = -1;
+    int namespaceL2 = 2;
+    string nodeIdL2 = "";
 
     // You can overwrite this method if you want but not mandatory because the class pluginsInterfaceImpl already implement it:)
     // but be careful, you have to call before doing your bussiness, call the father method (the father class) ( PluginsInterfaceImpl::afterStart())
@@ -123,8 +147,9 @@ int CDM::afterStart()
         LOG_ERROR << "Cannot connect to DataBroker!";
         throw std::exception();
     }
-
-    getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
+    // remplace le hardcodage des datapoints --> recuperation des infos provenant du fichier PLC_*****.xml
+    getDataAccessClientOPCUARef()->setDatapoint(searchDatapoint("CDM_FSM_state"), namespaceL2, 0);
+//    getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
 
     int quality = 0; // (0= Good, 1=Uncertain, 2 = Bad)
     std::string methodToCall = "Unit_CDM.AuxControl.SetDPQuality";
@@ -600,7 +625,8 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
     {
         return_value_double = camera.get_temperature_value();
         LOG_DEBUG << "Camera temperature value is: " << return_value_double << endl;
-        getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.temperatureValue.temperatureValue_v", 2, return_value_double);
+        //getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.temperatureValue.temperatureValue_v", 2, return_value_double);
+        getDataAccessClientOPCUARef()->setDatapoint(searchDatapoint("CDM_Camera_temperatureValue"), 2, return_value_double);
     }
     else if (chain.find("get_temperatureStatus") != std::string::npos)
     {

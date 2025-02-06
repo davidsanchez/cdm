@@ -8,9 +8,9 @@ using namespace std;
 
 #define M 12
 // #define N 2
-#define CONFIG_FILE_PATH  "/home/cdmmgr/cdm/config/CDM.config"
-#define LEDLOC_FILE_PATH  "/home/cdmmgr/cdm/config/LedLoc.config"
-#define OARLLOC_FILE_PATH  "/home/cdmmgr/cdm/config/OARLLoc.config"
+#define CONFIG_FILE_PATH  "/home/cdmmgr/cdmdevice/config/CDM.config"
+#define LEDLOC_FILE_PATH  "/home/cdmmgr/cdmdevice/config/LedLoc.config"
+#define OARLLOC_FILE_PATH  "/home/cdmmgr/cdmdevice/config/OARLLoc.config"
 
 bool LoadCDMConfiguration( map<std::string,std::string> &config )
 {
