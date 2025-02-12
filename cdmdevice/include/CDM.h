@@ -26,7 +26,7 @@
 //#include <boost/bimap.hpp>
 //#include <boost/assign.hpp>
 
-#include "Controller.h"
+//#include "Controller.h"
 
 //class CDM : public Controller
 class CDM : public PluginsBase
