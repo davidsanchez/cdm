@@ -11,7 +11,7 @@
 
 using namespace std;
 
-std::string  Helper::searchDatapoint (string element, config cdm_config)
+std::string  Helper::searchDatapoint (string element, config *cdm_config)
 {
         ListElement *myElement = NULL;
         std::string rootElement = "";
