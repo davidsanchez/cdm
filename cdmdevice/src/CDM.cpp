@@ -376,7 +376,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             if (subChaine1.compare("GoToReady") == 0)
             {
                 LOG_TRACE << "CDM::cdm() / GoToReady";                
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapsearchDatapointointsearchDatapoint("CDM_FSM_transition"), 2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("CDM_FSM_transition"), 2, 0);
             }
 
             if (subChaine1.compare("StopGetMultipleImages") == 0)
