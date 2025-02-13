@@ -87,6 +87,7 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}  CCfits cfitsio ) # FITS files library
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  boost_log boost_log_setup ) # Boost
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  usb-1.0 yocto ) # Yocto-Meteo
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  curl ) # cURL
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}  configXML ) # 
 
 set_target_properties( PROPERTIES DEBUG_POSTFIX "d")
 
