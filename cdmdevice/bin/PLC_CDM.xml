@@ -66,6 +66,20 @@
                                     <Traitement>n</Traitement>
                                     <Log>n</Log>
                         </Element>
+                        <Element>
+                                    <Name>CDM_comment</Name>
+                                    <Description></Description>
+                                    <NameSpace>2</NameSpace>
+                                    <NodeId>AuxControl.CDM.comment</NodeId>
+                                    <NameSpaceL2></NameSpaceL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
+                                    <Type>STRING</Type>
+                                    <Subscribe>y</Subscribe>
+                                    <Subscribe_L2>n</Subscribe_L2>
+                                    <Traitement>n</Traitement>
+                                    <Log>n</Log>
+                        </Element>
     </Elements>
 
     <Commands>

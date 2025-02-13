@@ -11,6 +11,27 @@
 
 using namespace std;
 
+
+
+std::string  Helper::searchDatapoint (string element)
+{
+        ListElement *myElement = NULL;
+        std::string rootElement = "";
+        std::string nodeIdL1 = "";
+
+        myElement = cdm_config->searchElement(element);
+        rootElement = cdm_config->getRootName() + ".";
+        if (myElement)
+        {
+		nodeIdL1 = rootElement + myElement->NodeId;
+        LOG_DEBUG<<"nodeIdL1 "<<nodeIdL1<< '\n';
+                return(nodeIdL1);
+        }
+        return("");
+}
+
+
+
 long int Helper::unix_timestamp()
 {
     time_t t = std::time(0);
