@@ -218,7 +218,7 @@ public:
         std::cout << "Comment is: " << get_Comment() << std::endl;
     }
 
-    std::string searchDatapoint (std::string element, Config cdm_config);
+    std::string searchDatapoint (std::string element, Config *cdm_config);
     int connectOpcUa_DataBroker(std::string url, CDM *cdm);
 
     DataAccessClientOPCUA *get_client_DataBroker() { return m_clientOpcUaRef_DataBroker; }
