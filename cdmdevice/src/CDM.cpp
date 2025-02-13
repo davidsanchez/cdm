@@ -319,7 +319,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                                        "IS_CM_MONO8" // pixel_format
                 );
                 
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), namespaceL2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), 2, 0);
                     
                 //    getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
             }
@@ -329,7 +329,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 LOG_TRACE << "CDM::cdm() / Disconnect";
                 camera.Disconnect();
                 
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), namespaceL2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), 2, 0);
             }
 
             if (subChaine1.compare("Configure") == 0)
@@ -367,7 +367,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 // TODO: Make some parsing/safety checks. best inside Comment function.
                 boost::trim_right(subChaine2);
                 CDM::AddComment(subChaine2);
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), namespaceL2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), 2, 0);
 
             }
 
@@ -376,7 +376,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 LOG_TRACE << "CDM::cdm() / GetImage";
                 camera.GetImage(getDataAccessClientOPCUARef()); // pushes the image to the datapoint inside the function
                 LOG_DEBUG << "Finished GetImage";
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), namespaceL2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), 2, 0);
                 
                 /* vector<unsigned char> displayImage = camera.GetImage();
                 int m_nameSpace = 2;
@@ -388,13 +388,13 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             if (subChaine1.compare("GoToTpoint") == 0)
             {
                 LOG_TRACE << "CDM::cdm() / GoToTpoint";                
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), namespaceL2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), 2, 0);
             }
 
             if (subChaine1.compare("GoToReady") == 0)
             {
                 LOG_TRACE << "CDM::cdm() / GoToReady";                
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), namespaceL2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), 2, 0);
             }
 
             if (subChaine1.compare("StopGetMultipleImages") == 0)
@@ -418,16 +418,16 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             if (subChaine1.compare("Error") == 0)
             {
                 LOG_TRACE << "CDM::cdm() / Error";
-                SetDatapointThread *m_SetDatapointThread_state = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_state"), namespaceL2, 5);
+                SetDatapointThread *m_SetDatapointThread_state = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_state"), 2, 5);
                 camera.StopCDM();
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), namespaceL2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), 2, 0);
             }
 
             if (subChaine1.compare("Acknowledge") == 0)
             {
                 LOG_TRACE << "CDM::cdm() / Acknowledge";
                 camera.Disconnect();
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), namespaceL2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), searchDatapoint("CDM_FSM_transition"), 2, 0);
             }
         }
     }
