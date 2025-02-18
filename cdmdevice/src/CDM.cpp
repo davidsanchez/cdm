@@ -5,7 +5,7 @@
 #include "Camera.h"
 #include "Helper.h"
 #include "Logging.h"
-#include "Config1.h"
+#include "ConfigCDM.h"
 #include "Config.h"
 // #include <fstream>
 #include <map>
@@ -59,8 +59,8 @@ int CDM::afterStart()
     // This method is automatically called by the program "MOS" after "MOS" server is launched and ready.
     int ret = 0;
     printf("\n***********************************\nIn CDM::afterStart\n***********************************\n");
+    LOG_DEBUG << "SetDPQuality "<<helper.searchDatapoint("SetDPQuality",cdm_config);
     
-
     // map<std::string,std::string> config;
 
     bool conf = LoadCDMConfiguration(m_config);
@@ -138,7 +138,7 @@ int CDM::afterStart()
 //    getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
 
     int quality = 0; // (0= Good, 1=Uncertain, 2 = Bad)
-    std::string methodToCall = "Unit_CDM.AuxControl.SetDPQuality"; //TODO
+    std::string methodToCall = helper.searchDatapoint("SetDPQuality",cdm_config);
     std::string completeNodeName = "AuxControl";
             
     boost::any completeNodeNameAny = completeNodeName;
@@ -221,7 +221,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
             {
                 LOG_TRACE << "CDM::cdmAsynch() / StartCDM";
 
-                std::string datapointName = "Unit_CDM.AuxControl.FSM.Configure";
+                std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
                 int nameSpace = 2;
                 m_Thread->cmdConfigure(datapointName,
                                        nameSpace,
@@ -239,7 +239,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
             {
                 LOG_TRACE << "CDM::cdmAsynch() / StartStream";
 
-                std::string datapointName = "Unit_CDM.AuxControl.FSM.Configure";
+                std::string datapointName =  helper.searchDatapoint("Configure",cdm_config);
                 int nameSpace = 2;
 
                 /* 
@@ -291,7 +291,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
                 camera.Connect();
 
-                std::string datapointName = "Unit_CDM.AuxControl.FSM.Configure";
+                std::string datapointName =  helper.searchDatapoint("Configure",cdm_config);
                 int nameSpace = 2;
                 //Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, std::string pixel_format="IS_CM_MONO8");
                 //m_Thread->cmdConfigure(datapointName, nameSpace, 216, 50, 10, 0, "IS_CM_SENSOR_RAW16");
@@ -340,7 +340,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 }
 
                 //Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, std::string pixel_format="IS_CM_MONO8");
-                std::string datapointName = "Unit_CDM.AuxControl.FSM.Configure";
+                std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
                 int nameSpace = 2;
                 m_Thread->cmdConfigure(datapointName, nameSpace, stoi(results[0]), stod(results[1]), stod(results[2]), stoi(results[3]), results[4]);
             }

@@ -26,6 +26,21 @@
     </Methods>
 
     <Elements>
+    
+                        <Element>
+                                    <Name>CameraTemp</Name>
+                                    <Description></Description>
+                                    <NameSpace>2</NameSpace>
+                                    <NodeId>CDM.Camera.temperatureValue.temperatureValue_v</NodeId>
+                                    <NameSpaceL2>2</NameSpaceL2>
+                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Camera.</NodeRootL2>
+                                    <NodeIdL2>temperatureValue.temperatureValue_v</NodeIdL2>
+                                    <Type>DOUBLE</Type>
+                                    <Subscribe>y</Subscribe>
+                                    <Subscribe_L2>y</Subscribe_L2>
+                                    <Log>n</Log>
+                                    <Traitement>n</Traitement>
+                        </Element>
                         <Element>
                                     <Name>circle_x</Name>
                                     <Description></Description>
@@ -497,6 +512,34 @@
                                     <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
                                     <NodeIdL2>swVersion.swVersion_v</NodeIdL2>
                                     <Type>STRING</Type>
+                                    <Subscribe>y</Subscribe>
+                                    <Subscribe_L2>y</Subscribe_L2>
+                                    <Log>n</Log>
+                                    <Traitement>n</Traitement>
+                        </Element>
+                        <Element>
+                                    <Name>SetDPQuality</Name>
+                                    <Description></Description>
+                                    <NameSpace>2</NameSpace>
+                                    <NodeId>SetDPQuality</NodeId>
+                                    <NameSpaceL2>2</NameSpaceL2>
+                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
+                                    <NodeIdL2>SetDPQuality</NodeIdL2>
+                                    <Type>INT</Type>
+                                    <Subscribe>y</Subscribe>
+                                    <Subscribe_L2>y</Subscribe_L2>
+                                    <Log>n</Log>
+                                    <Traitement>n</Traitement>
+                        </Element>
+                        <Element>
+                                    <Name>Configure</Name>
+                                    <Description></Description>
+                                    <NameSpace>2</NameSpace>
+                                    <NodeId>FSM.Configure</NodeId>
+                                    <NameSpaceL2>2</NameSpaceL2>
+                                    <NodeRootL2>Auxiliary.AuxControl.CDM.FSM.</NodeRootL2>
+                                    <NodeIdL2>Configure</NodeIdL2>
+                                    <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
                                     <Log>n</Log>
