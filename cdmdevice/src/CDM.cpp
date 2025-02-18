@@ -21,6 +21,7 @@ Helper helper;
 
 // a rajouter pour fichier mapping des Datapoints 
 #define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
+#define AUX_CONFIGURATION_NAME "Mapping_Aux_CDM.xml"
 
 
 int CDM::init(const std::string &chaine)
@@ -29,6 +30,7 @@ int CDM::init(const std::string &chaine)
 
     // a rajouter pour recuperer les infos du fichier mapping des datapoints
     cdm_config = new Config(CDM_CONFIGURATION_NAME,"");
+    aux_config = new Config(AUX_CONFIGURATION_NAME,"");
 
     // You can overwrite this method if you want but not mandatory because the class pluginsInterfaceImpl already implement it:)
     // but becarefull, you have to call before doing  your bussiness, call the father method (the father class) ( PluginsInterfaceImpl::init())
@@ -132,10 +134,11 @@ int CDM::afterStart()
     }
     // remplace le hardcodage des datapoints --> recuperation des infos provenant du fichier PLC_*****.xml
     getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), namespaceL2, 0);
+    helper.searchDatapoint("circle_x",aux_config)
 //    getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
 
     int quality = 0; // (0= Good, 1=Uncertain, 2 = Bad)
-    std::string methodToCall = "Unit_CDM.AuxControl.SetDPQuality";
+    std::string methodToCall = "Unit_CDM.AuxControl.SetDPQuality"; //TODO
     std::string completeNodeName = "AuxControl";
             
     boost::any completeNodeNameAny = completeNodeName;
