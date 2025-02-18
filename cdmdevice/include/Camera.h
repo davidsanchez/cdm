@@ -4,6 +4,7 @@
 
 #include "pluginsBase.h"
 #include "lappThread.h" // needed for MOS
+#include "Helper.h"
 
 #include <iostream>
 
@@ -21,6 +22,10 @@
 #include <map>
 #include "Config.h"
 using namespace std;
+
+#define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
+
+extern Helper helper;
 
 class Camera
 {
@@ -88,18 +93,21 @@ public:
     ( "IS_CM_SENSOR_RAW8", IS_CM_SENSOR_RAW8 )
     ( "IS_CM_SENSOR_RAW16", IS_CM_SENSOR_RAW16 );
 
-    const std::string datapointName_circle_x = "Unit_CDM.AuxControl.CDM.Circle.circle_x.circle_x_v";
-    const std::string datapointName_circle_y = "Unit_CDM.AuxControl.CDM.Circle.circle_y.circle_y_v";
-    const std::string datapointName_circle_R = "Unit_CDM.AuxControl.CDM.Circle.circle_R.circle_R_v";
-    const std::string datapointName_circle_RMS = "Unit_CDM.AuxControl.CDM.Circle.circle_RMS.circle_RMS_v";
-    const std::string datapointName_displacement_x = "Unit_CDM.AuxControl.CDM.Displacement.displacement_x.displacement_x_v";
-    const std::string datapointName_displacement_y = "Unit_CDM.AuxControl.CDM.Displacement.displacement_y.displacement_y_v";
-    const std::string datapointName_rotation = "Unit_CDM.AuxControl.CDM.Displacement.rotation.rotation_v";
+    Config *cdm_config = new Config(CDM_CONFIGURATION_NAME,"");
 
-    const std::string datapointName_circle_x_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_x_stddev.circle_x_stddev_v";
-    const std::string datapointName_circle_y_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_y_stddev.circle_y_stddev_v";
-    const std::string datapointName_circle_R_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_R_stddev.circle_R_stddev_v";
-    const std::string datapointName_circle_RMS_stddev = "Unit_CDM.AuxControl.CDM.Circle.circle_RMS_stddev.circle_RMS_stddev_v";
+    const std::string datapointName_circle_x = helper.searchDatapoint("circle_x",cdm_config);
+    const std::string datapointName_circle_y = helper.searchDatapoint("circle_y",cdm_config);
+    const std::string datapointName_circle_R = helper.searchDatapoint("circle_R",cdm_config);
+    const std::string datapointName_circle_RMS =  helper.searchDatapoint("circle_RMS",cdm_config);
+    const std::string datapointName_displacement_x =  helper.searchDatapoint("displacement_x",cdm_config);
+    const std::string datapointName_displacement_y = helper.searchDatapoint("displacement_y",cdm_config);
+    const std::string datapointName_rotation = helper.searchDatapoint("rotation",cdm_config);
+    
+
+    const std::string datapointName_circle_x_stddev = helper.searchDatapoint("circle_x_stddev",cdm_config);
+    const std::string datapointName_circle_y_stddev = helper.searchDatapoint("circle_y_stddev",cdm_config);
+    const std::string datapointName_circle_R_stddev = helper.searchDatapoint("circle_RMS_stddev",cdm_config);
+    const std::string datapointName_circle_RMS_stddev = helper.searchDatapoint("circle_R_stddev",cdm_config);
 
 
     const int nLED = 12;
@@ -109,53 +117,53 @@ public:
     // TODO: initalize vectors with the proper size immediately.    
     std::vector<std::string> datapointName_LED_x_arrays =
     {
-        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_01.LED_x_01_v", 
-        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_02.LED_x_02_v", 
-        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_03.LED_x_03_v", 
-        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_04.LED_x_04_v", 
-        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_05.LED_x_05_v", 
-        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_06.LED_x_06_v", 
-        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_07.LED_x_07_v", 
-        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_08.LED_x_08_v", 
-        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_09.LED_x_09_v", 
-        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_10.LED_x_10_v", 
-        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_11.LED_x_11_v", 
-        "Unit_CDM.AuxControl.CDM.LED_x.LED_x_12.LED_x_12_v", 
+        helper.searchDatapoint("LED_x_01",cdm_config),
+        helper.searchDatapoint("LED_x_02",cdm_config),
+        helper.searchDatapoint("LED_x_03",cdm_config),
+        helper.searchDatapoint("LED_x_04",cdm_config),
+        helper.searchDatapoint("LED_x_05",cdm_config),
+        helper.searchDatapoint("LED_x_06",cdm_config),
+        helper.searchDatapoint("LED_x_07",cdm_config),
+        helper.searchDatapoint("LED_x_08",cdm_config),
+        helper.searchDatapoint("LED_x_09",cdm_config),
+        helper.searchDatapoint("LED_x_10",cdm_config),
+        helper.searchDatapoint("LED_x_11",cdm_config),
+        helper.searchDatapoint("LED_x_12",cdm_config),
     };
 
     std::vector<std::string> datapointName_LED_y_arrays =
     {
-        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_01.LED_y_01_v", 
-        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_02.LED_y_02_v", 
-        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_03.LED_y_03_v", 
-        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_04.LED_y_04_v", 
-        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_05.LED_y_05_v", 
-        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_06.LED_y_06_v", 
-        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_07.LED_y_07_v", 
-        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_08.LED_y_08_v", 
-        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_09.LED_y_09_v", 
-        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_10.LED_y_10_v", 
-        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_11.LED_y_11_v", 
-        "Unit_CDM.AuxControl.CDM.LED_y.LED_y_12.LED_y_12_v", 
+        helper.searchDatapoint("LED_y_01",cdm_config),
+        helper.searchDatapoint("LED_y_02",cdm_config),
+        helper.searchDatapoint("LED_y_03",cdm_config),
+        helper.searchDatapoint("LED_y_04",cdm_config),
+        helper.searchDatapoint("LED_y_05",cdm_config),
+        helper.searchDatapoint("LED_y_06",cdm_config),
+        helper.searchDatapoint("LED_y_07",cdm_config),
+        helper.searchDatapoint("LED_y_08",cdm_config),
+        helper.searchDatapoint("LED_y_09",cdm_config),
+        helper.searchDatapoint("LED_y_10",cdm_config),
+        helper.searchDatapoint("LED_y_11",cdm_config),
+        helper.searchDatapoint("LED_y_12",cdm_config),
     };
 
     std::vector<std::string> datapointName_OARL_x_arrays =
     {
-        "Unit_CDM.AuxControl.CDM.OARL_x.OARL_x_1.OARL_x_1_v", 
-        "Unit_CDM.AuxControl.CDM.OARL_x.OARL_x_2.OARL_x_2_v", 
+        helper.searchDatapoint("OARL_x_1",cdm_config),
+        helper.searchDatapoint("OARL_x_2",cdm_config), 
     };
 
     std::vector<std::string> datapointName_OARL_y_arrays =
     {
-        "Unit_CDM.AuxControl.CDM.OARL_y.OARL_y_1.OARL_y_1_v", 
-        "Unit_CDM.AuxControl.CDM.OARL_y.OARL_y_2.OARL_y_2_v", 
+        helper.searchDatapoint("OARL_y_1",cdm_config),
+        helper.searchDatapoint("OARL_y_2",cdm_config), 
     };
 
-    std::string datapointName_OARL_x_mean = "Unit_CDM.AuxControl.CDM.OARL_x.OARL_x_mean.OARL_x_mean_v";
-    std::string datapointName_OARL_y_mean = "Unit_CDM.AuxControl.CDM.OARL_y.OARL_y_mean.OARL_y_mean_v";
+    std::string datapointName_OARL_x_mean = helper.searchDatapoint("OARL_x_mean",cdm_config);
+    std::string datapointName_OARL_y_mean = helper.searchDatapoint("OARL_y_mean",cdm_config);
 
-    std::string datapointName_timestamp_UTC = "Unit_CDM.AuxControl.CDM.timestamp.timestamp_UTC.timestamp_UTC_v";
-    std::string datapointName_timestamp_epoch = "Unit_CDM.AuxControl.CDM.timestamp.timestamp_epoch.timestamp_epoch_v";
+    std::string datapointName_timestamp_UTC = helper.searchDatapoint("timestamp-UTC",cdm_config);
+    std::string datapointName_timestamp_epoch = helper.searchDatapoint("timestamp-EPOCH",cdm_config);
 
 private:
     map<std::string,std::string> m_config;

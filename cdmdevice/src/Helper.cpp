@@ -11,14 +11,14 @@
 
 using namespace std;
 
-std::string  Helper::searchDatapoint (string element, Config *cdm_config)
+std::string  Helper::searchDatapoint (string element, Config *config)
 {
         ListElement *myElement = NULL;
         std::string rootElement = "";
         std::string nodeIdL1 = "";
 
-        myElement = cdm_config->searchElement(element);
-        rootElement = cdm_config->getRootName() + ".";
+        myElement = config->searchElement(element);
+        rootElement = config->getRootName() + ".";
         if (myElement)
         {
 		nodeIdL1 = rootElement + myElement->NodeId;

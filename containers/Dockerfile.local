@@ -72,7 +72,9 @@ RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_rsa_key -t rsa -N ""
 
 COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
 COPY payload/configurations/RunCDM.sh /home/cdmmgr/RunCDM.sh
-
+COPY cdmdevice/bin/PLC_CDM.xml /home/cdmmgr/PLC_CDM.xml
+COPY cdmdevice/bin/Unit_CDM_Model.xml /home/cdmmgr/Unit_CDM_Model.xml
+COPY cdmdevice/bin/FSM_CDM.xml /home/cdmmgr/FSM_CDM.xml
 #COPY cdm_mount/ /home/cdmmgr/
 
 #RUN git clone  -b mos12 https://gitlab-ci-token:zvXByVdyyoLTMbrW-n_u@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/

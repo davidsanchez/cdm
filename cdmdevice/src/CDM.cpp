@@ -21,7 +21,7 @@ Helper helper;
 
 // a rajouter pour fichier mapping des Datapoints 
 #define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
-#define AUX_CONFIGURATION_NAME "Mapping_Aux_CDM.xml"
+
 
 
 int CDM::init(const std::string &chaine)
@@ -30,7 +30,7 @@ int CDM::init(const std::string &chaine)
 
     // a rajouter pour recuperer les infos du fichier mapping des datapoints
     cdm_config = new Config(CDM_CONFIGURATION_NAME,"");
-    aux_config = new Config(AUX_CONFIGURATION_NAME,"");
+    
 
     // You can overwrite this method if you want but not mandatory because the class pluginsInterfaceImpl already implement it:)
     // but becarefull, you have to call before doing  your bussiness, call the father method (the father class) ( PluginsInterfaceImpl::init())
@@ -59,7 +59,7 @@ int CDM::afterStart()
     // This method is automatically called by the program "MOS" after "MOS" server is launched and ready.
     int ret = 0;
     printf("\n***********************************\nIn CDM::afterStart\n***********************************\n");
-
+    
 
     // map<std::string,std::string> config;
 
@@ -133,8 +133,8 @@ int CDM::afterStart()
         throw std::exception();
     }
     // remplace le hardcodage des datapoints --> recuperation des infos provenant du fichier PLC_*****.xml
-    getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), namespaceL2, 0);
-    helper.searchDatapoint("circle_x",aux_config)
+    getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("state",cdm_config), namespaceL2, 0);
+    
 //    getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
 
     int quality = 0; // (0= Good, 1=Uncertain, 2 = Bad)
@@ -304,7 +304,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                                        "IS_CM_MONO8" // pixel_format
                 );
                 
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
                     
                 //    getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
             }
@@ -314,7 +314,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 LOG_TRACE << "CDM::cdm() / Disconnect";
                 camera.Disconnect();
                 
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
             }
 
             if (subChaine1.compare("Configure") == 0)
@@ -352,7 +352,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 // TODO: Make some parsing/safety checks. best inside Comment function.
                 boost::trim_right(subChaine2);
                 CDM::AddComment(subChaine2);
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
 
             }
 
@@ -361,7 +361,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 LOG_TRACE << "CDM::cdm() / GetImage";
                 camera.GetImage(getDataAccessClientOPCUARef()); // pushes the image to the datapoint inside the function
                 LOG_DEBUG << "Finished GetImage";
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
                 
                 /* vector<unsigned char> displayImage = camera.GetImage();
                 int m_nameSpace = 2;
@@ -373,13 +373,13 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             if (subChaine1.compare("GoToTpoint") == 0)
             {
                 LOG_TRACE << "CDM::cdm() / GoToTpoint";                
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
             }
 
             if (subChaine1.compare("GoToReady") == 0)
             {
                 LOG_TRACE << "CDM::cdm() / GoToReady";                
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
             }
 
             if (subChaine1.compare("StopGetMultipleImages") == 0)
@@ -403,16 +403,16 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             if (subChaine1.compare("Error") == 0)
             {
                 LOG_TRACE << "CDM::cdm() / Error";
-                SetDatapointThread *m_SetDatapointThread_state = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, 5);
+                SetDatapointThread *m_SetDatapointThread_state = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 5);
                 camera.StopCDM();
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
             }
 
             if (subChaine1.compare("Acknowledge") == 0)
             {
                 LOG_TRACE << "CDM::cdm() / Acknowledge";
                 camera.Disconnect();
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
             }
         }
     }
@@ -575,7 +575,7 @@ int CDM::AddComment(std::string comment)
     cout << "Comment is: " << comment << endl;
 
     helper.set_Comment(comment);
-    SetDatapointThread *m_SetDatapointThread_comment = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("CDM_comment",cdm_config), 2, comment);
+    SetDatapointThread *m_SetDatapointThread_comment = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("comment",cdm_config), 2, comment);
 }
 
 int CDM::close()
@@ -613,7 +613,7 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
         return_value_double = camera.get_temperature_value();
         LOG_DEBUG << "Camera temperature value is: " << return_value_double << endl;
         //getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.temperatureValue.temperatureValue_v", 2, return_value_double);
-        getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("CDM_Camera_temperatureValue",cdm_config), 2, return_value_double);
+        getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("CameraTemp",cdm_config), 2, return_value_double);
     }
     else if (chain.find("get_temperatureStatus") != std::string::npos)
     {
