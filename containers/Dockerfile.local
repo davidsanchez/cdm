@@ -47,11 +47,16 @@ RUN yum install -y \
     vim \
     screen \
     python-devel \
-     opencv  \
-     opencv-devel  \
-     opencv-python
+    opencv  \
+    opencv-devel  \
+    opencv-python
 
 RUN yum install -y  CCfits-devel
+
+RUN yum install -y  boost169-devel
+RUN ln -s /usr/lib64/libboost_log.so.1.69.0 /usr/lib64/libboost_log.so
+RUN ln -s /usr/lib64/libboost_log_setup.so.1.69.0 /usr/lib64/libboost_log_setup.so
+
 
 USER cdmmgr
 WORKDIR /home/cdmmgr
@@ -103,9 +108,9 @@ COPY payload/ueye.h /usr/include/ueye.h
 RUN mkdir ./boost
 COPY payload/boost_1_79_0 ./boost
 
-WORKDIR /home/cdmmgr/boost
-RUN ./bootstrap.sh --with-python=python2.7
-RUN  ./b2 install  --with=all
+#WORKDIR /home/cdmmgr/boost
+#RUN ./bootstrap.sh --with-python=python2.7
+#RUN  ./b2 install  --with=all
 
 
 # DL and build Yocto meteo
@@ -115,8 +120,8 @@ RUN make
 WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
 RUN ln -s libyocto.so.1.0.1 libyocto.so
 
-#WORKDIR /home/cdmmgr/cdm/build
-#RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
+WORKDIR /home/cdmmgr/cdm/build
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
 #RUN make
 
 USER root

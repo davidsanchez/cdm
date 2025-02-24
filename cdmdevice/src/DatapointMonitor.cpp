@@ -1,8 +1,11 @@
 #pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
 #include "DatapointMonitor.h"
 #include "CDM.h"
-
+#include "Config.h"
 //#include "Logging.h"
+
+
+#define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
 
 DatapointMonitor::DatapointMonitor(CDM *caller)
 {

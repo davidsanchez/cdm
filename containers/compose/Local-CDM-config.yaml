@@ -4,7 +4,8 @@ services:
     container_name: "MOS-CDM-LOCAL"
     image: "cdm:local"
     # restart: unless-stopped
-
+    cap_add:
+      - SYS_PTRACE
     ports:
        - "48011:48011"
     ipc: host

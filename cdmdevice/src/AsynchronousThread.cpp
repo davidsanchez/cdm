@@ -13,16 +13,15 @@
 #include "AsynchronousThread.h"
 #include "dataAccessClientOPCUA.h"
 #include "Config.h"
-
-
 #include "Logging.h"
 
 extern Camera camera;
+extern Helper helper;
 
 #define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
 
 
-std::string  AsynchronousThread::searchDatapoint (string element)
+/*std::string  AsynchronousThread::searchDatapoint (string element)
 {
         ListElement *myElement = NULL;
         std::string rootElement = "";
@@ -37,7 +36,7 @@ std::string  AsynchronousThread::searchDatapoint (string element)
         }
         return("");
 }
-
+*/
 
 
 AsynchronousThread::AsynchronousThread(DataAccessClientOPCUA *dataAccessClientOPCUA)
@@ -168,10 +167,10 @@ void *AsynchronousThread::run(void *params)
 
                 // Puts the FSM.state to 4
                 //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 4);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_state"), 2, 4);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state"), 2, 4);
                 // Put the transition state to 0.
                 //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_transition"), 2, 0);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition"), 2, 0);
 
                 // inform that the command is in progress
                 temString = m_datapointName + "._InProgressBar";
@@ -192,15 +191,15 @@ void *AsynchronousThread::run(void *params)
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.imagePath_cat.imagePath_cat_v", 2, imagePath_cat);
 
                 //m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_state"), 2, FSM_state);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state"), 2, FSM_state);
                 // If not in error state then go back to standard state.
                 if (FSM_state != 5)
-                    m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_state"), 2, 3);
+                    m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state"), 2, 3);
                     //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 3);
 
                 // Put the transition state to 0.
                 //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_transition"), 2, 0);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition"), 2, 0);
 
                 // you can put the outputs arguments in this place to inform the server
                 // temString = m_datapointName + "._OutputArguments._Val_Retour";
@@ -226,10 +225,10 @@ void *AsynchronousThread::run(void *params)
 
                 // Puts the FSM.state to 4
                 //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 4);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_state"), 2, 4);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state"), 2, 4);
                 // Put the transition state to 0.
                 //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_transition"), 2, 0);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition"), 2, 0);
 
                 // inform that the command is in progress
                 // temString = m_datapointName + "._InProgressBar";
@@ -250,15 +249,15 @@ void *AsynchronousThread::run(void *params)
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.imagePath_cat.imagePath_cat_v", 2, imagePath_cat);
 
                 //m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_state"), 2, FSM_state);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state"), 2, FSM_state);
                 // If not in error state then go back to standard state.
                 if (FSM_state != 5)
-                	m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_state"), 2, 3);
+                	m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state"), 2, 3);
                    // m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 3);
 
                 // Put the transition state to 0.
                 //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_transition"), 2, 0);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition"), 2, 0);
 
                 // you can put the outputs arguments in this place to inform the server
                 // temString = m_datapointName + "._OutputArguments._Val_Retour";
@@ -285,10 +284,10 @@ void *AsynchronousThread::run(void *params)
                 cout << "In AsynchronousThread: cmdStartCDM" << endl;
                 // Puts the FSM.state to 2
                 //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 2);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_state"), 2, 2);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state"), 2, 2);
                 // Put the transition state to 0.
                 //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_transition"), 2, 0);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition"), 2, 0);
 
                 // inform that the command is in progress
                 // temString = m_datapointName + "._InProgressBar";
@@ -316,15 +315,15 @@ void *AsynchronousThread::run(void *params)
                 m_cmdStartCDM = 0;
 
                 //m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_state"), 2, FSM_state);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state"), 2, FSM_state);
                 // If not in error state then go back to standard state.
                 if (FSM_state != 5)
-                	m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_state"), 2, 1);
+                	m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state"), 2, 1);
 //                    m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 1);
 
                 // Put the transition state to 0.
                 //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_transition"), 2, 0);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition"), 2, 0);
 
                 cout << "End of cdmStartCDM inside AsynchronousThread.cpp" << endl;
             }
@@ -336,10 +335,10 @@ void *AsynchronousThread::run(void *params)
                 cout << "In AsynchronousThread: cmdStartStream" << endl;
                 // Puts the FSM.state to 6
 //                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 6);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_state"), 2, 6);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state"), 2, 6);
                 // Put the transition state to 0.
                 //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_transition"), 2, 0);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition"), 2, 0);
 
                 // inform that the command is in progress
                 // temString = m_datapointName + "._InProgressBar";
@@ -367,15 +366,15 @@ void *AsynchronousThread::run(void *params)
                 m_cmdStartStream = 0;
 
  //               m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_state"), 2, FSM_state);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state"), 2, FSM_state);
                 // If not in error state then go back to standard state.
                 if (FSM_state != 5)
-                	m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_state"), 2, 3);
+                	m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state"), 2, 3);
 //                    m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 1);
                 
                 // Put the transition state to 0.
                 //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_transition"), 2, 0);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition"), 2, 0);
 
                 cout << "End of cdmStartStream inside AsynchronousThread.cpp" << endl;
             }
