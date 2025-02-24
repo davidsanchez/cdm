@@ -16,7 +16,7 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
 
     logging::add_file_log(
         keywords::file_name = "../log/active.log",                                   //active filename
-        keywords::target_file_name = "../log/saved/target_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
+        keywords::target = "../log/saved/target_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
         keywords::auto_flush = true,                                                                //writes messages immediately to file. Should be used only for debug.
         keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%",
         keywords::time_based_rotation = sinks::file::rotation_at_time_point(7, 30, 0), // hour, minute, second
@@ -27,7 +27,7 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
 
     logging::add_file_log(
         keywords::file_name = "../log/active_image_taking.log",                                   //active filename
-        keywords::target_file_name = "../log/saved/image_taking_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
+        keywords::target = "../log/saved/image_taking_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
         keywords::auto_flush = true,                                                                //writes messages immediately to file. Should be used only for debug.
         keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%",
         keywords::time_based_rotation = sinks::file::rotation_at_time_point(7, 30, 0), // hour, minute, second
@@ -37,7 +37,7 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
 
     logging::add_file_log(
         keywords::file_name = "../log/active_debug.log",                                   //active filename
-        keywords::target_file_name = "../log/saved/debug_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
+        keywords::target = "../log/saved/debug_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
         keywords::auto_flush = true,                                                                //writes messages immediately to file. Should be used only for debug.
         keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%",
         keywords::time_based_rotation = sinks::file::rotation_at_time_point(7, 30, 0), // hour, minute, second
@@ -48,7 +48,7 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
 
     logging::add_file_log(
         keywords::file_name = "../log/active_env.log",                                   //active filename
-        keywords::target_file_name = "../log/saved/target_env_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
+        keywords::target = "../log/saved/target_env_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
         keywords::auto_flush = true,                                                                    //writes messages immediately to file. Should be used only for debug.
         //keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%",
         keywords::format = "%TimeStamp% %Message%",
@@ -59,7 +59,7 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
 
     logging::add_file_log(
         keywords::file_name = "../log/active_data.log",                                   //active filename
-        keywords::target_file_name = "../log/saved/target_data_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
+        keywords::target = "../log/saved/target_data_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
         keywords::auto_flush = true,                                                                     //writes messages immediately to file. Should be used only for debug.
         //keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%",
         keywords::format = "%TimeStamp% %Message%",
@@ -70,7 +70,7 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
 
     logging::add_file_log(
         keywords::file_name = "../log/active_settings.log",                                   //active filename
-        keywords::target_file_name = "../log/saved/target_settings_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
+        keywords::target = "../log/saved/target_settings_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
         keywords::auto_flush = true,                                                                    //writes messages immediately to file. Should be used only for debug.
         //keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%",
         keywords::format = "%TimeStamp% %Message%",
