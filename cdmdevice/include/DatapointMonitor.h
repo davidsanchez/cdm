@@ -3,7 +3,15 @@
 
 #include <MOS_callbackInterface.h>
 
+#include "Helper.h"
 class CDM;
+
+#include "Config.h"
+using namespace std;
+
+#define DATABROKER_CONFIGURATION_NAME "PLC_DATABROKER.xml"
+
+extern Helper helper;
 
 class DatapointMonitor : public MOS_CallbackInterface {
 public:
@@ -20,33 +28,34 @@ public:
 private:
 
     CDM *caller;
-
+    
+    Config *DB_config = new Config(DATABROKER_CONFIGURATION_NAME,"");
     //const std::string led01_var_name =   "DataBroker.SecurityBrokerControl.CameraControl.Led_01.Led_01_v"; 
-    const std::string leds_var_name =    "DataBroker.SecurityBrokerControl.CameraControl.ECC.Monitoring.LEDPositions.GeneralStatus.GeneralStatus_v"; 
-    const std::string shutter_var_name = "DataBroker.SecurityBrokerControl.CameraControl.ECC.Monitoring.Shutter.GeneralStatus.GeneralStatus_v"; 
-    const std::string sis_var_name =     "DataBroker.SecurityBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v"; 
+    const std::string leds_var_name =    helper.searchDatapoint("LEDPositions",DB_config);
+    const std::string shutter_var_name =  helper.searchDatapoint("Shutter",DB_config); 
+    const std::string sis_var_name =      helper.searchDatapoint("SIS",DB_config); 
 
-    const std::string oarl_var_name =             "DataBroker.SecurityBrokerControl.AuxControl.RemotePowerCtrl.OARLRelay_Status.OARLRelay_Status_v"; 
-    const std::string aux_DMEastBottom_var_name = "DataBroker.SecurityBrokerControl.AuxControl.DM.DM_East_Bottom.Status.Status_v"; 
-    const std::string aux_DMEastTop_var_name =    "DataBroker.SecurityBrokerControl.AuxControl.DM.DM_East_Top.Status.Status_v";  
-    const std::string aux_DMWestBottom_var_name = "DataBroker.SecurityBrokerControl.AuxControl.DM.DM_West_Bottom.Status.Status_v"; 
-    const std::string aux_DMWestTop_var_name =    "DataBroker.SecurityBrokerControl.AuxControl.DM.DM_West_Top.Status.Status_v"; 
+    const std::string oarl_var_name =             helper.searchDatapoint("OARLRelay_Status",DB_config); 
+    const std::string aux_DMEastBottom_var_name =  helper.searchDatapoint("DM_East_Bottom",DB_config); 
+    const std::string aux_DMEastTop_var_name =     helper.searchDatapoint("DM_East_Top",DB_config); 
+    const std::string aux_DMWestBottom_var_name =  helper.searchDatapoint("DM_West_Bottom",DB_config); 
+    const std::string aux_DMWestTop_var_name =     helper.searchDatapoint("DM_West_Bottom",DB_config); 
 
-    const std::string drive_ra_target_var_name =   "DataBroker.SecurityBrokerControl.DriveControl.RA_Target.RA_Target_v";
-    const std::string drive_dec_target_var_name =  "DataBroker.SecurityBrokerControl.DriveControl.Dec_Target.Dec_Target_v"; 
+    const std::string drive_ra_target_var_name =   helper.searchDatapoint("RA_Target",DB_config); 
+    const std::string drive_dec_target_var_name =  helper.searchDatapoint("Dec_Target",DB_config); 
 
-    const std::string az_offset_var_name = "DataBroker.SecurityBrokerControl.DriveControl.Azimuth_Offset.Azimuth_Offset_v"; 
-    const std::string zd_offset_var_name = "DataBroker.SecurityBrokerControl.DriveControl.ZenithAngle_Offset.ZenithAngle_Offset_v"; 
-    const std::string source_var_name =    "DataBroker.SecurityBrokerControl.DriveControl.SourceName.SourceName_v"; 
-    const std::string ra_tel_var_name =    "DataBroker.SecurityBrokerControl.DriveControl.RA_Telescope.RA_Telescope_v"; 
-    const std::string dec_tel_var_name =   "DataBroker.SecurityBrokerControl.DriveControl.Dec_Telescope.Dec_Telescope_v"; 
-    const std::string az_var_name =        "DataBroker.SecurityBrokerControl.DriveControl.CurrentPosition.azimuth_position.azimuth_position_v"; 
-    const std::string zd_var_name =        "DataBroker.SecurityBrokerControl.DriveControl.CurrentPosition.zenithangle_position.zenithangle_position_v"; 
+    const std::string az_offset_var_name = helper.searchDatapoint("Azimuth_Offset",DB_config); 
+    const std::string zd_offset_var_name = helper.searchDatapoint("ZenithAngle_Offset",DB_config); 
+    const std::string source_var_name =    helper.searchDatapoint("SourceName",DB_config); 
+    const std::string ra_tel_var_name =    helper.searchDatapoint("RA_Telescope",DB_config); 
+    const std::string dec_tel_var_name =   helper.searchDatapoint("Dec_Telescope",DB_config); 
+    const std::string az_var_name =        helper.searchDatapoint("azimuth_position",DB_config); 
+    const std::string zd_var_name =        helper.searchDatapoint("zenithangle_position",DB_config); 
 
-    const std::string drive_inmotion_var_name =    "DataBroker.SecurityBrokerControl.DriveControl.Status.Status_In_Motion.Status_In_Motion_v"; 
-    const std::string drive_inparkinpos_var_name = "DataBroker.SecurityBrokerControl.DriveControl.Status.Status_In_Parking_Position.Status_In_Parking_Position_v"; 
-    const std::string drive_parked_var_name =      "DataBroker.SecurityBrokerControl.DriveControl.Status.Status_Parked.Status_Parked_v"; 
-    const std::string drive_tracking_var_name =    "DataBroker.SecurityBrokerControl.DriveControl.Status.Status_Tracking_In_Progress.Status_Tracking_In_Progress_v"; 
+    const std::string drive_inmotion_var_name =    helper.searchDatapoint("Status_In_Motion",DB_config); 
+    const std::string drive_inparkinpos_var_name = helper.searchDatapoint("Status_In_Parking_Position",DB_config); 
+    const std::string drive_parked_var_name =      helper.searchDatapoint("Status_Parked",DB_config); 
+    const std::string drive_tracking_var_name =    helper.searchDatapoint("Status_Tracking_In_Progress",DB_config); 
 
 
 

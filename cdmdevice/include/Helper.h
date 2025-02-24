@@ -6,7 +6,7 @@
 #include "lappThread.h" // needed for MOS
 #include "pluginsBase.h"
 #include "Config.h"
-#include "DatapointMonitor.h"
+//#include "DatapointMonitor.h"
 
 class DataAccessClientOPCUA;
 class PluginsBase;

@@ -121,6 +121,7 @@ WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
 RUN ln -s libyocto.so.1.0.1 libyocto.so
 
 WORKDIR /home/cdmmgr/cdm/build
+COPY  payload/CMakeLists.txt ./cdm/build
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
 #RUN make
 
