@@ -427,11 +427,11 @@ void *AsynchronousThread::run(void *params)
                 // Checks the current FSM state so we can return to that state after Configure is done.
                 int FSM_state;
 //                m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_state",cdm_config), 2, FSM_state);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, FSM_state);
 
                 // Puts the FSM.transition to 1
                 //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 1);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_transition",cdm_config), 2, 1);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 1);
 
                 // inform that the command is in progress
                 // temString = m_datapointName + "._InProgressBar";
