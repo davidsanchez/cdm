@@ -78,6 +78,7 @@ RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_rsa_key -t rsa -N ""
 COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
 COPY payload/configurations/RunCDM.sh /home/cdmmgr/RunCDM.sh
 COPY cdmdevice/bin/PLC_CDM.xml /home/cdmmgr/PLC_CDM.xml
+COPY cdmdevice/bin/PLC_DATABROKER.xml /home/cdmmgr/PLC_DATABROKER.xml
 COPY cdmdevice/bin/Unit_CDM_Model.xml /home/cdmmgr/Unit_CDM_Model.xml
 COPY cdmdevice/bin/FSM_CDM.xml /home/cdmmgr/FSM_CDM.xml
 #COPY cdm_mount/ /home/cdmmgr/
@@ -121,8 +122,8 @@ WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
 RUN ln -s libyocto.so.1.0.1 libyocto.so
 
 WORKDIR /home/cdmmgr/cdmdevice/build
-COPY  payload/CMakeLists.txt ./cdmdevice/build
-#RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
+COPY  payload/CMakeLists.txt .
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
 #RUN make
 
 USER root
