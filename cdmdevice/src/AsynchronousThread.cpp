@@ -194,7 +194,7 @@ void *AsynchronousThread::run(void *params)
                 m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, FSM_state);
                 // If not in error state then go back to standard state.
                 if (FSM_state != 5)
-                    m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state,cdm_config"), 2, 3);
+                    m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, 3);
                     //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 3);
 
                 // Put the transition state to 0.
@@ -318,7 +318,7 @@ void *AsynchronousThread::run(void *params)
                 m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, FSM_state);
                 // If not in error state then go back to standard state.
                 if (FSM_state != 5)
-                	m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state,cdm_config"), 2, 1);
+                	m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, 1);
 //                    m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 1);
 
                 // Put the transition state to 0.
@@ -427,11 +427,11 @@ void *AsynchronousThread::run(void *params)
                 // Checks the current FSM state so we can return to that state after Configure is done.
                 int FSM_state;
 //                m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_state"), 2, FSM_state);
+                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_state",cdm_config), 2, FSM_state);
 
                 // Puts the FSM.transition to 1
                 //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 1);
-                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_transition"), 2, 1);
+                m_dataAccessClientOPCUA->setDatapoint(searchDatapoint("CDM_FSM_transition",cdm_config), 2, 1);
 
                 // inform that the command is in progress
                 // temString = m_datapointName + "._InProgressBar";
