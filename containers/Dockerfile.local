@@ -98,7 +98,7 @@ RUN mkdir ./output
 RUN mkdir ./output/images
 RUN mkdir ./output/fits
 
-RUN cp cdmdevice . 
+RUN cp -r  cdmdevice . 
 RUN mkdir -p ./cdmdevice/build
 
 #COPY  payload/CMakeLists.txt ./cdm/build
