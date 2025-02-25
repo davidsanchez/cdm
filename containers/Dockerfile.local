@@ -97,7 +97,7 @@ COPY cdmdevice/bin/FSM_CDM.xml /home/cdmmgr/FSM_CDM.xml
 RUN mkdir ./output
 RUN mkdir ./output/images
 RUN mkdir ./output/fits
-RUN mkdir ./cdmdevice/build
+RUN mkdir -P ./cdmdevice/build
 
 #COPY  payload/CMakeLists.txt ./cdm/build
 COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
