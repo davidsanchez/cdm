@@ -668,8 +668,8 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 // Push the image here
                 std::chrono::steady_clock::time_point begin_getimage = std::chrono::steady_clock::now();
                 published_image = myimage.GetImageToPublish(currentDateTime());
-                myclient->setDatapoint("Unit_CDM.AuxControl.CDM.image.image_v", m_nameSpace, published_image);
-                myclient->setDatapoint("Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", m_nameSpace, (int)i_images_taken);
+                myclient->setDatapoint(datapointName_image, m_nameSpace, published_image);
+                myclient->setDatapoint(datapointName_nImagesGet, m_nameSpace, (int)i_images_taken);
                 std::chrono::steady_clock::time_point end_getimage = std::chrono::steady_clock::now();
                 LOG_IMAGE << "Time difference [Get image for publishing] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_getimage - begin_getimage).count() << "[ms]" << std::endl;
 
@@ -871,7 +871,7 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
 
             int m_nameSpace = 2;
             published_image = myimage.GetImageToPublish(currentDateTime());
-            myclient->setDatapoint("Unit_CDM.AuxControl.CDM.image.image_v", m_nameSpace, published_image);
+            myclient->setDatapoint(datapointName_image, m_nameSpace, published_image);
         }
 
         else if (nRet == IS_CAPTURE_STATUS)
@@ -1027,11 +1027,11 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
                 cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
 
                 int m_nameSpace = 2;
-                string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
+                string temString = datapointName_image;
                 //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
                 SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
-                SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken + 1); //Updates the number of images taken
+                SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient,datapointName_nImagesGet, 2, i_images_taken + 1); //Updates the number of images taken
 
                 std::string imageName = writeFITSImage(src);
 
@@ -1070,7 +1070,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 
                 */
                 v_image_paths.push_back(imageName);
-                SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
+                SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient,datapointName_imageName, 2, imageName.c_str()); //Updates the imageName
 
                 auto tp_stop = std::chrono::high_resolution_clock::now();
                 auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
@@ -1240,11 +1240,11 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
                 cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
 
                 int m_nameSpace = 2;
-                string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
+                string temString = datapointName_image;
                 //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
                 SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
-                SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, i_images_taken + 1); //Updates the number of images taken
+                SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, datapointName_nImagesGet, 2, i_images_taken + 1); //Updates the number of images taken
 
                 // Accumulate images. In OpenCV_v2 input has to be 8bit or 32bit?
                 //Conversion from CV_32 to CV_64 should be automatic (TODO: verify)
@@ -1329,7 +1329,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     vector<unsigned char> data;
     cv::imencode(".png", accumulated_images_dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
     int m_nameSpace = 2;
-    string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
+    string temString = datapointName_image;
     SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
     // Make a FITS image
@@ -1359,7 +1359,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     */
 
     v_image_paths.push_back(imageName);
-    SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
+    SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, datapointName_imageName, 2, imageName.c_str()); //Updates the imageName
 
     // Free the OpenCV memory?
     // Free the allocated memories
@@ -1437,7 +1437,7 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
 
     int m_nameSpace = 2;
-    string temString = "Unit_CDM.AuxControl.CDM.image.image_v";
+    string temString = datapointName_image;
     SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
     std::string imageName = writeFITSImage(src);
@@ -1465,9 +1465,9 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     */
     std::vector<std::string> publish_remoteImagePath; 
     publish_remoteImagePath.push_back(imageName.c_str());
-    SetDatapointThread *m_SetDatapointThread_remote_path = new SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imagePath.imagePath_v", 2, publish_remoteImagePath); //Updates the imagePath
-    SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imageName.imageName_v", 2, imageName.c_str()); //Updates the imageName
-    SetDatapointThread(myclient, "Unit_CDM.AuxControl.CDM.imagePath_cat.imagePath_cat_v", 2, imageName.c_str()); //Updates the imagePath_cat
+    SetDatapointThread *m_SetDatapointThread_remote_path = new SetDatapointThread(myclient, datapointName_imagePath, 2, publish_remoteImagePath); //Updates the imagePath
+    SetDatapointThread(myclient, datapointName_imageName, 2, imageName.c_str()); //Updates the imageName
+    SetDatapointThread(myclient, datapointName_imagePath, 2, imageName.c_str()); //Updates the imagePath_cat
 
     // Free the allocated buffer
     if (pcImageMemory != NULL)

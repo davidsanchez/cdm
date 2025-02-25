@@ -9,7 +9,7 @@ class CDM;
 #include "Config.h"
 using namespace std;
 
-#define DATABROKER_CONFIGURATION_NAME "" //"PLC_DATABROKER.xml"
+#define DATABROKER_CONFIGURATION_NAME "PLC_DATABROKER.xml"
 
 extern Helper helper;
 

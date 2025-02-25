@@ -109,6 +109,11 @@ public:
     const std::string datapointName_circle_R_stddev = helper.searchDatapoint("circle_RMS_stddev",cdm_config);
     const std::string datapointName_circle_RMS_stddev = helper.searchDatapoint("circle_R_stddev",cdm_config);
 
+    const std::string datapointName_image = helper.searchDatapoint("image",cdm_config);
+    const std::string datapointName_nImagesGet = helper.searchDatapoint("nImagesGet",cdm_config);
+    const std::string datapointName_imageName = helper.searchDatapoint("imageName",cdm_config);
+    const std::string datapointName_imagePath = helper.searchDatapoint("imagePath",cdm_config);
+
 
     const int nLED = 12;
     const int nOARL = 2;
