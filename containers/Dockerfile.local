@@ -119,12 +119,14 @@ RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /hom
 WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/
 RUN make
 WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
-#RUN ln -s libyocto.so.1.0.1 libyocto.so
+RUN ln -s libyocto.so.1.0.1 libyocto.so
 RUN cp libyocto.so.1.0.1 /lib64/
 WORKDIR /home/cdmmgr/cdmdevice/build
 COPY  payload/CMakeLists.txt .
-#RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
-#RUN make
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
+RUN make
+
+RUN make install
 
 USER root
 WORKDIR /root
