@@ -99,7 +99,7 @@ RUN mkdir ./output/images
 RUN mkdir ./output/fits
 
 RUN git  clone  --branch  mos12_jl  https://gitlgab-ci-token:KCWu6cK-iZpswiotx3VF@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/aux/cdm.git
-RUN mkdir -p cmd/cdmdevice/build
+RUN mkdir -p cdm/cdmdevice/build
 
 #COPY  payload/CMakeLists.txt ./cdm/build
 COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
@@ -126,8 +126,8 @@ RUN cp libyocto.so.1.0.1 /lib64/
 WORKDIR /home/cdmmgr/cdm/cdmdevice/build
 COPY  payload/CMakeLists.txt .
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
-#RUN make
-#RUN make install
+RUN make
+RUN make install
 
 #USER root
 WORKDIR /root
