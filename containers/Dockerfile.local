@@ -98,8 +98,8 @@ RUN mkdir ./output
 RUN mkdir ./output/images
 RUN mkdir ./output/fits
 
-RUN cp -r  cdmdevice . 
-RUN mkdir -p ./cdmdevice/build
+RUN git  clone  --branch  mos12_jl  https://gitlgab-ci-token:KCWu6cK-iZpswiotx3VF@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/aux/cdm.git
+RUN mkdir -p cmd/cdmdevice/build
 
 #COPY  payload/CMakeLists.txt ./cdm/build
 COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
@@ -123,7 +123,7 @@ RUN make
 WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
 RUN ln -s libyocto.so.1.0.1 libyocto.so
 RUN cp libyocto.so.1.0.1 /lib64/
-WORKDIR /home/cdmmgr/cdmdevice/build
+WORKDIR /home/cdmmgr/cdm/cdmdevice/build
 COPY  payload/CMakeLists.txt .
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
 RUN make
