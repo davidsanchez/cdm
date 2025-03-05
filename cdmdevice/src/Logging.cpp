@@ -12,7 +12,7 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
 {
 
     char *pPath;
-    pPath = srd:getenv("HOME");
+    pPath = std:getenv("HOME");
     if (!pPath) {
         std::cerr << "HOME environment variable not set." << std::endl;
         return 1;
