@@ -14,7 +14,7 @@ fi
 
 # ADD MOS setup
 source /home/mosmgr/MOS.conf
-
+export CDMPATH='/home/cdmmgr'
 alias ti='ls -lrth'
 
 #crond

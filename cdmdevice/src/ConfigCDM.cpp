@@ -9,7 +9,7 @@ using namespace std;
 #define M 12
 // #define N 2
 
-char *pPath = std::getenv("HOME");
+char *pPath = std::getenv("CDMPATH");
 #define CONFIG_FILE_PATH  std::string(pPath) +"/cdmdevice/cdm/config/CDM.config"
 #define LEDLOC_FILE_PATH  std::string(pPath) +"/cdmdevice/cdm/config/LedLoc.config"
 #define OARLLOC_FILE_PATH  std::string(pPath) +"/cdmdevice/cdm/config/OARLLoc.config"
