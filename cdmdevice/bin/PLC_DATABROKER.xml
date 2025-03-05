@@ -65,6 +65,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>  
+                        <Element>
         	                        <Name>DM_East_Bottom</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -78,7 +79,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
-                        </Element>  
+                        <Element>  
         	                        <Name>DM_East_Top</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -92,7 +93,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
-                            </Element>  
+                        <Element>  
         	                        <Name>DM_West_Bottom</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -106,7 +107,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
-                        </Element>  
+                        <Element>  
         	                        <Name>DM_West_Top</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -120,9 +121,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
-    
-    
-                        </Element>  
+                        <Element>  
         	                        <Name>OARLRelay_Status</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -136,7 +135,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
-                        </Element>  
+                        <Element>  
         	                        <Name>RA_Target</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -150,7 +149,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
-                        </Element>  
+                        <Element>  
         	                        <Name>Dec_Target</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -164,7 +163,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
-                        </Element>  
+                        <Element>  
         	                        <Name>Azimuth_Offset</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -178,7 +177,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
-                        </Element>  
+                        <Element>  
         	                        <Name>ZenithAngle_Offset</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -192,7 +191,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
-                        </Element>  
+                        <Element>  
         	                        <Name>RA_Telescope</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -206,7 +205,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
-                        </Element>  
+                        <Element>  
         	                        <Name>Dec_Telescope</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -220,7 +219,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
-                        </Element>
+                        <Element>
         	                        <Name>SourceName</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -234,7 +233,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
-                        </Element>
+                        <Element>
         	                        <Name>azimuth_position</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -248,7 +247,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
-                        </Element>
+                        <Element>
         	                        <Name>zenithangle_position</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -276,7 +275,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
-                        </Element>
+                        <Element>
         	                        <Name>Status_In_Motion</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -289,8 +288,8 @@
                                     <Subscribe_L2>n</Subscribe_L2>
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
-
                         </Element>
+                        <Element>
         	                        <Name>Status_In_Parking_Position</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -304,6 +303,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
+                        <Element>
         	                        <Name>Status_Parked</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -317,6 +317,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
+                        <Element>
         	                        <Name>Status_Tracking_In_Progress</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
@@ -329,7 +330,8 @@
                                     <Subscribe_L2>n</Subscribe_L2>
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
-    </Elements>
+                        </Element>
+                </Elements>
 
     <Commands>
     </Commands>
