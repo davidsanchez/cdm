@@ -1,7 +1,7 @@
 #FROM centos:7
 
 #FROM lst/common-mos:v12
-FROM lst/mos:v12.4.3
+FROM lst-structcal/mos:v12.4.3
 
 
 USER root

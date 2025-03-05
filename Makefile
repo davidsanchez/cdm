@@ -16,7 +16,7 @@ image:
 
 dev-image:
 	@echo 'Creating development Docker image for CDM...'
-	docker build  -f containers/Dockerfile.dev . --tag cdm:dev
+	docker build  -f containers/Dockerfile.dev . --tag cdm:dev2
 
 local-image:
 	@echo 'Creating local Docker image for CDM...'
@@ -35,5 +35,5 @@ clean-local:
 
 clean-dev:
 	@echo 'Cleaning all Docker images'
-	docker rmi cdm:dev
+	docker rmi cdm:dev2
 	docker builder prune
