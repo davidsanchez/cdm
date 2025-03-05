@@ -10,9 +10,9 @@ using namespace std;
 // #define N 2
 
 char *pPath = std::getenv("CDMPATH");
-#define CONFIG_FILE_PATH  std::string(pPath) +"/cdmdevice/cdm/config/CDM.config"
-#define LEDLOC_FILE_PATH  std::string(pPath) +"/cdmdevice/cdm/config/LedLoc.config"
-#define OARLLOC_FILE_PATH  std::string(pPath) +"/cdmdevice/cdm/config/OARLLoc.config"
+#define CONFIG_FILE_PATH  std::string(pPath) +"/cdm/cdmdevice/config/CDM.config"
+#define LEDLOC_FILE_PATH  std::string(pPath) +"/cdm/cdmdevice/config/LedLoc.config"
+#define OARLLOC_FILE_PATH  std::string(pPath) +"/cdm/cdmdevice/config/OARLLoc.config"
 
 bool LoadCDMConfiguration( map<std::string,std::string> &config )
 {
