@@ -26,5 +26,14 @@ local-image:
 clean:
 	@echo 'Cleaning all Docker images'
 	docker rmi cdm:latest
+	docker builder prune
+
+clean-local:
+	@echo 'Cleaning all Docker images'
+	docker rmi cdm:local
+	docker builder prune
+
+clean-dev:
+	@echo 'Cleaning all Docker images'
 	docker rmi cdm:dev
 	docker builder prune
