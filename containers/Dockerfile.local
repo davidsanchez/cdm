@@ -133,6 +133,9 @@ RUN cp libyocto.so.1.0.1 /lib64/
 WORKDIR /root
 COPY payload/configurations/.bashrc .bashrc
 
+#temporay fix for MOS permission
+COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_12.4.3/properties/
+
 #final stuff
 WORKDIR /home/cdmmgr
 CMD tail -f /dev/null
