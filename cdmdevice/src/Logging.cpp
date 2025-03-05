@@ -13,13 +13,18 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
 
     char *pPath;
     pPath = srd:getenv("HOME");
+    if (!pPath) {
+        std::cerr << "HOME environment variable not set." << std::endl;
+        return 1;
+    }
+
     logger_t lg;
 
     logging::add_common_attributes(); // Adds "LineID", "TimeStamp", "ProcessID" and "ThreadID"
 
     logging::add_file_log(
-        keywords::file_name = pPath+"/log/active.log",                                   //active filename
-        keywords::target = pPath+"/log/saved/target_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
+        keywords::file_name = std::string(pPath) +"/log/active.log",                                   //active filename
+        keywords::target = std::string(pPath) +"/log/saved/target_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
         keywords::auto_flush = true,                                                                //writes messages immediately to file. Should be used only for debug.
         keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%",
         keywords::time_based_rotation = sinks::file::rotation_at_time_point(7, 30, 0), // hour, minute, second
@@ -29,8 +34,8 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
 
 
     logging::add_file_log(
-        keywords::file_name = pPath+"/log/active_image_taking.log",                                   //active filename
-        keywords::target = pPath+"/log/saved/image_taking_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
+        keywords::file_name = std::string(pPath) +"/log/active_image_taking.log",                                   //active filename
+        keywords::target = std::string(pPath) +"/log/saved/image_taking_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
         keywords::auto_flush = true,                                                                //writes messages immediately to file. Should be used only for debug.
         keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%",
         keywords::time_based_rotation = sinks::file::rotation_at_time_point(7, 30, 0), // hour, minute, second
@@ -39,8 +44,8 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
         keywords::filter = a_channel == "image");
 
     logging::add_file_log(
-        keywords::file_name = pPath+"/log/active_debug.log",                                   //active filename
-        keywords::target = pPath+"/log/saved/debug_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
+        keywords::file_name = std::string(pPath) +"/log/active_debug.log",                                   //active filename
+        keywords::target = std::string(pPath) +"/log/saved/debug_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
         keywords::auto_flush = true,                                                                //writes messages immediately to file. Should be used only for debug.
         keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%",
         keywords::time_based_rotation = sinks::file::rotation_at_time_point(7, 30, 0), // hour, minute, second
@@ -50,8 +55,8 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
 
 
     logging::add_file_log(
-        keywords::file_name = pPath+"/log/active_env.log",                                   //active filename
-        keywords::target = pPath+"/log/saved/target_env_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
+        keywords::file_name = std::string(pPath) +"/log/active_env.log",                                   //active filename
+        keywords::target = std::string(pPath) +"/log/saved/target_env_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
         keywords::auto_flush = true,                                                                    //writes messages immediately to file. Should be used only for debug.
         //keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%",
         keywords::format = "%TimeStamp% %Message%",
@@ -61,8 +66,8 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
         keywords::filter = a_channel == "env");
 
     logging::add_file_log(
-        keywords::file_name = pPath+"/log/active_data.log",                                   //active filename
-        keywords::target = pPath+"/log/saved/target_data_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
+        keywords::file_name = std::string(pPath) +"/log/active_data.log",                                   //active filename
+        keywords::target = std::string(pPath) +"/log/saved/target_data_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
         keywords::auto_flush = true,                                                                     //writes messages immediately to file. Should be used only for debug.
         //keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%",
         keywords::format = "%TimeStamp% %Message%",
@@ -72,8 +77,8 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
         keywords::filter = a_channel == "data");
 
     logging::add_file_log(
-        keywords::file_name = pPath+"/log/active_settings.log",                                   //active filename
-        keywords::target = pPath+"/log/saved/target_settings_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
+        keywords::file_name = std::string(pPath) +"/log/active_settings.log",                                   //active filename
+        keywords::target = std::string(pPath) +"/log/saved/target_settings_%Y-%m-%d_%H-%M-%S.%N.log", //filename after the program decides to save the log completely. Usually after the program closes or file size or time based settings set.
         keywords::auto_flush = true,                                                                    //writes messages immediately to file. Should be used only for debug.
         //keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%",
         keywords::format = "%TimeStamp% %Message%",
