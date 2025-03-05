@@ -263,7 +263,7 @@
                                     <Traitement>y</Traitement>
                                     <Log>n</Log>
                         </Element>
-                        </Element>
+                        <Element>
         	                        <Name>Status_In_Motion</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
