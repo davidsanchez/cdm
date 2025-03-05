@@ -1,10 +1,17 @@
 #FROM centos:7
 
-#FROM lst/common-mos:v11
+#FROM lst/common-mos:v12
 FROM lst/mos:v12.4.3
 
-# Creating a cdmmgr user
+
 USER root
+# legacy mirror for centOS
+RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/CentOS-*.repo
+RUN sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/CentOS-*.repo
+RUN sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/CentOS-*.repo
+
+# Creating a cdmmgr user
+
 RUN groupadd -g 1003 cdmmgr && \
     useradd -g 1002 -u 1003 -d /home/cdmmgr -m -s /bin/bash cdmmgr
  
@@ -30,9 +37,9 @@ RUN yum install -y \
     mc \
     libusbx-devel \
     curl-devel \
-    CCfits-devel \
     libxml2-devel \
     gdb-gdbserver \
+    CCfits-devel \
     #boost-devel \
     #boost169-devel \
     gedit \
@@ -40,9 +47,16 @@ RUN yum install -y \
     vim \
     screen \
     python-devel \
-     opencv  \
-     opencv-devel  \
-     opencv-python
+    opencv  \
+    opencv-devel  \
+    opencv-python
+
+RUN yum install -y  CCfits-devel
+
+RUN yum install -y  boost169-devel
+RUN ln -s /usr/lib64/libboost_log.so.1.69.0 /usr/lib64/libboost_log.so
+RUN ln -s /usr/lib64/libboost_log_setup.so.1.69.0 /usr/lib64/libboost_log_setup.so
+
 
 USER cdmmgr
 WORKDIR /home/cdmmgr
@@ -62,11 +76,14 @@ RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_rsa_key -t rsa -N ""
 
 
 COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
-#COPY payload/configurations/MOS.conf /home/cdmmgr/MOS.conf
+COPY payload/configurations/RunCDM.sh /home/cdmmgr/RunCDM.sh
+COPY cdmdevice/bin/PLC_CDM.xml /home/cdmmgr/PLC_CDM.xml
+COPY cdmdevice/bin/PLC_DATABROKER.xml /home/cdmmgr/PLC_DATABROKER.xml
+COPY cdmdevice/bin/Unit_CDM_Model.xml /home/cdmmgr/Unit_CDM_Model.xml
+COPY cdmdevice/bin/FSM_CDM.xml /home/cdmmgr/FSM_CDM.xml
+#COPY cdm_mount/ /home/cdmmgr/
 
-COPY cdm_mount/ /home/cdmmgr/
-
-#RUN git clone  https://gitlab-ci-token:zvXByVdyyoLTMbrW-n_u@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
+#RUN git clone  -b mos12 https://gitlab-ci-token:zvXByVdyyoLTMbrW-n_u@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
 
 # DL and build Yocto meteo
 #RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
@@ -77,18 +94,20 @@ COPY cdm_mount/ /home/cdmmgr/
 
 
 #WORKDIR /home/cdmmgr/
-#RUN mkdir ./output
-#RUN mkdir ./output/images
-#RUN mkdir ./output/fits
-#RUN mkdir ./cdm/build
+RUN mkdir ./output
+RUN mkdir ./output/images
+RUN mkdir ./output/fits
+
+RUN git  clone  --branch  mos12_jl  https://gitlgab-ci-token:KCWu6cK-iZpswiotx3VF@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/aux/cdm.git
+RUN mkdir -p cdm/cdmdevice/build
 
 #COPY  payload/CMakeLists.txt ./cdm/build
 COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
 
-#COPY payload/uEye-Linux-4.90.06-64 ./
-#RUN yes | ./ueyesdk-setup-4.90.06-usb-amd64.gz.run
+COPY payload/uEye-Linux-4.90.06-64 ./
+RUN yes | ./ueyesdk-setup-4.90.06-usb-amd64.gz.run
 
-#COPY payload/ueye.h /usr/include/ueye.h
+COPY payload/ueye.h /usr/include/ueye.h
 #RUN mkdir ./boost
 #COPY payload/boost_1_79_0 ./boost
 
@@ -96,14 +115,25 @@ COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
 #RUN ./bootstrap.sh --with-python=python2.7
 #RUN  ./b2 install  --with=all
 
-#WORKDIR /home/cdmmgr/cdm/build
-#RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
-#RUN make
 
-USER root
+# DL and build Yocto meteo
+RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
+WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/
+RUN make
+WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
+RUN ln -s libyocto.so.1.0.1 libyocto.so
+RUN cp libyocto.so.1.0.1 /lib64/
+WORKDIR /home/cdmmgr/cdm/cdmdevice/build
+COPY  payload/CMakeLists.txt .
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
+RUN make
+RUN make install
+
+#USER root
 WORKDIR /root
 COPY payload/configurations/.bashrc .bashrc
 
 #final stuff
 WORKDIR /home/cdmmgr
+#CMD tail -f /dev/null
 ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]

@@ -4,19 +4,19 @@ Camera Displacement Monitor
 
 # Docker build
 
-to build the Docker container, use the file buildCMDContainer
+to build the Docker container, use the file Makefile
 
-./buildCMDContainer
-
-then run it 
-
-docker run -tid --name mycdm cdm:v1.0
-
-docker exec -ti mycdm sh 
-
-In the docker machine make :
-
-cd boost
-./b2 install  --with=all
-cd ../cmd/build
 make
+
+# run Docker 
+
+then run it use the RunDocker.sh script or run the following commands :
+
+To start the docker 
+_cdm_start
+
+To stop the docker
+ _cdm_stop   
+
+To log into the docker 
+_cdm_login   

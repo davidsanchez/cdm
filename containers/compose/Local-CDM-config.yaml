@@ -10,6 +10,6 @@ services:
        - "48011:48011"
     ipc: host
     volumes:
-      - /home/lst-drive/cdm/cdm/cdmdevice:/home/cdmmgr/cdmdevice
+      - /home/lst-drive/cdm/cdm/cdmdevice:/home/cdmmgr/cdm/cdmdevice
       - /dev:/dev
       - /var/run:/var/run

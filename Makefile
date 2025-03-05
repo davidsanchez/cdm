@@ -5,13 +5,13 @@ all:
 
 image:
 	@echo 'Creating main Docker image for CDM...'
-	wget -N https://boostorg.jfrog.io/artifactory/main/release/1.79.0/source/boost_1_79_0.tar.gz
-	cp boost_1_79_0.tar.gz boost.tar.gz 
-	gunzip boost.tar.gz
-	tar -xvf boost.tar 
-	rm -r payload/boost_1_79_0
-	mv boost_1_79_0 payload/
-	rm boost.tar
+	#wget -N https://boostorg.jfrog.io/artifactory/main/release/1.79.0/source/boost_1_79_0.tar.gz
+	#cp boost_1_79_0.tar.gz boost.tar.gz 
+	#gunzip boost.tar.gz
+	#tar -xvf boost.tar 
+	#rm -r payload/boost_1_79_0
+	#mv boost_1_79_0 payload/
+	#rm boost.tar
 	docker build  -f containers/Dockerfile . --tag cdm:latest
 
 dev-image:
