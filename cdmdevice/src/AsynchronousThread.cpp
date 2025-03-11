@@ -446,14 +446,23 @@ void *AsynchronousThread::run(void *params)
 
                 std::vector<boost::any> configure_settings = camera.Configure(nPixelClock, exposure, fps, gain, pixel_format);
 
-                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("pixelClock",cdm_config), 2, boost::any_cast<int>(configure_settings[0]));
-                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("FPS",cdm_config), 2, boost::any_cast<double>(configure_settings[1]));
-                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("exposure",cdm_config), 2, boost::any_cast<double>(configure_settings[2]));
-                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("gain",cdm_config), 2, boost::any_cast<int>((configure_settings[3])));
+
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.pixelClock.pixelClock_v", 2, boost::any_cast<int>(configure_settings[0]));
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.FPS.FPS_v", 2, boost::any_cast<double>(configure_settings[1]));
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.exposure.exposure_v", 2, boost::any_cast<double>(configure_settings[2]));
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.gain.gain_v", 2, boost::any_cast<int>((configure_settings[3])));
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.pixelFormat.pixelFormat_v", 2, boost::any_cast<string>(configure_settings[4]));
+
+
+
+                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("pixelClock",cdm_config), 2, boost::any_cast<int>(configure_settings[0]));
+                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("FPS",cdm_config), 2, boost::any_cast<double>(configure_settings[1]));
+                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("exposure",cdm_config), 2, boost::any_cast<double>(configure_settings[2]));
+                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("gain",cdm_config), 2, boost::any_cast<int>((configure_settings[3])));
                 std::cout<<"DAVID "<<helper.searchDatapoint("pixelFormat",cdm_config)<<std::endl;
                 //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("pixelFormat",cdm_config), 2, boost::any_cast<string>(configure_settings[4]));
                 //                                       Unit_CDM.AuxControl.CDM.Camera.pixelFormat.pixelFormat_v
-                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.pixelFormat.pixelFormat_v", 2, boost::any_cast<string>(configure_settings[4]));
+                //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.pixelFormat.pixelFormat_v", 2, boost::any_cast<string>(configure_settings[4]));
 
 
                 // you can put the outputs arguments in this place to inform the server
