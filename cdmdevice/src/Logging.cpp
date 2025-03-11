@@ -48,11 +48,16 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t) {
         keywords::file_name = std::string(pPath) + "/log/active_debug.log",
         keywords::target = std::string(pPath) + "/log/saved/debug_%Y-%m-%d_%H-%M-%S.%N.log",
         keywords::auto_flush = true,
-        keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%",
+        keywords::format = expr::stream
+            << "[" << expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%Y-%m-%d %H:%M:%S") << "] "
+            << "[" << expr::attr<std::string>("Channel") << "] "
+            << expr::if_(expr::has_attr("Severity"))
+                [expr::stream << "[" << expr::attr<boost::log::trivial::severity_level>("Severity") << "] "]
+            << expr::smessage,
         keywords::time_based_rotation = sinks::file::rotation_at_time_point(7, 30, 0),
         keywords::open_mode = std::ios_base::out | std::ios_base::app,
         keywords::enable_final_rotation = false,
-        keywords::filter = logging::trivial::severity >= logging::trivial::debug
+        keywords::filter = a_channel == "debug"
     );
 
     // Configure the environment log file
