@@ -423,6 +423,7 @@ void *AsynchronousThread::run(void *params)
                 }
             }
 
+        
             if (m_cmdConfigure == 1)
             {
                 // Checks the current FSM state so we can return to that state after Configure is done.
