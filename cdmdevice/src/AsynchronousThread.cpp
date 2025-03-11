@@ -428,8 +428,8 @@ void *AsynchronousThread::run(void *params)
             {
                 // Checks the current FSM state so we can return to that state after Configure is done.
                 int FSM_state;
-                //m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
-                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, FSM_state);
+                m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
+                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, FSM_state);
 
                 // Puts the FSM.transition to 1
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 1);
@@ -483,8 +483,8 @@ void *AsynchronousThread::run(void *params)
                 m_cmdConfigure = 0;
 
                 // Puts the FSM.transition back to 0
-                //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
-                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
+                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
 
                 // Puts the FSM.state back to the initial one if the state was Ready(1) or Tpoint(3)
                 if ((FSM_state == 1) || (FSM_state == 3))
