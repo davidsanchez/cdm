@@ -53,9 +53,9 @@ RUN yum install -y \
 
 RUN yum install -y  CCfits-devel
 
-RUN yum install -y  boost169-devel
-RUN ln -s /usr/lib64/libboost_log.so.1.69.0 /usr/lib64/libboost_log.so
-RUN ln -s /usr/lib64/libboost_log_setup.so.1.69.0 /usr/lib64/libboost_log_setup.so
+#RUN yum install -y  boost169-devel
+#RUN ln -s /usr/lib64/libboost_log.so.1.69.0 /usr/lib64/libboost_log.so
+#RUN ln -s /usr/lib64/libboost_log_setup.so.1.69.0 /usr/lib64/libboost_log_setup.so
 
 
 USER cdmmgr
@@ -108,12 +108,16 @@ COPY payload/uEye-Linux-4.90.06-64 ./
 RUN yes | ./ueyesdk-setup-4.90.06-usb-amd64.gz.run
 
 COPY payload/ueye.h /usr/include/ueye.h
-#RUN mkdir ./boost
-#COPY payload/boost_1_79_0 ./boost
 
-#WORKDIR /home/cdmmgr/boost
-#RUN ./bootstrap.sh --with-python=python2.7
-#RUN  ./b2 install  --with=all
+
+
+
+RUN mkdir ./boost
+COPY payload/boost_1_79_0 ./boost
+
+WORKDIR /home/cdmmgr/boost
+RUN ./bootstrap.sh --with-python=python2.7
+RUN  ./b2 install  --with=all
 
 
 # DL and build Yocto meteo
