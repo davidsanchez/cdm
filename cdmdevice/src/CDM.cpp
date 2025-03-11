@@ -159,7 +159,7 @@ int CDM::subscribe_DataBroker()
     if (CDM::connection_result_DataBroker != -1)
     {
         cout << "Subscribing to DataBroker datapoints." << endl;
-        cout << CDM::dp_monitor_DataBroker->getNameSpaces()<<endl;
+        //cout << CDM::dp_monitor_DataBroker->getNameSpaces()<<endl;
         //delete CDM::dp_monitor_SG;
         //CDM::dp_monitor_SG = new DatapointMonitor(this);
         if (CDM::dp_monitor_DataBroker == NULL)
