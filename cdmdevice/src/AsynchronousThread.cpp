@@ -427,7 +427,7 @@ void *AsynchronousThread::run(void *params)
             if (m_cmdConfigure == 1)
             {
                 // Checks the current FSM state so we can return to that state after Configure is done.
-                int FSM_state=0;
+                int FSM_state=-1;
                 //m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
                 m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, FSM_state);
 
