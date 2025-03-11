@@ -428,12 +428,12 @@ void *AsynchronousThread::run(void *params)
             {
                 // Checks the current FSM state so we can return to that state after Configure is done.
                 int FSM_state;
-                m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
-                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, FSM_state);
+                //m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, FSM_state);
 
                 // Puts the FSM.transition to 1
-                //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 1);
-                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 1);
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 1);
+                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 1);
 
                 // inform that the command is in progress
                 // temString = m_datapointName + "._InProgressBar";
@@ -447,22 +447,22 @@ void *AsynchronousThread::run(void *params)
                 std::vector<boost::any> configure_settings = camera.Configure(nPixelClock, exposure, fps, gain, pixel_format);
 
 
-                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.pixelClock.pixelClock_v", 2, boost::any_cast<int>(configure_settings[0]));
-                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.FPS.FPS_v", 2, boost::any_cast<double>(configure_settings[1]));
-                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.exposure.exposure_v", 2, boost::any_cast<double>(configure_settings[2]));
-                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.gain.gain_v", 2, boost::any_cast<int>((configure_settings[3])));
-                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.pixelFormat.pixelFormat_v", 2, boost::any_cast<string>(configure_settings[4]));
+                //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.pixelClock.pixelClock_v", 2, boost::any_cast<int>(configure_settings[0]));
+                //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.FPS.FPS_v", 2, boost::any_cast<double>(configure_settings[1]));
+                //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.exposure.exposure_v", 2, boost::any_cast<double>(configure_settings[2]));
+                //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.gain.gain_v", 2, boost::any_cast<int>((configure_settings[3])));
+                //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.pixelFormat.pixelFormat_v", 2, boost::any_cast<string>(configure_settings[4]));
 
 
 
-                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("pixelClock",cdm_config), 2, boost::any_cast<int>(configure_settings[0]));
-                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("FPS",cdm_config), 2, boost::any_cast<double>(configure_settings[1]));
-                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("exposure",cdm_config), 2, boost::any_cast<double>(configure_settings[2]));
-                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("gain",cdm_config), 2, boost::any_cast<int>((configure_settings[3])));
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("pixelClock",cdm_config), 2, boost::any_cast<int>(configure_settings[0]));
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("FPS",cdm_config), 2, boost::any_cast<double>(configure_settings[1]));
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("exposure",cdm_config), 2, boost::any_cast<double>(configure_settings[2]));
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("gain",cdm_config), 2, boost::any_cast<int>((configure_settings[3])));
                 std::cout<<"DAVID "<<helper.searchDatapoint("pixelFormat",cdm_config)<<std::endl;
                 //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("pixelFormat",cdm_config), 2, boost::any_cast<string>(configure_settings[4]));
                 //                                       Unit_CDM.AuxControl.CDM.Camera.pixelFormat.pixelFormat_v
-                //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.pixelFormat.pixelFormat_v", 2, boost::any_cast<string>(configure_settings[4]));
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.pixelFormat.pixelFormat_v", 2, boost::any_cast<string>(configure_settings[4]));
 
 
                 // you can put the outputs arguments in this place to inform the server
@@ -483,8 +483,8 @@ void *AsynchronousThread::run(void *params)
                 m_cmdConfigure = 0;
 
                 // Puts the FSM.transition back to 0
-                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
-                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
+                //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
 
                 // Puts the FSM.state back to the initial one if the state was Ready(1) or Tpoint(3)
                 if ((FSM_state == 1) || (FSM_state == 3))
