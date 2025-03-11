@@ -49,7 +49,7 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t) {
         keywords::target = std::string(pPath) + "/log/saved/debug_%Y-%m-%d_%H-%M-%S.%N.log",
         keywords::auto_flush = true,
         keywords::format = expr::stream
-            << "[" << expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%Y-%m-%d %H:%M:%S") << "] "
+            << "[[%TimeStamp%]] "
             << "[" << expr::attr<std::string>("Channel") << "] "
             << expr::if_(expr::has_attr("Severity"))
                 [expr::stream << "[" << expr::attr<boost::log::trivial::severity_level>("Severity") << "] "]
