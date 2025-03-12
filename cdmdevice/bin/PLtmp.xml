@@ -14,7 +14,7 @@
      *
     -->
     <GeneralInfo>
-                <OPCUA_Address>opc.tcp://securitybrokerserver:48033</OPCUA_Address>
+                <OPCUA_Address>opc.tcp://securitybrokerserver:48030</OPCUA_Address>
                 <RootName>DataBroker.DataBrokerControl</RootName>
     </GeneralInfo>
 
