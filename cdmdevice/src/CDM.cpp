@@ -138,7 +138,7 @@ int CDM::afterStart()
 //    getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
 
     int quality = 0; // (0= Good, 1=Uncertain, 2 = Bad)
-    std::string methodToCall = helper.searchDatapoint("SetDPQuality",cdm_config);
+    std::string methodToCall = "Unit_CDM.AuxControl.SetDPQuality"; //helper.searchDatapoint("SetDPQuality",cdm_config);
     std::string completeNodeName = "AuxControl";
             
     boost::any completeNodeNameAny = completeNodeName;
