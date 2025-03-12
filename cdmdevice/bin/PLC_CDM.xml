@@ -34,8 +34,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_x.circle_x_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
-                                    <NodeIdL2>circle_x.circle_x_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -48,8 +48,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_x_stddev.circle_x_stddev_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
-                                    <NodeIdL2>circle_x_stddev.circle_x_stddev_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -62,8 +62,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_y.circle_y_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
-                                    <NodeIdL2>circle_y.circle_y_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -76,8 +76,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_y_stddev.circle_y_stddev_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
-                                    <NodeIdL2>circle_y_stddev.circle_y_stddev_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -90,8 +90,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_R.circle_R_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
-                                    <NodeIdL2>circle_R.circle_R_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -104,8 +104,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_RMS.circle_RMS_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
-                                    <NodeIdL2>circle_RMS.circle_RMS_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -118,8 +118,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_RMS_stddev.circle_RMS_stddev_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
-                                    <NodeIdL2>circle_RMS_stddev.circle_RMS_stddev_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -132,8 +132,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_R_stddev.circle_R_stddev_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
-                                    <NodeIdL2>circle_R_stddev.circle_R_stddev_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -146,8 +146,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Displacement.displacement_x.displacement_x_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Displacement.</NodeRootL2>
-                                    <NodeIdL2>displacement_x.displacement_x_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -160,8 +160,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Displacement.displacement_y.displacement_y_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Displacement.</NodeRootL2>
-                                    <NodeIdL2>displacement_y.displacement_y_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -174,8 +174,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Displacement.rotation.rotation_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Displacement.</NodeRootL2>
-                                    <NodeIdL2>rotation.rotation_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -188,8 +188,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Camera.FPS.FPS_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Camera.</NodeRootL2>
-                                    <NodeIdL2>FPS.FPS_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -202,8 +202,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Camera.exposure.exposure_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Camera.</NodeRootL2>
-                                    <NodeIdL2>exposure.exposure_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -216,8 +216,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Camera.gain.gain_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Camera.</NodeRootL2>
-                                    <NodeIdL2>gain.gain_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -230,8 +230,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Camera.pixelClock.pixelClock_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Camera.</NodeRootL2>
-                                    <NodeIdL2>pixelClock.pixelClock_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -244,8 +244,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Camera.pixelFormat.pixelFormat_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Camera.</NodeRootL2>
-                                    <NodeIdL2>pixelFormat.pixelFormat_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -258,8 +258,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Camera.temperatureValue.temperatureValue_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Camera.</NodeRootL2>
-                                    <NodeIdL2>temperatureValue.temperatureValue_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -272,8 +272,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Camera.temperatureStatus.temperatureStatus_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Camera.</NodeRootL2>
-                                    <NodeIdL2>temperatureStatus.temperatureStatus_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -286,8 +286,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.timestamp.timestamp_UTC.timestamp_UTC_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.timestamp.</NodeRootL2>
-                                    <NodeIdL2>timestamp_UTC.timestamp_UTC_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -300,8 +300,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.timestamp.timestamp_epoch.timestamp_epoch_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.timestamp.</NodeRootL2>
-                                    <NodeIdL2>timestamp_epoch.timestamp_epoch_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -314,8 +314,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.image.image_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
-                                    <NodeIdL2>image.image_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>ByteString</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -328,8 +328,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.imageName.imageName_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
-                                    <NodeIdL2>imageName.imageName_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -342,8 +342,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.imagePath.imagePath_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
-                                    <NodeIdL2>imagePath.imagePath_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -356,8 +356,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.nImagesGet.nImagesGet_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
-                                    <NodeIdL2>nImagesGet.nImagesGet_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -370,8 +370,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.imagePath_cat.imagePath_cat_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
-                                    <NodeIdL2>imagePath_cat.imagePath_cat_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -384,8 +384,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>Sensor.humidity_absolute.humidity_absolute_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.Sensor.</NodeRootL2>
-                                    <NodeIdL2>humidity_absolute.humidity_absolute_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>REAL</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -398,8 +398,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>Sensor.humidity_relative.humidity_relative_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.Sensor.</NodeRootL2>
-                                    <NodeIdL2>humidity_relative.humidity_relative_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>REAL</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -411,9 +411,8 @@
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
                                     <NodeId>Sensor.pressure.pressure_v</NodeId>
-                                    <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.Sensor.</NodeRootL2>
-                                    <NodeIdL2>pressure.pressure_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>REAL</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -426,8 +425,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>Sensor.temperature.temperature_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.Sensor.</NodeRootL2>
-                                    <NodeIdL2>temperature.temperature_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>REAL</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -454,8 +453,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.numIntegrateImage.numIntegrateImage_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
-                                    <NodeIdL2>numIntegrateImage.numIntegrateImage_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -468,8 +467,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.status.status_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
-                                    <NodeIdL2>status.status_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -482,8 +481,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.comment.comment_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
-                                    <NodeIdL2>comment.comment_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -496,8 +495,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.swVersion.swVersion_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
-                                    <NodeIdL2>swVersion.swVersion_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -510,8 +509,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>SetDPQuality</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
-                                    <NodeIdL2>SetDPQuality</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -524,8 +523,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>FSM.Configure</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.FSM.</NodeRootL2>
-                                    <NodeIdL2>Configure</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -538,7 +537,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>FSM.transition</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>FSM.transition.transition_v</NodeRootL2>
+                                    <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
@@ -552,7 +551,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>FSM.state</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>FSM.state.state_v</NodeRootL2>
+                                    <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
@@ -566,8 +565,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.LED_x.LED_x_01.LED_x_01_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.LED_x.</NodeRootL2>
-                                    <NodeIdL2>LED_x_01.LED_x_01_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -580,8 +579,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_x.LED_x_01.LED_x_01_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_x.</NodeRootL2>
-                            <NodeIdL2>LED_x_01.LED_x_01_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -595,8 +594,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_x.LED_x_02.LED_x_02_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_x.</NodeRootL2>
-                            <NodeIdL2>LED_x_02.LED_x_02_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -610,8 +609,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_x.LED_x_03.LED_x_03_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_x.</NodeRootL2>
-                            <NodeIdL2>LED_x_03.LED_x_03_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -625,8 +624,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_x.LED_x_04.LED_x_04_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_x.</NodeRootL2>
-                            <NodeIdL2>LED_x_04.LED_x_04_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -640,8 +639,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_x.LED_x_05.LED_x_05_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_x.</NodeRootL2>
-                            <NodeIdL2>LED_x_05.LED_x_05_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -655,8 +654,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_x.LED_x_06.LED_x_06_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_x.</NodeRootL2>
-                            <NodeIdL2>LED_x_06.LED_x_06_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -670,8 +669,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_x.LED_x_07.LED_x_07_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_x.</NodeRootL2>
-                            <NodeIdL2>LED_x_07.LED_x_07_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -685,8 +684,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_x.LED_x_08.LED_x_08_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_x.</NodeRootL2>
-                            <NodeIdL2>LED_x_08.LED_x_08_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -700,8 +699,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_x.LED_x_09.LED_x_09_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_x.</NodeRootL2>
-                            <NodeIdL2>LED_x_09.LED_x_09_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -715,8 +714,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_x.LED_x_10.LED_x_10_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_x.</NodeRootL2>
-                            <NodeIdL2>LED_x_10.LED_x_10_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -730,8 +729,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_x.LED_x_11.LED_x_11_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_x.</NodeRootL2>
-                            <NodeIdL2>LED_x_11.LED_x_11_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -745,8 +744,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_x.LED_x_12.LED_x_12_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_x.</NodeRootL2>
-                            <NodeIdL2>LED_x_12.LED_x_12_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -759,8 +758,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.LED_y.LED_y_01.LED_y_01_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.LED_y.</NodeRootL2>
-                                    <NodeIdL2>LED_y_01.LED_y_01_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -773,8 +772,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_y.LED_y_01.LED_y_01_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_y.</NodeRootL2>
-                            <NodeIdL2>LED_y_01.LED_y_01_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -788,8 +787,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_y.LED_y_02.LED_y_02_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_y.</NodeRootL2>
-                            <NodeIdL2>LED_y_02.LED_y_02_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -803,8 +802,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_y.LED_y_03.LED_y_03_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_y.</NodeRootL2>
-                            <NodeIdL2>LED_y_03.LED_y_03_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -818,8 +817,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_y.LED_y_04.LED_y_04_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_y.</NodeRootL2>
-                            <NodeIdL2>LED_y_04.LED_y_04_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -848,8 +847,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_y.LED_y_06.LED_y_06_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_y.</NodeRootL2>
-                            <NodeIdL2>LED_y_06.LED_y_06_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -863,8 +862,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_y.LED_y_07.LED_y_07_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_y.</NodeRootL2>
-                            <NodeIdL2>LED_y_07.LED_y_07_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -878,8 +877,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_y.LED_y_08.LED_y_08_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_y.</NodeRootL2>
-                            <NodeIdL2>LED_y_08.LED_y_08_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -893,8 +892,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_y.LED_y_09.LED_y_09_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_y.</NodeRootL2>
-                            <NodeIdL2>LED_y_09.LED_y_09_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -908,8 +907,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_y.LED_y_10.LED_y_10_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_y.</NodeRootL2>
-                            <NodeIdL2>LED_y_10.LED_y_10_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -923,8 +922,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_y.LED_y_11.LED_y_11_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_y.</NodeRootL2>
-                            <NodeIdL2>LED_y_11.LED_y_11_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -938,8 +937,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.LED_y.LED_y_12.LED_y_12_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.LED_y.</NodeRootL2>
-                            <NodeIdL2>LED_y_12.LED_y_12_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -953,8 +952,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.OARL_x.OARL_x_1.OARL_x_1_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.OARL_x.</NodeRootL2>
-                            <NodeIdL2>OARL_x_1.OARL_x_1_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -967,8 +966,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.OARL_x.OARL_x_2.OARL_x_2_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.OARL_x.</NodeRootL2>
-                            <NodeIdL2>OARL_x_2.OARL_x_2_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -982,8 +981,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.OARL_x.OARL_x_mean.OARL_x_mean_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.OARL_x.</NodeRootL2>
-                            <NodeIdL2>OARL_x_mean.OARL_x_mean_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -997,8 +996,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.OARL_y.OARL_y_1.OARL_y_1_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.OARL_y.</NodeRootL2>
-                            <NodeIdL2>OARL_y_1.OARL_y_1_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -1011,8 +1010,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.OARL_y.OARL_y_2.OARL_y_2_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.OARL_y.</NodeRootL2>
-                            <NodeIdL2>OARL_y_2.OARL_y_2_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
@@ -1026,8 +1025,8 @@
                             <NameSpace>2</NameSpace>
                             <NodeId>CDM.OARL_y.OARL_y_mean.OARL_y_mean_v</NodeId>
                             <NameSpaceL2>2</NameSpaceL2>
-                            <NodeRootL2>Auxiliary.AuxControl.CDM.OARL_y.</NodeRootL2>
-                            <NodeIdL2>OARL_y_mean.OARL_y_mean_v</NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2></NodeIdL2>
                             <Type>DOUBLE</Type>
                             <Subscribe>y</Subscribe>
                             <Subscribe_L2>n</Subscribe_L2>
