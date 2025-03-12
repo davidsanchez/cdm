@@ -256,10 +256,10 @@
                                     <Name>CameraTemp</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
-                                    <NodeId>CDM.Camera.</NodeId>
+                                    <NodeId>CDM.Camera.temperatureValue.temperatureValue_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>temperatureValue.temperatureValue_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
