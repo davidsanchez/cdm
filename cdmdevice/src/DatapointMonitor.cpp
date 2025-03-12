@@ -4,6 +4,7 @@
 #include "Config.h"
 //#include "Logging.h"
 
+#include <iterator> // Pour std::iterator
 
 #define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
 
