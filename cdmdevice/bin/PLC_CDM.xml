@@ -538,7 +538,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>FSM.transition</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>FSM.transition</NodeRootL2>
+                                    <NodeRootL2>FSM.transition.transition_v</NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
@@ -552,7 +552,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>FSM.state</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>FSM.state</NodeRootL2>
+                                    <NodeRootL2>FSM.state.state_v</NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
