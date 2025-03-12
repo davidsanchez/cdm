@@ -376,46 +376,34 @@ void DatapointMonitor::CheckShutterUpdate(std::vector<std::string> listElements,
 
 void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    
+    auto sis_iterator ;
     std::cout << "Elements de listElements :" << std::endl;
     for (const auto& element : listElements) {
         std::cout << element << std::endl;
+        if (element == this->sis_var_name) sis_iterator =element;
     }
 
     std::cout << "Elements de listValues :" << std::endl;
     for (const auto& element : listValues) {
         std::cout << element << std::endl;
     }
-    auto sis_iterator = std::find(listElements.begin(), listElements.end(), this->sis_var_name);
-    std::cout << "sis_iterator "<<sis_iterator << std::endl;
+    
+
+    int target_index;
+
+    if (sis_iterator != listElements.end())
+    {
+        // Shutter data point updated, acting
+        target_index = sis_iterator - listElements.begin();
+
+        int sis_value = std::stoi(listValues[target_index]);
+        caller->UpdateShutterValue(sis_value);
+    }
     /*
 
 
-    int target_index;
-        // Affichage des éléments de listElements
-        std::cout << "Elements de listElements :" << std::endl;
-        for (const auto& element : listElements) {
-            std::cout << element << std::endl;
-        }
-        std::cout << "aaaa " << this->sis_var_name << std::endl;
-
-        // Remplacement de std::find par une boucle for
-        for (size_t i = 0; i < listElements.size(); ++i) {
-            if (listElements[i] == this->sis_var_name) {
-                target_index = static_cast<int>(i);
-                break;
-            }
-        }
-    
-        std::cout << "bbbb " << this->sis_var_name << std::endl;
-        if (target_index != -1) {
-            // SIS data point updated, acting
-            std::cout << "target_index " << target_index << std::endl;
-            int sis_value = std::stoi(listValues[target_index]);
-            std::cout << "sis_value " << sis_value << std::endl;
-            caller->UpdateSISValue(sis_value);
-            std::cout << "UpdateSISValue done" << std::endl;
-        }
+   
+ 
         */
     }
 
