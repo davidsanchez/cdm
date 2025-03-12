@@ -78,7 +78,7 @@ std::vector<std::string> DatapointMonitor::getElements()
     elements.push_back(this->oarl_var_name);
     elements.push_back(this->leds_var_name);
     elements.push_back(this->shutter_var_name);
-    elements.push_back(this->sis_var_name);
+    
 
     elements.push_back(this->drive_inmotion_var_name);
     elements.push_back(this->drive_inparkinpos_var_name);
@@ -91,6 +91,7 @@ std::vector<std::string> DatapointMonitor::getElements()
     elements.push_back(this->aux_DMEastTop_var_name);
     elements.push_back(this->aux_DMWestBottom_var_name);
     elements.push_back(this->aux_DMWestTop_var_name);
+    elements.push_back(this->sis_var_name);
 
     return elements;
 }
