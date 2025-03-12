@@ -23,7 +23,8 @@ std::string  Helper::searchDatapoint (string element, Config *config)
         {
         LOG_DEBUG<<myElement->NodeId;
         LOG_DEBUG<<myElement->NodeIdL2;
-		nodeIdL1 = rootElement + myElement->NodeId;
+		nodeIdL1 = rootElement + myElement->NodeId+myElement->NodeIdL2;
+        LOG_DEBUG<<nodeIdL1;
                 return(nodeIdL1);
         }
         return("");
