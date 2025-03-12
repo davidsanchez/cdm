@@ -375,7 +375,19 @@ void DatapointMonitor::CheckShutterUpdate(std::vector<std::string> listElements,
 }
 
 void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
-{/*
+{
+    
+    std::cout << "Elements de listElements :" << std::endl;
+    for (const auto& element : listElements) {
+        std::cout << element << std::endl;
+    }
+
+    std::cout << "Elements de listValues :" << std::endl;
+    for (const auto& element : listValues) {
+        std::cout << element << std::endl;
+    }
+    
+    /*
 
 
     int target_index;
