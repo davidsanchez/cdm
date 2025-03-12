@@ -239,7 +239,7 @@
         	                        <Name>azimuth_position</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>SecurityBrokerControl.DriveControl.CurrentPosition.azimuth_position.azimuth_position_v"</NodeId>
+        	                        <NodeId>DriveControl.CurrentPosition.azimuth_position.azimuth_position_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
