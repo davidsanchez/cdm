@@ -4,7 +4,6 @@
 #include "Config.h"
 //#include "Logging.h"
 
-#include <iterator> // Pour std::iterator
 
 #define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
 
@@ -405,9 +404,9 @@ void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std
     //auto sis_iterator = std::find(listElements.begin(), listElements.end(), "DataBroker.DataBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v");
     
     auto sis_iterator =listElements.end();// = std::find(listElements.begin(), listElements.end(), this->sis_var_name);
-    for (Iterator it = listElements.begin(); it != listElements.end(); ++it) {
-        if (*it == this->sis_var_name) {
-            sis_iterator = it; // Élément trouvé, retourne l'itérateur
+    for (const auto& element : listElements) {
+        if (*element == this->sis_var_name) {
+            sis_iterator = element; // Élément trouvé, retourne l'itérateur
         }
     }
     std::cout<<"bbbb "<<this->sis_var_name<< std::endl;
