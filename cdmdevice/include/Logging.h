@@ -24,6 +24,12 @@ BOOST_LOG_ATTRIBUTE_KEYWORD(a_channel, "Channel", std::string)
 //typedef boost::log::sources::severity_logger_mt<boost::log::trivial::severity_level> logger_t;
 typedef boost::log::sources::severity_channel_logger_mt< boost::log::trivial::severity_level, std::string > logger_t;
 
+// Déclaration de la variable booléenne pour activer ou désactiver le log de débogage
+extern bool enable_debug_logging;
+
+// Macro pour le log de débogage conditionnel
+#define COND_LOG_DEBUG if (enable_debug_logging) LOG_DEBUG
+
 #define LOG_TRACE BOOST_LOG_CHANNEL_SEV(my_logger::get(), "all", boost::log::trivial::trace)
 #define LOG_DEBUG BOOST_LOG_CHANNEL_SEV(my_logger::get(), "debug", boost::log::trivial::debug)
 #define LOG_IMAGE BOOST_LOG_CHANNEL_SEV(my_logger::get(), "image", boost::log::trivial::info)
