@@ -78,7 +78,6 @@ std::vector<std::string> DatapointMonitor::getElements()
     elements.push_back(this->oarl_var_name);
     elements.push_back(this->leds_var_name);
     elements.push_back(this->shutter_var_name);
-    std::cout<<this->sis_var_name<<std::endl;
     elements.push_back(this->sis_var_name);
 
     elements.push_back(this->drive_inmotion_var_name);
@@ -394,8 +393,8 @@ void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std
     int target_index;
 
     //auto sis_iterator = std::find(listElements.begin(), listElements.end(), "DataBroker.DataBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v");
-    std::string myString(1, this->sis_var_name);
-    auto sis_iterator = std::find(listElements.begin(), listElements.end(), myString);
+    
+    auto sis_iterator = std::find(listElements.begin(), listElements.end(), this->sis_var_name);
 
     if (sis_iterator != listElements.end())
     {
