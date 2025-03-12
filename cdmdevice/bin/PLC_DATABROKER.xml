@@ -13,8 +13,9 @@
      *  Description: Description
      *
     -->
+
     <GeneralInfo>
-                <OPCUA_Address>opc.tcp://securitybrokerserver:48033</OPCUA_Address>
+                <OPCUA_Address>opc.tcp://securitybrokerserver:48030</OPCUA_Address>
                 <RootName>DataBroker.DataBrokerControl</RootName>
     </GeneralInfo>
 
@@ -56,10 +57,10 @@
                                     <Name>SIS</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
-				                    <NodeId>CameraControl.ModulesStatus.</NodeId>
+				                    <NodeId>CameraControl.ModulesStatus.SIS.SIS_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>SIS.SIS_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -70,10 +71,10 @@
         	                        <Name>DM_East_Bottom</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>AuxControl.DM.</NodeId>
+        	                        <NodeId>AuxControl.DM.DM_East_Bottom.Status.Status_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>DM_East_Bottom.Status.Status_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>BOOL</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -84,10 +85,10 @@
         	                        <Name>DM_East_Top</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>AuxControl.DM.</NodeId>
+        	                        <NodeId>AuxControl.DM.DM_East_Top.Status.Status_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>DM_East_Top.Status.Status_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>BOOL</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -98,10 +99,10 @@
         	                        <Name>DM_West_Bottom</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>AuxControl.DM.</NodeId>
+        	                        <NodeId>AuxControl.DM.DM_West_Bottom.Status.Status_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>DM_West_Bottom.Status.Status_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>BOOL</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -112,10 +113,10 @@
         	                        <Name>DM_West_Top</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>AuxControl.DM.</NodeId>
+        	                        <NodeId>AuxControl.DM.DM_West_Top.Status.Status_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>DM_West_Top.Status.Status_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>BOOL</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -126,10 +127,10 @@
         	                        <Name>OARLRelay_Status</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>AuxControl.RemotePowerCtrl.</NodeId>
+        	                        <NodeId>AuxControl.RemotePowerCtrl.OARLRelay_Status.OARLRelay_Status_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>OARLRelay_Status.OARLRelay_Status_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>BOOL</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -140,10 +141,10 @@
         	                        <Name>RA_Target</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.</NodeId>
+        	                        <NodeId>DriveControl.RA_Target.RA_Target_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>RA_Target.RA_Target_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>FLOAT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -154,10 +155,10 @@
         	                        <Name>Dec_Target</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.</NodeId>
+        	                        <NodeId>DriveControl.Dec_Target.Dec_Target_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>Dec_Target.Dec_Target_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>FLOAT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -168,10 +169,10 @@
         	                        <Name>Azimuth_Offset</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.</NodeId>
+        	                        <NodeId>DriveControl.Azimuth_Offset.Azimuth_Offset_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>Azimuth_Offset.Azimuth_Offset_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>FLOAT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -182,10 +183,10 @@
         	                        <Name>ZenithAngle_Offset</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.</NodeId>
+        	                        <NodeId>DriveControl.ZenithAngle_Offset.ZenithAngle_Offset_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>ZenithAngle_Offset.ZenithAngle_Offset_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>FLOAT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -196,10 +197,10 @@
         	                        <Name>RA_Telescope</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.</NodeId>
+        	                        <NodeId>DriveControl.RA_Telescope.RA_Telescope_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>RA_Telescope.RA_Telescope_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>FLOAT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -210,10 +211,10 @@
         	                        <Name>Dec_Telescope</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.</NodeId>
+        	                        <NodeId>DriveControl.Dec_Telescope.Dec_Telescope_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>Dec_Telescope.Dec_Telescope_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>FLOAT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -224,10 +225,10 @@
         	                        <Name>SourceName</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.</NodeId>
+        	                        <NodeId>DriveControl.SourceName.SourceName_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>SourceName.SourceName_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>FLOAT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -238,10 +239,10 @@
         	                        <Name>azimuth_position</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.</NodeId>
+        	                        <NodeId>DriveControl.CurrentPosition.azimuth_position.azimuth_position_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>CurrentPosition.azimuth_position.azimuth_position_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>FLOAT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -252,10 +253,10 @@
         	                        <Name>zenithangle_position</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.</NodeId>
+        	                        <NodeId>DriveControl.CurrentPosition.zenithangle_position.zenithangle_position_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>CurrentPosition.zenithangle_position.zenithangle_position_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>FLOAT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -266,10 +267,10 @@
         	                        <Name>Status_In_Motion</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.</NodeId>
+        	                        <NodeId>DriveControl.Status.Status_In_Motion.Status_In_Motion_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>Status.Status_In_Motion.Status_In_Motion_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>BOOL</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -280,10 +281,10 @@
         	                        <Name>Status_In_Motion</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.</NodeId>
+        	                        <NodeId>DriveControl.Status.Status_In_Motion.Status_In_Motion_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>Status.Status_In_Motion.Status_In_Motion_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>BOOL</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -294,10 +295,10 @@
         	                        <Name>Status_In_Parking_Position</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.</NodeId>
+        	                        <NodeId>DriveControl.Status.Status_In_Parking_Position.Status_In_Parking_Position_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>Status.Status_In_Parking_Position.Status_In_Parking_Position_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>BOOL</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -308,10 +309,10 @@
         	                        <Name>Status_Parked</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.</NodeId>
+        	                        <NodeId>DriveControl.Status.Status_Parked.Status_Parked_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>Status.Status_Parked.Status_Parked_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>BOOL</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -322,10 +323,10 @@
         	                        <Name>Status_Tracking_In_Progress</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.</NodeId>
+        	                        <NodeId>DriveControl.Status.Status_Tracking_In_Progress.Status_Tracking_In_Progress_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>Status.Status_Tracking_In_Progress.Status_Tracking_In_Progress_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>BOOL</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
