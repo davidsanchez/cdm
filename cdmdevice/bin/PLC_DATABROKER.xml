@@ -29,10 +29,10 @@
                                     <Name>LEDPositions</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
-				                    <NodeId>CameraControl.</NodeId>
+				                    <NodeId>CameraControl.ModulesAvailable.ECC.exports.ServerECC.ECC.Monitoring.LEDPositions.GeneralStatus.GeneralStatus_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>LEDPositions.GeneralStatus.GeneralStatus_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>BOOL</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -43,10 +43,10 @@
                                     <Name>Shutter</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
-				                    <NodeId>CameraControl.ModulesAvailable.</NodeId>
+				                    <NodeId>CameraControl.ModulesAvailable.ECC.exports.ServerECC.ECC.Monitoring.Shutter.GeneralStatus.GeneralStatus_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>Shutter.GeneralStatus.GeneralStatus_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -113,7 +113,7 @@
         	                        <Name>DM_West_Top</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>AuxControl.DM.DM_West_Top.Status.Status_v</NodeId>
+        	                        <NodeId>SecurityBrokerControl.AuxControl.DM.DM_West_Top.Status.Status_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>

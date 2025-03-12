@@ -176,6 +176,12 @@ public:
 
     };
 
+    //int publish_datapoint(std::string datapoint_name, int nameSpace, int data );
+
+    //void set_OPCUAref(DataAccessClientOPCUA*);
+
+    // declare a  new method
+
     double get_Ra_drive() { return Helper::Ra_drive; }
     double get_Dec_drive() { return Helper::Dec_drive; }
     double get_Ra_target() { return Helper::Ra_target; }
@@ -212,7 +218,6 @@ public:
         std::cout << "Comment is: " << get_Comment() << std::endl;
     }
 
-    std::string searchDatapointWithNodeID (std::string element, Config *config);
     std::string searchDatapoint (std::string element, Config *config);
     int connectOpcUa_DataBroker(std::string url, CDM *cdm);
 
