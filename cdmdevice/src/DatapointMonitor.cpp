@@ -386,7 +386,8 @@ void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std
     for (const auto& element : listValues) {
         std::cout << element << std::endl;
     }
-    
+    auto sis_iterator = std::find(listElements.begin(), listElements.end(), this->sis_var_name);
+    std::cout << "sis_iterator "<<sis_iterator << std::endl;
     /*
 
 
