@@ -403,7 +403,12 @@ void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std
     std::cout<<"aaaa "<<this->sis_var_name<< std::endl;
     //auto sis_iterator = std::find(listElements.begin(), listElements.end(), "DataBroker.DataBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v");
     
-    auto sis_iterator = my_find(listElements.begin(), listElements.end(), this->sis_var_name);
+    auto sis_iterator =listElements.end();// = std::find(listElements.begin(), listElements.end(), this->sis_var_name);
+    for (Iterator it = listElements.begin(); it != listElements.end(); ++it) {
+        if (*it == this->sis_var_name) {
+            sis_iterator = it; // Élément trouvé, retourne l'itérateur
+        }
+    }
     std::cout<<"bbbb "<<this->sis_var_name<< std::endl;
     if (sis_iterator != listElements.end())
     {
@@ -418,15 +423,6 @@ void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std
 }
 
 
-template <typename Iterator, typename T>
-Iterator my_find(Iterator begin, Iterator end, const T& value) {
-    for (Iterator it = begin; it != end; ++it) {
-        if (*it == value) {
-            return it; // Élément trouvé, retourne l'itérateur
-        }
-    }
-    return end; // Élément non trouvé, retourne l'itérateur de fin
-}
 
 void DatapointMonitor::CheckDriveInMotionUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {

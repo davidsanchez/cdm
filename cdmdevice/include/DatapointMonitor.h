@@ -24,6 +24,7 @@ public:
     std::vector<std::string> getElements();
     std::vector<int> getNameSpaces();
 
+    
 private:
 
     CDM *caller;
