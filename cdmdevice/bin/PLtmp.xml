@@ -13,8 +13,9 @@
      *  Description: Description
      *
     -->
+
     <GeneralInfo>
-                <OPCUA_Address>opc.tcp://databrokerserver:48033</OPCUA_Address>
+                <OPCUA_Address>opc.tcp://securitybrokerserver:48033</OPCUA_Address>
                 <RootName>DataBroker.DataBrokerControl</RootName>
     </GeneralInfo>
 
@@ -28,7 +29,7 @@
                                     <Name>LEDPositions</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
-				                    <NodeId>CameraControl.ModulesAvailable.ECC.exports.ServerECC.ECC.Monitoring.LEDPositions.GeneralStatus.GeneralStatus_v</NodeId>
+				                    <NodeId>SecurityBrokerControl.CameraControl.ECC.Monitoring.LEDPositions.GeneralStatus.GeneralStatus_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
@@ -42,10 +43,10 @@
                                     <Name>Shutter</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
-				                    <NodeId>CameraControl.ModulesAvailable.ECC.exports.ServerECC.ECC.Monitoring.</NodeId>
+				                    <NodeId>SecurityBrokerControl.CameraControl.ECC.Monitoring.Shutter.GeneralStatus.GeneralStatus_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2>Shutter.GeneralStatus.GeneralStatus_v</NodeIdL2>
+                                    <NodeIdL2></NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -56,7 +57,7 @@
                                     <Name>SIS</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
-				                    <NodeId>CameraControl.ModulesStatus.SIS.SIS_v</NodeId>
+				                    <NodeId>SecurityBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
@@ -70,7 +71,7 @@
         	                        <Name>DM_East_Bottom</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>AuxControl.DM.DM_East_Bottom.Status.Status_v</NodeId>
+        	                        <NodeId>SecurityBrokerControl.AuxControl.DM.DM_East_Bottom.Status.Status_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
@@ -238,7 +239,7 @@
         	                        <Name>azimuth_position</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.CurrentPosition.azimuth_position.azimuth_position_v</NodeId>
+        	                        <NodeId>SecurityBrokerControl.DriveControl.CurrentPosition.azimuth_position.azimuth_position_v"</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
