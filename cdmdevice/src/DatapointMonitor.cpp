@@ -367,6 +367,7 @@ void DatapointMonitor::CheckShutterUpdate(std::vector<std::string> listElements,
     if (shutter_iterator != listElements.end())
     {
         // Shutter data point updated, acting
+        std::cout<<"shutter_iterator "<<shutter_iterator<<std::endl;
         target_index = shutter_iterator - listElements.begin();
         std::cout<<"target_index "<<target_index<<std::endl;
         int shutter_value = std::stoi(listValues[target_index]);
