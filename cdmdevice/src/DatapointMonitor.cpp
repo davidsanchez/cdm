@@ -346,7 +346,7 @@ void DatapointMonitor::CheckLEDsUpdate(std::vector<std::string> listElements, st
     {
         // LEDs data point updated, acting
         target_index = leds_iterator - listElements.begin();
-
+        
         // Converts the string to bool value.
         bool leds_value;
         istringstream(listValues[target_index]) >> std::boolalpha >> leds_value;
@@ -368,8 +368,9 @@ void DatapointMonitor::CheckShutterUpdate(std::vector<std::string> listElements,
     {
         // Shutter data point updated, acting
         target_index = shutter_iterator - listElements.begin();
-
+        std::cout<<"target_index "<<target_index<<std::endl;
         int shutter_value = std::stoi(listValues[target_index]);
+        std::cout<<"shutter_value "<<shutter_value<<std::endl;
         caller->UpdateShutterValue(shutter_value);
     }
 }
