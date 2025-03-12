@@ -196,8 +196,8 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
     std::string filePath = stream_fitsPath.str();
     std::string remoteImagePath = stream_remoteImagePath.str();
 
-    LOG_DEBUG << "filePath: " << filePath << std::endl;
-    LOG_DEBUG << "remoteImagePath: " << remoteImagePath << std::endl;
+    COND_LOG_DEBUG << "filePath: " << filePath << std::endl;
+    COND_LOG_DEBUG << "remoteImagePath: " << remoteImagePath << std::endl;
 
     try
     {
@@ -339,7 +339,7 @@ int Camera::Connect()
     LOG_TRACE << "Camera::Connect()"<<endl;
 
     nRet = is_InitCamera(&hCam, NULL);
-    LOG_DEBUG << "InitCamera returned " << nRet << std::endl;
+    COND_LOG_DEBUG << "InitCamera returned " << nRet << std::endl;
     if (nRet != IS_SUCCESS)
     {
         LOG_ERROR << "Failed to open camera." << std::endl;
@@ -417,7 +417,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     for (int i = 0; i < n_allocated_memories; i++)
     {
         nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-        LOG_DEBUG << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
+        COND_LOG_DEBUG << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
         is_AddToSequence(hCam, pcImageMemory, nMemoryId);
 
         pcImageMemory_arr[i] = pcImageMemory;
@@ -426,7 +426,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     is_InitImageQueue(hCam, 0);
 
     nRet = is_CaptureVideo(hCam, IS_WAIT);
-    LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
+    COND_LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
@@ -786,13 +786,13 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     // Free the allocated memories
 
     nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
-    LOG_DEBUG << "is_StopLiveVideo result: " << nRet << endl;
+    COND_LOG_DEBUG << "is_StopLiveVideo result: " << nRet << endl;
 
     nRet = is_ExitImageQueue(hCam);
-    LOG_DEBUG << "is_ExitImageQueue: " << nRet << endl;
+    COND_LOG_DEBUG << "is_ExitImageQueue: " << nRet << endl;
 
     nRet = is_ClearSequence(hCam);
-    LOG_DEBUG << "is_ClearSequence: " << nRet << endl;
+    COND_LOG_DEBUG << "is_ClearSequence: " << nRet << endl;
 
     for (int i = 0; i < n_allocated_memories; i++)
     {
@@ -815,7 +815,7 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
     for (int i = 0; i < n_allocated_memories; i++)
     {
         nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-        LOG_DEBUG << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
+        COND_LOG_DEBUG << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
         is_AddToSequence(hCam, pcImageMemory, nMemoryId);
 
         pcImageMemory_arr[i] = pcImageMemory;
@@ -824,7 +824,7 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
     is_InitImageQueue(hCam, 0);
 
     nRet = is_CaptureVideo(hCam, IS_WAIT);
-    LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
+    COND_LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
@@ -930,13 +930,13 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
     // Free the allocated memories
 
     nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
-    LOG_DEBUG << "is_StopLiveVideo result: " << nRet << endl;
+    COND_LOG_DEBUG << "is_StopLiveVideo result: " << nRet << endl;
 
     nRet = is_ExitImageQueue(hCam);
-    LOG_DEBUG << "is_ExitImageQueue: " << nRet << endl;
+    COND_LOG_DEBUG << "is_ExitImageQueue: " << nRet << endl;
 
     nRet = is_ClearSequence(hCam);
-    LOG_DEBUG << "is_ClearSequence: " << nRet << endl;
+    COND_LOG_DEBUG << "is_ClearSequence: " << nRet << endl;
 
     for (int i = 0; i < n_allocated_memories; i++)
     {
@@ -962,7 +962,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     for (int i = 0; i < n_allocated_memories; i++)
     {
         nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-        LOG_DEBUG << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
+        COND_LOG_DEBUG << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
 
         is_AddToSequence(hCam, pcImageMemory, nMemoryId);
         pcImageMemory_arr[i] = pcImageMemory;
@@ -971,7 +971,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     is_InitImageQueue(hCam, 0);
 
     nRet = is_CaptureVideo(hCam, IS_WAIT);
-    LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
+    COND_LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
@@ -1137,13 +1137,13 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     // Free the allocated memories
 
     nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
-    LOG_DEBUG << "is_StopLiveVideo result: " << nRet << endl;
+    COND_LOG_DEBUG << "is_StopLiveVideo result: " << nRet << endl;
 
     nRet = is_ExitImageQueue(hCam);
-    LOG_DEBUG << "is_ExitImageQueue: " << nRet << endl;
+    COND_LOG_DEBUG << "is_ExitImageQueue: " << nRet << endl;
 
     nRet = is_ClearSequence(hCam);
-    LOG_DEBUG << "is_ClearSequence: " << nRet << endl;
+    COND_LOG_DEBUG << "is_ClearSequence: " << nRet << endl;
 
     for (int i = 0; i < n_allocated_memories; i++)
     {
@@ -1175,7 +1175,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     for (int i = 0; i < n_allocated_memories; i++)
     {
         nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-        LOG_DEBUG << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
+        COND_LOG_DEBUG << "AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
 
         is_AddToSequence(hCam, pcImageMemory, nMemoryId);
         pcImageMemory_arr[i] = pcImageMemory;
@@ -1184,7 +1184,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     is_InitImageQueue(hCam, 0);
 
     nRet = is_CaptureVideo(hCam, IS_WAIT);
-    LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
+    COND_LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
@@ -1365,13 +1365,13 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     // Free the allocated memories
 
     nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
-    LOG_DEBUG << "is_StopLiveVideo result: " << nRet << endl;
+    COND_LOG_DEBUG << "is_StopLiveVideo result: " << nRet << endl;
 
     nRet = is_ExitImageQueue(hCam);
-    LOG_DEBUG << "is_ExitImageQueue: " << nRet << endl;
+    COND_LOG_DEBUG << "is_ExitImageQueue: " << nRet << endl;
 
     nRet = is_ClearSequence(hCam);
-    LOG_DEBUG << "is_ClearSequence: " << nRet << endl;
+    COND_LOG_DEBUG << "is_ClearSequence: " << nRet << endl;
 
     for (int i = 0; i < n_allocated_memories; i++)
     {
@@ -1408,12 +1408,12 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     LOG_TRACE << "Camera::GetImage()"<<endl;
 
     nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-    LOG_DEBUG << "Status is_AllocImageMem" << nRet;
+    COND_LOG_DEBUG << "Status is_AllocImageMem" << nRet;
     //Activate memory for storing
     nRet = is_SetImageMem(hCam, pcImageMemory, nMemoryId);
-    LOG_DEBUG << "Status is_SetImageMem" << nRet;
+    COND_LOG_DEBUG << "Status is_SetImageMem" << nRet;
     int nRet = is_FreezeVideo(hCam, IS_WAIT);
-    LOG_DEBUG << "Status is_FreezeVideo" << nRet;
+    COND_LOG_DEBUG << "Status is_FreezeVideo" << nRet;
 
     // TODO: Add pushing image to a datapoint and making a .fits file
     // Actually make a function that processes the image when it has been taken.y
@@ -1570,7 +1570,7 @@ double Camera::get_temperature_value()
 
     else
     {
-        LOG_DEBUG << "Camera not connected."<<endl;
+        COND_LOG_DEBUG << "Camera not connected."<<endl;
         return 0;
     }
 }
@@ -1605,7 +1605,7 @@ string Camera::get_temperature_status()
 
     else
     {
-        LOG_DEBUG << "Camera not connected."<<endl;
+        COND_LOG_DEBUG << "Camera not connected."<<endl;
         return "Camera not connected";
     }
 }

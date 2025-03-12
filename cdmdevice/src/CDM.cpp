@@ -59,7 +59,7 @@ int CDM::afterStart()
     // This method is automatically called by the program "MOS" after "MOS" server is launched and ready.
     int ret = 0;
     printf("\n***********************************\nIn CDM::afterStart\n***********************************\n");
-    LOG_DEBUG << "SetDPQuality "<<helper.searchDatapoint("SetDPQuality",cdm_config);
+    COND_LOG_DEBUG << "SetDPQuality "<<helper.searchDatapoint("SetDPQuality",cdm_config);
     
     // map<std::string,std::string> config;
 
@@ -68,7 +68,7 @@ int CDM::afterStart()
     // debug print the config
     map<std::string, std::string>::iterator it;
    for(it=m_config.begin(); it!=m_config.end(); ++it){
-      LOG_DEBUG << it->first << " => " << it->second << '\n';
+    COND_LOG_DEBUG << it->first << " => " << it->second << '\n';
     }
 
 
@@ -118,12 +118,12 @@ int CDM::afterStart()
     // Trying to access other OPCUA server
     CDM::connection_result_DataBroker = helper.connectOpcUa_DataBroker(m_config["OPCUA"], this); //DataBroker OPCUA
 
-    LOG_DEBUG << "DataBroker status OPCUA: " << connection_result_DataBroker;
+    COND_LOG_DEBUG << "DataBroker status OPCUA: " << connection_result_DataBroker;
 
     // Creating datapoint monitor that will notify us when the subscribed datapoints change.
     if (connection_result_DataBroker != connection_failure)
     {
-        LOG_DEBUG << "Connected to DataBroker.";
+        COND_LOG_DEBUG << "Connected to DataBroker.";
         // Subscription now happens in ControllerCB which calls the subscribe method.
         //subscribe_DataBroker();
     }
@@ -360,7 +360,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             {
                 LOG_TRACE << "CDM::cdm() / GetImage";
                 camera.GetImage(getDataAccessClientOPCUARef()); // pushes the image to the datapoint inside the function
-                LOG_DEBUG << "Finished GetImage";
+                COND_LOG_DEBUG << "Finished GetImage";
                 SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
                 
                 /* vector<unsigned char> displayImage = camera.GetImage();
@@ -429,34 +429,34 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
 int CDM::UpdateRaValue(double newvalue)
 {
-    //LOG_DEBUG << "UpdateRaValue: " << newvalue;
+    
     helper.SetRaDrive(newvalue);
     return 0;
 }
 
 int CDM::UpdateDecValue(double newvalue)
 {
-    //LOG_DEBUG << "UpdateDecValue: " << newvalue;
+    
     helper.SetDecDrive(newvalue);
     return 0;
 }
 
 int CDM::UpdateAzValue(double newvalue)
 {
-    //LOG_DEBUG << "UpdateAzValue: " << newvalue;
+    
     helper.SetAz(newvalue);
     return 0;
 }
 int CDM::UpdateZdValue(double newvalue)
 {
-    //LOG_DEBUG << "UpdateZdValue: " << newvalue;
+    
     helper.SetZd(newvalue);
     return 0;
 }
 
 int CDM::UpdateAzOffsetValue(double newvalue)
 {
-    //LOG_DEBUG << "UpdateAzOfssetValue: " << newvalue;
+    
     helper.SetAzOffset(newvalue);
     return 0;
 }
