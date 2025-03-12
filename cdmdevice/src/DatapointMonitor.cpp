@@ -364,20 +364,15 @@ void DatapointMonitor::CheckShutterUpdate(std::vector<std::string> listElements,
         List of values of the changed data points
     */
 
-    std::vector<std::string> list = {
-        "Element1",
-        "DataBroker.DataBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v",
-        "Element3"
-    };
 
     int target_index;
 
-    auto shutter_iterator = std::find(list.begin(), list.end(), this->shutter_var_name);
+    auto shutter_iterator = std::find(listElements.begin(), listElements.end(), this->shutter_var_name);
 
-    if (shutter_iterator != list.end())
+    if (shutter_iterator != listElements.end())
     {
         // Shutter data point updated, acting
-        target_index = shutter_iterator - list.begin();
+        target_index = shutter_iterator - listElements.begin();
 
         int shutter_value = std::stoi(listValues[target_index]);
         caller->UpdateShutterValue(shutter_value);
@@ -397,6 +392,12 @@ void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std
     */
 
     int target_index;
+
+    std::vector<std::string> listElements = {
+        "Element1",
+        "DataBroker.DataBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v",
+        "Element3"
+    };
 
     //auto sis_iterator = std::find(listElements.begin(), listElements.end(), "DataBroker.DataBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v");
     
