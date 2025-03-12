@@ -30,31 +30,31 @@ private:
     
     //Read the configuration and set up DP names
     Config *DB_config = new Config(DATABROKER_CONFIGURATION_NAME,"");
-    const std::string leds_var_name =    helper.searchDatapoint("LEDPositions",DB_config);
-    const std::string shutter_var_name =  helper.searchDatapoint("Shutter",DB_config); 
-    const std::string sis_var_name =      helper.searchDatapoint("SIS",DB_config); 
+    const std::string leds_var_name =    helper.searchDatapointWithNodeID("LEDPositions",DB_config);
+    const std::string shutter_var_name =  helper.searchDatapointWithNodeID("Shutter",DB_config); 
+    const std::string sis_var_name =      helper.searchDatapointWithNodeID("SIS",DB_config); 
 
-    const std::string oarl_var_name =             helper.searchDatapoint("OARLRelay_Status",DB_config); 
-    const std::string aux_DMEastBottom_var_name =  helper.searchDatapoint("DM_East_Bottom",DB_config); 
-    const std::string aux_DMEastTop_var_name =     helper.searchDatapoint("DM_East_Top",DB_config); 
-    const std::string aux_DMWestBottom_var_name =  helper.searchDatapoint("DM_West_Bottom",DB_config); 
-    const std::string aux_DMWestTop_var_name =     helper.searchDatapoint("DM_West_Bottom",DB_config); 
+    const std::string oarl_var_name =             helper.searchDatapointWithNodeID("OARLRelay_Status",DB_config); 
+    const std::string aux_DMEastBottom_var_name =  helper.searchDatapointWithNodeID("DM_East_Bottom",DB_config); 
+    const std::string aux_DMEastTop_var_name =     helper.searchDatapointWithNodeID("DM_East_Top",DB_config); 
+    const std::string aux_DMWestBottom_var_name =  helper.searchDatapointWithNodeID("DM_West_Bottom",DB_config); 
+    const std::string aux_DMWestTop_var_name =     helper.searchDatapointWithNodeID("DM_West_Bottom",DB_config); 
 
-    const std::string drive_ra_target_var_name =   helper.searchDatapoint("RA_Target",DB_config); 
-    const std::string drive_dec_target_var_name =  helper.searchDatapoint("Dec_Target",DB_config); 
+    const std::string drive_ra_target_var_name =   helper.searchDatapointWithNodeID("RA_Target",DB_config); 
+    const std::string drive_dec_target_var_name =  helper.searchDatapointWithNodeID("Dec_Target",DB_config); 
 
-    const std::string az_offset_var_name = helper.searchDatapoint("Azimuth_Offset",DB_config); 
-    const std::string zd_offset_var_name = helper.searchDatapoint("ZenithAngle_Offset",DB_config); 
-    const std::string source_var_name =    helper.searchDatapoint("SourceName",DB_config); 
-    const std::string ra_tel_var_name =    helper.searchDatapoint("RA_Telescope",DB_config); 
-    const std::string dec_tel_var_name =   helper.searchDatapoint("Dec_Telescope",DB_config); 
-    const std::string az_var_name =        helper.searchDatapoint("azimuth_position",DB_config); 
-    const std::string zd_var_name =        helper.searchDatapoint("zenithangle_position",DB_config); 
+    const std::string az_offset_var_name = helper.searchDatapointWithNodeID("Azimuth_Offset",DB_config); 
+    const std::string zd_offset_var_name = helper.searchDatapointWithNodeID("ZenithAngle_Offset",DB_config); 
+    const std::string source_var_name =    helper.searchDatapointWithNodeID("SourceName",DB_config); 
+    const std::string ra_tel_var_name =    helper.searchDatapointWithNodeID("RA_Telescope",DB_config); 
+    const std::string dec_tel_var_name =   helper.searchDatapointWithNodeID("Dec_Telescope",DB_config); 
+    const std::string az_var_name =        helper.searchDatapointWithNodeID("azimuth_position",DB_config); 
+    const std::string zd_var_name =        helper.searchDatapointWithNodeID("zenithangle_position",DB_config); 
 
-    const std::string drive_inmotion_var_name =    helper.searchDatapoint("Status_In_Motion",DB_config); 
-    const std::string drive_inparkinpos_var_name = helper.searchDatapoint("Status_In_Parking_Position",DB_config); 
-    const std::string drive_parked_var_name =      helper.searchDatapoint("Status_Parked",DB_config); 
-    const std::string drive_tracking_var_name =    helper.searchDatapoint("Status_Tracking_In_Progress",DB_config); 
+    const std::string drive_inmotion_var_name =    helper.searchDatapointWithNodeID("Status_In_Motion",DB_config); 
+    const std::string drive_inparkinpos_var_name = helper.searchDatapointWithNodeID("Status_In_Parking_Position",DB_config); 
+    const std::string drive_parked_var_name =      helper.searchDatapointWithNodeID("Status_Parked",DB_config); 
+    const std::string drive_tracking_var_name =    helper.searchDatapointWithNodeID("Status_Tracking_In_Progress",DB_config); 
 
 
 

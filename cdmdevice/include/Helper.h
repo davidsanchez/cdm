@@ -212,6 +212,7 @@ public:
         std::cout << "Comment is: " << get_Comment() << std::endl;
     }
 
+    std::string searchDatapointWithNodeID (std::string element, Config *config);
     std::string searchDatapoint (std::string element, Config *config);
     int connectOpcUa_DataBroker(std::string url, CDM *cdm);
 
