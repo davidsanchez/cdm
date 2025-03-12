@@ -34,6 +34,7 @@ private:
     const std::string shutter_var_name =  helper.searchDatapoint("Shutter",DB_config); 
     const std::string sis_var_name =    "DataBroker.DataBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v";// helper.searchDatapoint("SIS",DB_config); 
 
+
     const std::string oarl_var_name =             helper.searchDatapoint("OARLRelay_Status",DB_config); 
     const std::string aux_DMEastBottom_var_name =  helper.searchDatapoint("DM_East_Bottom",DB_config); 
     const std::string aux_DMEastTop_var_name =     helper.searchDatapoint("DM_East_Top",DB_config); 
