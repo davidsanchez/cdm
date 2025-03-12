@@ -71,7 +71,7 @@
         	                        <Name>DM_East_Bottom</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>SecurityBrokerControl.AuxControl.DM.DM_East_Bottom.Status.Status_v</NodeId>
+        	                        <NodeId>AuxControl.DM.DM_East_Bottom.Status.Status_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
