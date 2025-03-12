@@ -7,11 +7,6 @@ namespace expr = boost::log::expressions;
 namespace attrs = boost::log::attributes;
 namespace keywords = boost::log::keywords;
 
-// Déclaration de la variable booléenne pour activer ou désactiver le log de débogage
-extern bool enable_debug_logging;
-
-// Macro pour le log de débogage conditionnel
-#define COND_LOG_DEBUG if (enable_debug_logging) LOG_DEBUG
 
 //Defines a global logger initialization routine
 BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
