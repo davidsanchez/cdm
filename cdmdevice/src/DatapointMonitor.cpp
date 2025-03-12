@@ -399,28 +399,26 @@ void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std
         for (const auto& element : listElements) {
             std::cout << element << std::endl;
         }
+        std::cout << "aaaa " << this->sis_var_name << std::endl;
 
-    std::cout<<"aaaa "<<this->sis_var_name<< std::endl;
-    //auto sis_iterator = std::find(listElements.begin(), listElements.end(), "DataBroker.DataBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v");
+        // Remplacement de std::find par une boucle for
+        for (size_t i = 0; i < listElements.size(); ++i) {
+            if (listElements[i] == this->sis_var_name) {
+                target_index = static_cast<int>(i);
+                break;
+            }
+        }
     
-    auto sis_iterator =listElements.end();// = std::find(listElements.begin(), listElements.end(), this->sis_var_name);
-    for (const auto& element : listElements) {
-        if (*element == this->sis_var_name) {
-            sis_iterator = element; // Élément trouvé, retourne l'itérateur
+        std::cout << "bbbb " << this->sis_var_name << std::endl;
+        if (target_index != -1) {
+            // SIS data point updated, acting
+            std::cout << "target_index " << target_index << std::endl;
+            int sis_value = std::stoi(listValues[target_index]);
+            std::cout << "sis_value " << sis_value << std::endl;
+            caller->UpdateSISValue(sis_value);
+            std::cout << "UpdateSISValue done" << std::endl;
         }
     }
-    std::cout<<"bbbb "<<this->sis_var_name<< std::endl;
-    if (sis_iterator != listElements.end())
-    {
-        // SIS data point updated, acting
-        target_index = sis_iterator - listElements.begin();
-        std::cout<<"target_index "<<target_index<<std::endl;
-        int sis_value = std::stoi(listValues[target_index]);
-        std::cout<<"sis_value "<<sis_value<<std::endl;
-        caller->UpdateSISValue(sis_value);
-        std::cout<<"UpdateSISValue done"<<std::endl;
-    }
-}
 
 
 
