@@ -76,8 +76,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>circle_y_stddev.circle_y_stddev_v</NodeRootL2>
-                                    <NodeIdL2></NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2>circle_y_stddev.circle_y_stddev_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -88,10 +88,10 @@
                                     <Name>circle_R</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
-                                    <NodeId>CDM.Circle.circle_R.circle_R_v</NodeId>
+                                    <NodeId>CDM.Circle.</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2></NodeIdL2>
+                                    <NodeIdL2>circle_R.circle_R_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -132,8 +132,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>circle_R_stddev.circle_R_stddev_v</NodeRootL2>
-                                    <NodeIdL2></NodeIdL2>
+                                    <NodeRootL2></NodeRootL2>
+                                    <NodeIdL2>circle_R_stddev.circle_R_stddev_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -186,10 +186,10 @@
                                     <Name>FPS</Name>
                                     <Description>CCD FPS</Description>
                                     <NameSpace>2</NameSpace>
-                                    <NodeId>CDM.Camera.FPS.FPS_v</NodeId>
+                                    <NodeId>CDM.Camera.</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2></NodeIdL2>
+                                    <NodeIdL2>FPS.FPS_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
@@ -507,10 +507,10 @@
                                     <Name>SetDPQuality</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
-                                    <NodeId>SetDPQuality</NodeId>
+                                    <NodeId>Set</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2></NodeIdL2>
+                                    <NodeIdL2>DPQuality</NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
