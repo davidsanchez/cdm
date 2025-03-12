@@ -357,7 +357,7 @@ void DatapointMonitor::CheckLEDsUpdate(std::vector<std::string> listElements, st
 void DatapointMonitor::CheckShutterUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
     
-
+/*
     std::cout << "Elements de listElements :" << std::endl;
     for (const auto& element : listElements) {
         std::cout << element << std::endl;
@@ -377,7 +377,7 @@ void DatapointMonitor::CheckShutterUpdate(std::vector<std::string> listElements,
         int shutter_value = std::stoi(listValues[target_index]);
         std::cout<<"shutter_value "<<shutter_value<<std::endl;
         caller->UpdateShutterValue(shutter_value);
-    }
+    }*/
 }
 
 void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
