@@ -78,6 +78,7 @@ std::vector<std::string> DatapointMonitor::getElements()
     elements.push_back(this->oarl_var_name);
     elements.push_back(this->leds_var_name);
     elements.push_back(this->shutter_var_name);
+    std::cout<<this->sis_var_name<<std::endl;
     elements.push_back(this->sis_var_name);
 
     elements.push_back(this->drive_inmotion_var_name);
