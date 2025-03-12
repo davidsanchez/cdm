@@ -382,16 +382,8 @@ void DatapointMonitor::CheckShutterUpdate(std::vector<std::string> listElements,
 }
 
 void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
-{
-    /*!
-    Checks if the SIS data point was changed 
-    and reports the update to the "caller" object in such a case.
+{/*
 
-    @param listElements
-        List of changed data points
-    @param listValues
-        List of values of the changed data points
-    */
 
     int target_index;
         // Affichage des éléments de listElements
@@ -418,6 +410,7 @@ void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std
             caller->UpdateSISValue(sis_value);
             std::cout << "UpdateSISValue done" << std::endl;
         }
+        */
     }
 
 
