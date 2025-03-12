@@ -393,7 +393,7 @@ void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std
 
     int target_index;
 
-    std::vector<std::string> listElements = {
+    std::vector<std::string> le = {
         "Element1",
         "DataBroker.DataBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v",
         "Element3"
@@ -401,12 +401,12 @@ void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std
 
     //auto sis_iterator = std::find(listElements.begin(), listElements.end(), "DataBroker.DataBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v");
     
-    auto sis_iterator = std::find(listElements.begin(), listElements.end(), this->sis_var_name);
+    auto sis_iterator = std::find(le.begin(), le.end(), this->sis_var_name);
 
-    if (sis_iterator != listElements.end())
+    if (sis_iterator != le.end())
     {
         // SIS data point updated, acting
-        target_index = sis_iterator - listElements.begin();
+        target_index = sis_iterator - le.begin();
 
         int sis_value = std::stoi(listValues[target_index]);
         caller->UpdateSISValue(sis_value);
