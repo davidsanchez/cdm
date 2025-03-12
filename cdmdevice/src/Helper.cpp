@@ -40,7 +40,7 @@ std::string  Helper::searchDatapointWithNodeID (string element, Config *config)
         {
         LOG_DEBUG<<"DAVID NodeId "<<myElement->NodeId;
         LOG_DEBUG<<"DAVID NodeIdL2 "<<myElement->NodeIdL2;
-		nodeIdL1 = rootElement + myElement->NodeId+myElement->NodeIdL2;
+		nodeIdL1 = rootElement + myElement->NodeId;//+myElement->NodeIdL2;
         LOG_DEBUG<<"DAVID FINAL "<<nodeIdL1;
                 return(nodeIdL1);
         }
