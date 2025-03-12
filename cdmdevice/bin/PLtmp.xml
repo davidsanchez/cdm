@@ -42,10 +42,10 @@
                                     <Name>Shutter</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
-				                    <NodeId>CameraControl.ModulesAvailable.ECC.exports.ServerECC.ECC.Monitoring.Shutter.GeneralStatus.GeneralStatus_v</NodeId>
+				                    <NodeId>CameraControl.ModulesAvailable.ECC.exports.ServerECC.ECC.Monitoring.</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
-                                    <NodeIdL2></NodeIdL2>
+                                    <NodeIdL2>Shutter.GeneralStatus.GeneralStatus_v</NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
