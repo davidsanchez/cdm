@@ -58,9 +58,6 @@ Meteo::Meteo()
     tsensor = yFirstTemperature();
     psensor = yFirstPressure();
 
-    // chunk.memory = (char *)malloc(1); /* will be grown as needed by the realloc above */
-    // chunk.size = 0;                   /* no data at this point */
-
 
 };
 

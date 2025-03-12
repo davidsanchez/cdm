@@ -1,5 +1,5 @@
-#ifndef Logging_H_
-#define Logging_H_
+#ifndef LOGGING_H_
+#define LOGGING_H_
 
 #pragma once
 
@@ -15,8 +15,7 @@
 #include <boost/log/sources/channel_logger.hpp>
 #include <boost/log/sources/severity_logger.hpp>
 #include <boost/log/sources/severity_channel_logger.hpp>
-//#include <boost/log/support/date_time.hpp>
-//#include <boost/log/utility/setup.hpp>
+
 
 BOOST_LOG_ATTRIBUTE_KEYWORD(a_severity, "Severity", boost::log::trivial::severity_level)
 BOOST_LOG_ATTRIBUTE_KEYWORD(a_channel, "Channel", std::string)
@@ -42,4 +41,4 @@ typedef boost::log::sources::severity_channel_logger_mt< boost::log::trivial::se
 //declares a global logger with a custom initialization
 BOOST_LOG_GLOBAL_LOGGER(my_logger, logger_t)
 
-#endif //  Logging_H_
+#endif //  LOGGING_H_

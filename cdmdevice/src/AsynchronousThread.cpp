@@ -21,24 +21,6 @@ extern Helper helper;
 #define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
 
 
-/*std::string  AsynchronousThread::searchDatapoint (string element)
-{
-        ListElement *myElement = NULL;
-        std::string rootElement = "";
-        std::string nodeIdL1 = "";
-
-        myElement = cdm_config->searchElement(element);
-        rootElement = cdm_config->getRootName() + ".";
-        if (myElement)
-        {
-                nodeIdL1 = rootElement + myElement->NodeId;
-                return(nodeIdL1);
-        }
-        return("");
-}
-*/
-
-
 AsynchronousThread::AsynchronousThread(DataAccessClientOPCUA *dataAccessClientOPCUA)
 {
     m_pause = false;
@@ -201,20 +183,6 @@ void *AsynchronousThread::run(void *params)
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
                 //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
 
-                // you can put the outputs arguments in this place to inform the server
-                // temString = m_datapointName + "._OutputArguments._Val_Retour";
-                // tempValue = "command Open : c'est bon c'est fini : JL ";
-                // m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, tempValue);
-
-                // inform that the command is done
-                // temString = m_datapointName + "._Done";
-                // m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, true);
-
-                // inform that the command is not in progress
-                // temString = m_datapointName + "._InProgressBar";
-                // t = 0;
-                // m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
-
                 // reset the command
                 m_cmdGetMultipleImages = 0;
             }
@@ -230,10 +198,6 @@ void *AsynchronousThread::run(void *params)
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
                 //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
 
-                // inform that the command is in progress
-                // temString = m_datapointName + "._InProgressBar";
-                // t = 1;
-                // m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
 
                 // ****************** here put the code for Start who take a long time to execute ***************
 
@@ -259,20 +223,6 @@ void *AsynchronousThread::run(void *params)
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
                 //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
 
-                // you can put the outputs arguments in this place to inform the server
-                // temString = m_datapointName + "._OutputArguments._Val_Retour";
-                // tempValue = "command Open : c'est bon c'est fini : JL ";
-                // m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, tempValue);
-
-                // inform that the command is done
-                // temString = m_datapointName + "._Done";
-                // m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, true);
-
-                // inform that the command is not in progress
-                // temString = m_datapointName + "._InProgressBar";
-                // t = 0;
-                // m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
-
                 // reset the command
                 m_cmdGetMultipleImagesStacked = 0;
             }
@@ -286,30 +236,11 @@ void *AsynchronousThread::run(void *params)
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 2);
                 //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, 2);
                 // Put the transition state to 0.
-                //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
                 //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
-
-                // inform that the command is in progress
-                // temString = m_datapointName + "._InProgressBar";
-                // t = 1;
-                // m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
 
                 // ****************** here put the code for Start who take a long time to execute ***************
                 camera.StartCDM(m_dataAccessClientOPCUA);
-
-                // you can put the outputs arguments in this place to inform the server
-                // temString = m_datapointName + "._OutputArguments._Val_Retour";
-                // tempValue = "command Open : c'est bon c'est fini : JL ";
-                // m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, tempValue);
-
-                // inform that the command is done
-                // temString = m_datapointName + "._Done";
-                // m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, true);
-
-                // inform that the command is not in progress
-                // temString = m_datapointName + "._InProgressBar";
-                // t = 0;
-                // m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
 
                 // reset the command
                 m_cmdStartCDM = 0;
@@ -340,27 +271,8 @@ void *AsynchronousThread::run(void *params)
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
                 //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
 
-                // inform that the command is in progress
-                // temString = m_datapointName + "._InProgressBar";
-                // t = 1;
-                // m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
-
                 // ****************** here put the code for Start who take a long time to execute ***************
                 camera.StartStream(m_dataAccessClientOPCUA);
-
-                // you can put the outputs arguments in this place to inform the server
-                // temString = m_datapointName + "._OutputArguments._Val_Retour";
-                // tempValue = "command Open : c'est bon c'est fini : JL ";
-                // m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, tempValue);
-
-                // inform that the command is done
-                // temString = m_datapointName + "._Done";
-                // m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, true);
-
-                // inform that the command is not in progress
-                // temString = m_datapointName + "._InProgressBar";
-                // t = 0;
-                // m_dataAccessClientOPCUA->setDatapoint(temString, m_nameSpace, t);
 
                 // reset the command
                 m_cmdStartStream = 0;

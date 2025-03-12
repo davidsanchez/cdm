@@ -16,7 +16,6 @@ extern Helper helper;
 class DatapointMonitor : public MOS_CallbackInterface {
 public:
     DatapointMonitor(CDM *caller);
-   // void dataChange(std::vector<std::string> listElements, std::vector<std::string> listValues, std::vector<int> listQuality);
     void  dataChange(std::vector<std::string> listElements, std::vector<std::string> listValues, std::vector<int> listQuality, std::vector<std::string> listTime);
 
     void infoDebug(){};
@@ -29,8 +28,8 @@ private:
 
     CDM *caller;
     
+    //Read the configuration and set up DP names
     Config *DB_config = new Config(DATABROKER_CONFIGURATION_NAME,"");
-    //const std::string led01_var_name =   "DataBroker.SecurityBrokerControl.CameraControl.Led_01.Led_01_v"; 
     const std::string leds_var_name =    helper.searchDatapoint("LEDPositions",DB_config);
     const std::string shutter_var_name =  helper.searchDatapoint("Shutter",DB_config); 
     const std::string sis_var_name =      helper.searchDatapoint("SIS",DB_config); 
@@ -67,7 +66,6 @@ private:
     void CheckZdOffsetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckSourceUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckOARLUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
-    // void CheckLED01Update(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckLEDsUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckShutterUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckSISUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);

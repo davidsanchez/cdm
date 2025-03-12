@@ -176,12 +176,6 @@ public:
 
     };
 
-    //int publish_datapoint(std::string datapoint_name, int nameSpace, int data );
-
-    //void set_OPCUAref(DataAccessClientOPCUA*);
-
-    // declare a  new method
-
     double get_Ra_drive() { return Helper::Ra_drive; }
     double get_Dec_drive() { return Helper::Dec_drive; }
     double get_Ra_target() { return Helper::Ra_target; }
