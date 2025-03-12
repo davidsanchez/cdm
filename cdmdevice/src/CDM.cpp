@@ -133,9 +133,9 @@ int CDM::afterStart()
         throw std::exception();
     }
     // remplace le hardcodage des datapoints --> recuperation des infos provenant du fichier PLC_*****.xml
-    getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("state",cdm_config), namespaceL2, 0);
+//    getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("state",cdm_config), namespaceL2, 0);
     
-//    getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
+    getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
 
     int quality = 0; // (0= Good, 1=Uncertain, 2 = Bad)
     std::string methodToCall = helper.searchDatapoint("SetDPQuality",cdm_config);
@@ -597,8 +597,8 @@ int CDM::close()
 
 int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::any> &tabValue)
 {
-    //LOG_TRACE << "CDM::get()";
-    //LOG_TRACE << "Chain: " << chain;
+    LOG_DEBUG << "CDM::get()";
+    LOG_DEBUG << "Chain: " << chain;
 
     // Usually you would push_back to the tabValue vector and they would be automatically updated in the OPCUA server.
     // But there is some bug that crashes the program when resizing that vector and the chain is empty.
