@@ -409,9 +409,11 @@ void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std
     {
         // SIS data point updated, acting
         target_index = sis_iterator - listElements.begin();
-
+        std::cout<<"target_index "<<target_index<<std::endl;
         int sis_value = std::stoi(listValues[target_index]);
+        std::cout<<"sis_value "<<sis_value<<std::endl;
         caller->UpdateSISValue(sis_value);
+        std::cout<<"UpdateSISValue done"<<<<std::endl;
     }
 }
 
