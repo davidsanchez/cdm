@@ -21,10 +21,10 @@ std::string  Helper::searchDatapoint (string element, Config *config)
         rootElement = config->getRootName() + ".";
         if (myElement)
         {
-        LOG_DEBUG<<myElement->NodeId;
-        LOG_DEBUG<<myElement->NodeIdL2;
+        LOG_DEBUG<<"DAVID "<<myElement->NodeId;
+        LOG_DEBUG<<"DAVID "<<myElement->NodeIdL2;
 		nodeIdL1 = rootElement + myElement->NodeId+myElement->NodeIdL2;
-        LOG_DEBUG<<nodeIdL1;
+        LOG_DEBUG<<"DAVID "<<nodeIdL1;
                 return(nodeIdL1);
         }
         return("");
