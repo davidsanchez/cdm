@@ -92,7 +92,7 @@ std::vector<std::string> DatapointMonitor::getElements()
     elements.push_back(this->aux_DMWestBottom_var_name);
     elements.push_back(this->aux_DMWestTop_var_name);
     elements.push_back(this->sis_var_name);
-    
+
 
     return elements;
 }
@@ -400,6 +400,7 @@ void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std
             std::cout << element << std::endl;
         }
 
+    std::cout<<"aaaa "<<this->sis_var_name<< std::endl;
     //auto sis_iterator = std::find(listElements.begin(), listElements.end(), "DataBroker.DataBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v");
     
     auto sis_iterator = std::find(listElements.begin(), listElements.end(), this->sis_var_name);
