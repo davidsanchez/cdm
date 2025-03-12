@@ -56,7 +56,7 @@
                                     <Name>SIS</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
-				                    <NodeId>SecurityBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v</NodeId>
+				                    <NodeId>CameraControl.ModulesStatus.SIS.SIS_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
