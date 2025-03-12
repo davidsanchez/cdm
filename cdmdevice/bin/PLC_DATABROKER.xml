@@ -169,7 +169,7 @@
         	                        <Name>Azimuth_Offset</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.Azimuth_Offset.Azimuth_Offset_v"</NodeId>
+        	                        <NodeId>DriveControl.Azimuth_Offset.Azimuth_Offset_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
@@ -183,7 +183,7 @@
         	                        <Name>ZenithAngle_Offset</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.ZenithAngle_Offset.ZenithAngle_Offset_v"</NodeId>
+        	                        <NodeId>DriveControl.ZenithAngle_Offset.ZenithAngle_Offset_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
@@ -197,7 +197,7 @@
         	                        <Name>RA_Telescope</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.RA_Telescope.RA_Telescope_v"</NodeId>
+        	                        <NodeId>DriveControl.RA_Telescope.RA_Telescope_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
@@ -211,7 +211,7 @@
         	                        <Name>Dec_Telescope</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.Dec_Telescope.Dec_Telescope_v"</NodeId>
+        	                        <NodeId>DriveControl.Dec_Telescope.Dec_Telescope_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
@@ -225,7 +225,7 @@
         	                        <Name>SourceName</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.SourceName.SourceName_v"</NodeId>
+        	                        <NodeId>DriveControl.SourceName.SourceName_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
@@ -239,7 +239,7 @@
         	                        <Name>azimuth_position</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.CurrentPosition.azimuth_position.azimuth_position_v"</NodeId>
+        	                        <NodeId>DriveControl.CurrentPosition.azimuth_position.azimuth_position_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
@@ -253,7 +253,7 @@
         	                        <Name>zenithangle_position</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.CurrentPosition.zenithangle_position.zenithangle_position_v"</NodeId>
+        	                        <NodeId>DriveControl.CurrentPosition.zenithangle_position.zenithangle_position_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
@@ -267,7 +267,7 @@
         	                        <Name>Status_In_Motion</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.Status.Status_In_Motion.Status_In_Motion_v"</NodeId>
+        	                        <NodeId>DriveControl.Status.Status_In_Motion.Status_In_Motion_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
@@ -281,7 +281,7 @@
         	                        <Name>Status_In_Motion</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.Status.Status_In_Motion.Status_In_Motion_v"</NodeId>
+        	                        <NodeId>DriveControl.Status.Status_In_Motion.Status_In_Motion_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
@@ -295,7 +295,7 @@
         	                        <Name>Status_In_Parking_Position</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.Status.Status_In_Parking_Position.Status_In_Parking_Position_v"</NodeId>
+        	                        <NodeId>DriveControl.Status.Status_In_Parking_Position.Status_In_Parking_Position_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
@@ -309,7 +309,7 @@
         	                        <Name>Status_Parked</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.Status.Status_Parked.Status_Parked_v"</NodeId>
+        	                        <NodeId>DriveControl.Status.Status_Parked.Status_Parked_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
@@ -323,7 +323,7 @@
         	                        <Name>Status_Tracking_In_Progress</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.Status.Status_Tracking_In_Progress.Status_Tracking_In_Progress_v"</NodeId>
+        	                        <NodeId>DriveControl.Status.Status_Tracking_In_Progress.Status_Tracking_In_Progress_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
