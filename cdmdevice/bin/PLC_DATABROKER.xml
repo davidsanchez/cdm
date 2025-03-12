@@ -29,7 +29,7 @@
                                     <Name>LEDPositions</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
-				                    <NodeId>CameraControl.ModulesAvailable.ECC.exports.ServerECC.ECC.Monitoring.</NodeId>
+				                    <NodeId>CameraControl.</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2>LEDPositions.GeneralStatus.GeneralStatus_v</NodeIdL2>
@@ -43,7 +43,7 @@
                                     <Name>Shutter</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
-				                    <NodeId>CameraControl.ModulesAvailable.ECC.exports.ServerECC.ECC.Monitoring.</NodeId>
+				                    <NodeId>CameraControl.ModulesAvailable.</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2>Shutter.GeneralStatus.GeneralStatus_v</NodeIdL2>
