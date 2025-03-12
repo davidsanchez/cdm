@@ -611,14 +611,14 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
     if (chain.find("get_temperatureValue") != std::string::npos)
     {
         return_value_double = camera.get_temperature_value();
-        COND_LOG_DEBUG << "Camera temperature value is: " << return_value_double << endl;
+        LOG_DEBUG << "Camera temperature value is: " << return_value_double << endl;
         //getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.temperatureValue.temperatureValue_v", 2, return_value_double);
         getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("CameraTemp",cdm_config), 2, return_value_double);
     }
     else if (chain.find("get_temperatureStatus") != std::string::npos)
     {
         return_value_string = camera.get_temperature_status();
-        COND_LOG_DEBUG << "Camera temperature status is: " << return_value_string << endl;
+        LOG_DEBUG << "Camera temperature status is: " << return_value_string << endl;
         tabValue.resize(0);
         tabValue.push_back(return_value_string);
     }
