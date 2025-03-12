@@ -392,7 +392,8 @@ void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std
 
     int target_index;
 
-    auto sis_iterator = std::find(listElements.begin(), listElements.end(), this->sis_var_name);
+    auto sis_iterator = std::find(listElements.begin(), listElements.end(), "rr");
+    //auto sis_iterator = std::find(listElements.begin(), listElements.end(), this->sis_var_name);
 
     if (sis_iterator != listElements.end())
     {
