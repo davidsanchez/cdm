@@ -29,7 +29,7 @@
                                     <Name>LEDPositions</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
-				                    <NodeId>SecurityBrokerControl.CameraControl.ECC.Monitoring.LEDPositions.GeneralStatus.GeneralStatus_v</NodeId>
+				                    <NodeId>CameraControl.ModulesAvailable.ECC.exports.ServerECC.ECC.Monitoring.LEDPositions.GeneralStatus.GeneralStatus_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>

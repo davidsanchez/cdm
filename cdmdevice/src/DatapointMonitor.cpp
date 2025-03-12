@@ -356,15 +356,8 @@ void DatapointMonitor::CheckLEDsUpdate(std::vector<std::string> listElements, st
 
 void DatapointMonitor::CheckShutterUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
-    Checks if the Shutter data point was changed 
-    and reports the update to the "caller" object in such a case.
+    /*
 
-    @param listElements
-        List of changed data points
-    @param listValues
-        List of values of the changed data points
-    */
 
 
     int target_index;
@@ -378,7 +371,7 @@ void DatapointMonitor::CheckShutterUpdate(std::vector<std::string> listElements,
 
         int shutter_value = std::stoi(listValues[target_index]);
         caller->UpdateShutterValue(shutter_value);
-    }
+    }*/
 }
 
 void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
