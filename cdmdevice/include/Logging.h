@@ -27,8 +27,8 @@ typedef boost::log::sources::severity_channel_logger_mt< boost::log::trivial::se
 // Déclaration de la variable booléenne pour activer ou désactiver le log de débogage
 extern bool enable_debug_logging;
 
-// Macro pour le log de débogage conditionnel
-#define COND_LOG_DEBUG if (enable_debug_logging) LOG_DEBUG
+
+
 
 #define LOG_TRACE BOOST_LOG_CHANNEL_SEV(my_logger::get(), "all", boost::log::trivial::trace)
 #define LOG_DEBUG BOOST_LOG_CHANNEL_SEV(my_logger::get(), "debug", boost::log::trivial::debug)
@@ -37,7 +37,8 @@ extern bool enable_debug_logging;
 #define LOG_WARNING BOOST_LOG_CHANNEL_SEV(my_logger::get(), "all", boost::log::trivial::warning)
 #define LOG_ERROR BOOST_LOG_CHANNEL_SEV(my_logger::get(), "all", boost::log::trivial::error)
 #define LOG_FATAL BOOST_LOG_CHANNEL_SEV(my_logger::get(), "all", boost::log::trivial::fatal)
-
+// Macro pour le log de débogage conditionnel
+#define COND_LOG_DEBUG if (enable_debug_logging) LOG_DEBUG
 
 #define LOG_ENV BOOST_LOG_CHANNEL_SEV(my_logger::get(), "env", boost::log::trivial::fatal)
 #define LOG_DATA BOOST_LOG_CHANNEL_SEV(my_logger::get(), "data", boost::log::trivial::fatal)
