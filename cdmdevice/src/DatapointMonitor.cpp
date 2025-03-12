@@ -401,10 +401,10 @@ void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std
         }
 
     std::cout<<"aaaa "<<this->sis_var_name<< std::endl;
-    //auto sis_iterator = std::find(listElements.begin(), listElements.end(), "DataBroker.DataBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v");
+    auto sis_iterator = std::find(listElements.begin(), listElements.end(), "DataBroker.DataBrokerControl.CameraControl.ModulesStatus.SIS.SIS_v");
     
-    auto sis_iterator = std::find(listElements.begin(), listElements.end(), this->sis_var_name);
-
+    //auto sis_iterator = std::find(listElements.begin(), listElements.end(), this->sis_var_name);
+    std::cout<<"bbbb "<<this->sis_var_name<< std::endl;
     if (sis_iterator != listElements.end())
     {
         // SIS data point updated, acting
