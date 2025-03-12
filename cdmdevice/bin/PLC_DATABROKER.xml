@@ -141,7 +141,7 @@
         	                        <Name>RA_Target</Name>
         	                        <Description></Description>
         	                        <NameSpace>2</NameSpace>
-        	                        <NodeId>DriveControl.Dec_Target.RA_Target_v</NodeId>
+        	                        <NodeId>DriveControl.RA_Target.RA_Target_v</NodeId>
                                     <NameSpaceL2></NameSpaceL2>
                                     <NodeRootL2></NodeRootL2>
                                     <NodeIdL2></NodeIdL2>
