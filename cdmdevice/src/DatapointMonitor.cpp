@@ -238,11 +238,12 @@ void DatapointMonitor::CheckZdUpdate(std::vector<std::string> listElements, std:
         List of values of the changed data points
     */
 
-    /*int target_index = GetTargetIndex(listElements, listValues, this->zd_var_name);
-    if (target_index != -1 ) {
-        double zd_value = std::stod(listValues[target_index]);
+    int index = GetTargetIndex(listElements, listValues, this->zd_var_name);
+    if (index != -1 ) {
+        double zd_value = std::stod(listValues[index]);
         caller->UpdateZdValue(zd_value);
-    }*/
+    }
+    /*
     int target_index;
     auto zd_iterator = std::find(listElements.begin(), listElements.end(), this->zd_var_name);
     
@@ -253,7 +254,7 @@ void DatapointMonitor::CheckZdUpdate(std::vector<std::string> listElements, std:
         
         double zd_value = std::stod(listValues[target_index]);
         caller->UpdateZdValue(zd_value);
-    }
+    }*/
 }
 
 void DatapointMonitor::CheckAzOffsetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
@@ -268,6 +269,13 @@ void DatapointMonitor::CheckAzOffsetUpdate(std::vector<std::string> listElements
         List of values of the changed data points
     */
 
+    int index = GetTargetIndex(listElements, listValues, this->az_offset_var_name);
+    if (index != -1 ) {
+        double az_offset_value = std::stod(listValues[index]);
+        caller->UpdateAzOffsetValue(az_offset_value);
+    }
+
+    /*
     int target_index;
 
     auto az_offset_iterator = std::find(listElements.begin(), listElements.end(), this->az_offset_var_name);
@@ -279,7 +287,7 @@ void DatapointMonitor::CheckAzOffsetUpdate(std::vector<std::string> listElements
 
         double az_offset_value = std::stod(listValues[target_index]);
         caller->UpdateAzOffsetValue(az_offset_value);
-    }
+    }*/
 }
 
 void DatapointMonitor::CheckZdOffsetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
