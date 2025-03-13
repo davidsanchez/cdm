@@ -330,13 +330,6 @@ void DatapointMonitor::CheckOARLUpdate(std::vector<std::string> listElements, st
         List of values of the changed data points
     */
 
-    int index = GetTargetIndex(listElements, listValues, this->oarl_var_name);
-    COND_LOG_DEBUG<<" NEW way e "<<index<<std::endl;
-    if (index != -1 ) {
-        double zd_value = std::stod(listValues[index]);
-        caller->UpdateZdValue(zd_value);
-    }
-    else {COND_LOG_DEBUG<<" No UPDATE of OARL "<<std::endl;}
 
     int target_index;
 
@@ -353,6 +346,16 @@ void DatapointMonitor::CheckOARLUpdate(std::vector<std::string> listElements, st
         COND_LOG_DEBUG<<" FOUND OLD way oarl_valuex "<<oarl_value<<std::endl;
         caller->UpdateOARLValue(oarl_value);
     }
+
+    int index = GetTargetIndex(listElements, listValues, this->oarl_var_name);
+    COND_LOG_DEBUG<<" NEW way index "<<index<<std::endl;
+    if (index != -1 ) {
+        double zd_value = std::stod(listValues[index]);
+        COND_LOG_DEBUG<<" NEW way zd_value "<<zd_value<<std::endl;
+        caller->UpdateZdValue(zd_value);
+    }
+    else {COND_LOG_DEBUG<<" No UPDATE of OARL "<<std::endl;}
+
 }
 
 void DatapointMonitor::CheckLEDsUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
