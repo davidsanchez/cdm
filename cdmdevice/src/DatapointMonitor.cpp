@@ -120,7 +120,7 @@ int DatapointMonitor::GetTargetIndex(std::vector<std::string> listElements, std:
 {
 
 
-    int target_index;
+    int target_index = -1;
 
     auto iterator = std::find(listElements.begin(), listElements.end(), var_name);
 
