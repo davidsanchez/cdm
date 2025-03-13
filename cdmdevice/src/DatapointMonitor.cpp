@@ -221,18 +221,19 @@ void DatapointMonitor::CheckZdUpdate(std::vector<std::string> listElements, std:
         List of values of the changed data points
     */
 
-    int target_index = GetTargetIndex(listElements, listValues, this->zd_var_name);
+    /*int target_index = GetTargetIndex(listElements, listValues, this->zd_var_name);
     if (target_index != -1 ) {
         double zd_value = std::stod(listValues[target_index]);
         caller->UpdateZdValue(zd_value);
-    }
+    }*/
+    int target_index;
     auto zd_iterator = std::find(listElements.begin(), listElements.end(), this->zd_var_name);
-    COND_LOG_DEBUG<<" OLD way  this->zd_var_name "<< this->zd_var_name<<std::endl;
+    
     if (zd_iterator != listElements.end())
     {
         // Zd data point updated, acting
         target_index = zd_iterator - listElements.begin();
-        COND_LOG_DEBUG<<" OLD way target_index "<<target_index<<std::endl;
+        
         double zd_value = std::stod(listValues[target_index]);
         caller->UpdateZdValue(zd_value);
     }
@@ -328,15 +329,21 @@ void DatapointMonitor::CheckOARLUpdate(std::vector<std::string> listElements, st
         List of values of the changed data points
     */
 
-    int target_index;
+    int target_index = GetTargetIndex(listElements, listValues, this->zd_var_name);
+    if (target_index != -1 ) {
+        double zd_value = std::stod(listValues[target_index]);
+        caller->UpdateZdValue(zd_value);
+    }
+
+    //int target_index;
 
     auto oarl_iterator = std::find(listElements.begin(), listElements.end(), this->oarl_var_name);
-
+    COND_LOG_DEBUG<<" OLD way  this->oarl_var_name "<< this->oarl_var_name<<std::endl;
     if (oarl_iterator != listElements.end())
     {
         // OARL data point updated, acting
         target_index = oarl_iterator - listElements.begin();
-
+        COND_LOG_DEBUG<<" OLD way target_index "<<target_index<<std::endl;
         // Converts the string to bool value.
         bool oarl_value;
         istringstream(listValues[target_index]) >> std::boolalpha >> oarl_value;
