@@ -119,13 +119,17 @@ std::vector<int> DatapointMonitor::getNameSpaces()
 int DatapointMonitor::GetTargetIndex(std::vector<std::string> listElements, std::vector<std::string> listValues, std::string var_name)
 {
     int target_index = -1;
-
+    COND_LOG_DEBUG<<" in GetTargetIndex "<<std::endl;
+    COND_LOG_DEBUG<<" var_name "<<var_name<<std::endl;
     auto iterator = std::find(listElements.begin(), listElements.end(), var_name);
+
+    COND_LOG_DEBUG<<" iterator "<<*iterator<<std::endl;
+
 
     if (iterator != listElements.end())  target_index = iterator - listElements.begin();
     else LOG_FATAL<<"Element "<<var_name<<" not found" << std::endl;
     
-    COND_LOG_DEBUG<<" Found taget index "<<target_index<<std::endl;
+    COND_LOG_DEBUG<<" Value of taget index "<<target_index<<std::endl;
     return target_index;
 }
 
