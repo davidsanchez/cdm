@@ -119,8 +119,7 @@ std::vector<int> DatapointMonitor::getNameSpaces()
 int DatapointMonitor::GetTargetIndex(std::vector<std::string> listElements, std::vector<std::string> listValues, std::string var_name)
 {
     int target_index = -1;
-    COND_LOG_DEBUG<<" in GetTargetIndex "<<std::endl;
-    COND_LOG_DEBUG<<" var_name "<<var_name<<std::endl;
+
     auto iterator = std::find(listElements.begin(), listElements.end(), var_name);
 
     if (iterator != listElements.end())  target_index = iterator - listElements.begin();
@@ -133,7 +132,7 @@ int DatapointMonitor::GetTargetIndex(std::vector<std::string> listElements, std:
 
 void DatapointMonitor::CheckRaUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the RA data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -143,8 +142,14 @@ void DatapointMonitor::CheckRaUpdate(std::vector<std::string> listElements, std:
         List of values of the changed data points
     */
 
-    int target_index;
 
+    int index = GetTargetIndex(listElements, listValues, this->ra_tel_var_name);
+    if (index != -1 ) {
+        double ra_value = std::stod(listValues[index]);
+        caller->UpdateRaValue(ra_value);
+    }
+    /*
+    int target_index;
     auto ra_iterator = std::find(listElements.begin(), listElements.end(), this->ra_tel_var_name);
 
     if (ra_iterator != listElements.end())
@@ -154,7 +159,7 @@ void DatapointMonitor::CheckRaUpdate(std::vector<std::string> listElements, std:
 
         double ra_value = std::stod(listValues[target_index]);
         caller->UpdateRaValue(ra_value);
-    }
+    }*/
 }
 
 void DatapointMonitor::CheckDecUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
