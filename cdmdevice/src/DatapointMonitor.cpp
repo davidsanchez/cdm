@@ -820,5 +820,5 @@ void DatapointMonitor::CheckAuxDMWestTopUpdate(std::vector<std::string> listElem
         bool aux_value;
         istringstream(listValues[target_index]) >> std::boolalpha >> aux_value;
         caller->UpdateAuxDMWestTopValue(aux_value);
-    }
+    }*/
 }
