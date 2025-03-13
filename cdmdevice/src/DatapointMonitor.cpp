@@ -164,7 +164,7 @@ void DatapointMonitor::CheckRaUpdate(std::vector<std::string> listElements, std:
 
 void DatapointMonitor::CheckDecUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the Dec data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -174,6 +174,12 @@ void DatapointMonitor::CheckDecUpdate(std::vector<std::string> listElements, std
         List of values of the changed data points
     */
 
+    int index = GetTargetIndex(listElements, listValues, this->dec_tel_var_name);
+    if (index != -1 ) {
+        double dec_value = std::stod(listValues[index]);
+        caller->UpdateDecValue(dec_value);
+    }
+    /*
     int target_index;
 
     auto dec_iterator = std::find(listElements.begin(), listElements.end(), this->dec_tel_var_name);
@@ -185,7 +191,7 @@ void DatapointMonitor::CheckDecUpdate(std::vector<std::string> listElements, std
 
         double dec_value = std::stod(listValues[target_index]);
         caller->UpdateDecValue(dec_value);
-    }
+    }*/
 }
 
 void DatapointMonitor::CheckAzUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
