@@ -343,16 +343,17 @@ void DatapointMonitor::CheckOARLUpdate(std::vector<std::string> listElements, st
         // Converts the string to bool value.
         bool oarl_value;
         istringstream(listValues[target_index]) >> std::boolalpha >> oarl_value;
-        COND_LOG_DEBUG<<" FOUND OLD way oarl_valuex "<<oarl_value<<std::endl;
+        COND_LOG_DEBUG<<" FOUND OLD way oarl_value "<<oarl_value<<std::endl;
         caller->UpdateOARLValue(oarl_value);
     }
 
     int index = GetTargetIndex(listElements, listValues, this->oarl_var_name);
     COND_LOG_DEBUG<<" NEW way index "<<index<<std::endl;
     if (index != -1 ) {
-        double zd_value = std::stod(listValues[index]);
-        COND_LOG_DEBUG<<" NEW way zd_value "<<zd_value<<std::endl;
-        caller->UpdateZdValue(zd_value);
+        bool oarl_value;
+        istringstream(listValues[target_index]) >> std::boolalpha >> oarl_value;
+        COND_LOG_DEBUG<<" FOUND NEW way oarl_value "<<oarl_value<<std::endl;
+        caller->UpdateOARLValue(oarl_value);
     }
     else {COND_LOG_DEBUG<<" No UPDATE of OARL "<<std::endl;}
 
