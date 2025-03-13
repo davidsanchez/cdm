@@ -397,7 +397,7 @@ void DatapointMonitor::CheckOARLUpdate(std::vector<std::string> listElements, st
 
 void DatapointMonitor::CheckLEDsUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the LEDs data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -472,7 +472,7 @@ void DatapointMonitor::CheckSISUpdate(std::vector<std::string> listElements, std
 
 void DatapointMonitor::CheckDriveInMotionUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the DriveInMotion data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -482,6 +482,15 @@ void DatapointMonitor::CheckDriveInMotionUpdate(std::vector<std::string> listEle
         List of values of the changed data points
     */
 
+    int index = GetTargetIndex(listElements, listValues, this->drive_inmotion_var_name);
+    if (index != -1 ) {
+        // Converts the string to bool value.
+        // Converts the string to bool value.
+        bool drive_value;
+        istringstream(listValues[index]) >> std::boolalpha >> drive_value;
+        caller->UpdateDriveInMotionValue(drive_value);
+    }
+    /*
     int target_index;
 
     auto drive_iterator = std::find(listElements.begin(), listElements.end(), this->drive_inmotion_var_name);
@@ -495,12 +504,12 @@ void DatapointMonitor::CheckDriveInMotionUpdate(std::vector<std::string> listEle
         bool drive_value;
         istringstream(listValues[target_index]) >> std::boolalpha >> drive_value;
         caller->UpdateDriveInMotionValue(drive_value);
-    }
+    }*/
 }
 
 void DatapointMonitor::CheckDriveInparkingPosUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the DriveInParkinPos data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -510,6 +519,16 @@ void DatapointMonitor::CheckDriveInparkingPosUpdate(std::vector<std::string> lis
         List of values of the changed data points
     */
 
+
+    int index = GetTargetIndex(listElements, listValues, this->drive_inparkinpos_var_name);
+    if (index != -1 ) {
+        // Converts the string to bool value.
+        // Converts the string to bool value.
+        bool drive_value;
+        istringstream(listValues[index]) >> std::boolalpha >> drive_value;
+        caller->UpdateDriveInParkingPosValue(drive_value);
+    }
+    /*
     int target_index;
 
     auto drive_iterator = std::find(listElements.begin(), listElements.end(), this->drive_inparkinpos_var_name);
@@ -523,7 +542,7 @@ void DatapointMonitor::CheckDriveInparkingPosUpdate(std::vector<std::string> lis
         bool drive_value;
         istringstream(listValues[target_index]) >> std::boolalpha >> drive_value;
         caller->UpdateDriveInParkingPosValue(drive_value);
-    }
+    }*/
 }
 
 void DatapointMonitor::CheckDriveParkedUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
