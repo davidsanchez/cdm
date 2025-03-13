@@ -715,7 +715,7 @@ void DatapointMonitor::CheckAuxDMEastBottomUpdate(std::vector<std::string> listE
 
 void DatapointMonitor::CheckAuxDMEastTopUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the Aux DM East Top data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -725,6 +725,14 @@ void DatapointMonitor::CheckAuxDMEastTopUpdate(std::vector<std::string> listElem
         List of values of the changed data points
     */
 
+    int index = GetTargetIndex(listElements, listValues, this->aux_DMEastTop_var_name);
+    if (index != -1 ) {
+        // Converts the string to bool value.
+        bool aux_value;
+        istringstream(listValues[target_index]) >> std::boolalpha >> aux_value;
+        caller->UpdateAuxDMEastTopValue(aux_value);
+    }
+    /*
     int target_index;
 
     auto aux_iterator = std::find(listElements.begin(), listElements.end(), this->aux_DMEastTop_var_name);
@@ -738,13 +746,13 @@ void DatapointMonitor::CheckAuxDMEastTopUpdate(std::vector<std::string> listElem
         bool aux_value;
         istringstream(listValues[target_index]) >> std::boolalpha >> aux_value;
         caller->UpdateAuxDMEastTopValue(aux_value);
-    }
+    }*/
 }
 
 
 void DatapointMonitor::CheckAuxDMWestBottomUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the Aux DM West Bottom data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -753,6 +761,14 @@ void DatapointMonitor::CheckAuxDMWestBottomUpdate(std::vector<std::string> listE
     @param listValues
         List of values of the changed data points
     */
+    int index = GetTargetIndex(listElements, listValues, this->aux_DMWestBottom_var_name);
+    if (index != -1 ) {
+        // Converts the string to bool value.
+        bool aux_value;
+        istringstream(listValues[target_index]) >> std::boolalpha >> aux_value;
+        caller->UpdateAuxDMWestBottomValue(aux_value);
+    }
+    /*
 
     int target_index;
 
@@ -767,13 +783,13 @@ void DatapointMonitor::CheckAuxDMWestBottomUpdate(std::vector<std::string> listE
         bool aux_value;
         istringstream(listValues[target_index]) >> std::boolalpha >> aux_value;
         caller->UpdateAuxDMWestBottomValue(aux_value);
-    }
+    }*/
 }
 
 
 void DatapointMonitor::CheckAuxDMWestTopUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the Aux DM West Top data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -782,6 +798,14 @@ void DatapointMonitor::CheckAuxDMWestTopUpdate(std::vector<std::string> listElem
     @param listValues
         List of values of the changed data points
     */
+    int index = GetTargetIndex(listElements, listValues, this->aux_DMWestTop_var_name);
+    if (index != -1 ) {
+        // Converts the string to bool value.
+        bool aux_value;
+        istringstream(listValues[target_index]) >> std::boolalpha >> aux_value;
+        caller->UpdateAuxDMWestTopValue(aux_value);
+    }
+    /*
 
     int target_index;
 
