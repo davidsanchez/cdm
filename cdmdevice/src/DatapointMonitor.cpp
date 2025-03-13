@@ -128,7 +128,7 @@ int DatapointMonitor::GetTargetIndex(std::vector<std::string> listElements, std:
     else LOG_FATAL<<"Element "<<var_name<<" not found" << std::endl;
     
     COND_LOG_DEBUG<<" Found taget index "<<target_index<<std::endl;
-    return target_index
+    return target_index;
 }
 
 
