@@ -185,6 +185,7 @@ void DatapointMonitor::CheckDecUpdate(std::vector<std::string> listElements, std
 
 void DatapointMonitor::CheckAzUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
+    
     /*!
     Checks if the Az data point was changed 
     and reports the update to the "caller" object in such a case.
@@ -329,7 +330,7 @@ void DatapointMonitor::CheckOARLUpdate(std::vector<std::string> listElements, st
         List of values of the changed data points
     */
 
-    int target_index = GetTargetIndex(listElements, listValues, this->zd_var_name);
+    int target_index = GetTargetIndex(listElements, listValues, this->oarl_var_name);
     if (target_index != -1 ) {
         double zd_value = std::stod(listValues[target_index]);
         caller->UpdateZdValue(zd_value);
@@ -343,7 +344,7 @@ void DatapointMonitor::CheckOARLUpdate(std::vector<std::string> listElements, st
     {
         // OARL data point updated, acting
         target_index = oarl_iterator - listElements.begin();
-        COND_LOG_DEBUG<<" OLD way target_index "<<target_index<<std::endl;
+        COND_LOG_DEBUG<<" FOUND OLD way target_index "<<target_index<<std::endl;
         // Converts the string to bool value.
         bool oarl_value;
         istringstream(listValues[target_index]) >> std::boolalpha >> oarl_value;
