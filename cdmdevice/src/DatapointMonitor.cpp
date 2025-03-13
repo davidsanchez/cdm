@@ -2,7 +2,7 @@
 #include "DatapointMonitor.h"
 #include "CDM.h"
 #include "Config.h"
-//#include "Logging.h"
+#include "Logging.h"
 
 
 #define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
@@ -113,6 +113,21 @@ std::vector<int> DatapointMonitor::getNameSpaces()
         namespaces.push_back(2);
 
     return namespaces;
+}
+
+
+int DatapointMonitor::GetTargetIndex(std::vector<std::string> listElements, std::vector<std::string> listValues, std::string var_name)
+{
+
+
+    int target_index;
+
+    auto iterator = std::find(listElements.begin(), listElements.end(), var_name);
+
+    if (iterator != listElements.end())  target_index = iterator - listElements.begin();
+    else LOG_FATAL<<"Element "<<var_name<<" not found" << std::endl;
+    
+    return target_index
 }
 
 

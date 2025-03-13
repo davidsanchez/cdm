@@ -58,7 +58,7 @@ private:
     const std::string drive_parked_var_name =      helper.searchDatapoint("Status_Parked",DB_config); 
     const std::string drive_tracking_var_name =    helper.searchDatapoint("Status_Tracking_In_Progress",DB_config); 
 
-
+    int GetTargetIndex(std::vector<std::string> listElements, std::vector<std::string> listValues, std::string var_name);
 
     void CheckRaUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckDecUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
