@@ -351,7 +351,7 @@ void DatapointMonitor::CheckOARLUpdate(std::vector<std::string> listElements, st
     COND_LOG_DEBUG<<" NEW way index "<<index<<std::endl;
     if (index != -1 ) {
         bool oarl_value;
-        istringstream(listValues[target_index]) >> std::boolalpha >> oarl_value;
+        istringstream(listValues[index]) >> std::boolalpha >> oarl_value;
         COND_LOG_DEBUG<<" FOUND NEW way oarl_value "<<oarl_value<<std::endl;
         caller->UpdateOARLValue(oarl_value);
     }
