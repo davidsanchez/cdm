@@ -330,7 +330,7 @@ void DatapointMonitor::CheckOARLUpdate(std::vector<std::string> listElements, st
         List of values of the changed data points
     */
 
-
+    /*
     int target_index;
 
     auto oarl_iterator = std::find(listElements.begin(), listElements.end(), this->oarl_var_name);
@@ -345,7 +345,7 @@ void DatapointMonitor::CheckOARLUpdate(std::vector<std::string> listElements, st
         istringstream(listValues[target_index]) >> std::boolalpha >> oarl_value;
         COND_LOG_DEBUG<<" FOUND OLD way oarl_value "<<oarl_value<<std::endl;
         caller->UpdateOARLValue(oarl_value);
-    }
+    }*/
 
     int index = GetTargetIndex(listElements, listValues, this->oarl_var_name);
     COND_LOG_DEBUG<<" NEW way index "<<index<<std::endl;
