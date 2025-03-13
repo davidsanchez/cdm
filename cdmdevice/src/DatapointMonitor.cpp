@@ -118,8 +118,6 @@ std::vector<int> DatapointMonitor::getNameSpaces()
 
 int DatapointMonitor::GetTargetIndex(std::vector<std::string> listElements, std::vector<std::string> listValues, std::string var_name)
 {
-
-
     int target_index = -1;
 
     auto iterator = std::find(listElements.begin(), listElements.end(), var_name);
@@ -212,7 +210,7 @@ void DatapointMonitor::CheckAzUpdate(std::vector<std::string> listElements, std:
 
 void DatapointMonitor::CheckZdUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the Zd data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -222,9 +220,12 @@ void DatapointMonitor::CheckZdUpdate(std::vector<std::string> listElements, std:
         List of values of the changed data points
     */
 
-    int target_index;
-
-    auto zd_iterator = std::find(listElements.begin(), listElements.end(), this->zd_var_name);
+    int target_index = GetTargetIndex(listElements, listValues, var_name);
+    if (target_index != -1 ) {
+        double zd_value = std::stod(listValues[target_index]);
+        caller->UpdateZdValue(zd_value);
+    }
+    /*auto zd_iterator = std::find(listElements.begin(), listElements.end(), this->zd_var_name);
 
     if (zd_iterator != listElements.end())
     {
@@ -233,7 +234,7 @@ void DatapointMonitor::CheckZdUpdate(std::vector<std::string> listElements, std:
 
         double zd_value = std::stod(listValues[target_index]);
         caller->UpdateZdValue(zd_value);
-    }
+    }*/
 }
 
 void DatapointMonitor::CheckAzOffsetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
