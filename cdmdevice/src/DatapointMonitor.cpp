@@ -220,7 +220,7 @@ void DatapointMonitor::CheckZdUpdate(std::vector<std::string> listElements, std:
         List of values of the changed data points
     */
 
-    int target_index = GetTargetIndex(listElements, listValues, vathis->zd_var_namer_name);
+    int target_index = GetTargetIndex(listElements, listValues, this->zd_var_name);
     if (target_index != -1 ) {
         double zd_value = std::stod(listValues[target_index]);
         caller->UpdateZdValue(zd_value);
