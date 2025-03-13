@@ -197,7 +197,7 @@ void DatapointMonitor::CheckDecUpdate(std::vector<std::string> listElements, std
 void DatapointMonitor::CheckAzUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
     
-    /*!
+    /*
     Checks if the Az data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -206,7 +206,12 @@ void DatapointMonitor::CheckAzUpdate(std::vector<std::string> listElements, std:
     @param listValues
         List of values of the changed data points
     */
-
+    int index = GetTargetIndex(listElements, listValues, this->az_var_name);
+    if (index != -1 ) {
+        double az_value = std::stod(listValues[index]);
+        caller->UpdateAzValue(az_value);
+    }
+    /*
     int target_index;
 
     auto az_iterator = std::find(listElements.begin(), listElements.end(), this->az_var_name);
@@ -218,7 +223,7 @@ void DatapointMonitor::CheckAzUpdate(std::vector<std::string> listElements, std:
 
         double az_value = std::stod(listValues[target_index]);
         caller->UpdateAzValue(az_value);
-    }
+    }*/
 }
 
 void DatapointMonitor::CheckZdUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
