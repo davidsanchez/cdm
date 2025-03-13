@@ -729,7 +729,7 @@ void DatapointMonitor::CheckAuxDMEastTopUpdate(std::vector<std::string> listElem
     if (index != -1 ) {
         // Converts the string to bool value.
         bool aux_value;
-        istringstream(listValues[target_index]) >> std::boolalpha >> aux_value;
+        istringstream(listValues[index]) >> std::boolalpha >> aux_value;
         caller->UpdateAuxDMEastTopValue(aux_value);
     }
     /*
@@ -765,7 +765,7 @@ void DatapointMonitor::CheckAuxDMWestBottomUpdate(std::vector<std::string> listE
     if (index != -1 ) {
         // Converts the string to bool value.
         bool aux_value;
-        istringstream(listValues[target_index]) >> std::boolalpha >> aux_value;
+        istringstream(listValues[index]) >> std::boolalpha >> aux_value;
         caller->UpdateAuxDMWestBottomValue(aux_value);
     }
     /*
@@ -802,7 +802,7 @@ void DatapointMonitor::CheckAuxDMWestTopUpdate(std::vector<std::string> listElem
     if (index != -1 ) {
         // Converts the string to bool value.
         bool aux_value;
-        istringstream(listValues[target_index]) >> std::boolalpha >> aux_value;
+        istringstream(listValues[index]) >> std::boolalpha >> aux_value;
         caller->UpdateAuxDMWestTopValue(aux_value);
     }
     /*
