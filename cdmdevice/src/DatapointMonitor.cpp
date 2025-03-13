@@ -485,7 +485,6 @@ void DatapointMonitor::CheckDriveInMotionUpdate(std::vector<std::string> listEle
     int index = GetTargetIndex(listElements, listValues, this->drive_inmotion_var_name);
     if (index != -1 ) {
         // Converts the string to bool value.
-        // Converts the string to bool value.
         bool drive_value;
         istringstream(listValues[index]) >> std::boolalpha >> drive_value;
         caller->UpdateDriveInMotionValue(drive_value);
@@ -522,7 +521,6 @@ void DatapointMonitor::CheckDriveInparkingPosUpdate(std::vector<std::string> lis
 
     int index = GetTargetIndex(listElements, listValues, this->drive_inparkinpos_var_name);
     if (index != -1 ) {
-        // Converts the string to bool value.
         // Converts the string to bool value.
         bool drive_value;
         istringstream(listValues[index]) >> std::boolalpha >> drive_value;
@@ -575,7 +573,7 @@ void DatapointMonitor::CheckDriveParkedUpdate(std::vector<std::string> listEleme
 
 void DatapointMonitor::CheckDriveTrackingUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the DriveTracking data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -584,6 +582,15 @@ void DatapointMonitor::CheckDriveTrackingUpdate(std::vector<std::string> listEle
     @param listValues
         List of values of the changed data points
     */
+
+    int index = GetTargetIndex(listElements, listValues, this->drive_tracking_var_name);
+    if (index != -1 ) {
+        // Converts the string to bool value.
+        bool drive_value;
+        istringstream(listValues[index]) >> std::boolalpha >> drive_value;
+        caller->UpdateDriveTrackingValue(drive_value);
+    }
+    /*
 
     int target_index;
 
@@ -598,13 +605,13 @@ void DatapointMonitor::CheckDriveTrackingUpdate(std::vector<std::string> listEle
         bool drive_value;
         istringstream(listValues[target_index]) >> std::boolalpha >> drive_value;
         caller->UpdateDriveTrackingValue(drive_value);
-    }
+    }*/
 }
 
 
 void DatapointMonitor::CheckDriveRaTargetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the RA target data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -613,6 +620,13 @@ void DatapointMonitor::CheckDriveRaTargetUpdate(std::vector<std::string> listEle
     @param listValues
         List of values of the changed data points
     */
+    int index = GetTargetIndex(listElements, listValues, this->drive_ra_target_var_name);
+    if (index != -1 ) {
+
+        double drive_ra_value = std::stod(listValues[index]);
+        caller->UpdateDriveRaTargetValue(drive_ra_value);
+    }
+    /*
 
     int target_index;
 
@@ -625,12 +639,12 @@ void DatapointMonitor::CheckDriveRaTargetUpdate(std::vector<std::string> listEle
 
         double drive_ra_value = std::stod(listValues[target_index]);
         caller->UpdateDriveRaTargetValue(drive_ra_value);
-    }
+    }*/
 }
 
 void DatapointMonitor::CheckDriveDecTargetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the Dec target data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -639,6 +653,13 @@ void DatapointMonitor::CheckDriveDecTargetUpdate(std::vector<std::string> listEl
     @param listValues
         List of values of the changed data points
     */
+
+    int index = GetTargetIndex(listElements, listValues, this->drive_dec_target_var_name);
+    if (index != -1 ) {
+        double drive_dec_value = std::stod(listValues[index]);
+        caller->UpdateDriveDecTargetValue(drive_dec_value);
+    }
+    /*
 
     int target_index;
 
@@ -651,13 +672,13 @@ void DatapointMonitor::CheckDriveDecTargetUpdate(std::vector<std::string> listEl
 
         double drive_dec_value = std::stod(listValues[target_index]);
         caller->UpdateDriveDecTargetValue(drive_dec_value);
-    }
+    }*/
 }
 
 
 void DatapointMonitor::CheckAuxDMEastBottomUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the Aux DM East Bottom data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -667,6 +688,14 @@ void DatapointMonitor::CheckAuxDMEastBottomUpdate(std::vector<std::string> listE
         List of values of the changed data points
     */
 
+    int index = GetTargetIndex(listElements, listValues, this->aux_DMEastBottom_var_name);
+    if (index != -1 ) {
+        // Converts the string to bool value.
+        bool aux_value;
+        istringstream(listValues[index]) >> std::boolalpha >> aux_value;
+        caller->UpdateAuxDMEastBottomValue(aux_value);
+    }
+    /*
     int target_index;
 
     auto aux_iterator = std::find(listElements.begin(), listElements.end(), this->aux_DMEastBottom_var_name);
@@ -680,7 +709,7 @@ void DatapointMonitor::CheckAuxDMEastBottomUpdate(std::vector<std::string> listE
         bool aux_value;
         istringstream(listValues[target_index]) >> std::boolalpha >> aux_value;
         caller->UpdateAuxDMEastBottomValue(aux_value);
-    }
+    }*/
 }
 
 
