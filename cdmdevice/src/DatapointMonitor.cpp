@@ -292,7 +292,7 @@ void DatapointMonitor::CheckAzOffsetUpdate(std::vector<std::string> listElements
 
 void DatapointMonitor::CheckZdOffsetUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the Zd_offset data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -302,6 +302,12 @@ void DatapointMonitor::CheckZdOffsetUpdate(std::vector<std::string> listElements
         List of values of the changed data points
     */
 
+    int index = GetTargetIndex(listElements, listValues, this->zd_offset_var_name);
+    if (index != -1 ) {
+        double zd_offset_value = std::stod(listValues[index]);
+        caller->UpdateZdOffsetValue(zd_offset_value);
+    }
+    /*
     int target_index;
 
     auto zd_offset_iterator = std::find(listElements.begin(), listElements.end(), this->zd_offset_var_name);
@@ -313,12 +319,12 @@ void DatapointMonitor::CheckZdOffsetUpdate(std::vector<std::string> listElements
 
         double zd_offset_value = std::stod(listValues[target_index]);
         caller->UpdateZdOffsetValue(zd_offset_value);
-    }
+    }*/
 }
 
 void DatapointMonitor::CheckSourceUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the Source data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -327,6 +333,12 @@ void DatapointMonitor::CheckSourceUpdate(std::vector<std::string> listElements, 
     @param listValues
         List of values of the changed data points
     */
+    int index = GetTargetIndex(listElements, listValues, this->zd_offset_var_name);
+    if (index != -1 ) {
+        double zd_offset_value = std::stod(listValues[index]);
+        caller->UpdateZdOffsetValue(zd_offset_value);
+    }
+    /*
 
     int target_index;
 
@@ -339,12 +351,12 @@ void DatapointMonitor::CheckSourceUpdate(std::vector<std::string> listElements, 
 
         string source_value = listValues[target_index];
         caller->UpdateSourceValue(source_value);
-    }
+    }*/
 }
 
 void DatapointMonitor::CheckOARLUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
 {
-    /*!
+    /*
     Checks if the OARL data point was changed 
     and reports the update to the "caller" object in such a case.
 
@@ -395,6 +407,14 @@ void DatapointMonitor::CheckLEDsUpdate(std::vector<std::string> listElements, st
         List of values of the changed data points
     */
 
+    int index = GetTargetIndex(listElements, listValues, this->leds_var_name);
+    if (index != -1 ) {
+        // Converts the string to bool value.
+        bool leds_value;
+        istringstream(listValues[index]) >> std::boolalpha >> leds_value;
+        caller->UpdateLEDsValue(leds_value);
+    }
+    /*
     int target_index;
 
     auto leds_iterator = std::find(listElements.begin(), listElements.end(), this->leds_var_name);
@@ -408,7 +428,7 @@ void DatapointMonitor::CheckLEDsUpdate(std::vector<std::string> listElements, st
         bool leds_value;
         istringstream(listValues[target_index]) >> std::boolalpha >> leds_value;
         caller->UpdateLEDsValue(leds_value);
-    }
+    }*/
 }
 
 void DatapointMonitor::CheckShutterUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
