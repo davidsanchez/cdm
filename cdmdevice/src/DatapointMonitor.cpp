@@ -123,9 +123,6 @@ int DatapointMonitor::GetTargetIndex(std::vector<std::string> listElements, std:
     COND_LOG_DEBUG<<" var_name "<<var_name<<std::endl;
     auto iterator = std::find(listElements.begin(), listElements.end(), var_name);
 
-    COND_LOG_DEBUG<<" iterator "<<*iterator<<std::endl;
-
-
     if (iterator != listElements.end())  target_index = iterator - listElements.begin();
     else LOG_FATAL<<"Element "<<var_name<<" not found" << std::endl;
     
