@@ -123,7 +123,6 @@ int DatapointMonitor::GetTargetIndex(std::vector<std::string> listElements, std:
     auto iterator = std::find(listElements.begin(), listElements.end(), var_name);
 
     if (iterator != listElements.end())  target_index = iterator - listElements.begin();
-    else LOG_FATAL<<"Element "<<var_name<<" not found" << std::endl;
     
     COND_LOG_DEBUG<<" Value of taget index "<<target_index<<std::endl;
     return target_index;
