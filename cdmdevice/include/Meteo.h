@@ -8,8 +8,8 @@
  *
  *********************************************************************/
 #pragma GCC diagnostic ignored "-Wunused-function"
-#ifndef Meteo_H_
-#define Meteo_H_
+#ifndef METEO_H_
+#define METEO_H_
 
 #include "yocto_api.h"
 #include "yocto_humidity.h"
@@ -53,4 +53,4 @@ private:
 
 };
 
-#endif //  Meteo_H_
+#endif //  METEO_H_

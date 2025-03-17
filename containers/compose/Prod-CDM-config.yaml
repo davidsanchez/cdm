@@ -16,3 +16,5 @@ services:
       - /dev:/dev
       - /var/run:/var/run
       - /home/lstoperator/CDM/:/home/cdmmgr/output
+
+

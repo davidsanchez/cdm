@@ -26,7 +26,7 @@ Helper helper;
 
 int CDM::init(const std::string &chaine)
 {
-    LOG_TRACE << "CDM::init()";
+    LOG_TRACE << "CDM::init(): Start";
 
     // a rajouter pour recuperer les infos du fichier mapping des datapoints
     cdm_config = new Config(CDM_CONFIGURATION_NAME,"");
@@ -44,12 +44,12 @@ int CDM::init(const std::string &chaine)
     PluginsBase::init(chaine);
 
     return ret;
-    LOG_TRACE << "End of CDM::init()"<<endl;
+    LOG_TRACE << "CDM::init(): End"<<endl;
 }
 
 int CDM::afterStart()
 {
-    LOG_TRACE << "CDM::afterStart()";
+    LOG_TRACE << "CDM::afterStart(): Start";
     const int connection_failure = -1;
     int namespaceL2 = 2;
     string nodeIdL2 = "";
@@ -58,8 +58,7 @@ int CDM::afterStart()
     // but be careful, you have to call before doing your bussiness, call the father method (the father class) ( PluginsInterfaceImpl::afterStart())
     // This method is automatically called by the program "MOS" after "MOS" server is launched and ready.
     int ret = 0;
-    printf("\n***********************************\nIn CDM::afterStart\n***********************************\n");
-    COND_LOG_DEBUG << "SetDPQuality "<<helper.searchDatapoint("SetDPQuality",cdm_config);
+    COND_LOG_DEBUG << "CDM::afterStart(): SetDPQuality "<<helper.searchDatapoint("SetDPQuality",cdm_config);
     
     // map<std::string,std::string> config;
 
@@ -118,18 +117,18 @@ int CDM::afterStart()
     // Trying to access other OPCUA server
     CDM::connection_result_DataBroker = helper.connectOpcUa_DataBroker(m_config["OPCUA"], this); //DataBroker OPCUA
 
-    COND_LOG_DEBUG << "DataBroker status OPCUA: " << connection_result_DataBroker;
+    COND_LOG_DEBUG << "CDM::afterStart(): DataBroker status OPCUA: " << connection_result_DataBroker;
 
     // Creating datapoint monitor that will notify us when the subscribed datapoints change.
     if (connection_result_DataBroker != connection_failure)
     {
-        COND_LOG_DEBUG << "Connected to DataBroker.";
+        COND_LOG_DEBUG << "CDM::afterStart(): Connected to DataBroker.";
         // Subscription now happens in ControllerCB which calls the subscribe method.
         //subscribe_DataBroker();
     }
     else
     {
-        LOG_ERROR << "Cannot connect to DataBroker!";
+        LOG_ERROR << "CDM::afterStart(): Cannot connect to DataBroker!";
         throw std::exception();
     }
     // remplace le hardcodage des datapoints --> recuperation des infos provenant du fichier PLC_*****.xml
@@ -150,15 +149,16 @@ int CDM::afterStart()
     LOG_TRACE << methodToCall << "  method call result = " << res << endl;
     //getDataAccessClientOPCUARef()->setDPQuality("CDM", 1);
 
-    LOG_TRACE << "End of CDM::afterStart()"<<endl;
+    LOG_TRACE << "CDM::afterStart(): End"<<endl;
     return ret;
 }
 
 int CDM::subscribe_DataBroker()
 {
+    LOG_TRACE << "CDM::subscribe_DataBroker(): Start"<<endl;
     if (CDM::connection_result_DataBroker != -1)
     {
-        cout << "Subscribing to DataBroker datapoints." << endl;
+        LOG_TRACE << "CDM::subscribe_DataBroker(): Subscribing to DataBroker datapoints." << endl;
         //delete CDM::dp_monitor_SG;
         //CDM::dp_monitor_SG = new DatapointMonitor(this);
         if (CDM::dp_monitor_DataBroker == NULL)
@@ -173,11 +173,12 @@ int CDM::subscribe_DataBroker()
 
         helper.get_client_DataBroker()->startSubscribe();
     }
+    LOG_TRACE << "CDM::subscribe_DataBroker(): End"<<endl;
 }
 
 int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::string &datapointName, int nameSpace, std::string &result)
 {
-    LOG_TRACE << "CDM::cdmAsynch()";
+    LOG_TRACE << "CDM::cdmAsynch(): Start"<<endl;
 
     int ret = 0;
     printf("In CMDAsync part: received command with the instruction: %s\n", command.c_str());
@@ -265,7 +266,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
 int CDM::cmd(const std::string &command, int commandStringAck, std::string &result)
 {
-    LOG_TRACE << "CDM::cdm()";
+    LOG_TRACE << "CDM::cdm(): Start";
 
     int ret = 0;
     printf("In CMD part: received command with the instruction: %s\n", command.c_str());
@@ -422,7 +423,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
     // DAVID
     // int FSM_state;
     // getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
-    LOG_TRACE << "End of CDM::cdm() "<<endl;
+    LOG_TRACE << "CDM::cdm(): End"<<endl;
     // LOG_TRACE << "End of CDM::cdm(), State of the CDM : "<<FSM_state<<endl;
     return ret;
 }
@@ -597,8 +598,8 @@ int CDM::close()
 
 int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::any> &tabValue)
 {
-    COND_LOG_DEBUG << "CDM::get()";
-    COND_LOG_DEBUG << "Chain: " << chain;
+    COND_LOG_DEBUG << "CDM::get(): Start";
+    COND_LOG_DEBUG << "CDM::get(): Chain: " << chain;
 
     // Usually you would push_back to the tabValue vector and they would be automatically updated in the OPCUA server.
     // But there is some bug that crashes the program when resizing that vector and the chain is empty.
@@ -611,14 +612,14 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
     if (chain.find("get_temperatureValue") != std::string::npos)
     {
         return_value_double = camera.get_temperature_value();
-        COND_LOG_DEBUG << "Camera temperature value is: " << return_value_double << endl;
+        COND_LOG_DEBUG << "CDM::get(): Camera temperature value is: " << return_value_double << endl;
         getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.temperatureValue.temperatureValue_v", 2, return_value_double);
         //getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("CameraTemp",cdm_config), 2, return_value_double);
     }
     else if (chain.find("get_temperatureStatus") != std::string::npos)
     {
         return_value_string = camera.get_temperature_status();
-        COND_LOG_DEBUG << "Camera temperature status is: " << return_value_string << endl;
+        COND_LOG_DEBUG << "CDM::get(): Camera temperature status is: " << return_value_string << endl;
         tabValue.resize(0);
         tabValue.push_back(return_value_string);
     }

@@ -1,5 +1,5 @@
-#ifndef ImageAnalysis_H_
-#define ImageAnalysis_H_
+#ifndef IMAGEANALYSIS_H_
+#define IMAGEANALYSIS_H_
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -75,4 +75,4 @@ public:
     map<std::string,std::string> m_config;
 };
 
-#endif //  ImageAnalysis_H_
+#endif //  IMAGEANALYSIS_H_
