@@ -105,7 +105,7 @@ COPY payload/ueye.h /usr/include/ueye.h
 #WORKDIR /home/cdmmgr/boost
 #RUN ./bootstrap.sh --with-python=python2.7
 #RUN  ./b2 install  --with=all
-RUN cp payload/boost/libboost* /usr/lib64/
+#RUN cp payload/boost/libboost* /usr/lib64/
 
 # DL and build Yocto meteo
 RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
