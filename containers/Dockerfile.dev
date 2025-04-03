@@ -99,8 +99,8 @@ RUN yes | ./ueyesdk-setup-4.90.06-usb-amd64.gz.run
 COPY payload/ueye.h /usr/include/ueye.h
 
 
-#RUN mkdir ./boost
-#COPY payload/boost_1_79_0 ./boost
+RUN mkdir ./boost
+COPY payload/boost_1_79_0 ./boost
 
 #WORKDIR /home/cdmmgr/boost
 #RUN ./bootstrap.sh --with-python=python2.7
