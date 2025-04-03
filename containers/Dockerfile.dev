@@ -88,7 +88,7 @@ RUN mkdir ./output
 RUN mkdir ./output/images
 RUN mkdir ./output/fits
 
-RUN git  clone  --branch  mos12_jl  https://gitlgab-ci-token:KCWu6cK-iZpswiotx3VF@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/aux/cdm.git
+RUN git  clone  --branch  mos12_jl  https://gitlgab-ci-token:u8nz7deWHHs6nM-UBEK9@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/aux/cdm.git
 RUN mkdir -p cdm/cdmdevice/build
 
 #COPY  payload/CMakeLists.txt ./cdm/build
