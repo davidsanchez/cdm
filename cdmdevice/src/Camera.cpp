@@ -432,7 +432,8 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     int64_t duration_count = 0;
 
     Mat m1;
-    vector<uchar> published_image;
+    // April 2025 Remove the publication of the image to save bandwidth
+    // vector<uchar> published_image;
 
     vector<double> circle_x;
     vector<double> circle_y;
@@ -641,17 +642,6 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                     myclient->setDatapoint(datapointName_OARL_y_arrays[i], m_nameSpace, OARL_y[i]);
                 }
 
-                /* No need to calculate the OARL mean values here. 
-                   They are calculated in inside the ImageAnalysis class
-
-                // Adding values from the second vector to the first (inplace)
-                std::transform(OARL_x[0].begin(), OARL_x[0].end(), OARL_x[1].begin(), OARL_x[0].begin(), std::plus<double>());
-                std::transform(OARL_y[0].begin(), OARL_y[0].end(), OARL_y[1].begin(), OARL_y[0].begin(), std::plus<double>());
-                // Taking an average of the previously computed value
-                std::transform(OARL_x[0].begin(), OARL_x[0].end(), OARL_x[0].begin(), std::bind(std::divides<double>(), std::placeholders::_1, 2.0));
-                std::transform(OARL_y[0].begin(), OARL_y[0].end(), OARL_y[0].begin(), std::bind(std::divides<double>(), std::placeholders::_1, 2.0));
-                 */
-
                 // Publish the value
                 myclient->setDatapoint(datapointName_OARL_x_mean, m_nameSpace, OARL_mean_x);
                 myclient->setDatapoint(datapointName_OARL_y_mean, m_nameSpace, OARL_mean_y);
@@ -667,8 +657,9 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
                 // Push the image here
                 std::chrono::steady_clock::time_point begin_getimage = std::chrono::steady_clock::now();
-                published_image = myimage.GetImageToPublish(currentDateTime());
-                myclient->setDatapoint(datapointName_image, m_nameSpace, published_image);
+                // April 2025 Remove the publication of the image to save bandwidth
+                //published_image = myimage.GetImageToPublish(currentDateTime());
+                //myclient->setDatapoint(datapointName_image, m_nameSpace, published_image);
                 myclient->setDatapoint(datapointName_nImagesGet, m_nameSpace, (int)i_images_taken);
                 std::chrono::steady_clock::time_point end_getimage = std::chrono::steady_clock::now();
                 LOG_IMAGE << "Camera::StartCDM(): Time difference [Get image for publishing] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_getimage - begin_getimage).count() << "[ms]" << std::endl;
@@ -830,7 +821,8 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
     int64_t duration_count = 0;
 
     Mat m1;
-    vector<uchar> published_image;
+    // April 2025 Remove the publication of the image to save bandwidth
+    // vector<uchar> published_image;
 
     while (b_keep_taking == 1)
     {
@@ -870,8 +862,9 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
             i_images_taken++;
 
             int m_nameSpace = 2;
-            published_image = myimage.GetImageToPublish(currentDateTime());
-            myclient->setDatapoint(datapointName_image, m_nameSpace, published_image);
+            // April 2025 Remove the publication of the image to save bandwidth
+            // published_image = myimage.GetImageToPublish(currentDateTime());
+            // myclient->setDatapoint(datapointName_image, m_nameSpace, published_image);
         }
 
         else if (nRet == IS_CAPTURE_STATUS)

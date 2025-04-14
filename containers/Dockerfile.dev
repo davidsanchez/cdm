@@ -105,6 +105,9 @@ COPY payload/boost_1_79_0 ./boost
 WORKDIR /home/cdmmgr/boost
 RUN ./bootstrap.sh --with-python=python2.7
 RUN  ./b2 install  --with=all
+
+# to be change by linking better in cmake 
+RUN cp /usr/local/lib/libboost_* /usr/lib64/  
 #RUN cp payload/boost/libboost* /usr/lib64/
 
 # DL and build Yocto meteo
@@ -117,6 +120,8 @@ RUN cp libyocto.so.1.0.1 /lib64/
 WORKDIR /home/cdmmgr/cdm/cdmdevice/build
 COPY  payload/CMakeLists.txt .
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
+
+
 #RUN make
 #RUN make install
 
