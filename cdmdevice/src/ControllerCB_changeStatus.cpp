@@ -21,7 +21,7 @@ ControllerCB_changeStatus::ControllerCB_changeStatus(CDM *cdm)
 
 void ControllerCB_changeStatus::message(int serverStatus)
 {
-    LOG_INFO << "-------------------------------------ControllerCB_changeStatus ------------------------\n";
+    LOG_INFO << "------------------------------------- ControllerCB_changeStatus ------------------------\n";
 
     std::string message = "";
     std::string nameOfConfig = "";

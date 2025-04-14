@@ -3,7 +3,7 @@ services:
   dev-cdm:
     privileged: true
     hostname: dev-cdm
-    container_name: "MOS-CDM-COMPOSE"
+    container_name: "MOS-CDM"
     image: "cdm:latest"
     # restart: unless-stopped
 
