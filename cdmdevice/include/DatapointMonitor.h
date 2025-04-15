@@ -58,7 +58,7 @@ private:
     const std::string drive_parked_var_name =      helper.searchDatapoint("Status_Parked",DB_config); 
     const std::string drive_tracking_var_name =    helper.searchDatapoint("Status_Tracking_In_Progress",DB_config); 
 
-    const std::string heartBeatError_name = "ns=2;s=Unit_CDM.Diagnostics._Error_Heart_Beat"; //TODO hard coded value
+    const std::string heartBeatError_name = "Unit_CDM.Diagnostics._Error_Heart_Beat"; //TODO hard coded value
 
     int GetTargetIndex(std::vector<std::string> listElements, std::vector<std::string> listValues, std::string var_name);
 
