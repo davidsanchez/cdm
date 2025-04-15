@@ -81,6 +81,8 @@ COPY cdmdevice/bin/PLC_CDM.xml /home/cdmmgr/PLC_CDM.xml
 COPY cdmdevice/bin/PLC_DATABROKER.xml /home/cdmmgr/PLC_DATABROKER.xml
 COPY cdmdevice/bin/Unit_CDM_Model.xml /home/cdmmgr/Unit_CDM_Model.xml
 COPY cdmdevice/bin/FSM_CDM.xml /home/cdmmgr/FSM_CDM.xml
+
+COPY payload/FDF452960864D07BAA248D95BD2A78B69ADE57B7.der /home/mosmgr/MOS/MOS_X86_12.4.3/bin/pkiserver/trusted
 #COPY cdm_mount/ /home/cdmmgr/
 
 #WORKDIR /home/cdmmgr/
@@ -130,8 +132,10 @@ RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
 WORKDIR /root
 COPY payload/configurations/.bashrc .bashrc
 
-#temporay fix for MOS permission
+#MOS permission and authentification
 COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_12.4.3/properties/
+COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_12.4.3/properties/
+COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_12.4.3/properties/
 
 #final stuff
 WORKDIR /home/cdmmgr
