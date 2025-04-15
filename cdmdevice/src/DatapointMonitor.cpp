@@ -835,15 +835,15 @@ void DatapointMonitor::CheckHeartBeatError(std::vector<std::string> listElements
         List of values of the changed data points
     */
     int index = GetTargetIndex(listElements, listValues, this->heartBeatError_name);
-    COND_LOG_DEBUG<<" CheckHeartBeatError index "<<index<<std::endl;
+    std::cout<<" CheckHeartBeatError index "<<index<<std::endl;
 
     if (index != -1 ) {
         // Converts the string to bool value.
         bool HB_value;
         istringstream(listValues[index]) >> std::boolalpha >> HB_value;
-        COND_LOG_DEBUG<<"HearBeat has change to "<<HB_value<<std::endl;
+        std::cout<<"HearBeat has change to "<<HB_value<<std::endl;
         
     }
-    else {COND_LOG_DEBUG<<" No UPDATE of HearBeat "<<std::endl;}
+    else {std::cout<<" No UPDATE of HearBeat "<<std::endl;}
 
 }
