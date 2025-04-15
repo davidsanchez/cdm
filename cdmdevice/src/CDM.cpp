@@ -616,6 +616,12 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
         std::cout << "CDM::get(): get_HeartBeatError " << HeartBeatError<< endl;
         if (HeartBeatError) {ret = 1;}
         else {ret = 0;}
+
+        //camera.Disconnect();
+        int FSM_state;
+        getDataAccessClientOPCUARef()->getDatapoint(helper.searchDatapoint("state",cdm_config), 2, FSM_state);
+        std::cout << "CDM::get(): state is " << FSM_state<< endl;
+
         
     }
 
@@ -623,6 +629,7 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
     {
         return_value_double = camera.get_temperature_value();
         COND_LOG_DEBUG << "CDM::get(): Camera temperature value is: " << return_value_double << endl;
+        //TODO hard coded
         getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.temperatureValue.temperatureValue_v", 2, return_value_double);
         //getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("CameraTemp",cdm_config), 2, return_value_double);
     }
