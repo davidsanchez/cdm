@@ -821,3 +821,26 @@ void DatapointMonitor::CheckAuxDMWestTopUpdate(std::vector<std::string> listElem
         caller->UpdateAuxDMWestTopValue(aux_value);
     }*/
 }
+
+
+void DatapointMonitor::CheckHeartBeatError(std::vector<std::string> listElements, std::vector<std::string> listValues)
+{
+    /*
+    Checks if the CheckHeartBeatError data point was changed 
+    and reports the update to the "caller" object in such a case.
+
+    @param listElements
+        List of changed data points
+    @param listValues
+        List of values of the changed data points
+    */
+    int index = GetTargetIndex(listElements, listValues, this->heartBeatError_name);
+    if (index != -1 ) {
+        // Converts the string to bool value.
+        bool HB_value;
+        istringstream(listValues[index]) >> std::boolalpha >> HB_value;
+        std::cout<<"HearBeat has change to "<<HB_value<<std::endl;
+        
+    }
+
+}
