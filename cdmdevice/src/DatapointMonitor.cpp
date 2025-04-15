@@ -383,14 +383,12 @@ void DatapointMonitor::CheckOARLUpdate(std::vector<std::string> listElements, st
     }*/
 
     int index = GetTargetIndex(listElements, listValues, this->oarl_var_name);
-    COND_LOG_DEBUG<<" NEW way index "<<index<<std::endl;
     if (index != -1 ) {
         bool oarl_value;
         istringstream(listValues[index]) >> std::boolalpha >> oarl_value;
-        COND_LOG_DEBUG<<" FOUND NEW way oarl_value "<<oarl_value<<std::endl;
         caller->UpdateOARLValue(oarl_value);
     }
-    else {COND_LOG_DEBUG<<" No UPDATE of OARL "<<std::endl;}
+    //else {COND_LOG_DEBUG<<" No UPDATE of OARL "<<std::endl;}
 
 }
 
@@ -835,12 +833,15 @@ void DatapointMonitor::CheckHeartBeatError(std::vector<std::string> listElements
         List of values of the changed data points
     */
     int index = GetTargetIndex(listElements, listValues, this->heartBeatError_name);
+    COND_LOG_DEBUG<<" CheckHeartBeatError index "<<index<<std::endl;
+
     if (index != -1 ) {
         // Converts the string to bool value.
         bool HB_value;
         istringstream(listValues[index]) >> std::boolalpha >> HB_value;
-        std::cout<<"HearBeat has change to "<<HB_value<<std::endl;
+        COND_LOG_DEBUG<<"HearBeat has change to "<<HB_value<<std::endl;
         
     }
+    else {COND_LOG_DEBUG<<" No UPDATE of HearBeat "<<std::endl;}
 
 }
