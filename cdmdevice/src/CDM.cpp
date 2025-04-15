@@ -609,6 +609,14 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
     double return_value_double = 0;
     string return_value_string = "";
 
+    if (chain.find("get_HeartBeatError") != std::string::npos)
+    {
+        //return_value_double = camera.get_temperature_value();
+        std::cout << "CDM::get(): get_HeartBeatError " << endl;
+        //getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.temperatureValue.temperatureValue_v", 2, return_value_double);
+        
+    }
+
     if (chain.find("get_temperatureValue") != std::string::npos)
     {
         return_value_double = camera.get_temperature_value();

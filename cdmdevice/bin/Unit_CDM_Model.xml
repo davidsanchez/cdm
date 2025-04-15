@@ -126,6 +126,10 @@
                                 <Name>StopGetMultipleImages_Instruction</Name>
                                 <Cmd>StopGetMultipleImages</Cmd>
                         </Instruction>
+                    <Instruction>
+                                <Name>get_HeartBeatError_Instruction</Name>
+                                <Cmd>get_HeartBeatError</Cmd>
+                        </Instruction>
                         <Instruction>
                                 <Name>get_temperatureValue_Instruction</Name>
                                 <Cmd>get_temperatureValue</Cmd>
@@ -864,6 +868,28 @@
 
                         <CompoundDatapoint>
                                 <Name>Camera</Name>
+                                <!-- NEW -->
+                                <SimpleDatapoint>
+                                        <Name>HeartBeatError</Name>
+                                        <Type>double</Type>
+
+                                        <MonitoringRate>5</MonitoringRate>
+                                        <DefaultValue>0</DefaultValue>
+                                        <Description>HeartBeatError boolean</Description>
+                                        <Historizing>1</Historizing>
+                                        <Method>
+                                                <Name>get</Name>
+                                                <Argument>
+                                                        <Name>value_return</Name>
+                                                        <Type>int32</Type>
+                                                        <Access>Output</Access>
+                                                </Argument>
+                                                <DeviceInstruction>
+                                                        <Value>get_HeartBeatError_Instruction</Value>
+                                                </DeviceInstruction>
+                                        </Method>
+                                </SimpleDatapoint>
+                                <!-- END NEW -->
                                 <SimpleDatapoint>
                                         <Name>temperatureValue</Name>
                                         <Type>double</Type>
