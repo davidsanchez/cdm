@@ -622,7 +622,7 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
         getDataAccessClientOPCUARef()->getDatapoint(helper.searchDatapoint("state",cdm_config), 2, FSM_state);
         std::cout << "CDM::get(): state is " << FSM_state<< endl;
         if (FSM_state != 0 and HeartBeatError) {
-            std::string r :
+            std::string r;
             cmd("Disconnect",0,r)
             //camera.Disconnect();
             getDataAccessClientOPCUARef()->getDatapoint(helper.searchDatapoint("state",cdm_config), 2, 0);
