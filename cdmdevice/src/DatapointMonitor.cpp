@@ -58,8 +58,6 @@ void DatapointMonitor::dataChange(std::vector<std::string> listElements, std::ve
     CheckAuxDMWestBottomUpdate(listElements, listValues);
     CheckAuxDMWestTopUpdate(listElements, listValues);
 
-    CheckHeartBeatError(listElements, listValues);
-
 }
 
 std::vector<std::string> DatapointMonitor::getElements()
@@ -94,8 +92,6 @@ std::vector<std::string> DatapointMonitor::getElements()
     elements.push_back(this->aux_DMWestBottom_var_name);
     elements.push_back(this->aux_DMWestTop_var_name);
     elements.push_back(this->sis_var_name);
-
-    elements.push_back(this->heartBeatError_name);
 
     return elements;
 }
@@ -823,28 +819,3 @@ void DatapointMonitor::CheckAuxDMWestTopUpdate(std::vector<std::string> listElem
     }*/
 }
 
-
-void DatapointMonitor::CheckHeartBeatError(std::vector<std::string> listElements, std::vector<std::string> listValues)
-{
-    /*
-    Checks if the CheckHeartBeatError data point was changed 
-    and reports the update to the "caller" object in such a case.
-
-    @param listElements
-        List of changed data points
-    @param listValues
-        List of values of the changed data points
-    */
-    int index = GetTargetIndex(listElements, listValues, this->heartBeatError_name);
-    std::cout<<" CheckHeartBeatError index "<<index<<std::endl;
-
-    if (index != -1 ) {
-        // Converts the string to bool value.
-        bool HB_value;
-        istringstream(listValues[index]) >> std::boolalpha >> HB_value;
-        std::cout<<"HearBeat has change to "<<HB_value<<std::endl;
-        
-    }
-    else {std::cout<<" No UPDATE of HearBeat "<<std::endl;}
-
-}
