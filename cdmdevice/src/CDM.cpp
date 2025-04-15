@@ -614,8 +614,8 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
         bool HeartBeatError;
         getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.Diagnostics._Error_Heart_Beat", 2, HeartBeatError);
         std::cout << "CDM::get(): get_HeartBeatError " << HeartBeatError<< endl;
-        if (HeartBeatError) (ret = 1;)
-        else (ret = 0;)
+        if (HeartBeatError) {ret = 1;}
+        else {ret = 0;}
         
     }
 
