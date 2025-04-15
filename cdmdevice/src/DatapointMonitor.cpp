@@ -95,6 +95,7 @@ std::vector<std::string> DatapointMonitor::getElements()
     elements.push_back(this->aux_DMWestTop_var_name);
     elements.push_back(this->sis_var_name);
 
+    elements.push_back(this->heartBeatError_name);
 
     return elements;
 }
