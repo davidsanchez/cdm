@@ -58,6 +58,8 @@ void DatapointMonitor::dataChange(std::vector<std::string> listElements, std::ve
     CheckAuxDMWestBottomUpdate(listElements, listValues);
     CheckAuxDMWestTopUpdate(listElements, listValues);
 
+    CheckHeartBeatError(listElements, listValues);
+
 }
 
 std::vector<std::string> DatapointMonitor::getElements()
@@ -124,7 +126,7 @@ int DatapointMonitor::GetTargetIndex(std::vector<std::string> listElements, std:
 
     if (iterator != listElements.end())  target_index = iterator - listElements.begin();
     
-    COND_LOG_DEBUG<<" Value of taget index "<<target_index<<std::endl;
+    //COND_LOG_DEBUG<<" Value of taget index "<<target_index<<std::endl;
     return target_index;
 }
 
