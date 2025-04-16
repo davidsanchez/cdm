@@ -1,6 +1,3 @@
-#FROM centos:7
-
-#FROM lst/common-mos:v12
 FROM lst-structcal/mos:v12.4.3
 
 
@@ -40,8 +37,6 @@ RUN yum install -y \
     libxml2-devel \
     gdb-gdbserver \
     CCfits-devel \
-    #boost-devel \
-    #boost169-devel \
     gedit \
     libatomic \
     vim \
@@ -52,10 +47,6 @@ RUN yum install -y \
     opencv-python
 
 RUN yum install -y  CCfits-devel
-
-#RUN yum install -y  boost169-devel
-#RUN ln -s /usr/lib64/libboost_log.so.1.69.0 /usr/lib64/libboost_log.so
-#RUN ln -s /usr/lib64/libboost_log_setup.so.1.69.0 /usr/lib64/libboost_log_setup.so
 
 
 USER cdmmgr

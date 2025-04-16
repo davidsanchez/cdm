@@ -1028,40 +1028,6 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 
                 std::string imageName = writeFITSImage(src);
 
-                /*
-                REMOVE COPY BY CDM AND CHANGE THE FILE PUSH ON THE DATABROKER
-                std::string filePath = helper.get_fitsPath() + imageName;
-                std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
-
-
-                char exec[300];
-                sprintf(exec, "scp -o StrictHostKeyChecking=no %s %s", filePath.c_str(), m_config["OUT_FITS_BENDING"].c_str());
-                // sprintf(exec, "scp -o StrictHostKeyChecking=no %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
-                LOG_DEBUG << "Command is: " << exec << endl;
-                int scp_result = system(exec);
-                LOG_DEBUG << "Output of scp is: " << scp_result << endl;
-                if (scp_result == 0)
-                {
-                    std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
-                }
-                else
-                {
-                    LOG_ERROR << "There was a problem while copying the image! RETRYING" << endl;
-                    sprintf(exec, "scp -o StrictHostKeyChecking=no %s %s", filePath.c_str(), m_config["OUT_FITS_BENDING"].c_str());
-                    scp_result = system(exec);
-                    if (scp_result == 0)
-                    {
-                       std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
-                    }
-                    else
-                    {
-                    LOG_ERROR << "There was a problem while copying the image! ABORTING" << endl;
-                    remoteImagePath = "Error";
-                    }
-
-                }
-
-                */
                 v_image_paths.push_back(imageName);
                 SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient,datapointName_imageName, 2, imageName.c_str()); //Updates the imageName
 
@@ -1328,28 +1294,6 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     // Make a FITS image
     std::string imageName = writeFITSImage(accumulated_images, i_images_taken);
 
-    /*
-    REMOVE COPY BY CDM AND CHANGE THE FILE PUSH ON THE DATABROKER
-    std::string filePath = helper.get_fitsPath() + imageName;
-    std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
-
-    char exec[300];
-    sprintf(exec, "scp -o StrictHostKeyChecking=no %s %s", filePath.c_str(), m_config["OUT_FITS_BENDING"].c_str());
-    // sprintf(exec, "scp %s drivedev@10.1.8.1:/fefs/home/lapp/CDM_Images", filePath.c_str());
-    LOG_DEBUG << "Command is: " << exec << endl;
-    int scp_result = system(exec);
-    LOG_DEBUG << "Output of scp is: " << scp_result << endl;
-    if (scp_result == 0)
-    {
-        std::remove(filePath.c_str()); // deletes the file from the NUC if the file was copied succesfuly
-    }
-    else
-    {
-        LOG_ERROR << "There was a problem while copying the image!" << endl;
-        remoteImagePath = "Error";
-    }
-
-    */
 
     v_image_paths.push_back(imageName);
     SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient, datapointName_imageName, 2, imageName.c_str()); //Updates the imageName

@@ -85,8 +85,6 @@ private:
     void CheckAuxDMWestBottomUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
     void CheckAuxDMWestTopUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues);
 
-    void CheckHeartBeatError(std::vector<std::string> listElements, std::vector<std::string> listValues);
-
     Config *cdm_config;
     
 };
