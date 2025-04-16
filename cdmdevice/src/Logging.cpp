@@ -14,7 +14,7 @@ bool enable_debug_logging = false;
 BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
 {
 
-    char *pPath;
+    std::string *pPath;
     pPath = std::getenv("CDMPATH") ? std::getenv("CDMPATH") : "/home/cdmmgr/";
 
     logger_t lg;
