@@ -280,7 +280,7 @@
         <!--Configuration for supported user identity tokens-->
         <UserIdentityTokens>
             <!--Enable anonymous login true/false-->
-            <EnableAnonymous>false</EnableAnonymous>
+            <EnableAnonymous>true</EnableAnonymous>
             <!--Enable user/password login true/false-->
             <EnableUserPw>true</EnableUserPw>
             <!--Enable certificate based user login true/false-->
