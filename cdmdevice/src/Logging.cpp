@@ -15,7 +15,7 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
 {
 
     char *pPath;
-    logpPath_path = std::getenv("CDMPATH") ? std::getenv("CDMPATH") : "/home/cdmmgr/";
+    pPath = std::getenv("CDMPATH") ? std::getenv("CDMPATH") : "/home/cdmmgr/";
 
     logger_t lg;
 
