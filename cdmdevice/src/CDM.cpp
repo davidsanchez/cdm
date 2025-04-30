@@ -243,16 +243,6 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
                 std::string datapointName =  helper.searchDatapoint("Configure",cdm_config);
                 int nameSpace = 2;
 
-                /* 
-                m_Thread->cmdConfigure(datapointName,
-                                       nameSpace,
-                                       216,          // nPixelClock
-                                       50,           // exposure
-                                       1,           // fps
-                                       0,            // gain
-                                       "IS_CM_MONO8" // pixel_format
-                ); 
-                */
 
                 m_Thread->cmdStartStream(datapointName, nameSpace);
             }
