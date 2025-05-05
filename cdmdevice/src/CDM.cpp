@@ -30,7 +30,7 @@ int CDM::init(const std::string &chaine)
 
     // a rajouter pour recuperer les infos du fichier mapping des datapoints
     cdm_config = new Config(CDM_CONFIGURATION_NAME,"");
-    
+    std::cout<<cdm_config->getOPCUA_Address()<<std::endl;
 
     // You can overwrite this method if you want but not mandatory because the class pluginsInterfaceImpl already implement it:)
     // but becarefull, you have to call before doing  your bussiness, call the father method (the father class) ( PluginsInterfaceImpl::init())
@@ -613,7 +613,7 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
         getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.Diagnostics._Enable_Heart_Beat", 2, HeartBeatEnable);
         std::cout << "CDM::get(): HeartBeatEnable " << HeartBeatEnable<< endl;
         getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.Diagnostics._Error_Heart_Beat", 2, HeartBeatError);
-        std::cout << "CDM::get(): get_HeartBeatError " << HeartBeatError<< endl;
+        std::cout << "CDM::get(): HeartBeatError " << HeartBeatError<< endl;
 
 //        if (HeartBeatError ) {ret = 1;}
 //        else {ret = 0;}
