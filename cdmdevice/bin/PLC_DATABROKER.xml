@@ -15,7 +15,7 @@
     -->
 
     <GeneralInfo>
-                <OPCUA_Address>opc.tcp://10.1.8.5:48033</OPCUA_Address>
+                <OPCUA_Address>opc.tcp://10.1.8.5:480330</OPCUA_Address>
                 <RootName>DataBroker.DataBrokerControl</RootName>
     </GeneralInfo>
 
