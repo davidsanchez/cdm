@@ -30,7 +30,7 @@ int CDM::init(const std::string &chaine)
 
     // a rajouter pour recuperer les infos du fichier mapping des datapoints
     cdm_config = new Config(CDM_CONFIGURATION_NAME,"");
-    std::cout<<cdm_config->getOPCUA_Address()<<std::endl;
+    std::cout<<cdm_config->getOpcUaRef()<<std::endl;
 
     // You can overwrite this method if you want but not mandatory because the class pluginsInterfaceImpl already implement it:)
     // but becarefull, you have to call before doing  your bussiness, call the father method (the father class) ( PluginsInterfaceImpl::init())
