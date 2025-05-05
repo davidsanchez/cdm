@@ -21,7 +21,7 @@ Helper helper;
 
 // a rajouter pour fichier mapping des Datapoints 
 #define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
-
+#define DATABROKER_CONFIGURATION_NAME "PLC_DATABROKER.xml"
 
 
 int CDM::init(const std::string &chaine)
@@ -30,7 +30,8 @@ int CDM::init(const std::string &chaine)
 
     // a rajouter pour recuperer les infos du fichier mapping des datapoints
     cdm_config = new Config(CDM_CONFIGURATION_NAME,"");
-    std::cout<<cdm_config->getOpcUaRef()<<std::endl;
+    DB_config = new Config(DATABROKER_CONFIGURATION_NAME,"");
+    std::cout<<DB_config->getOpcUaRef()<<std::endl;
 
     // You can overwrite this method if you want but not mandatory because the class pluginsInterfaceImpl already implement it:)
     // but becarefull, you have to call before doing  your bussiness, call the father method (the father class) ( PluginsInterfaceImpl::init())
@@ -115,7 +116,7 @@ int CDM::afterStart()
     //helper.set_OPCUAref( getDataAccessClientOPCUARef() );
 
     // Trying to access other OPCUA server
-    CDM::connection_result_DataBroker = helper.connectOpcUa_DataBroker(m_config["OPCUA"], this); //DataBroker OPCUA
+    CDM::connection_result_DataBroker = helper.connectOpcUa_DataBroker(DB_config->getOpcUaRef(), this); //DataBroker OPCUA
 
     COND_LOG_DEBUG << "CDM::afterStart(): DataBroker status OPCUA: " << connection_result_DataBroker;
 
