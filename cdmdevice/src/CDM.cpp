@@ -118,12 +118,12 @@ int CDM::afterStart()
     std::cout<<"DB adress "<<DB_config->getOpcUaRef()<<std::endl;
     CDM::connection_result_DataBroker = helper.connectOpcUa_DataBroker(DB_config->getOpcUaRef(), this); //DataBroker OPCUA
 
-    COND_LOG_DEBUG << "CDM::afterStart(): DataBroker status OPCUA: " << connection_result_DataBroker;
+    LOG_TRACE << "CDM::afterStart(): DataBroker status OPCUA: " << connection_result_DataBroker;
 
     // Creating datapoint monitor that will notify us when the subscribed datapoints change.
     if (connection_result_DataBroker != connection_failure)
     {
-        COND_LOG_DEBUG << "CDM::afterStart(): Connected to DataBroker.";
+        LOG_TRACE << "CDM::afterStart(): Connected to DataBroker.";
         // Subscription now happens in ControllerCB which calls the subscribe method.
         //subscribe_DataBroker();
     }
@@ -151,7 +151,7 @@ int CDM::afterStart()
     callRequest.push_back(completeNodeNameAny);
     callRequest.push_back(quality);
     int res = getDataAccessClientOPCUARef()->callMethod(methodToCall, 4, callRequest, resultCall);
-    LOG_TRACE << methodToCall << "  method call result = " << res << endl;
+    COND_LOG_DEBUG << methodToCall << "  method call result = " << res << endl;
     //getDataAccessClientOPCUARef()->setDPQuality("CDM", 1);
 
     LOG_TRACE << "CDM::afterStart(): End"<<endl;
