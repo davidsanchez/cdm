@@ -76,7 +76,7 @@ int Helper::connectOpcUa_DataBroker(std::string url, CDM *cdm)
 
             int l_typeAuthentification=0;
             ret = m_clientOpcUaRef_DataBroker->setTypeAuthentification(l_typeAuthentification);
-            ret = m_clientOpcUaRef_DataBroker->connect("", dataBroker_CB, timeout);
+            ret = m_clientOpcUaRef_DataBroker->connect(url, dataBroker_CB, timeout);
             std::cout<<"Helper::connectOpcUa_DataBroker "<<ret<<std::endl;
             flag = ret;
             if (cpt == 3)
