@@ -628,11 +628,11 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
                     getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("state",cdm_config), 2, 1);
                     break;
                 case 2: //Observing to ready
-                    Camera.StopCDM();
+                    camera.StopCDM();
                     getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("state",cdm_config), 2, 1);
                     break;
                 case 6: //Stream to ready
-                    Camera.StopStream();
+                    camera.StopStream();
                     getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("state",cdm_config), 2, 1);
                     break;
             }
