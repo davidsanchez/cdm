@@ -134,8 +134,12 @@ int CDM::afterStart()
     // remplace le hardcodage des datapoints --> recuperation des infos provenant du fichier PLC_*****.xml
 //    getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("state",cdm_config), namespaceL2, 0);
     
+    //Be sure that the state is 0 at the start (safe)
     getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
-
+    //enable Heartbeat
+    getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.Diagnostics._Enable_Heart_Beat", 2, true);
+    getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.Diagnostics._Error_Heart_Beat", 2, false);
+    
     int quality = 0; // (0= Good, 1=Uncertain, 2 = Bad)
     std::string methodToCall = helper.searchDatapoint("SetDPQuality",cdm_config);
     std::string completeNodeName = "AuxControl";
