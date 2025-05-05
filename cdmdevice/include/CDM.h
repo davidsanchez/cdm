@@ -90,6 +90,7 @@ private:
 
     map<std::string,std::string> m_config;
     Config *cdm_config;
+    Config *DB_config;
 
 
 };
