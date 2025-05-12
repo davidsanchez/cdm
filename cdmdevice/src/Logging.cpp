@@ -22,9 +22,9 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
     logging::add_common_attributes(); // Adds "LineID", "TimeStamp", "ProcessID" and "ThreadID"
 
     std::string logDir = std::string(pPath) + "/log/saved/";
-    if (!boost::filesystem::exists(logDir)) {
-        boost::filesystem::create_directories(logDir);
-    }
+//    if (!boost::filesystem::exists(logDir)) {
+ //       boost::filesystem::create_directories(logDir);
+ //   }
 
 
     logging::add_file_log(
