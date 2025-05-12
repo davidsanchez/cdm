@@ -599,7 +599,6 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 << oarl_x_results[1] * px2arcsec << " "
                 << oarl_y_results[0] * px2arcsec << " "
                 << oarl_y_results[1] * px2arcsec
-                << endl
                 << endl; //
 
             //TODO: Time this process!
