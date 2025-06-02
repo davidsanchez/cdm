@@ -98,7 +98,7 @@ COPY payload/boost_1_79_0 ./boost
 WORKDIR /home/cdmmgr/boost
 RUN ./bootstrap.sh --with-python=python2.7
 RUN  ./b2 install  --with=all
-REMOVE -r /home/cdmmgr/boost
+RUN rm -r /home/cdmmgr/boost
 
 # to be change by linking better in cmake 
 RUN cp /usr/local/lib/libboost_* /usr/lib64/  
