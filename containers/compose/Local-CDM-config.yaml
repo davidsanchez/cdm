@@ -1,12 +1,16 @@
-version: '3.3'
 services:
   dev-cdm:
     hostname: dev-cdm
-    container_name: "MOS-CDM-COMPOSE"
-    image: "cdm:latest"
+    container_name: "MOS-CDM-LOCAL"
+    image: "cdm:local"
     # restart: unless-stopped
-
+    cap_add:
+      - SYS_PTRACE
     ports:
        - "48011:48011"
+    ipc: host
     volumes:
-      - ../../../cdm/:/home/cdmmgr/cdm
+      - /home/lst-drive/cdm/log:/home/cdmmgr/log
+      - /home/lst-drive/cdm/cdm/cdmdevice:/home/cdmmgr/cdm/cdmdevice
+      - /dev:/dev
+      - /var/run:/var/run

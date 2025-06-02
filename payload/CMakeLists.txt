@@ -32,10 +32,10 @@ MESSAGE( STATUS "==============================================" )
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/share)
     include_directories(${MOS_PATH}/include/MOS_Plugin)
     include_directories(/usr/include/libxml2)
-    include_directories(/usr/include/boost169)
+    include_directories(/usr/local/lib/)
     include_directories(/usr/include/CCfits)
-    include_directories(/home/cdmmgr/cdm/include)
-    include_directories(/home/cdmmgr/cdm/src)
+    include_directories(/home/cdmmgr/cdm/cdmdevice/include)
+    include_directories(/home/cdmmgr/cdm/cdmdevice/src)
 
     include_directories(Source)
 
@@ -73,7 +73,7 @@ add_library(
         ../src/Circle/circle.h
         ../src/Circle/data.h
         ../src/Logging.cpp
-        ../src/Config.cpp
+        ../src/ConfigCDM.cpp
         ../src/DatapointMonitor.cpp
         ../src/ControllerCB_changeStatus.cpp
         #ImageFITS.cpp
@@ -87,6 +87,7 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}  CCfits cfitsio ) # FITS files library
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  boost_log boost_log_setup ) # Boost
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  usb-1.0 yocto ) # Yocto-Meteo
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  curl ) # cURL
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}  configXML ) # 
 
 set_target_properties( PROPERTIES DEBUG_POSTFIX "d")
 

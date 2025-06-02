@@ -1,5 +1,5 @@
 #!/bin/bash
-PROCESS="MOS-CDM-COMPOSE"
+PROCESS="MOS-CDM-DEV"
 
 count=`docker ps | grep -v grep | grep "$PROCESS" | awk {'print $5'} | wc -l`
 if [ "$count" = 0 ]; then
