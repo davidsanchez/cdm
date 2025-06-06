@@ -93,7 +93,7 @@ RUN mkdir ./output
 RUN mkdir ./output/images
 RUN mkdir ./output/fits
 
-RUN git clone -b main https://gitlab-ci-token:7bvXeXpAdmxzzYGJUhU7@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
+RUN git clone https://gitlab-ci-token:7bvXeXpAdmxzzYGJUhU7@gitlab.cta-observatory.org/riccardo.rando/cdm.git /home/cdmmgr/cdm/
 RUN mkdir ./cdm/build
 #RUN mkdir -p cdm/cdmdevice/build
 
@@ -115,7 +115,6 @@ COPY payload/uEye-Linux-4.96.1/ueye.h /usr/include/ueye.h
 
 WORKDIR /home/cdmmgr/cdm/cdmdevice/build
 #RR tmp fix
-COPY payload/ImageAnalysis.h ../include
 COPY  payload/CMakeLists.txt .
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3a9
 RUN make
