@@ -619,7 +619,7 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
 //        if (HeartBeatError ) {ret = 1;}
 //        else {ret = 0;}
 
-/*
+
         int FSM_state;
         getDataAccessClientOPCUARef()->getDatapoint(helper.searchDatapoint("state",cdm_config), 2, FSM_state);
         std::cout << "CDM::get(): state is " << FSM_state<< endl;
@@ -642,7 +642,7 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
                     break;
             }
         }
-            */
+            
         
     }
 
