@@ -130,7 +130,7 @@ void ImageAnalysis::CalculateCircle()
     if (n_leds_valid < 3)
     {
         // TODO: Raise some errors here
-        LOG_ERROR << "Cannot fit circle with less than 3 points." << endl;
+        //LOG_ERROR << "Cannot fit circle with less than 3 points." << endl;
         this->circle_a = 0;
         this->circle_b = 0;
         this->circle_r = 0;
