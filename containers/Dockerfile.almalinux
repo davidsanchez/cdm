@@ -1,19 +1,15 @@
 #FROM centos:7
-FROM lst/common-mos:v12
+FROM --platform=linux/x86_64  lst-safetybroker/mos-a9:V12.4.10
 #FROM lst/common-mos-almalinux9:v12
 
 
 USER root
-sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/CentOS-*.repo
-sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/CentOS-*.repo
-sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/CentOS-*.repo
-
 
 # Creating a cdmmgr user
 
 RUN groupadd -g 1003 cdmmgr && \
-    useradd -g 1002 -u 1003 -d /home/cdmmgr -m -s /bin/bash cdmmgr
- 
+    useradd -g mosmgr -u 1003 -d /home/cdmmgr -m -s /bin/bash cdmmgr
+
 #RUN yum clean all && yum update -y 
 #RUN yum install -y cronie && yum install -y sudo && rm -rf /etc/cron.*/*
 
@@ -97,11 +93,16 @@ RUN ssh-keygen -b 521 -f  /etc/ssh/ssh_host_ecdsa_key -t ecdsa -N ""
 RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_rsa_key -t rsa -N ""
 
 
+COPY payload/build.sh /home/cdmmgr/build.sh
 COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
-COPY payload/configurations/MOS.conf /home/cdmmgr/MOS.conf
+COPY payload/configurations/RunCDM.sh /home/cdmmgr/RunCDM.sh
+COPY cdmdevice/bin/PLC_CDM.xml /home/cdmmgr/PLC_CDM.xml
+COPY cdmdevice/bin/PLC_DATABROKER.xml /home/cdmmgr/PLC_DATABROKER.xml
+COPY cdmdevice/bin/Unit_CDM_Model.xml /home/cdmmgr/Unit_CDM_Model.xml
+COPY cdmdevice/bin/FSM_CDM.xml /home/cdmmgr/FSM_CDM.xml
 
 
-RUN git clone  -b alamaLinux https://gitlab-ci-token:zvXByVdyyoLTMbrW-n_u@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
+RUN git clone  -b Alma9 https://gitlab-ci-token:C5Y4WJtPogwxyKG4HoJ-@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
 
 # DL and build Yocto meteo
 RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
@@ -130,15 +131,25 @@ COPY payload/boost_1_79_0 ./boost
 WORKDIR /home/cdmmgr/boost
 RUN ./bootstrap.sh --with-python=python2.7
 RUN  ./b2 install  --with=all
+WORKDIR /home/cdmmgr/cdm/cdmdevice/build
+COPY  payload/CMakeLists.txt .
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.10a9/
 
-WORKDIR /home/cdmmgr/cdm/build
-RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.1.5/
-RUN make
 
-USER root
+#RUN make
+#RUN make install
+
+
+#USER root
 WORKDIR /root
 COPY payload/configurations/.bashrc .bashrc
 
+#MOS permission and authentification
+COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_12.4.10a9/properties/
+COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_12.4.10a9/properties/
+COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_12.4.10a9/properties/
+
 #final stuff
 WORKDIR /home/cdmmgr
-ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
+CMD tail -f /dev/null
+#ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]

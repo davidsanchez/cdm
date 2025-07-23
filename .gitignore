@@ -49,3 +49,7 @@ build/*
 # VSCode
 *.code-workspace
 *.vscode
+
+
+payload/boost_1_79_0
+payload/boost_1_79_0/*.*

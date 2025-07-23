@@ -5,6 +5,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/video/video.hpp>
+#include <opencv2/imgcodecs.hpp>
 
 #include <chrono>
 
@@ -41,7 +42,9 @@ public:
 
     //private:
 
-    std::vector<int> compression_params = {CV_IMWRITE_PNG_COMPRESSION, 0};
+//    std::vector<int> compression_params = {CV_IMWRITE_PNG_COMPRESSION, 0};
+    std::vector<int> compression_params = {cv::IMWRITE_PNG_COMPRESSION, 0};
+
     Mat resized_image;
     vector<unsigned char> published_image;
 

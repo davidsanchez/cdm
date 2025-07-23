@@ -1,0 +1,18 @@
+version: '3.3'
+services:
+  dev-cdm:
+    privileged: true
+    hostname: dev-cdm
+    container_name: "MOS-CDM-DEV"
+    image: "cdm:alma9"
+    # restart: unless-stopped
+
+    ports:
+        - "48011:48011"
+    ipc: host
+    volumes:
+      - /Users/david/CDM/cdm:/home/cdmmgr/cdm
+      #- /home/lstoperator/log/:/home/cdmmgr/log
+      #- /dev:/dev
+      #- /var/run:/var/run
+      #- /home/lstoperator/CDM/:/home/cdmmgr/output

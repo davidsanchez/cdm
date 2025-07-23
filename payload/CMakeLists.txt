@@ -4,16 +4,6 @@ SET(CMAKE_DEBUG_POSTFIX "d")
 
 SET(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wunused-variable")
 
-#if ( EXISTS ${MOS_PATH} )
-    #SET(MOS_PATH "_X86")
-#else()
-    #SET(MOS_PATH "/MOS")
-    #SET(MOS_PATH "/MOS_v4.0.2/")
-    #SET(MOS_PATH "/MOS_v5.0.1/")
-    #SET(MOS_PATH "/MOS_v7.0.0/")
-    #SET(MOS_PATH "/MOS_test.1.3/")
-#    SET(MOS_PATH "/MOS_v11.0.0/")
-#endif()
 
 
 if ( EXISTS ${CMAKE_INSTALL_PREFIX} )
@@ -30,7 +20,9 @@ MESSAGE( STATUS "==============================================" )
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/share)
-    include_directories(${MOS_PATH}/include/MOS_Plugin)
+    
+    include_directories($ENV{MOS_PATH}/../include/MOS_Plugin)
+    include_directories(${MOS_PATH}/../include/MOS_Plugin)
     include_directories(/usr/include/libxml2)
     include_directories(/usr/local/lib/)
     include_directories(/usr/include/CCfits)
@@ -63,19 +55,19 @@ add_library(
          ${PROJECT_NAME}
         SHARED
         #/usr/include/ueye.h
-        ../src/CDM.cpp
-        ../src/AsynchronousThread.cpp
-        ../src/Camera.cpp
-        ../src/Helper.cpp
-        ../src/Meteo.cpp
-        ../src/ImageAnalysis.cpp
-        ../src/Circle/mystuff.h
-        ../src/Circle/circle.h
-        ../src/Circle/data.h
-        ../src/Logging.cpp
-        ../src/ConfigCDM.cpp
-        ../src/DatapointMonitor.cpp
-        ../src/ControllerCB_changeStatus.cpp
+        ../cdmdevice/src/CDM.cpp
+        ../cdmdevice/src/AsynchronousThread.cpp
+        ../cdmdevice/src/Camera.cpp
+        ../cdmdevice/src/Helper.cpp
+        ../cdmdevice/src/Meteo.cpp
+        ../cdmdevice/src/ImageAnalysis.cpp
+        ../cdmdevice/src/Circle/mystuff.h
+        ../cdmdevice/src/Circle/circle.h
+        ../cdmdevice/src/Circle/data.h
+        ../cdmdevice/src/Logging.cpp
+        ../cdmdevice/src/ConfigCDM.cpp
+        ../cdmdevice/src/DatapointMonitor.cpp
+        ../cdmdevice/src/ControllerCB_changeStatus.cpp
         #ImageFITS.cpp
         )
 
@@ -86,10 +78,18 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}  opencv_core opencv_highgui opencv_imgproc
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  CCfits cfitsio ) # FITS files library
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  boost_log boost_log_setup ) # Boost
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  usb-1.0 yocto ) # Yocto-Meteo
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}  curl ) # cURL
+#TARGET_LINK_LIBRARIES(${PROJECT_NAME}  curl ) # cURL
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  configXML ) # 
 
+
+
 set_target_properties( PROPERTIES DEBUG_POSTFIX "d")
+
+
+find_package (OpenCV 4.0.0 REQUIRED)
+include_directories ("/usr/include/opencv4/")
+
+
 
 # configure output path
 INSTALL(TARGETS  ${PROJECT_NAME}
