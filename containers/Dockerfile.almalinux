@@ -1,6 +1,6 @@
 #FROM centos:7
 #FROM --platform=linux/x86_64  lst-safetybroker/mos-a9:V12.4.10
-FROM lst/source_mos_a9:V2
+FROM lst-safetybroker/mos-a9:v12.4.4
 #FROM lst/common-mos-almalinux9:v12
 
 
@@ -134,7 +134,7 @@ RUN ./bootstrap.sh --with-python=python2.7
 RUN  ./b2 install  --with=all
 WORKDIR /home/cdmmgr/cdm/cdmdevice/build
 COPY  payload/CMakeLists.txt .
-RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.9/
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.4/
 
 
 #RUN make
@@ -146,9 +146,9 @@ WORKDIR /root
 COPY payload/configurations/.bashrc .bashrc
 
 #MOS permission and authentification
-COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_12.4.9/properties/
-COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_12.4.9/properties/
-COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_12.4.9/properties/
+COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_12.4.4/properties/
+COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_12.4.4/properties/
+COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_12.4.4/properties/
 
 #final stuff
 WORKDIR /home/cdmmgr
