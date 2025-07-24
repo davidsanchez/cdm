@@ -137,7 +137,7 @@ COPY  payload/CMakeLists.txt .
 
 
 
-#RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.4/
+#RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.4a9/
 #RUN make
 #RUN make install
 
@@ -147,9 +147,9 @@ WORKDIR /root
 COPY payload/configurations/.bashrc .bashrc
 
 #MOS permission and authentification
-COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_12.4.4/properties/
-COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_12.4.4/properties/
-COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_12.4.4/properties/
+COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_12.4.4a9/properties/
+COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_12.4.4a9/properties/
+COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_12.4.4a9/properties/
 
 #final stuff
 WORKDIR /home/cdmmgr
