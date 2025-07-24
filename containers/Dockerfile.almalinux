@@ -126,6 +126,10 @@ COPY payload/uEye-Linux-4.90.06-64 ./
 RUN  ./ueyesdk-setup-4.90.06-usb-amd64.gz.run; exit 0
 COPY payload/ueye.h /usr/include/ueye.h
 
+WORKDIR /usr/lib
+ln -s libueye_api.so.1 libueye_api.so
+
+WORKDIR /home/cdmmgr/
 RUN mkdir ./boost
 COPY payload/boost_1_79_0 ./boost
 
@@ -137,9 +141,9 @@ COPY  payload/CMakeLists.txt .
 
 
 
-#RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.4a9/
-#RUN make
-#RUN make install
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.4a9/
+RUN make
+RUN make install
 
 
 #USER root
