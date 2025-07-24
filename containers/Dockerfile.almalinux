@@ -132,7 +132,7 @@ COPY payload/boost_1_79_0 ./boost
 WORKDIR /home/cdmmgr/boost
 RUN ./bootstrap.sh --with-python=python2.7
 RUN  ./b2 install  --with=all
-WORKDIR /home/cdmmgr/cdm/cdmdevice/build
+WORKDIR /home/cdmmgr/cdm/build
 COPY  payload/CMakeLists.txt .
 
 

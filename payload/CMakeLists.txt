@@ -55,19 +55,19 @@ add_library(
          ${PROJECT_NAME}
         SHARED
         #/usr/include/ueye.h
-        ../cdmdevice/src/CDM.cpp
-        ../cdmdevice/src/AsynchronousThread.cpp
-        ../cdmdevice/src/Camera.cpp
-        ../cdmdevice/src/Helper.cpp
-        ../cdmdevice/src/Meteo.cpp
-        ../cdmdevice/src/ImageAnalysis.cpp
-        ../cdmdevice/src/Circle/mystuff.h
-        ../cdmdevice/src/Circle/circle.h
-        ../cdmdevice/src/Circle/data.h
-        ../cdmdevice/src/Logging.cpp
-        ../cdmdevice/src/ConfigCDM.cpp
-        ../cdmdevice/src/DatapointMonitor.cpp
-        ../cdmdevice/src/ControllerCB_changeStatus.cpp
+        cdmdevice/src/CDM.cpp
+        cdmdevice/src/AsynchronousThread.cpp
+        cdmdevice/src/Camera.cpp
+        cdmdevice/src/Helper.cpp
+        cdmdevice/src/Meteo.cpp
+        cdmdevice/src/ImageAnalysis.cpp
+        cdmdevice/src/Circle/mystuff.h
+        cdmdevice/src/Circle/circle.h
+        cdmdevice/src/Circle/data.h
+        cdmdevice/src/Logging.cpp
+        cdmdevice/src/ConfigCDM.cpp
+        cdmdevice/src/DatapointMonitor.cpp
+        cdmdevice/src/ControllerCB_changeStatus.cpp
         #ImageFITS.cpp
         )
 
