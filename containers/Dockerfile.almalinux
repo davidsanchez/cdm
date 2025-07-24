@@ -127,7 +127,7 @@ RUN  ./ueyesdk-setup-4.90.06-usb-amd64.gz.run; exit 0
 COPY payload/ueye.h /usr/include/ueye.h
 
 WORKDIR /usr/lib
-ln -s libueye_api.so.1 libueye_api.so
+RUN ln -s libueye_api.so.1 libueye_api.so
 
 WORKDIR /home/cdmmgr/
 RUN mkdir ./boost
