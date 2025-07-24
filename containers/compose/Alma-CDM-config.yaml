@@ -11,7 +11,7 @@ services:
         - "48011:48011"
     ipc: host
     volumes:
-      - /Users/david/CDM/cdm:/home/cdmmgr/cdm
+      - /home/lst-drive/cdm/david/cdm:/home/cdmmgr/cdm
       #- /home/lstoperator/log/:/home/cdmmgr/log
       #- /dev:/dev
       #- /var/run:/var/run
