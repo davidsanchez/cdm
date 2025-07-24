@@ -142,8 +142,8 @@ COPY  payload/CMakeLists.txt .
 
 
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.4a9/
-RUN make
-RUN make install
+#RUN make
+#RUN make install
 
 
 #USER root
