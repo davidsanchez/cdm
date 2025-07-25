@@ -81,7 +81,7 @@ add_library(
 
 #TARGET_LINK_LIBRARIES(${PROJECT_NAME}  m pthread stdc++)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  PluginBase) # MOS
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}  ueye_api) # Camera library
+#TARGET_LINK_LIBRARIES(${PROJECT_NAME}  ueye_api) # Camera library
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  opencv_core opencv_highgui opencv_imgproc ) #OpenCV
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  CCfits cfitsio ) # FITS files library
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  boost_log boost_log_setup ) # Boost
