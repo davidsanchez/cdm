@@ -1,0 +1,124 @@
+project(CDM)
+cmake_minimum_required(VERSION 2.8)
+set(CMAKE_CXX_STANDARD 11)
+
+set(CMAKE_DEBUG_POSTFIX "d")
+set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wunused-variable")
+set (MOS_PATH "/data/rando/github/LST/mos-latest/MOS/MOS_X86_12.4.4a9")
+set (YOCTO_PATH "/data/rando/github/LST/YoctoMeteo_cpp")
+
+if ( EXISTS ${CMAKE_INSTALL_PREFIX} )
+    #SET(CMAKE_INSTALL_PREFIX "..")
+else()
+    SET(CMAKE_INSTALL_PREFIX "..")
+endif()
+
+
+find_package(OpenCV REQUIRED)
+find_package(LibXml2 REQUIRED)
+find_package(Boost COMPONENTS log log_setup REQUIRED)
+#find_package(CCFITS REQUIRED)
+
+include_directories(${LIBXML2_INCLUDE_DIR})
+include_directories(/usr/include/CCfits)
+
+include_directories(${MOS_PATH}/include/MOS_Plugin)
+include_directories(${YOCTO_PATH}/Sources)
+include_directories(/data/rando/github/LST/cdm-mine/cdmdevice/src)
+include_directories(/data/rando/github/LST/cdm-mine/cdmdevice/include)
+
+
+link_directories(${MOS_PATH}/lib)
+link_directories(${YOCTO_PATH}/Binaries/linux/64bits)
+
+
+#MESSAGE( STATUS "" )
+#
+#MESSAGE( STATUS "==============================================" )
+#MESSAGE( STATUS "Now configuring server_OPCUA CMakeLists.txt" )
+#MESSAGE( STATUS "==============================================" )
+
+#    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+#    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/share)
+#
+#    include_directories(/usr/include/libxml2)
+#    include_directories(/usr/local/lib/)
+#    include_directories(/usr/include/CCfits)
+#    include_directories(/data/rando/github/LST/cdm-mine/cdmdevice/include)
+#    
+
+
+#    include_directories(/home/cdmmgr/YoctoMeteo_cpp/Sources)
+#    include_directories(/home/cdmmgr/YoctoMeteo_cpp/Sources/yapi)
+
+#    link_directories(${MOS_LIB_PATH})
+#    link_directories(${CMAKE_CURRENT_SOURCE_DIR})
+#    link_directories(/usr/lib)
+#    link_directories(/usr/local/lib)
+#    link_directories(/usr/lib64)
+#    link_directories(/home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits)
+
+IF (UNIX)
+    INCLUDE_DIRECTORIES()
+    ADD_DEFINITIONS(-Wall)
+#    ADD_DEFINITIONS(-O2 -g -m64)
+    ADD_DEFINITIONS(-O3 -m64 -fPIC -std=c++11)
+    ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
+    SET(PLATTFORM_LIBS pthread rt dl)
+ENDIF (UNIX)
+
+#print includes
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+foreach(dir ${dirs})
+  message(STATUS "incdir='${dir}'")
+endforeach()
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY LINK_DIRECTORIES)
+foreach(dir ${dirs})
+  message(STATUS "linkdir='${dir}'")
+endforeach()
+
+# Create library
+add_library(
+         ${PROJECT_NAME}
+        SHARED
+        #/usr/include/ueye.h
+        src/CDM.cpp
+        src/AsynchronousThread.cpp
+        src/Camera.cpp
+        src/Helper.cpp
+        src/Meteo.cpp
+        src/ImageAnalysis.cpp
+        src/Circle/mystuff.h
+        src/Circle/circle.h
+        src/Circle/data.h
+        src/Logging.cpp
+        src/ConfigCDM.cpp
+        src/DatapointMonitor.cpp
+        src/ControllerCB_changeStatus.cpp
+        #ImageFITS.cpp
+        )
+
+target_link_libraries(${PROJECT_NAME} m pthread stdc++)
+target_link_libraries(${PROJECT_NAME} PluginBase) # MOS
+target_link_libraries(${PROJECT_NAME}  configXML ) #MOS
+target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
+target_link_libraries(${PROJECT_NAME} ${LibXml2_LIBS})
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} )
+target_link_libraries(${PROJECT_NAME}  usb-1.0 yocto ) #YOCTO METEO
+target_link_libraries(${PROJECT_NAME}  CCfits cfitsio ) # FITS files library
+
+#target_LINK_LIBRARIES(${PROJECT_NAME}  ueye_api) # Camera library
+#target_link_libraries(${PROJECT_NAME}  opencv_core opencv_highgui opencv_imgproc ) #OpenCV
+#target_link_libraries(${PROJECT_NAME}  CCfits cfitsio ) # FITS files library
+#target_link_libraries(${PROJECT_NAME}  boost_log boost_log_setup ) # Boost
+#target_link_libraries(${PROJECT_NAME}  usb-1.0 yocto ) # Yocto-Meteo
+#target_link_libraries(${PROJECT_NAME}  curl ) # cURL
+
+
+
+# configure output path
+INSTALL(TARGETS  ${PROJECT_NAME}
+        RUNTIME DESTINATION ../bin
+        LIBRARY DESTINATION ../plugins
+        ARCHIVE DESTINATION ../lib
+)

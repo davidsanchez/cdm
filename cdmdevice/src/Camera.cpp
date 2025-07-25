@@ -338,55 +338,60 @@ int Camera::Connect()
 {
     LOG_TRACE << "Camera::Connect(): Start"<<endl;
 
-    nRet = is_InitCamera(&hCam, NULL);
+    //nRet = is_InitCamera(&hCam, NULL);
+    nRet=1;
     COND_LOG_DEBUG << "Camera::Connect(): InitCamera returned " << nRet << std::endl;
-    if (nRet != IS_SUCCESS)
+    if (nRet != 1)//IS_SUCCESS)
     {
         LOG_ERROR << "Camera::Connect(): Failed to open camera." << std::endl;
         return 1;
     }
 
-    is_SetErrorReport(hCam, IS_ENABLE_ERR_REP);
-    LOG_INFO << "Camera::Connect(): Set Error Report result: " << nRet << endl;
+    //is_SetErrorReport(hCam, IS_ENABLE_ERR_REP);
+    //LOG_INFO << "Camera::Connect(): Set Error Report result: " << nRet << endl;
 
-    nRet = is_ResetToDefault(hCam); //Resets to default values
-    if (nRet != IS_SUCCESS)
+    //nRet = is_ResetToDefault(hCam); //Resets to default values
+    if (nRet != 1)//IS_SUCCESS)
     {
         LOG_ERROR << "Camera::Connect(): Failed to reset to default values." << std::endl;
         return 1;
     }
 
-    nRet = is_GetCameraInfo(hCam, &camerainfo);
-    if (nRet != IS_SUCCESS)
+    //nRet = is_GetCameraInfo(hCam, &camerainfo);
+    if (nRet != 1) //IS_SUCCESS)
     {
         LOG_ERROR << "Camera::Connect(): Failed to retrieve camera info." << std::endl;
     }
 
-    nRet = is_GetSensorInfo(hCam, &sensorinfo);
-    if (nRet != IS_SUCCESS)
+    //nRet = is_GetSensorInfo(hCam, &sensorinfo);
+    if (nRet != 1) //IS_SUCCESS)
     {
         LOG_ERROR << "Camera::Connect(): Failed to retrieve sensor info." << std::endl;
     }
-    LOG_INFO << "Camera::Connect(): Sensor model " << sensorinfo.strSensorName << ". Camera serial no " << camerainfo.SerNo << std::endl;
 
-    nRet = is_AOI(hCam, IS_AOI_IMAGE_GET_AOI, (void *)&rectAOI, sizeof(rectAOI));
-    if (nRet != IS_SUCCESS)
+    //LOG_INFO << "Camera::Connect(): Sensor model " << sensorinfo.strSensorName << ". Camera serial no " << camerainfo.SerNo << std::endl;
+
+    //nRet = is_AOI(hCam, IS_AOI_IMAGE_GET_AOI, (void *)&rectAOI, sizeof(rectAOI));
+    if (nRet != 1) // IS_SUCCESS)
     {
         LOG_ERROR << "Camera::Connect(): Failed to retrieve AOI info." << std::endl;
     }
-    iWidth = rectAOI.s32Width;
-    iHeight = rectAOI.s32Height;
+    iWidth = 1024; //rectAOI.s32Width;
+    iHeight = 768; // rectAOI.s32Height;
     LOG_INFO << "Camera::Connect(): Image size is " << iWidth << "x" << iHeight << std::endl;
 
     // Check does the camera support reporting temperature status
+    /*
     INT nFeatures = 0;
     is_DeviceFeature(hCam, IS_DEVICE_FEATURE_CMD_GET_SUPPORTED_FEATURES, &nFeatures, sizeof(nFeatures));
     if ((nFeatures & IS_DEVICE_FEATURE_CAP_TEMPERATURE_STATUS) == IS_DEVICE_FEATURE_CAP_TEMPERATURE_STATUS)
     {
         LOG_INFO << "Camera::Connect(): Camera supports monitoring of camera temperature status"<<endl;
     }
+    */
 
     LOG_TRACE << "Camera::Connect(): End"<< endl;
+    return 0;
 }
 
 int Camera::Disconnect()
@@ -396,10 +401,11 @@ int Camera::Disconnect()
     // You should release the reserved images in memory here. Like OpenCV Mat and IDS images
 
     // Disables the hCam camera handle and releases the data structures and memory areas taken up by the uEye camera
-    is_ExitCamera(hCam);
-    hCam = NULL;
+    //is_ExitCamera(hCam);
+    //hCam = NULL;
 
     LOG_TRACE << "Camera::Disconnect(): End"<< endl;
+    return 0;
 }
 
 // TODO: merge GetMultipleImages, GetMultipleImagesStacked and StartCDM into one function?
@@ -416,17 +422,18 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     int nMemoryId_arr[n_allocated_memories];
     for (int i = 0; i < n_allocated_memories; i++)
     {
-        nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-        COND_LOG_DEBUG << "Camera::StartCDM(): AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
-        is_AddToSequence(hCam, pcImageMemory, nMemoryId);
+      //nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
+      nRet=1;
+      COND_LOG_DEBUG << "Camera::StartCDM(): AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
+        //is_AddToSequence(hCam, pcImageMemory, nMemoryId);
 
         pcImageMemory_arr[i] = pcImageMemory;
         nMemoryId_arr[i] = nMemoryId;
     }
-    is_InitImageQueue(hCam, 0);
+    //is_InitImageQueue(hCam, 0);
 
-    nRet = is_CaptureVideo(hCam, IS_WAIT);
-    COND_LOG_DEBUG << "Camera::StartCDM(): is_CaptureVideo returned " << nRet << std::endl;
+    //nRet = is_CaptureVideo(hCam, IS_WAIT);
+    //COND_LOG_DEBUG << "Camera::StartCDM(): is_CaptureVideo returned " << nRet << std::endl;
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
@@ -475,10 +482,10 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
         // Use is_LockSeqBuf when processing image?
 
         char *pBuffer = NULL;
-        nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
+        //nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
         std::chrono::steady_clock::time_point begin_loop_after_image = std::chrono::steady_clock::now();
 
-        if (nRet == IS_SUCCESS)
+        if (nRet == 1) //IS_SUCCESS)
         {
             timestamp_UTC.push_back(currentDateTimeMs());
             timestamp_epoch.push_back(currentEpochTime());
@@ -500,25 +507,25 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
             // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
             // This is to be done for incoming camera image or Fake camera image from fits file.
-            ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
+            //ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
             std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
             LOG_IMAGE << "Camera::StartCDM(): Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
             //ImageAnalysis myimage(src);
             begin = std::chrono::steady_clock::now();
-            myimage.CalculateImage();
+	    // myimage.CalculateImage();
             end = std::chrono::steady_clock::now();
             LOG_IMAGE << "Camera::StartCDM(): Time difference [CalculateImage] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
             begin = std::chrono::steady_clock::now();
 
-            circle_results = myimage.GetCircleResults();
-            led_x_results = myimage.GetLEDxResults();
-            led_y_results = myimage.GetLEDyResults();
-            oarl_x_results = myimage.GetOARLxResults();
-            oarl_y_results = myimage.GetOARLyResults();
-            displacement_results = myimage.GetDisplacementResults();
-            oarl_mean_results = myimage.GetOARLmeanResults();
+            circle_results = std::vector<double>{0.0,0.0,0.0,0.0}; //myimage.GetCircleResults();
+            //led_x_results = 0; // myimage.GetLEDxResults();
+            //led_y_results = 0; // myimage.GetLEDyResults();
+            //oarl_x_results = 0; // myimage.GetOARLxResults();
+            //oarl_y_results = 0; // myimage.GetOARLyResults();
+            //displacement_results = 0; // myimage.GetDisplacementResults();
+            //oarl_mean_results = 0; // myimage.GetOARLmeanResults();
 
             circle_x.push_back(circle_results[0]);
             circle_y.push_back(circle_results[1]);
@@ -553,7 +560,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
                 duration_count = 0;
             }
 
-            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
+            //is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
             i_images_taken++;
 
             // TODO: Optimize this?
@@ -720,10 +727,11 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             }
         }
 
-        else if (nRet == IS_CAPTURE_STATUS)
+        else if (nRet == 0) //IS_CAPTURE_STATUS)
         {
             LOG_WARNING << "Camera::StartCDM() / IS_CAPTURE_STATUS"<<endl;
 
+	    /*
             UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
             INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
 
@@ -749,13 +757,14 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             }
 
             is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
+	    */
         }
         else
         {
             LOG_WARNING << "is_WaitForNextImage : " << nRet << std::endl;
             //	wLinkSpeed_Mb
             // The camera has the device ID 1
-
+	    /*
             UINT nDeviceId = 1;
             IS_DEVICE_INFO deviceInfo;
             memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
@@ -763,6 +772,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
             WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
             LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
+	    */
         }
 
         std::chrono::steady_clock::time_point end_loop = std::chrono::steady_clock::now();
@@ -770,27 +780,29 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
         LOG_IMAGE << "Camera::StartCDM(): Time difference [One loop after image] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop_after_image).count() << "[ms]" << std::endl;
 
+
     } // while (b_keep_taking == 1)
 
     // Free the OpenCV memory?
     // Free the allocated memories
 
-    nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
+    //nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
     COND_LOG_DEBUG << "Camera::StartCDM(): is_StopLiveVideo result: " << nRet << endl;
 
-    nRet = is_ExitImageQueue(hCam);
+    //nRet = is_ExitImageQueue(hCam);
     COND_LOG_DEBUG << "Camera::StartCDM(): is_ExitImageQueue: " << nRet << endl;
 
-    nRet = is_ClearSequence(hCam);
+    //nRet = is_ClearSequence(hCam);
     COND_LOG_DEBUG << "Camera::StartCDM(): is_ClearSequence: " << nRet << endl;
 
     for (int i = 0; i < n_allocated_memories; i++)
     {
-        nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
+      //nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
         //LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
     }
 
     LOG_TRACE << "Camera::StartCDM(): End"<< endl;
+    return 0;
 }
 
 int Camera::StartStream(DataAccessClientOPCUA *myclient)
@@ -804,16 +816,16 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
     int nMemoryId_arr[n_allocated_memories];
     for (int i = 0; i < n_allocated_memories; i++)
     {
-        nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
+      nRet = 1; //is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
         COND_LOG_DEBUG << "Camera::StartStream(): AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
-        is_AddToSequence(hCam, pcImageMemory, nMemoryId);
+        //is_AddToSequence(hCam, pcImageMemory, nMemoryId);
 
         pcImageMemory_arr[i] = pcImageMemory;
         nMemoryId_arr[i] = nMemoryId;
     }
-    is_InitImageQueue(hCam, 0);
+    //is_InitImageQueue(hCam, 0);
 
-    nRet = is_CaptureVideo(hCam, IS_WAIT);
+    nRet = 2; //is_CaptureVideo(hCam, IS_WAIT);
     COND_LOG_DEBUG << "Camera::StartStream(): is_CaptureVideo returned " << nRet << std::endl;
 
     int loop_image_count = 0;
@@ -829,10 +841,10 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
         // Use is_LockSeqBuf when processing image?
 
         char *pBuffer = NULL;
-        nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
+        nRet = 1; //is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
         std::chrono::steady_clock::time_point begin_loop_after_image = std::chrono::steady_clock::now();
 
-        if (nRet == IS_SUCCESS)
+        if (nRet == 1) //IS_SUCCESS)
         {
             // Vertical flipping of image so it is upright when read from stored old fits files.
             //ImageAnalysis myimage(m1, "Vertical", 0);
@@ -855,9 +867,10 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
 
             // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
             // This is to be done for incoming camera image or Fake camera image from fits file.
-            ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
 
-            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
+            //ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
+
+            //is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
             i_images_taken++;
 
             int m_nameSpace = 2;
@@ -866,10 +879,10 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
             // myclient->setDatapoint(datapointName_image, m_nameSpace, published_image);
         }
 
-        else if (nRet == IS_CAPTURE_STATUS)
+        else if (nRet == 0) //IS_CAPTURE_STATUS)
         {
             LOG_WARNING << "Camera::StartCDM() / IS_CAPTURE_STATUS"<<endl;
-
+	    /*
             UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
             INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
 
@@ -895,20 +908,22 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
             }
 
             is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
+	    */
         }
         else
-        {
+	  {
             LOG_WARNING << "is_WaitForNextImage : " << nRet << std::endl;
             //	wLinkSpeed_Mb
             // The camera has the device ID 1
-
-            UINT nDeviceId = 1;
+	    /*
+	    UINT nDeviceId = 1;
             IS_DEVICE_INFO deviceInfo;
             memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
             nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
 
             WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
             LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
+	    */
         }
 
         std::chrono::steady_clock::time_point end_loop = std::chrono::steady_clock::now();
@@ -916,27 +931,29 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
 
         LOG_IMAGE << "Camera::StartStream(): Time difference [One loop after image] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop_after_image).count() << "[ms]" << std::endl;
 
-    } // while (b_keep_taking == 1)
+	    
+	  } // while (b_keep_taking == 1)
 
     // Free the OpenCV memory?
     // Free the allocated memories
 
-    nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
+	nRet = 1; //is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
     COND_LOG_DEBUG << "Camera::StartStream(): is_StopLiveVideo result: " << nRet << endl;
 
-    nRet = is_ExitImageQueue(hCam);
+    //nRet = is_ExitImageQueue(hCam);
     COND_LOG_DEBUG << "Camera::StartStream(): is_ExitImageQueue: " << nRet << endl;
 
-    nRet = is_ClearSequence(hCam);
+    //nRet = is_ClearSequence(hCam);
     COND_LOG_DEBUG << "Camera::StartStream(): is_ClearSequence: " << nRet << endl;
 
     for (int i = 0; i < n_allocated_memories; i++)
     {
-        nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
+      //nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
         //LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
     }
 
      LOG_TRACE << "Camera::StartStream(): End"<< endl;
+     return 0;
 }
 
 vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCUA *myclient)
@@ -953,17 +970,17 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     int nMemoryId_arr[n_allocated_memories];
     for (int i = 0; i < n_allocated_memories; i++)
     {
-        nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
+      nRet = 1; //is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
         COND_LOG_DEBUG << "Camera::GetMultipleImages(): AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
 
-        is_AddToSequence(hCam, pcImageMemory, nMemoryId);
+        //is_AddToSequence(hCam, pcImageMemory, nMemoryId);
         pcImageMemory_arr[i] = pcImageMemory;
         nMemoryId_arr[i] = nMemoryId;
     }
-    is_InitImageQueue(hCam, 0);
+    //is_InitImageQueue(hCam, 0);
 
-    nRet = is_CaptureVideo(hCam, IS_WAIT);
-    COND_LOG_DEBUG << "Camera::GetMultipleImages(): is_CaptureVideo returned " << nRet << std::endl;
+    //nRet = is_CaptureVideo(hCam, IS_WAIT);
+    //COND_LOG_DEBUG << "Camera::GetMultipleImages(): is_CaptureVideo returned " << nRet << std::endl;
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
@@ -974,9 +991,9 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 
         LOG_TRACE << "Camera::GetMultipleImages(): Number of images taken "<<i_images_taken+1<<" over "<<n_images<<endl;
         char *pBuffer = NULL;
-        nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
+        nRet = 1;//is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
 
-        if (nRet == IS_SUCCESS)
+        if (nRet == 1) //IS_SUCCESS)
         {
             {
                 auto tp_start = std::chrono::high_resolution_clock::now();
@@ -1041,13 +1058,15 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
                     duration_count = 0;
                 }
             }
-            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
+            //is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
             i_images_taken++;
         }
 
-        else if (nRet == IS_CAPTURE_STATUS)
+        else if (nRet == 0) //IS_CAPTURE_STATUS)
         {
-            LOG_WARNING << "Camera::GetMultipleImages() / IS_CAPTURE_STATUS"<<endl;
+
+	  LOG_WARNING << "Camera::GetMultipleImages() / IS_CAPTURE_STATUS"<<endl;
+	  /*
 
             UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
             INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
@@ -1074,13 +1093,14 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
             }
 
             is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
+	  */
         }
         else
         {
             LOG_WARNING << "is_WaitForNextImage : " << nRet << std::endl;
             //	wLinkSpeed_Mb
             // The camera has the device ID 1
-
+	    /*
             UINT nDeviceId = 1;
             IS_DEVICE_INFO deviceInfo;
             memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
@@ -1088,24 +1108,25 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 
             WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
             LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
+	    */
         }
     }
 
     // Free the OpenCV memory?
     // Free the allocated memories
 
-    nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
+    nRet = 1; //is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
     COND_LOG_DEBUG << "Camera::GetMultipleImages(): is_StopLiveVideo result: " << nRet << endl;
 
-    nRet = is_ExitImageQueue(hCam);
+    //nRet = is_ExitImageQueue(hCam);
     COND_LOG_DEBUG << "Camera::GetMultipleImages(): is_ExitImageQueue: " << nRet << endl;
 
-    nRet = is_ClearSequence(hCam);
+    //nRet = is_ClearSequence(hCam);
     COND_LOG_DEBUG << "Camera::GetMultipleImages(): is_ClearSequence: " << nRet << endl;
 
     for (int i = 0; i < n_allocated_memories; i++)
     {
-        nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
+      //nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
         //LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
     }
 
@@ -1132,16 +1153,16 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     int nMemoryId_arr[n_allocated_memories];
     for (int i = 0; i < n_allocated_memories; i++)
     {
-        nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-        COND_LOG_DEBUG << "Camera::GetMultipleImagesStacked(): AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
-
-        is_AddToSequence(hCam, pcImageMemory, nMemoryId);
-        pcImageMemory_arr[i] = pcImageMemory;
-        nMemoryId_arr[i] = nMemoryId;
+      nRet = 1; //is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
+      COND_LOG_DEBUG << "Camera::GetMultipleImagesStacked(): AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
+      
+      //is_AddToSequence(hCam, pcImageMemory, nMemoryId);
+      pcImageMemory_arr[i] = pcImageMemory;
+      nMemoryId_arr[i] = nMemoryId;
     }
-    is_InitImageQueue(hCam, 0);
+    //is_InitImageQueue(hCam, 0);
 
-    nRet = is_CaptureVideo(hCam, IS_WAIT);
+    nRet = 1; //is_CaptureVideo(hCam, IS_WAIT);
     COND_LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
 
     int loop_image_count = 0;
@@ -1153,9 +1174,9 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
         LOG_TRACE << "Camera::GetMultipleImagesStacked(): Number of images taken "<<i_images_taken+1<<" over "<<n_images<<endl;
 
         char *pBuffer = NULL;
-        nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
+        nRet = 1; //is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
 
-        if (nRet == IS_SUCCESS)
+        if (nRet == 1) //IS_SUCCESS)
         {
             {
                 auto tp_start = std::chrono::high_resolution_clock::now();
@@ -1220,14 +1241,14 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
                     duration_count = 0;
                 }
             }
-            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
+            //is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
             i_images_taken++;
         }
 
-        else if (nRet == IS_CAPTURE_STATUS)
+        else if (nRet == 0) //IS_CAPTURE_STATUS)
         {
             LOG_WARNING << "Camera::GetMultipleImagesStacked() / IS_CAPTURE_STATUS"<<endl;
-
+	    /*
             UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
             INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
 
@@ -1253,10 +1274,14 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
             }
 
             is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
+	    */
         }
         else
         {
+	  
             LOG_WARNING << "Camera::GetMultipleImagesStacked(): is_WaitForNextImage : " << nRet << std::endl;
+	    /*
+
             //	wLinkSpeed_Mb
             // The camera has the device ID 1
 
@@ -1267,6 +1292,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
 
             WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
             LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
+	    */
         }
 
         LOG_INFO << "Camera::GetMultipleImagesStacked(): Images taken: " << i_images_taken << endl;
@@ -1300,18 +1326,18 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     // Free the OpenCV memory?
     // Free the allocated memories
 
-    nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
+    nRet = 1; //is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
     COND_LOG_DEBUG << "Camera::GetMultipleImagesStacked(): is_StopLiveVideo result: " << nRet << endl;
 
-    nRet = is_ExitImageQueue(hCam);
+    //nRet = is_ExitImageQueue(hCam);
     COND_LOG_DEBUG << "Camera::GetMultipleImagesStacked(): is_ExitImageQueue: " << nRet << endl;
 
-    nRet = is_ClearSequence(hCam);
+    //nRet = is_ClearSequence(hCam);
     COND_LOG_DEBUG << "Camera::GetMultipleImagesStacked(): is_ClearSequence: " << nRet << endl;
 
     for (int i = 0; i < n_allocated_memories; i++)
     {
-        nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
+      //nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
         //LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
     }
 
@@ -1331,18 +1357,21 @@ int Camera::StopCDM()
 {
     LOG_TRACE << "Camera::StopCDM(): Start"<<endl;
     b_keep_taking = 0;
+    LOG_TRACE << "RR: ckechpoint end Camera::StopCDM()"<<endl;
+    return 0;
 }
 
 int Camera::StopStream()
 {
     LOG_TRACE << "Camera::StopStream(): Start"<<endl;
     b_keep_taking = 0;
+    return 0;
 }
 
 void Camera::GetImage(DataAccessClientOPCUA *myclient)
 {
     LOG_TRACE << "Camera::GetImage(): Start"<<endl;
-
+    /*
     nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
     COND_LOG_DEBUG << "Camera::GetImage(): Status is_AllocImageMem" << nRet;
     //Activate memory for storing
@@ -1377,6 +1406,7 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
     std::string imageName = writeFITSImage(src);
+    */
     /*
     REMOVE COPY BY CDM AND CHANGE THE FILE PUSH ON THE DATABROKER
     std::string filePath = helper.get_fitsPath() + imageName;
@@ -1399,6 +1429,8 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     }
 
     */
+
+    /*
     std::vector<std::string> publish_remoteImagePath; 
     publish_remoteImagePath.push_back(imageName.c_str());
     SetDatapointThread *m_SetDatapointThread_remote_path = new SetDatapointThread(myclient, datapointName_imagePath, 2, publish_remoteImagePath); //Updates the imagePath
@@ -1412,6 +1444,7 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
 
 
     LOG_TRACE << "Camera::GetImage(): End"<<endl;
+    */
     return;
 }
 
@@ -1422,52 +1455,54 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     std::vector<boost::any> return_values;
 
     // Set pixel clock
-    nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_SET, (void *)&nPixelClock, sizeof(nPixelClock));
+    nRet = 1; //is_PixelClock(hCam, IS_PIXELCLOCK_CMD_SET, (void *)&nPixelClock, sizeof(nPixelClock));
     LOG_INFO << "Camera::Configure(): IS_PIXELCLOCK_CMD_SET returned " << nRet << ". tried to set pixel clock to = " << nPixelClock << std::endl;
     // Get current pixel clock
-    nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_GET, (void *)&nPixelClock, sizeof(nPixelClock));
+    //nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_GET, (void *)&nPixelClock, sizeof(nPixelClock));
     LOG_INFO << "Camera::Configure(): IS_PIXELCLOCK_CMD_GET returned " << nRet << ". The current pixel clock is = " << nPixelClock << std::endl;
     return_values.push_back(nPixelClock);
 
     // Set frame rate
     double new_fps;
-    nRet = is_SetFrameRate(hCam, fps, (double *)&new_fps);
+    //nRet = is_SetFrameRate(hCam, fps, (double *)&new_fps);
     LOG_INFO << "Camera::Configure(): SetFrameRate returned " << nRet << ". New framerate = " << new_fps << std::endl;
-    is_SetFrameRate(hCam, IS_GET_FRAMERATE, &fps);
+    //is_SetFrameRate(hCam, IS_GET_FRAMERATE, &fps);
     LOG_INFO << "Camera::Configure(): Applied framerate " << fps << " fps." << std::endl;
     return_values.push_back(fps);
 
     // Set exposure
     double current_exposure;
-    is_Exposure(hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, (void *)&current_exposure, sizeof(current_exposure));
+    //is_Exposure(hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, (void *)&current_exposure, sizeof(current_exposure));
     LOG_INFO << "Camera::Configure(): Current exposure is: " << current_exposure << std::endl;
     LOG_INFO << "Camera::Configure(): Value of exposure to be set is : " << exposure << std::endl;
-    is_Exposure(hCam, IS_EXPOSURE_CMD_SET_EXPOSURE, (void *)&exposure, sizeof(current_exposure));
+    //is_Exposure(hCam, IS_EXPOSURE_CMD_SET_EXPOSURE, (void *)&exposure, sizeof(current_exposure));
     LOG_INFO << "Camera::Configure(): Set exposure is: " << exposure << std::endl;
-    is_Exposure(hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, (void *)&current_exposure, sizeof(current_exposure));
+    //is_Exposure(hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, (void *)&current_exposure, sizeof(current_exposure));
     LOG_INFO << "Camera::Configure(): Current exposure is: " << current_exposure << std::endl;
     return_values.push_back(current_exposure);
     Camera::exposure_setting = current_exposure;
 
     // Set hardware gain
     LOG_INFO << "Camera::Configure(): Gain to be set is: " << gain << std::endl;
-    is_SetHardwareGain(hCam, gain, 14, 0, 32); // Master, red, green, blue
-    int master_gain = is_SetHardwareGain(hCam, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER);
+    //is_SetHardwareGain(hCam, gain, 14, 0, 32); // Master, red, green, blue
+    int master_gain;
+    //master_gain=is_SetHardwareGain(hCam, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER);
     return_values.push_back(master_gain);
     Camera::master_gain_setting = master_gain;
     LOG_INFO << "Camera::Configure(): Gain set is: " << master_gain << std::endl;
 
     // Set Display Mode
-    nRet = is_SetDisplayMode(hCam, IS_SET_DM_DIB);
+    //nRet = is_SetDisplayMode(hCam, IS_SET_DM_DIB);
     LOG_INFO << "Camera::Configure(): SetDisplayMode returned " << nRet << std::endl;
 
     // Set Color Mode
     //TODO: depending on the chosen pixel format the iBitsPerPixel should also change.
-    nRet = is_SetColorMode(hCam, pixel_formats.left.at(pixel_format));
+    //nRet = is_SetColorMode(hCam, pixel_formats.left.at(pixel_format));
     LOG_INFO << "Camera::Configure(): SetColorMode returned " << nRet << std::endl;
-    nRet = is_SetColorMode(hCam, IS_GET_COLOR_MODE);
+    //nRet = is_SetColorMode(hCam, IS_GET_COLOR_MODE);
+    /*
     LOG_INFO << "Camera::Configure(): GetColorMode returned " << pixel_formats.right.at(nRet) << std::endl;
-    return_values.push_back(pixel_formats.right.at(nRet));
+    eturn_values.push_back(pixel_formats.right.at(nRet));
 
     if (pixel_format == "IS_CM_SENSOR_RAW16")
         iBitsPerPixel = 16;
@@ -1475,9 +1510,10 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
         iBitsPerPixel = 8;
     else
         LOG_ERROR << "Bad pixel format." << endl;
+    */
 
     // Setting image format
-    nRet = is_ImageFormat(hCam, IMGFRMT_CMD_SET_FORMAT, &formatID, sizeof(formatID));
+    //nRet = is_ImageFormat(hCam, IMGFRMT_CMD_SET_FORMAT, &formatID, sizeof(formatID));
     LOG_INFO << "Camera::Configure(): Status ImageFormat: " << nRet;
 
     //TODO: Check if the fps, exposure, pixel clock are still after pixel format setting.
@@ -1493,6 +1529,7 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
 
 double Camera::get_temperature_value()
 {
+  /*
     // Checks if the camera is connected.
     if (hCam != (HIDS)0)
     {
@@ -1509,10 +1546,16 @@ double Camera::get_temperature_value()
         COND_LOG_DEBUG << "Camera::get_temperature_value(): Camera not connected."<<endl;
         return 0;
     }
+  */
+  //RR
+  //LOG_INFO << "RR: Camera::get_temperature_value(): no camera so bogus value"<<endl;
+  double fTemperature = 25.0;
+  return fTemperature;
 }
 
 string Camera::get_temperature_status()
 {
+  /*
     // Checks if the camera is connected.
     if (hCam != (HIDS)0)
     {
@@ -1544,4 +1587,8 @@ string Camera::get_temperature_status()
         COND_LOG_DEBUG << "Camera not connected."<<endl;
         return "Camera not connected";
     }
+  */
+  //RR
+  COND_LOG_DEBUG << "Camera not connected."<<endl;
+  return "Camera not connected";
 }

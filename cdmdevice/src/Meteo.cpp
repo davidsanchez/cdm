@@ -73,7 +73,7 @@ vector<float> Meteo::Update_sensor()
     if (hsensor == NULL || tsensor == NULL || psensor == NULL)
     {
         LOG_ERROR << "No module connected (check USB cable)";
-        val = {0, 0, 0, 0};
+        val = {0.0, 0.0, 0.0, 0.0};
         return val;
     }
 
@@ -88,7 +88,7 @@ vector<float> Meteo::Update_sensor()
     else
     {
         LOG_ERROR << "Module not connected (check identification and USB cable)";
-        val = {0, 0, 0, 0};
+        val = {0.0, 0.0, 0.0, 0.0};
     }
 
     return val;

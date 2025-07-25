@@ -179,6 +179,7 @@ int CDM::subscribe_DataBroker()
         helper.get_client_DataBroker()->startSubscribe();
     }
     LOG_TRACE << "CDM::subscribe_DataBroker(): End"<<endl;
+    return 0;
 }
 
 int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::string &datapointName, int nameSpace, std::string &result)
@@ -261,7 +262,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
 int CDM::cmd(const std::string &command, int commandStringAck, std::string &result)
 {
-    LOG_TRACE << "CDM::cdm(): Start";
+    LOG_TRACE << "CDM::cmd(): Start";
 
     int ret = 0;
     printf("In CMD part: received command with the instruction: %s\n", command.c_str());
@@ -399,9 +400,13 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             if (subChaine1.compare("Error") == 0)
             {
                 LOG_TRACE << "CDM::cdm() / Error";
+		LOG_TRACE << "RR: try to do error datapoint 1";
                 SetDatapointThread *m_SetDatapointThread_state = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 5);
+		LOG_TRACE << "RR: try to error: stop CDM";
                 camera.StopCDM();
+		LOG_TRACE << "RR: try to do error datapoint 2";
                 SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
+		LOG_TRACE << "RR: done";
             }
 
             if (subChaine1.compare("Acknowledge") == 0)
@@ -418,7 +423,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
     // DAVID
     // int FSM_state;
     // getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
-    LOG_TRACE << "CDM::cdm(): End"<<endl;
+    LOG_TRACE << "CDM::cdm(): command "<<command<<" ret "<<ret<<" End"<<endl;
     // LOG_TRACE << "End of CDM::cdm(), State of the CDM : "<<FSM_state<<endl;
     return ret;
 }
