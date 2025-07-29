@@ -140,7 +140,7 @@ void *AsynchronousThread::run(void *params)
     {
         if (m_pause == false)
         {
-            LOG_TRACE << "RR: async thread run";
+	  //LOG_TRACE << "RR: async thread run";
             usleep(1000000);
 
             if (m_cmdGetMultipleImages == 1)
@@ -321,7 +321,7 @@ void *AsynchronousThread::run(void *params)
 
             if (m_cmdLogRestart == 1)
             {
-	      LOG_TRACE << "RR: async thread run: log restart";
+	      //LOG_TRACE << "RR: async thread run: log restart";
                 // Get current UTC time
                 boost::posix_time::ptime time = boost::posix_time::second_clock::universal_time();
                 int h = time.time_of_day().hours();
@@ -373,6 +373,7 @@ void *AsynchronousThread::run(void *params)
                 //m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.pixelFormat.pixelFormat_v", 2, boost::any_cast<string>(configure_settings[4]));
 
 
+		
 
                 m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("pixelClock",cdm_config), 2, boost::any_cast<int>(configure_settings[0]));
                 m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("FPS",cdm_config), 2, boost::any_cast<double>(configure_settings[1]));

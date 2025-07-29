@@ -137,9 +137,9 @@ int CDM::afterStart()
     
     //Be sure that the state is 0 at the start (safe)
     getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("state",cdm_config), 2, 0);
-    //enable Heartbeat
-    getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.Diagnostics._Enable_Heart_Beat", 2, true);
-    getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.Diagnostics._Error_Heart_Beat", 2, false);
+    //enable Heartbeat RR: NO
+    //getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.Diagnostics._Enable_Heart_Beat", 2, true);
+    //getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.Diagnostics._Error_Heart_Beat", 2, false);
 
     int quality = 0; // (0= Good, 1=Uncertain, 2 = Bad)
     std::string methodToCall = helper.searchDatapoint("SetDPQuality",cdm_config);
@@ -302,8 +302,9 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 );
                 
                 SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
-                    
-                //    getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
+		
+		LOG_TRACE << "CDM::cdm() end Connect";
+                //getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
             }
 
             if (subChaine1.compare("Disconnect") == 0)
@@ -400,13 +401,13 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             if (subChaine1.compare("Error") == 0)
             {
                 LOG_TRACE << "CDM::cdm() / Error";
-		LOG_TRACE << "RR: try to do error datapoint 1";
-                SetDatapointThread *m_SetDatapointThread_state = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 5);
+		//LOG_TRACE << "RR: try to do error datapoint 1";
+                SetDatapointThread *m_SetDatapointThread_state = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.FSM.state", 2, 5);
 		LOG_TRACE << "RR: try to error: stop CDM";
                 camera.StopCDM();
 		LOG_TRACE << "RR: try to do error datapoint 2";
-                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
-		LOG_TRACE << "RR: done";
+                SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.FSM.transition", 2, 0);
+		LOG_TRACE << "RR: CDM:Error done";
             }
 
             if (subChaine1.compare("Acknowledge") == 0)
@@ -609,6 +610,7 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
     double return_value_double = 0;
     string return_value_string = "";
 
+    /*
     if (chain.find("get_HeartBeatError") != std::string::npos)
     {
         bool HeartBeatError = false;
@@ -628,7 +630,7 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
         int FSM_state;
         getDataAccessClientOPCUARef()->getDatapoint(helper.searchDatapoint("state",cdm_config), 2, FSM_state);
         std::cout << "CDM::get(): state is " << FSM_state<< endl;
-        /*if (HeartBeatError and HeartBeatEnable) {
+        if (HeartBeatError and HeartBeatEnable) {
             switch(FSM_state){
                 case 1: //ready to safe
                     camera.Disconnect();
@@ -646,9 +648,9 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
                     getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("state",cdm_config), 2, 1);
                     break;
             }
-        }*/
+        }
         
-    }
+	}*/
 
     if (chain.find("get_temperatureValue") != std::string::npos)
     {

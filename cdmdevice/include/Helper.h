@@ -28,7 +28,7 @@ public:
         m_data_vbyte = data;
 
         m_varType = varType::isVectorByte;
-	LOG_TRACE << "RR: SetDatapointThread::init vectorByte"<<datapointName<<" ";
+	//LOG_TRACE << "RR: SetDatapointThread::init vectorByte "<<datapointName<<" ";
 	for (auto d : data)
 	  LOG_TRACE<<d<<" ";
 	LOG_TRACE<<std::endl;	
@@ -44,7 +44,7 @@ public:
         m_data_vstring = data;
 
         m_varType = varType::isVectorString;
-	LOG_TRACE << "RR: SetDatapointThread::init vectorString"<<datapointName<<" ";
+	//LOG_TRACE << "RR: SetDatapointThread::init vectorString "<<datapointName<<" ";
 	for (auto d : data)
 	  LOG_TRACE<<d<<" ";
 	LOG_TRACE<<std::endl;	
@@ -60,7 +60,7 @@ public:
         m_data_vdouble = data;
 
         m_varType = varType::isVectorDouble;
-	LOG_TRACE << "RR: SetDatapointThread::init vectorDouble"<<datapointName<<" ";
+	//LOG_TRACE << "RR: SetDatapointThread::init vectorDouble "<<datapointName<<" ";
 	for (auto d : data)
 	  LOG_TRACE<<d<<" ";
 	LOG_TRACE<<std::endl;	
@@ -76,7 +76,7 @@ public:
         m_data_vfloat = data;
 
         m_varType = varType::isVectorFloat;
-	LOG_TRACE << "RR: SetDatapointThread::init vectorFloat"<<datapointName<<" ";
+	//LOG_TRACE << "RR: SetDatapointThread::init vectorFloat "<<datapointName<<" ";
 	for (auto d : data)
 	  LOG_TRACE<<d<<" ";
 	LOG_TRACE<<std::endl;	
@@ -92,10 +92,11 @@ public:
         m_data_str = data;
 
         m_varType = varType::isString;
-	LOG_TRACE << "RR: SetDatapointThread::init string"<<datapointName<<" "<<data<<std::endl;
+	//LOG_TRACE << "RR: SetDatapointThread::init string "<<datapointName<<" "<<data<<std::endl;
         start(&m_varType);
     };
 
+  
     SetDatapointThread(DataAccessClientOPCUA *dataAccessClientOPCUA, std::string datapointName, int nameSpace,
                        float data)
     {
@@ -105,10 +106,10 @@ public:
         m_data_float = data;
 
         m_varType = varType::isFloat;
-	LOG_TRACE << "RR: SetDatapointThread::init float"<<datapointName<<" "<<data<<std::endl;
+	//LOG_TRACE << "RR: SetDatapointThread::init float "<<datapointName<<" "<<data<<std::endl;
         start(&m_varType);
     };
-
+  
     SetDatapointThread(DataAccessClientOPCUA *dataAccessClientOPCUA, std::string datapointName, int nameSpace,
                        double data)
     {
@@ -118,7 +119,7 @@ public:
         m_data_double = data;
 
         m_varType = varType::isDouble;
-	LOG_TRACE << "RR: SetDatapointThread::init double"<<datapointName<<" "<<data<<std::endl;
+	//LOG_TRACE << "RR: SetDatapointThread::init double "<<datapointName<<" "<<data<<std::endl;
         start(&m_varType);
     };
 
@@ -132,51 +133,78 @@ public:
 
         m_varType = varType::isInt;
 
-	LOG_TRACE << "RR: SetDatapointThread::init int"<<datapointName<<" "<<data<<std::endl;
+	//LOG_TRACE << "RR: SetDatapointThread::init int "<<datapointName<<" "<<data<<std::endl;
         start(&m_varType);
     };
 
     ~SetDatapointThread(){};
-
-    void *run(void *params)
-    {
-        //  std::string temString = m_datapointName + "._Done";
-        //std::cout << "RR: run params: " << *(static_cast<varType*>(params)) << std::endl;
-            LOG_TRACE << "RR: SetDatapointThread::run"<<std::endl;
-	    if (*(static_cast<varType *>(params)) == varType::isVectorByte) {
-	      LOG_TRACE << "RR: SetDatapointThread::run VectorByte: "<<m_datapointName<<std::endl;
-	      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vbyte);
-	    }
-	    else if (*(static_cast<varType *>(params)) == varType::isVectorString) {
-	      	LOG_TRACE << "RR: SetDatapointThread::run VectorString: "<<m_datapointName<<std::endl;
-		m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vstring);
-	    }
-	    else if (*(static_cast<varType *>(params)) == varType::isVectorDouble) {
-	      	LOG_TRACE << "RR: SetDatapointThread::run VectorDouble: "<<m_datapointName<<std::endl;
-	      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vdouble);
-	    }
-	    else if (*(static_cast<varType *>(params)) == varType::isVectorFloat) {
-	      LOG_TRACE << "RR: SetDatapointThread::run VectorFloat: "<<m_datapointName<<std::endl;
-	      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vfloat);
-	    }
-	    else if (*(static_cast<varType *>(params)) == varType::isString) {
-	      LOG_TRACE << "RR: SetDatapointThread::run String: "<<m_datapointName<<std::endl;
-	      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_str);
-	    }
-	    else if (*(static_cast<varType *>(params)) == varType::isInt) {
-	      LOG_TRACE << "RR: SetDatapointThread::run Int: "<<m_datapointName<<std::endl;	      
-	      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_int);
-	    }
-	    else if (*(static_cast<varType *>(params)) == varType::isFloat) {
-	      	LOG_TRACE << "RR: SetDatapointThread::run Float: "<<m_datapointName<<std::endl;
-		m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_float);
-	    }
-	    else if (*(static_cast<varType *>(params)) == varType::isDouble) {
-	      LOG_TRACE << "RR: SetDatapointThread::run Double:"<<m_datapointName<<std::endl;
-	      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_double);
-	    }
-    };
-
+  
+  void *run(void *params)
+  {
+    //  std::string temString = m_datapointName + "._Done";
+    //std::cout << "RR: run params: " << *(static_cast<varType*>(params)) << std::endl;
+    //LOG_TRACE << "RR: SetDatapointThread::run"<<std::endl;
+    //if (*(static_cast<varType *>(params)) == varType::isVectorByte) {
+    if (m_varType == varType::isVectorByte) {
+      //LOG_TRACE << "RR: SetDatapointThread::run VectorByte: "<<m_datapointName<<std::endl;
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vbyte);
+      return nullptr;
+    }
+    //else if (*(static_cast<varType *>(params)) == varType::isVectorString) {
+    else if (m_varType == varType::isVectorString) {
+      //LOG_TRACE << "RR: SetDatapointThread::run VectorString: "<<m_datapointName<<std::endl;
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vstring);
+      return nullptr;
+    }
+    //else if (*(static_cast<varType *>(params)) == varType::isVectorDouble) {
+    else if (m_varType == varType::isVectorDouble) {
+      //LOG_TRACE << "RR: SetDatapointThread::run VectorDouble: "<<m_datapointName<<std::endl;
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vdouble);
+      return nullptr;
+    }
+    //else if (*(static_cast<varType *>(params)) == varType::isVectorFloat) {
+    else if (m_varType == varType::isVectorFloat) {
+      //LOG_TRACE << "RR: SetDatapointThread::run VectorFloat: "<<m_datapointName<<std::endl;
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vfloat);
+      return nullptr;
+    }
+    //else if (*(static_cast<varType *>(params)) == varType::isString) {
+    else if (m_varType == varType::isString) {
+      //LOG_TRACE << "RR: SetDatapointThread::run String: "<<m_datapointName<<std::endl;
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_str);
+      return nullptr;
+    }
+    //else if (*(static_cast<varType *>(params)) == varType::isInt) {
+    else if (m_varType == varType::isInt) {
+      /* LOG_TRACE << "RR: SetDatapointThread::run Int: "<<m_datapointName
+		<<" namespace "<<m_nameSpace
+		<<" value "<<m_data_int
+		<< " params "<< (*(static_cast<varType *>(params)))
+		<< " vartype "<<m_varType
+		<<std::endl;	       */
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_int);
+      return nullptr;
+    }
+    //else if (*(static_cast<varType *>(params)) == varType::isFloat) {
+    else if (m_varType == varType::isFloat) {
+      /*  LOG_TRACE << "RR: SetDatapointThread::run Float: "<<m_datapointName
+		<< " namespace " << m_nameSpace
+		<< " value "<<m_data_float
+		<< " params "<< (*(static_cast<varType *>(params)))
+		<< " vartype "<<m_varType
+		<< " and for ref int val "<<m_data_int
+		<<std::endl; */		
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_float);
+      return nullptr;
+    }
+    //else if (*(static_cast<varType *>(params)) == varType::isDouble) {
+    else if (m_varType == varType::isDouble) {
+      // LOG_TRACE << "RR: SetDatapointThread::run Double:"<<m_datapointName<<std::endl;
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_double);
+      return nullptr;
+    }
+  };
+  
 private:
     int m_nameSpace;
     std::string m_datapointName;

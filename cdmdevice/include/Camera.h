@@ -27,6 +27,19 @@ using namespace std;
 
 extern Helper helper;
 
+//RR: these from uEye that was removed
+#define IS_CM_MONO8                 6
+#define IS_CM_MONO10                34
+#define IS_CM_MONO12                26
+#define IS_CM_SENSOR_RAW8           11
+#define IS_CM_SENSOR_RAW10          33
+#define IS_CM_SENSOR_RAW12          27
+#define IS_CM_SENSOR_RAW16          29
+#define IS_GET_MASTER_GAIN                  0x8000
+#define IS_IGNORE_PARAMETER                 (-1)
+
+
+
 class Camera
 {
 public:
@@ -87,13 +100,13 @@ public:
 
   bool b_keep_taking=1;
 
-  /*
+  
   typedef boost::bimap< std::string, int > bimap;
   const bimap pixel_formats = boost::assign::list_of< bimap::relation >
     ( "IS_CM_MONO8", IS_CM_MONO8 )
     ( "IS_CM_SENSOR_RAW8", IS_CM_SENSOR_RAW8 )
     ( "IS_CM_SENSOR_RAW16", IS_CM_SENSOR_RAW16 );
-  */
+  
   
   Config *cdm_config = new Config(CDM_CONFIGURATION_NAME,"");
 

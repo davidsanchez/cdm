@@ -1355,9 +1355,8 @@ void Camera::StopGetMultipleImages()
 
 int Camera::StopCDM()
 {
-    LOG_TRACE << "Camera::StopCDM(): Start"<<endl;
+    LOG_TRACE << "Camera::StopCDM()"<<endl;
     b_keep_taking = 0;
-    LOG_TRACE << "RR: ckechpoint end Camera::StopCDM()"<<endl;
     return 0;
 }
 
@@ -1455,7 +1454,8 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     std::vector<boost::any> return_values;
 
     // Set pixel clock
-    nRet = 1; //is_PixelClock(hCam, IS_PIXELCLOCK_CMD_SET, (void *)&nPixelClock, sizeof(nPixelClock));
+    nRet = 0;
+    //is_PixelClock(hCam, IS_PIXELCLOCK_CMD_SET, (void *)&nPixelClock, sizeof(nPixelClock));
     LOG_INFO << "Camera::Configure(): IS_PIXELCLOCK_CMD_SET returned " << nRet << ". tried to set pixel clock to = " << nPixelClock << std::endl;
     // Get current pixel clock
     //nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_GET, (void *)&nPixelClock, sizeof(nPixelClock));
@@ -1472,6 +1472,8 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
 
     // Set exposure
     double current_exposure;
+    //RR:debug set expected val
+    current_exposure=exposure;
     //is_Exposure(hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, (void *)&current_exposure, sizeof(current_exposure));
     LOG_INFO << "Camera::Configure(): Current exposure is: " << current_exposure << std::endl;
     LOG_INFO << "Camera::Configure(): Value of exposure to be set is : " << exposure << std::endl;
@@ -1485,7 +1487,9 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     // Set hardware gain
     LOG_INFO << "Camera::Configure(): Gain to be set is: " << gain << std::endl;
     //is_SetHardwareGain(hCam, gain, 14, 0, 32); // Master, red, green, blue
-    int master_gain;
+    int master_gain=0;
+    //RR: debug set reasonable value
+    master_gain=gain;
     //master_gain=is_SetHardwareGain(hCam, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER);
     return_values.push_back(master_gain);
     Camera::master_gain_setting = master_gain;
@@ -1498,11 +1502,12 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     // Set Color Mode
     //TODO: depending on the chosen pixel format the iBitsPerPixel should also change.
     //nRet = is_SetColorMode(hCam, pixel_formats.left.at(pixel_format));
+    //RR debug place reasonable value
+    nRet=pixel_formats.left.at(pixel_format);
     LOG_INFO << "Camera::Configure(): SetColorMode returned " << nRet << std::endl;
     //nRet = is_SetColorMode(hCam, IS_GET_COLOR_MODE);
-    /*
     LOG_INFO << "Camera::Configure(): GetColorMode returned " << pixel_formats.right.at(nRet) << std::endl;
-    eturn_values.push_back(pixel_formats.right.at(nRet));
+    return_values.push_back(pixel_formats.right.at(nRet));
 
     if (pixel_format == "IS_CM_SENSOR_RAW16")
         iBitsPerPixel = 16;
@@ -1510,7 +1515,7 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
         iBitsPerPixel = 8;
     else
         LOG_ERROR << "Bad pixel format." << endl;
-    */
+    
 
     // Setting image format
     //nRet = is_ImageFormat(hCam, IMGFRMT_CMD_SET_FORMAT, &formatID, sizeof(formatID));
