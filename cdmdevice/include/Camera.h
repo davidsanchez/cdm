@@ -76,6 +76,9 @@ public:
   peak::DeviceManager* m_DeviceManagerPtr; 
   std::shared_ptr<peak::core::Device> m_DevicePtr;
   std::shared_ptr<peak::core::NodeMap> m_NodemapPtr;
+  std::shared_ptr<peak::core::DataStream> m_DatastreamPtr;
+  std::shared_ptr<peak::core::Buffer> m_ImgbufferPtr;
+  int64_t m_roi_width,m_roi_height;
   //HIDS hCam; //= (HIDS)0;
   //SENSORINFO sensorinfo;
   //CAMINFO camerainfo;

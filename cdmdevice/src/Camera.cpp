@@ -373,6 +373,11 @@ int Camera::Connect()
     m_NodemapPtr=m_DevicePtr->RemoteDevice()->NodeMaps().at(0);
 
     //RR: TODO reset to factory config and reconnect
+
+    //datastreams for image taking
+    auto datastreams=m_DevicePtr->DataStreams();
+    //if (datastreams.empty()) ...
+    m_DatastreamPtr=datastreams.at(0)->OpenDataStream();
     
     //retrieve sensor information
     //camera and sensor info
@@ -399,7 +404,11 @@ int Camera::Connect()
 	    <<m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("DeviceTemperature")->Value()
 	    <<" deg"<<std::endl;
 
-
+    //setup bit depth / exp / gain for now
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono12");
+    m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->SetValue(20000.0);
+    m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("Gain")->SetValue(1.0);
+    
     //setup ROI
     //this should go to ::Configure?
     //check minimum ROI and report
@@ -407,20 +416,20 @@ int Camera::Connect()
     int64_t roi_h_min = m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("Height")->Minimum();
     LOG_INFO<<"Minimum ROI is "<<roi_w_min<<"x"<<roi_h_min<<std::endl;
     //set ROI/offset to desired value
-    int64_t roi_w=stoll(m_config["ids_roi_width"]);
-    int64_t roi_h=stoll(m_config["ids_roi_height"]);
+    m_roi_width=stoll(m_config["ids_roi_width"]);
+    m_roi_height=stoll(m_config["ids_roi_height"]);
     int64_t offset_x=stoll(m_config["ids_roi_offset_x"]);
     int64_t offset_y=stoll(m_config["ids_roi_offset_y"]);
-    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("Width")->SetValue(roi_w);
-    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("Height")->SetValue(roi_h);
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("Width")->SetValue(m_roi_width);
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("Height")->SetValue(m_roi_height);
     m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("OffsetX")->SetValue(offset_x);
     m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("OffsetY")->SetValue(offset_y);
     //report
-    roi_w=m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("Width")->Value();
-    roi_h=m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("Height")->Value();
+    m_roi_width=m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("Width")->Value();
+    m_roi_height=m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("Height")->Value();
     offset_x=m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("OffsetX")->Value();
     offset_y=m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("OffsetY")->Value();
-    LOG_INFO<<"ROI is set to "<<roi_w<<"x"<<roi_h<<std::endl;
+    LOG_INFO<<"ROI is set to "<<m_roi_width<<"x"<<m_roi_height<<std::endl;
     LOG_INFO<<"ROI offset is set to "<<offset_x<<"x"<<offset_y<<std::endl;
     
     return 0;
@@ -434,6 +443,7 @@ int Camera::Disconnect()
     // You should release the reserved images in memory here. Like OpenCV Mat and IDS images
 
     // when last IDS last device shared pointer is deleted, sensor is released. Nothing explicit to do about that
+    m_DatastreamPtr=nullptr;
     m_NodemapPtr=nullptr;
     m_DevicePtr=nullptr;
     m_DeviceManagerPtr=nullptr;
@@ -1404,15 +1414,77 @@ int Camera::StopStream()
 void Camera::GetImage(DataAccessClientOPCUA *myclient)
 {
     LOG_TRACE << "Camera::GetImage(): Start"<<endl;
-    /*
-    nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-    COND_LOG_DEBUG << "Camera::GetImage(): Status is_AllocImageMem" << nRet;
-    //Activate memory for storing
-    nRet = is_SetImageMem(hCam, pcImageMemory, nMemoryId);
-    COND_LOG_DEBUG << "Camera::GetImage(): Status is_SetImageMem" << nRet;
-    int nRet = is_FreezeVideo(hCam, IS_WAIT);
-    COND_LOG_DEBUG << "Camera::GetImage(): Status is_FreezeVideo" << nRet;
 
+    //is camera connected
+    if (m_DevicePtr==nullptr) {
+      LOG_ERROR<<"Camera::GetImage camera is not connected"<<std::endl;
+      return;
+    }
+    
+    // configure everything to grab one single image, then cleanup
+    // this will take order of 0.5 s
+    LOG_INFO<<"Camera::GetImage setup acquisition, single frame"<<std::endl;
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")->SetCurrentEntry("SingleFrame"); 
+    // Here without ExposureStart trigger, replace it by software or hardware trigger if necessary
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")->SetCurrentEntry("ExposureStart");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")->SetCurrentEntry("Off");  
+    //std::shared_ptr<peak::core::NodeMap> nodemap_ds=datastream->NodeMaps().at(0);
+    LOG_INFO<<"Camera::GetImage find payload size"<<std::endl;
+    int payload_size =m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("PayloadSize")->Value();
+    LOG_INFO<<"Camera::GetImage find minimum number of buffers needed"<<std::endl;
+    size_t num_buf_min=m_DatastreamPtr->NumBuffersAnnouncedMinRequired();
+    LOG_INFO<<"Camera::GetImage payload size: "<<payload_size<<", min no of mem buffers: "<<num_buf_min<<std::endl;
+  
+    LOG_INFO<<"Camera::GetImage allocating data buffers"<<std::endl;
+    //automatically alloc raw buffers
+    for (size_t count=0; count<num_buf_min; count++) {
+      auto buffer=m_DatastreamPtr->AllocAndAnnounceBuffer(static_cast<size_t>(payload_size),nullptr);
+      m_DatastreamPtr->QueueBuffer(buffer);
+    }
+
+    LOG_INFO<<"Camera::GetImage acquiring image"<<std::endl;
+    m_DatastreamPtr->StartAcquisition(peak::core::AcquisitionStartMode::Default, 1);
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")->SetValue(1);
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStart")->Execute();
+    
+    //wait for data for 1s
+    m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(1000);
+
+    LOG_INFO<<"Camera::GetImage image ready, processing image size"<<m_roi_width<<"x"<<m_roi_height<<std::endl;
+    // process data ...
+    cv::Mat src, dst;
+    //check bit depth etc... for now 8 bits
+    src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, static_cast<uint16_t*>(m_ImgbufferPtr->BasePtr()));
+
+    // Transpose + Flip = 90 deg rotation
+    transpose(src, src);
+    flip(src, src, 1);
+
+    std::vector<int> compression_params;
+    compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
+    compression_params.push_back(0);
+    resize(src, dst, cv::Size(0, 0), 0.15, 0.15, cv::INTER_AREA);
+
+    //vector<unsigned char> data;
+    //cv::imencode(".png", src, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
+
+    //RR temp
+    cv::imwrite("./img.png",src,compression_params);
+    
+
+    // queue buffer so that it can be used again
+    m_DatastreamPtr->QueueBuffer(m_ImgbufferPtr);
+
+    //stop acquisition
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")->Execute();
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")->SetValue(0);
+    m_DatastreamPtr->StopAcquisition(peak::core::AcquisitionStopMode::Default);
+
+    LOG_INFO<<"Camera::GetImage image taken"<<std::endl;    
+
+
+
+    /*
     // TODO: Add pushing image to a datapoint and making a .fits file
     // Actually make a function that processes the image when it has been taken.y
 
@@ -1439,8 +1511,7 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
     std::string imageName = writeFITSImage(src);
-    */
-    /*
+
     REMOVE COPY BY CDM AND CHANGE THE FILE PUSH ON THE DATABROKER
     std::string filePath = helper.get_fitsPath() + imageName;
     std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
@@ -1461,9 +1532,7 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
         remoteImagePath = "Error";
     }
 
-    */
 
-    /*
     std::vector<std::string> publish_remoteImagePath; 
     publish_remoteImagePath.push_back(imageName.c_str());
     SetDatapointThread *m_SetDatapointThread_remote_path = new SetDatapointThread(myclient, datapointName_imagePath, 2, publish_remoteImagePath); //Updates the imagePath
@@ -1478,6 +1547,14 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
 
     LOG_TRACE << "Camera::GetImage(): End"<<endl;
     */
+
+    //Flush and delete data buffers
+    m_DatastreamPtr->Flush(peak::core::DataStreamFlushMode::DiscardAll);
+    for (const auto& buffer : m_DatastreamPtr->AnnouncedBuffers())
+      m_DatastreamPtr->RevokeBuffer(buffer);
+
+
+    LOG_INFO << "Camera::GetImage end"<<endl;
     return;
 }
 
