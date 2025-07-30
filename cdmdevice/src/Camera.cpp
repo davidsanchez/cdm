@@ -386,6 +386,11 @@ int Camera::Connect()
     int64_t iHeight = m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("SensorHeight")->Value();
     LOG_INFO<<"Image size "<<iWidth<<"x"<<iHeight<<std::endl;
 
+    //link speed
+    int64_t lspeed = m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("DeviceLinkSpeed")->Value();
+    LOG_INFO<<"Camera and network negotiated link speed as "<<lspeed<<std::endl;
+  
+    
     //check temperature sensor
     LOG_INFO<<"Camera temperature sensor is "
 	    <<m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("DeviceTemperatureSelector")->CurrentEntry()->SymbolicValue()
@@ -421,14 +426,18 @@ int Camera::Connect()
     return 0;
 }
 
+
 int Camera::Disconnect()
 {
     LOG_TRACE << "Camera::Disconnect(): Start"<<endl;
 
     // You should release the reserved images in memory here. Like OpenCV Mat and IDS images
 
-    // when last IDS last device shared pointer is deleted, sensor is released. Nothing explicit to do 
-
+    // when last IDS last device shared pointer is deleted, sensor is released. Nothing explicit to do about that
+    m_NodemapPtr=nullptr;
+    m_DevicePtr=nullptr;
+    m_DeviceManagerPtr=nullptr;
+    
     LOG_TRACE << "Camera::Disconnect(): End"<< endl;
     return 0;
 }
@@ -1478,15 +1487,9 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
 
     std::vector<boost::any> return_values;
 
-    //RR: pixel clock cannot be changed in Ueye+ cameras
-    
     // Set pixel clock
     nRet = 0;
-    //is_PixelClock(hCam, IS_PIXELCLOCK_CMD_SET, (void *)&nPixelClock, sizeof(nPixelClock));
-    LOG_INFO << "Camera::Configure(): IS_PIXELCLOCK_CMD_SET returned " << nRet << ". tried to set pixel clock to = " << nPixelClock << std::endl;
-    // Get current pixel clock
-    //nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_GET, (void *)&nPixelClock, sizeof(nPixelClock));
-    LOG_INFO << "Camera::Configure(): IS_PIXELCLOCK_CMD_GET returned " << nRet << ". The current pixel clock is = " << nPixelClock << std::endl;
+    LOG_INFO << "Camera::Configure(): pixel clock cannot be set for uEye+ cameras"<< std::endl;
     return_values.push_back(nPixelClock);
     
     
@@ -1588,40 +1591,23 @@ double Camera::get_temperature_value()
 
 string Camera::get_temperature_status()
 {
-  /*
-    // Checks if the camera is connected.
-    if (hCam != (HIDS)0)
-    {
-        // Query the temperature status
-        INT nTemperatureStatus = 0;
-        string temperatureStatus = "";
-        is_DeviceFeature(hCam, IS_DEVICE_FEATURE_CMD_GET_TEMPERATURE_STATUS, &nTemperatureStatus, sizeof(nTemperatureStatus));
-        if (nTemperatureStatus == TEMPERATURE_CONTROL_STATUS_CRITICAL)
-        {
-            LOG_FATAL << "Temperature status: Critical"<<endl;
-            temperatureStatus = "Critical";
-        }
-        else if (nTemperatureStatus == TEMPERATURE_CONTROL_STATUS_WARNING)
-        {
-            LOG_WARNING << "Temperature status: Warning"<<endl;
-            temperatureStatus = "Warning";
-        }
-        else if (nTemperatureStatus == TEMPERATURE_CONTROL_STATUS_NORMAL)
-        {
-            //LOG_INFO << "Temperature status: Normal"<<endl;
-            temperatureStatus = "Normal";
-        }
+  // Checks if the camera is connected.
+  if (m_DevicePtr==nullptr) {
+    LOG_ERROR<<"Camera::get_temperature_status: camera is not connected"<<std::endl;
+    return "Camera not connected";
+  }
+  
+  //RR: set limits somewhere in config?
 
-        return temperatureStatus;
-    }
-
-    else
-    {
-        COND_LOG_DEBUG << "Camera not connected."<<endl;
-        return "Camera not connected";
-    }
-  */
-  //RR
-  COND_LOG_DEBUG << "Camera not connected."<<endl;
-  return "Camera not connected";
+  float temp=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("DeviceTemperature")->Value();
+  string temperatureStatus = "Normal";
+  if (temp>80.0) {
+    temperatureStatus = "Critical";
+    LOG_FATAL << "Camera: temperature status critical"<<endl;
+  } else if (temp>70.0) {
+    temperatureStatus = "Warning";
+    LOG_WARNING << "Camera: temperature status warning"<<endl;
+  } 
+  return temperatureStatus;
+  
 }
