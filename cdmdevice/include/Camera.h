@@ -13,7 +13,7 @@
 #include <opencv2/video/video.hpp>
 #include <opencv2/opencv.hpp>
 
-//#include <ueye.h> // Camera library (IDS)
+#include <peak/peak.hpp> // Camera library (IDS)
 
 #include <boost/bimap.hpp>
 #include <boost/assign.hpp>
@@ -44,12 +44,9 @@ class Camera
 {
 public:
   //Need a constructor first if using a camera
-  Camera()
-  {
-    //hCam = (HIDS)0;
-    // LoadCDMConfiguration(m_config);
-  };
-
+  Camera();
+  ~Camera();
+  
   int Connect();
   int Disconnect();
   std::vector<boost::any> Configure(int nPixelClock=216, double exposure=1000, double fps=1, int gain=0, std::string pixel_format="IS_CM_SENSOR_RAW16");
@@ -76,6 +73,9 @@ public:
 
   //private:
   // Camera stuff
+  peak::DeviceManager* m_DeviceManagerPtr; 
+  std::shared_ptr<peak::core::Device> m_DevicePtr;
+  std::shared_ptr<peak::core::NodeMap> m_NodemapPtr;
   //HIDS hCam; //= (HIDS)0;
   //SENSORINFO sensorinfo;
   //CAMINFO camerainfo;

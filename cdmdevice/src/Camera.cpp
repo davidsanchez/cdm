@@ -125,6 +125,16 @@ double calculateStdDev(vector<double> v)
     return stdev;
 }
 
+Camera::Camera() {
+  //initialize IDS library
+  peak::Library::Initialize();
+}
+
+Camera::~Camera() {
+  //close IDS library
+  peak::Library::Close();
+}
+
 std::string Camera::writeFITSImage(Mat image, int n_stack)
 {
     LOG_TRACE << "Camera::writeFITSImage()"<<endl;
@@ -336,61 +346,50 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
 
 int Camera::Connect()
 {
-    LOG_TRACE << "Camera::Connect(): Start"<<endl;
-
-    //nRet = is_InitCamera(&hCam, NULL);
-    nRet=1;
-    COND_LOG_DEBUG << "Camera::Connect(): InitCamera returned " << nRet << std::endl;
-    if (nRet != 1)//IS_SUCCESS)
-    {
-        LOG_ERROR << "Camera::Connect(): Failed to open camera." << std::endl;
-        return 1;
+  //RR: move most LOG_INFO to COND_LOG_DEBUG
+    LOG_INFO << "Camera::Connect(): Start"<<endl;
+    //get a ref to the IDS device manager
+    m_DeviceManagerPtr=&peak::DeviceManager::Instance();
+    //update list of installed libraries
+    m_DeviceManagerPtr->Update();
+    //TODO: read serial no from config
+    std::string serial_no =m_config["ids_serial_no"]; //"4108904530";
+    //enumerate all attached IDS devices, look for the correct SN
+    for (const auto& descriptor: m_DeviceManagerPtr->Devices()) {
+	if (descriptor->SerialNumber() == serial_no)
+	  {
+	    m_DevicePtr = descriptor->OpenDevice(peak::core::DeviceAccessType::Control);
+	    break;
+	  }
+    }
+    if (m_DevicePtr==nullptr) {
+      LOG_ERROR<<"Could not access IDS camera "<<serial_no<<std::endl;
+      return 1;
     }
 
-    //is_SetErrorReport(hCam, IS_ENABLE_ERR_REP);
-    //LOG_INFO << "Camera::Connect(): Set Error Report result: " << nRet << endl;
+    LOG_INFO << "Camera "<<serial_no<<" succesfully connected"<< std::endl;
 
-    //nRet = is_ResetToDefault(hCam); //Resets to default values
-    if (nRet != 1)//IS_SUCCESS)
-    {
-        LOG_ERROR << "Camera::Connect(): Failed to reset to default values." << std::endl;
-        return 1;
-    }
+    //get a nodemap object to access functions and parameters for current device
+    m_NodemapPtr=m_DevicePtr->RemoteDevice()->NodeMaps().at(0);
 
-    //nRet = is_GetCameraInfo(hCam, &camerainfo);
-    if (nRet != 1) //IS_SUCCESS)
-    {
-        LOG_ERROR << "Camera::Connect(): Failed to retrieve camera info." << std::endl;
-    }
+    //RR: TODO reset to factory config and reconnect
+    
+    //retrieve sensor information
+    //camera and sensor info
+    LOG_INFO<<"Camera model: ";
+    LOG_INFO<<m_NodemapPtr->FindNode<peak::core::nodes::StringNode>("DeviceManufacturerInfo")->Value();
+    LOG_INFO<<std::endl;
+    LOG_INFO<<"Sensor model: ";
+    LOG_INFO<<m_NodemapPtr->FindNode<peak::core::nodes::StringNode>("SensorName")->Value();
+    LOG_INFO<<std::endl;
+    int64_t iWidth = m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("SensorWidth")->Value();
+    int64_t iHeight = m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("SensorHeight")->Value();
+    LOG_INFO<<"Image size "<<iWidth<<"x"<<iHeight<<std::endl;
 
-    //nRet = is_GetSensorInfo(hCam, &sensorinfo);
-    if (nRet != 1) //IS_SUCCESS)
-    {
-        LOG_ERROR << "Camera::Connect(): Failed to retrieve sensor info." << std::endl;
-    }
-
-    //LOG_INFO << "Camera::Connect(): Sensor model " << sensorinfo.strSensorName << ". Camera serial no " << camerainfo.SerNo << std::endl;
-
-    //nRet = is_AOI(hCam, IS_AOI_IMAGE_GET_AOI, (void *)&rectAOI, sizeof(rectAOI));
-    if (nRet != 1) // IS_SUCCESS)
-    {
-        LOG_ERROR << "Camera::Connect(): Failed to retrieve AOI info." << std::endl;
-    }
-    iWidth = 1024; //rectAOI.s32Width;
-    iHeight = 768; // rectAOI.s32Height;
-    LOG_INFO << "Camera::Connect(): Image size is " << iWidth << "x" << iHeight << std::endl;
-
-    // Check does the camera support reporting temperature status
-    /*
-    INT nFeatures = 0;
-    is_DeviceFeature(hCam, IS_DEVICE_FEATURE_CMD_GET_SUPPORTED_FEATURES, &nFeatures, sizeof(nFeatures));
-    if ((nFeatures & IS_DEVICE_FEATURE_CAP_TEMPERATURE_STATUS) == IS_DEVICE_FEATURE_CAP_TEMPERATURE_STATUS)
-    {
-        LOG_INFO << "Camera::Connect(): Camera supports monitoring of camera temperature status"<<endl;
-    }
-    */
-
-    LOG_TRACE << "Camera::Connect(): End"<< endl;
+    //RR: remove
+    nRet=0;
+    
+    LOG_INFO << "Camera::Connect(): End"<< endl;
     return 0;
 }
 
@@ -400,9 +399,7 @@ int Camera::Disconnect()
 
     // You should release the reserved images in memory here. Like OpenCV Mat and IDS images
 
-    // Disables the hCam camera handle and releases the data structures and memory areas taken up by the uEye camera
-    //is_ExitCamera(hCam);
-    //hCam = NULL;
+    // when last IDS last device shared pointer is deleted, sensor is released. Nothing explicit to do 
 
     LOG_TRACE << "Camera::Disconnect(): End"<< endl;
     return 0;
@@ -1453,6 +1450,8 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
 
     std::vector<boost::any> return_values;
 
+    //RR: pixel clock cannot be changed in Ueye+ cameras
+    /*
     // Set pixel clock
     nRet = 0;
     //is_PixelClock(hCam, IS_PIXELCLOCK_CMD_SET, (void *)&nPixelClock, sizeof(nPixelClock));
@@ -1461,7 +1460,8 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     //nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_GET, (void *)&nPixelClock, sizeof(nPixelClock));
     LOG_INFO << "Camera::Configure(): IS_PIXELCLOCK_CMD_GET returned " << nRet << ". The current pixel clock is = " << nPixelClock << std::endl;
     return_values.push_back(nPixelClock);
-
+    */
+    
     // Set frame rate
     double new_fps;
     //nRet = is_SetFrameRate(hCam, fps, (double *)&new_fps);
