@@ -13,7 +13,6 @@ char *pPath = std::getenv("CDMPATH");
 #define CONFIG_FILE_PATH  std::string(pPath) +"/cdm/cdmdevice/config/CDM.config"
 #define LEDLOC_FILE_PATH  std::string(pPath) +"/cdm/cdmdevice/config/LedLoc.config"
 #define OARLLOC_FILE_PATH  std::string(pPath) +"/cdm/cdmdevice/config/OARLLoc.config"
-#define CAMERA_FILE_PATH  std::string(pPath) +"/cdm/cdmdevice/config/Camera.config"
 
 bool LoadCDMConfiguration( map<std::string,std::string> &config )
 {

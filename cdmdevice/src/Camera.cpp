@@ -376,20 +376,48 @@ int Camera::Connect()
     
     //retrieve sensor information
     //camera and sensor info
-    LOG_INFO<<"Camera model: ";
-    LOG_INFO<<m_NodemapPtr->FindNode<peak::core::nodes::StringNode>("DeviceManufacturerInfo")->Value();
-    LOG_INFO<<std::endl;
-    LOG_INFO<<"Sensor model: ";
-    LOG_INFO<<m_NodemapPtr->FindNode<peak::core::nodes::StringNode>("SensorName")->Value();
-    LOG_INFO<<std::endl;
+    LOG_INFO<<"Camera model: "
+	    <<m_NodemapPtr->FindNode<peak::core::nodes::StringNode>("DeviceManufacturerInfo")->Value()
+	    <<std::endl;
+    LOG_INFO<<"Sensor model: "
+	    <<m_NodemapPtr->FindNode<peak::core::nodes::StringNode>("SensorName")->Value()
+	    <<std::endl;
     int64_t iWidth = m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("SensorWidth")->Value();
     int64_t iHeight = m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("SensorHeight")->Value();
     LOG_INFO<<"Image size "<<iWidth<<"x"<<iHeight<<std::endl;
 
-    //RR: remove
-    nRet=0;
+    //check temperature sensor
+    LOG_INFO<<"Camera temperature sensor is "
+	    <<m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("DeviceTemperatureSelector")->CurrentEntry()->SymbolicValue()
+	    <<std::endl;
+    LOG_INFO<<"T sensor reports temperature: "
+	    <<m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("DeviceTemperature")->Value()
+	    <<" deg"<<std::endl;
+
+
+    //setup ROI
+    //this should go to ::Configure?
+    //check minimum ROI and report
+    int64_t roi_w_min = m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("Width")->Minimum();
+    int64_t roi_h_min = m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("Height")->Minimum();
+    LOG_INFO<<"Minimum ROI is "<<roi_w_min<<"x"<<roi_h_min<<std::endl;
+    //set ROI/offset to desired value
+    int64_t roi_w=stoll(m_config["ids_roi_width"]);
+    int64_t roi_h=stoll(m_config["ids_roi_height"]);
+    int64_t offset_x=stoll(m_config["ids_roi_offset_x"]);
+    int64_t offset_y=stoll(m_config["ids_roi_offset_y"]);
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("Width")->SetValue(roi_w);
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("Height")->SetValue(roi_h);
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("OffsetX")->SetValue(offset_x);
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("OffsetY")->SetValue(offset_y);
+    //report
+    roi_w=m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("Width")->Value();
+    roi_h=m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("Height")->Value();
+    offset_x=m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("OffsetX")->Value();
+    offset_y=m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("OffsetY")->Value();
+    LOG_INFO<<"ROI is set to "<<roi_w<<"x"<<roi_h<<std::endl;
+    LOG_INFO<<"ROI offset is set to "<<offset_x<<"x"<<offset_y<<std::endl;
     
-    LOG_INFO << "Camera::Connect(): End"<< endl;
     return 0;
 }
 
@@ -1451,7 +1479,7 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     std::vector<boost::any> return_values;
 
     //RR: pixel clock cannot be changed in Ueye+ cameras
-    /*
+    
     // Set pixel clock
     nRet = 0;
     //is_PixelClock(hCam, IS_PIXELCLOCK_CMD_SET, (void *)&nPixelClock, sizeof(nPixelClock));
@@ -1460,7 +1488,7 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     //nRet = is_PixelClock(hCam, IS_PIXELCLOCK_CMD_GET, (void *)&nPixelClock, sizeof(nPixelClock));
     LOG_INFO << "Camera::Configure(): IS_PIXELCLOCK_CMD_GET returned " << nRet << ". The current pixel clock is = " << nPixelClock << std::endl;
     return_values.push_back(nPixelClock);
-    */
+    
     
     // Set frame rate
     double new_fps;
