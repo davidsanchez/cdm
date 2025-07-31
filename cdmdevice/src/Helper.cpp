@@ -17,14 +17,12 @@ std::string  Helper::searchDatapoint (string element, Config *config)
         std::string rootElement = "";
         std::string nodeIdL1 = "";
 
-	//LOG_TRACE << "RR: Helper::searchDatapoint: "<<element<<std::endl;;
 	
         myElement = config->searchElement(element);
         rootElement = config->getRootName() + ".";
         if (myElement)
         {
 		nodeIdL1 = rootElement + myElement->NodeId;
-		//LOG_TRACE <<"RR: Helper::searchDatapoint: nodeIdL1 is"<<nodeIdL1<< '\n';
                 return(nodeIdL1);
         }
         return("");

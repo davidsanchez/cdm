@@ -137,211 +137,201 @@ Camera::~Camera() {
 
 std::string Camera::writeFITSImage(Mat image, int n_stack)
 {
-    LOG_TRACE << "Camera::writeFITSImage()"<<endl;
+  LOG_INFO << "Camera::writeFITSImage()"<<std::endl;
 
-    //TODO: should also send image data type to this method, now assume 8bit
+  //TODO: should also send image data type to this method, now assume 8bit
+  
+  // if( ePixelFormat == VmbPixelFormatMono14)
+  //     image=4*image; // For converting 14bit images to 16bit
+  
+  flip(image, image, 0); // Vertical flipping of image so it is displayed nicely in DS9.
 
-    // if( ePixelFormat == VmbPixelFormatMono14)
-    //     image=4*image; // For converting 14bit images to 16bit
+  // Create a FITS primary array containing a 2-D image
+  // declare axis arrays.
+  long naxis = 2;
+  long naxes[2] = {image.cols, image.rows};
+  
+  // declare auto-pointer to FITS at function scope. Ensures no resources
+  // leaked if something fails in dynamic allocation.
+  std::auto_ptr<FITS> pFits(0);
+  
+  std::ostringstream streamObj;
+  std::ostringstream stream_fitsPath;
+  std::ostringstream stream_remoteImagePath;
+  
+  stream_fitsPath << std::fixed << std::setprecision(4) << helper.get_fitsPath();
+  stream_remoteImagePath << std::fixed << std::setprecision(4) << helper.get_remoteImagePathPrefix();
 
-    flip(image, image, 0); // Vertical flipping of image so it is displayed nicely in DS9.
+  streamObj << std::fixed;
+  streamObj << std::setprecision(4);
+  streamObj << helper.unix_timestamp();
+  streamObj << "_";
+  streamObj << currentDateTimeMsFilename();
+  streamObj << "-TARGET=";
+  streamObj << helper.get_StarName();
+  streamObj << "-EXP=";
+  streamObj << std::setprecision(0);
+  streamObj << Camera::get_exposure();
+  streamObj << "-GAIN=";
+  streamObj << Camera::get_master_gain();
+  streamObj << "-ZD=";
+  streamObj << helper.get_Zenith();
+  streamObj << "-AZ=";
+  streamObj << helper.get_Azimuth();
+  streamObj << "-LED=";
+  streamObj << helper.get_LEDs_state();
+  streamObj << "-OARL=";
+  streamObj << helper.get_OARL_state();
+  streamObj << "-parked=";
+  streamObj << helper.get_Drive_status_parked();
+  streamObj << "-parkingPos=";
+  streamObj << helper.get_Drive_status_in_parking_position();
+  streamObj << "-inMotion=";
+  streamObj << helper.get_Drive_status_in_motion();
+  streamObj << "-tracking=";
+  streamObj << helper.get_Drive_status_tracking_in_progress();
+  streamObj << "-DM=";
+  streamObj << helper.get_Aux_status_DM_East_Bottom();
+  streamObj << helper.get_Aux_status_DM_East_Top();
+  streamObj << helper.get_Aux_status_DM_West_Bottom();
+  streamObj << helper.get_Aux_status_DM_West_Top();
+  
+  if (n_stack > 1)
+    streamObj << "-stack=" << n_stack;
+  streamObj << ".fits.gz";
 
-    // Create a FITS primary array containing a 2-D image
-    // declare axis arrays.
-    long naxis = 2;
-    long naxes[2] = {image.cols, image.rows};
+  stream_fitsPath << streamObj.str();
+  stream_remoteImagePath << streamObj.str();
+  std::string fileName = streamObj.str();
+  std::string filePath = stream_fitsPath.str();
+  std::string remoteImagePath = stream_remoteImagePath.str();
+  
+  COND_LOG_DEBUG << "filePath: " << filePath << std::endl;
+  COND_LOG_DEBUG << "remoteImagePath: " << remoteImagePath << std::endl;
 
-    // declare auto-pointer to FITS at function scope. Ensures no resources
-    // leaked if something fails in dynamic allocation.
-    std::auto_ptr<FITS> pFits(0);
-
-    std::ostringstream streamObj;
-    std::ostringstream stream_fitsPath;
-    std::ostringstream stream_remoteImagePath;
-
-    stream_fitsPath << std::fixed << std::setprecision(4) << helper.get_fitsPath();
-    stream_remoteImagePath << std::fixed << std::setprecision(4) << helper.get_remoteImagePathPrefix();
-
-    streamObj << std::fixed;
-    streamObj << std::setprecision(4);
-    streamObj << helper.unix_timestamp();
-    streamObj << "_";
-    streamObj << currentDateTimeMsFilename();
-    streamObj << "-TARGET=";
-    streamObj << helper.get_StarName();
-    streamObj << "-EXP=";
-    streamObj << std::setprecision(0);
-    streamObj << Camera::get_exposure();
-    streamObj << "-GAIN=";
-    streamObj << Camera::get_master_gain();
-    streamObj << "-ZD=";
-    streamObj << helper.get_Zenith();
-    streamObj << "-AZ=";
-    streamObj << helper.get_Azimuth();
-    streamObj << "-LED=";
-    streamObj << helper.get_LEDs_state();
-    streamObj << "-OARL=";
-    streamObj << helper.get_OARL_state();
-    streamObj << "-parked=";
-    streamObj << helper.get_Drive_status_parked();
-    streamObj << "-parkingPos=";
-    streamObj << helper.get_Drive_status_in_parking_position();
-    streamObj << "-inMotion=";
-    streamObj << helper.get_Drive_status_in_motion();
-    streamObj << "-tracking=";
-    streamObj << helper.get_Drive_status_tracking_in_progress();
-    streamObj << "-DM=";
-    streamObj << helper.get_Aux_status_DM_East_Bottom();
-    streamObj << helper.get_Aux_status_DM_East_Top();
-    streamObj << helper.get_Aux_status_DM_West_Bottom();
-    streamObj << helper.get_Aux_status_DM_West_Top();
-
-    if (n_stack > 1)
-        streamObj << "-stack=" << n_stack;
-    streamObj << ".fits.gz";
-
-    stream_fitsPath << streamObj.str();
-    stream_remoteImagePath << streamObj.str();
-    std::string fileName = streamObj.str();
-    std::string filePath = stream_fitsPath.str();
-    std::string remoteImagePath = stream_remoteImagePath.str();
-
-    COND_LOG_DEBUG << "filePath: " << filePath << std::endl;
-    COND_LOG_DEBUG << "remoteImagePath: " << remoteImagePath << std::endl;
-
-    try
+  // RR do this
+  iBitsPerPixel=12;
+  
+  try
     {
-        if ((iBitsPerPixel == 16) || (iBitsPerPixel == 12) || (iBitsPerPixel == 10))
-            pFits.reset(new FITS(filePath, USHORT_IMG, naxis, naxes)); //BYTE_IMG for 8bit, USHORT_IMG for 16bit
-        else if (iBitsPerPixel == 8)
-            pFits.reset(new FITS(filePath, BYTE_IMG, naxis, naxes));
-
-        else
-            LOG_ERROR << "Error invalid bitdepth value for saving!" << endl;
+      if ((iBitsPerPixel == 16) || (iBitsPerPixel == 12) || (iBitsPerPixel == 10))
+	pFits.reset(new FITS(filePath, USHORT_IMG, naxis, naxes)); //BYTE_IMG for 8bit, USHORT_IMG for 16bit
+      else if (iBitsPerPixel == 8)
+	pFits.reset(new FITS(filePath, BYTE_IMG, naxis, naxes));
+      
+      else
+	LOG_ERROR << "writeFITSImage Error: invalid bitdepth value for saving!" << endl;
     }
-    catch (FITS::CantCreate)
+  catch (FITS::CantCreate)
     {
-        // ... or not, as the case may be.
-        return "-1"; //TODO: KLUDGE, should return just -1?
+      // ... or not, as the case may be.
+      return "-1"; //TODO: KLUDGE, should return just -1?
     }
+    
+ 
+  
+  long &vectorLength = naxes[0];
+  long &numberOfRows = naxes[1];
+  long nelements(1);
+  long fpixel(1);
 
-    long &vectorLength = naxes[0];
-    long &numberOfRows = naxes[1];
-    long nelements(1);
-    long fpixel(1);
+  nelements = std::accumulate(&naxes[0], &naxes[naxis], 1, std::multiplies<long>());
 
-    nelements = std::accumulate(&naxes[0], &naxes[naxis], 1, std::multiplies<long>());
 
-    /* 	// Mat to array 8bit
-	std::vector<uchar> array;
-	if (image.isContinuous())
-	{
-		// array.assign(mat.datastart, mat.dataend); // <- has problems for sub-matrix like mat = big_mat.row(i)
-		array.assign(image.data, image.data + image.total());
-	}
-	else
-	{
-		for (int i = 0; i < image.rows; ++i)
-		{
-			//array.insert(array.end(), image.ptr<uchar>(i), image.ptr<uchar>(i)+image.cols);
-			array.insert(array.end(), image.ptr<uint16_t>(i), image.ptr<uint16_t>(i) + image.cols);
-		}
-	} */
-
-    if ((iBitsPerPixel == 16) || (iBitsPerPixel == 12) || (iBitsPerPixel == 10))
+  if ((iBitsPerPixel == 16) || (iBitsPerPixel == 12) || (iBitsPerPixel == 10))
     {
-        // Mat to array 16bit
-        std::vector<uint16_t> array;
-        if (image.isContinuous())
+      // Mat to array 16bit
+      std::vector<uint16_t> array;
+      if (image.isContinuous())
         {
-            array.assign((uint16_t *)image.data, (uint16_t *)image.data + image.total());
+	  array.assign((uint16_t *)image.data, (uint16_t *)image.data + image.total());
         }
-        else
+      else
         {
-            for (int i = 0; i < image.rows; ++i)
+	  for (int i = 0; i < image.rows; ++i)
             {
-                //array.insert(array.end(), image.ptr<uchar>(i), image.ptr<uchar>(i)+image.cols);
-                array.insert(array.end(), image.ptr<uint16_t>(i), image.ptr<uint16_t>(i) + image.cols);
+	      //array.insert(array.end(), image.ptr<uchar>(i), image.ptr<uchar>(i)+image.cols);
+	      array.insert(array.end(), image.ptr<uint16_t>(i), image.ptr<uint16_t>(i) + image.cols);
             }
         }
-
-        // Convert array to valarray
-        valarray<uint16_t> myVala(array.data(), array.size());
-        pFits->pHDU().write(fpixel, nelements, myVala);
+      
+      // Convert array to valarray
+      valarray<uint16_t> myVala(array.data(), array.size());
+      pFits->pHDU().write(fpixel, nelements, myVala);
     }
-
-    else if (iBitsPerPixel == 8)
+  
+  else if (iBitsPerPixel == 8)
     {
-        // Mat to array 8bit
-        std::vector<uchar> array;
-        if (image.isContinuous())
+      // Mat to array 8bit
+      std::vector<uchar> array;
+      if (image.isContinuous())
         {
-            // array.assign(mat.datastart, mat.dataend); // <- has problems for sub-matrix like mat = big_mat.row(i)
-            array.assign(image.data, image.data + image.total());
+	  // array.assign(mat.datastart, mat.dataend); // <- has problems for sub-matrix like mat = big_mat.row(i)
+	  array.assign(image.data, image.data + image.total());
         }
-        else
+      else
         {
-            for (int i = 0; i < image.rows; ++i)
+	  for (int i = 0; i < image.rows; ++i)
             {
-                array.insert(array.end(), image.ptr<uchar>(i), image.ptr<uchar>(i) + image.cols);
-                //array.insert(array.end(), image.ptr<uint16_t>(i), image.ptr<uint16_t>(i) + image.cols);
+	      array.insert(array.end(), image.ptr<uchar>(i), image.ptr<uchar>(i) + image.cols);
+	      //array.insert(array.end(), image.ptr<uint16_t>(i), image.ptr<uint16_t>(i) + image.cols);
             }
         }
-
-        // Convert array to valarray
-        valarray<uchar> myVala(array.data(), array.size());
-        pFits->pHDU().write(fpixel, nelements, myVala);
+      
+      // Convert array to valarray
+      valarray<uchar> myVala(array.data(), array.size());
+      pFits->pHDU().write(fpixel, nelements, myVala);
     }
-
-    else
-        LOG_ERROR << "Check pixel format" << endl;
-
-    pFits->pHDU().addKey("RA_LST", helper.get_Ra_drive(), "Drive Right Ascension");
-    pFits->pHDU().addKey("DEC_LST", helper.get_Dec_drive(), "Drive Declination");
-    pFits->pHDU().addKey("RA_TRGT", helper.get_Ra_target(), "Target Right Ascension");
-    pFits->pHDU().addKey("DEC_TRGT", helper.get_Dec_target(), "Target Declination");
-    pFits->pHDU().addKey("EPOCH", "2000.0", "Epoch");
-    pFits->pHDU().addKey("EQUINOX", "2000.0", "Equinox");
-    //pFits->pHDU().addKey("SECPIX_SG", 18.56, "Arcsec per pixel"); TODO: Add this information for CDM
-
-    pFits->pHDU().addKey("EXPOSURE", Camera::get_exposure(), "Total Exposure Time in miliseconds");
-    pFits->pHDU().addKey("UNIXTIME", helper.unix_timestamp(), "Unix epoch time in seconds");
-    pFits->pHDU().addKey("DATETIME", currentDateTime(), "UTC time");
-
-    pFits->pHDU().addKey("LAT", 28.7573, "Latitude: Location:ORM");
-    pFits->pHDU().addKey("LONG", 17.8850, "Longitude: Location:ORM");
-    pFits->pHDU().addKey("ZENITH", helper.get_Zenith(), "Zenith, in degrees");
-    pFits->pHDU().addKey("AZIMUTH", helper.get_Azimuth(), "Azimuth, in degrees");
-
-    pFits->pHDU().addKey("OFFZEN", helper.get_OffsetZenith(), "Offset of Zenith, in degrees");
-    pFits->pHDU().addKey("OFFAZ", helper.get_OffsetAzimuth(), "Offset of Azimuth, in degrees");
-    pFits->pHDU().addKey("OBJECT", helper.get_StarName(), "Star name");
-    pFits->pHDU().addKey("LEDS", helper.get_LEDs_state(), "LEDs state");
-    //pFits->pHDU().addKey("LED01", helper.get_LED01_intensity(), "LED01 intensity");
-    pFits->pHDU().addKey("OARL", helper.get_OARL_state(), "OARL status");
-    pFits->pHDU().addKey("SHUTTER", helper.get_Shutter_state(), "Shutter status");
-    pFits->pHDU().addKey("SIS", helper.get_SIS_state(), "SIS status");
-    pFits->pHDU().addKey("INMOTION", helper.get_Drive_status_in_motion(), "Drive status - In Motion");
-    pFits->pHDU().addKey("PARKED", helper.get_Drive_status_parked(), "Drive status - Parked");
-    pFits->pHDU().addKey("PARKINGP", helper.get_Drive_status_in_parking_position(), "Drive status - In Parking Position");
-    pFits->pHDU().addKey("TRACKING", helper.get_Drive_status_tracking_in_progress(), "Drive status - Tracking In Progress");
-
-    //     pFits->pHDU().addKey("GAMMA", gamma_value, "Gamma");
-    pFits->pHDU().addKey("GAIN", Camera::get_master_gain(), "Gain");
-    pFits->pHDU().addKey("INFO", helper.get_Comment(), "Additional image info");
-    pFits->pHDU().addKey("CAMTVAL", Camera::get_temperature_value(), "Camera temperature value");
-    pFits->pHDU().addKey("CAMTSTAT", Camera::get_temperature_status(), "Camera temperature status");
-    pFits->pHDU().addKey("STACK", n_stack, "Number of stacked images");
-
-    pFits->pHDU().addKey("DM_E_bot", helper.get_Aux_status_DM_East_Bottom(), "DM East Bottom");
-    pFits->pHDU().addKey("DM_E_top", helper.get_Aux_status_DM_East_Top(), "DM East Top");
-    pFits->pHDU().addKey("DM_W_bot", helper.get_Aux_status_DM_West_Bottom(), "DM West Bottom");
-    pFits->pHDU().addKey("DM_W_top", helper.get_Aux_status_DM_West_Top(), "DM West Top");
-
-    //LOG_DEBUG << pFits->pHDU() << std::endl;
-    LOG_TRACE << "End of Camera::writeFITSImage()"<< endl;
-    //return remoteImagePath;
-    return fileName;
+  
+  else
+    LOG_ERROR << "Check pixel format" << endl;
+  
+  pFits->pHDU().addKey("RA_LST", helper.get_Ra_drive(), "Drive Right Ascension");
+  pFits->pHDU().addKey("DEC_LST", helper.get_Dec_drive(), "Drive Declination");
+  pFits->pHDU().addKey("RA_TRGT", helper.get_Ra_target(), "Target Right Ascension");
+  pFits->pHDU().addKey("DEC_TRGT", helper.get_Dec_target(), "Target Declination");
+  pFits->pHDU().addKey("EPOCH", "2000.0", "Epoch");
+  pFits->pHDU().addKey("EQUINOX", "2000.0", "Equinox");
+  //pFits->pHDU().addKey("SECPIX_SG", 18.56, "Arcsec per pixel"); TODO: Add this information for CDM
+  
+  pFits->pHDU().addKey("EXPOSURE", Camera::get_exposure(), "Total Exposure Time in miliseconds");
+  pFits->pHDU().addKey("UNIXTIME", helper.unix_timestamp(), "Unix epoch time in seconds");
+  pFits->pHDU().addKey("DATETIME", currentDateTime(), "UTC time");
+  
+  pFits->pHDU().addKey("LAT", 28.7573, "Latitude: Location:ORM");
+  pFits->pHDU().addKey("LONG", 17.8850, "Longitude: Location:ORM");
+  pFits->pHDU().addKey("ZENITH", helper.get_Zenith(), "Zenith, in degrees");
+  pFits->pHDU().addKey("AZIMUTH", helper.get_Azimuth(), "Azimuth, in degrees");
+  
+  pFits->pHDU().addKey("OFFZEN", helper.get_OffsetZenith(), "Offset of Zenith, in degrees");
+  pFits->pHDU().addKey("OFFAZ", helper.get_OffsetAzimuth(), "Offset of Azimuth, in degrees");
+  pFits->pHDU().addKey("OBJECT", helper.get_StarName(), "Star name");
+  pFits->pHDU().addKey("LEDS", helper.get_LEDs_state(), "LEDs state");
+  //pFits->pHDU().addKey("LED01", helper.get_LED01_intensity(), "LED01 intensity");
+  pFits->pHDU().addKey("OARL", helper.get_OARL_state(), "OARL status");
+  pFits->pHDU().addKey("SHUTTER", helper.get_Shutter_state(), "Shutter status");
+  pFits->pHDU().addKey("SIS", helper.get_SIS_state(), "SIS status");
+  pFits->pHDU().addKey("INMOTION", helper.get_Drive_status_in_motion(), "Drive status - In Motion");
+  pFits->pHDU().addKey("PARKED", helper.get_Drive_status_parked(), "Drive status - Parked");
+  pFits->pHDU().addKey("PARKINGP", helper.get_Drive_status_in_parking_position(), "Drive status - In Parking Position");
+  pFits->pHDU().addKey("TRACKING", helper.get_Drive_status_tracking_in_progress(), "Drive status - Tracking In Progress");
+  
+  //     pFits->pHDU().addKey("GAMMA", gamma_value, "Gamma");
+  pFits->pHDU().addKey("GAIN", Camera::get_master_gain(), "Gain");
+  pFits->pHDU().addKey("INFO", helper.get_Comment(), "Additional image info");
+  pFits->pHDU().addKey("CAMTVAL", Camera::get_temperature_value(), "Camera temperature value");
+  pFits->pHDU().addKey("CAMTSTAT", Camera::get_temperature_status(), "Camera temperature status");
+  pFits->pHDU().addKey("STACK", n_stack, "Number of stacked images");
+  
+  pFits->pHDU().addKey("DM_E_bot", helper.get_Aux_status_DM_East_Bottom(), "DM East Bottom");
+  pFits->pHDU().addKey("DM_E_top", helper.get_Aux_status_DM_East_Top(), "DM East Top");
+  pFits->pHDU().addKey("DM_W_bot", helper.get_Aux_status_DM_West_Bottom(), "DM West Bottom");
+  pFits->pHDU().addKey("DM_W_top", helper.get_Aux_status_DM_West_Top(), "DM West Top");
+  
+  //LOG_DEBUG << pFits->pHDU() << std::endl;
+  LOG_INFO << "End of Camera::writeFITSImage() wrote "<<fileName<<std::endl;
+  //return remoteImagePath;
+  return fileName;
 }
 
 int Camera::Connect()
@@ -438,7 +428,7 @@ int Camera::Connect()
 
 int Camera::Disconnect()
 {
-    LOG_TRACE << "Camera::Disconnect(): Start"<<endl;
+    LOG_INFO << "Camera::Disconnect(): Start"<<endl;
 
     // You should release the reserved images in memory here. Like OpenCV Mat and IDS images
 
@@ -448,7 +438,7 @@ int Camera::Disconnect()
     m_DevicePtr=nullptr;
     m_DeviceManagerPtr=nullptr;
     
-    LOG_TRACE << "Camera::Disconnect(): End"<< endl;
+    LOG_INFO << "Camera::Disconnect(): End"<< endl;
     return 0;
 }
 
@@ -1464,55 +1454,22 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
     compression_params.push_back(0);
     resize(src, dst, cv::Size(0, 0), 0.15, 0.15, cv::INTER_AREA);
-
-    //vector<unsigned char> data;
-    //cv::imencode(".png", src, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
-
-    //RR temp
-    cv::imwrite("./img.png",src,compression_params);
-    
-
-    // queue buffer so that it can be used again
-    m_DatastreamPtr->QueueBuffer(m_ImgbufferPtr);
-
-    //stop acquisition
-    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")->Execute();
-    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")->SetValue(0);
-    m_DatastreamPtr->StopAcquisition(peak::core::AcquisitionStopMode::Default);
-
-    LOG_INFO<<"Camera::GetImage image taken"<<std::endl;    
-
-
-
-    /*
-    // TODO: Add pushing image to a datapoint and making a .fits file
-    // Actually make a function that processes the image when it has been taken.y
-
-    cv::Mat src, dst;
-    if (iBitsPerPixel == 8)
-        src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pcImageMemory);
-    else if (iBitsPerPixel == 16)
-        src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pcImageMemory);
-
-    // Transpose + Flip = 90 deg rotation
-    transpose(src, src);
-    flip(src, src, 1);
-
-    std::vector<int> compression_params;
-    compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
-    compression_params.push_back(0);
-    resize(src, dst, cv::Size(0, 0), 0.15, 0.15, cv::INTER_AREA);
-
     vector<unsigned char> data;
     cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
 
+    //RR temp
+    //cv::imwrite("./img.png",,compression_params);
+    
     int m_nameSpace = 2;
     string temString = datapointName_image;
     SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
 
+    LOG_INFO<<"Prepare FITS file"<<std::endl;
     std::string imageName = writeFITSImage(src);
-
-    REMOVE COPY BY CDM AND CHANGE THE FILE PUSH ON THE DATABROKER
+    LOG_INFO<<"FITS file ready in "<<imageName<<std::endl;
+    
+    /*
+    //REMOVE COPY BY CDM AND CHANGE THE FILE PUSH ON THE DATABROKER
     std::string filePath = helper.get_fitsPath() + imageName;
     std::string remoteImagePath = helper.get_remoteImagePathPrefix() + imageName;
 
@@ -1531,7 +1488,7 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
         LOG_ERROR << "There was a problem while copying the image!" << endl;
         remoteImagePath = "Error";
     }
-
+    */
 
     std::vector<std::string> publish_remoteImagePath; 
     publish_remoteImagePath.push_back(imageName.c_str());
@@ -1539,14 +1496,15 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     SetDatapointThread(myclient, datapointName_imageName, 2, imageName.c_str()); //Updates the imageName
     SetDatapointThread(myclient, datapointName_imagePath, 2, imageName.c_str()); //Updates the imagePath_cat
 
-    // Free the allocated buffer
-    if (pcImageMemory != NULL)
-        is_FreeImageMem(hCam, pcImageMemory, nMemoryId);
-    pcImageMemory = NULL;
 
 
-    LOG_TRACE << "Camera::GetImage(): End"<<endl;
-    */
+    // queue buffer so that it can be used again
+    m_DatastreamPtr->QueueBuffer(m_ImgbufferPtr);
+
+    //stop acquisition
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")->Execute();
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")->SetValue(0);
+    m_DatastreamPtr->StopAcquisition(peak::core::AcquisitionStopMode::Default);
 
     //Flush and delete data buffers
     m_DatastreamPtr->Flush(peak::core::DataStreamFlushMode::DiscardAll);
@@ -1642,27 +1600,12 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
 
 double Camera::get_temperature_value()
 {
-  /*
-    // Checks if the camera is connected.
-    if (hCam != (HIDS)0)
-    {
-        // Get the camera temperature value
-        double fTemperature = 0;
-        nRet = is_DeviceFeature(hCam, IS_DEVICE_FEATURE_CMD_GET_TEMPERATURE,
-                                (void *)&fTemperature, sizeof(fTemperature));
-        //LOG_INFO << "Camera temperature: " << fTemperature;
-        return fTemperature;
-    }
-
-    else
-    {
-        COND_LOG_DEBUG << "Camera::get_temperature_value(): Camera not connected."<<endl;
-        return 0;
-    }
-  */
-  //RR
-  //LOG_INFO << "RR: Camera::get_temperature_value(): no camera so bogus value"<<endl;
-  double fTemperature = 25.0;
+  // Checks if the camera is connected.
+  if (m_DevicePtr==nullptr) {
+    LOG_ERROR<<"Camera::get_temperature_value: camera is not connected"<<std::endl;
+    return -1;
+  }
+  float fTemperature=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("DeviceTemperature")->Value();
   return fTemperature;
 }
 

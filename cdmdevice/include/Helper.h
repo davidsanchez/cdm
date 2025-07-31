@@ -28,10 +28,6 @@ public:
         m_data_vbyte = data;
 
         m_varType = varType::isVectorByte;
-	//LOG_TRACE << "RR: SetDatapointThread::init vectorByte "<<datapointName<<" ";
-	for (auto d : data)
-	  LOG_TRACE<<d<<" ";
-	LOG_TRACE<<std::endl;	
         start(&m_varType);
     };
 
@@ -44,10 +40,6 @@ public:
         m_data_vstring = data;
 
         m_varType = varType::isVectorString;
-	//LOG_TRACE << "RR: SetDatapointThread::init vectorString "<<datapointName<<" ";
-	for (auto d : data)
-	  LOG_TRACE<<d<<" ";
-	LOG_TRACE<<std::endl;	
         start(&m_varType);
     };
 
@@ -60,10 +52,6 @@ public:
         m_data_vdouble = data;
 
         m_varType = varType::isVectorDouble;
-	//LOG_TRACE << "RR: SetDatapointThread::init vectorDouble "<<datapointName<<" ";
-	for (auto d : data)
-	  LOG_TRACE<<d<<" ";
-	LOG_TRACE<<std::endl;	
         start(&m_varType);
     };
 
@@ -76,10 +64,6 @@ public:
         m_data_vfloat = data;
 
         m_varType = varType::isVectorFloat;
-	//LOG_TRACE << "RR: SetDatapointThread::init vectorFloat "<<datapointName<<" ";
-	for (auto d : data)
-	  LOG_TRACE<<d<<" ";
-	LOG_TRACE<<std::endl;	
         start(&m_varType);
     };
 
@@ -92,7 +76,6 @@ public:
         m_data_str = data;
 
         m_varType = varType::isString;
-	//LOG_TRACE << "RR: SetDatapointThread::init string "<<datapointName<<" "<<data<<std::endl;
         start(&m_varType);
     };
 
@@ -106,7 +89,6 @@ public:
         m_data_float = data;
 
         m_varType = varType::isFloat;
-	//LOG_TRACE << "RR: SetDatapointThread::init float "<<datapointName<<" "<<data<<std::endl;
         start(&m_varType);
     };
   
@@ -119,7 +101,6 @@ public:
         m_data_double = data;
 
         m_varType = varType::isDouble;
-	//LOG_TRACE << "RR: SetDatapointThread::init double "<<datapointName<<" "<<data<<std::endl;
         start(&m_varType);
     };
 
@@ -133,7 +114,6 @@ public:
 
         m_varType = varType::isInt;
 
-	//LOG_TRACE << "RR: SetDatapointThread::init int "<<datapointName<<" "<<data<<std::endl;
         start(&m_varType);
     };
 

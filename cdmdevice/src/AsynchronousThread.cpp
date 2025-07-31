@@ -140,12 +140,10 @@ void *AsynchronousThread::run(void *params)
     {
         if (m_pause == false)
         {
-	  //LOG_TRACE << "RR: async thread run";
             usleep(1000000);
 
             if (m_cmdGetMultipleImages == 1)
             {
-	      LOG_TRACE << "RR: async thread run: getmultimages";
                 int FSM_state;
 
                 // Puts the FSM.state to 4
@@ -190,7 +188,6 @@ void *AsynchronousThread::run(void *params)
 
             if (m_cmdGetMultipleImagesStacked == 1)
             {
-	      LOG_TRACE << "RR: async thread run: getmultimagestacked";
                 int FSM_state;
 
                 // Puts the FSM.state to 4
@@ -231,7 +228,6 @@ void *AsynchronousThread::run(void *params)
 
             if (m_cmdStartCDM == 1)
             {
-	      LOG_TRACE << "RR: async thread run: startcdm";
                 int FSM_state;
 
                 cout << "In AsynchronousThread: cmdStartCDM" << endl;
@@ -264,7 +260,6 @@ void *AsynchronousThread::run(void *params)
 
             if (m_cmdStartStream == 1)
             {
-	      LOG_TRACE << "RR: async thread run: startstream";
                 int FSM_state;
 
                 cout << "In AsynchronousThread: cmdStartStream" << endl;
@@ -297,7 +292,6 @@ void *AsynchronousThread::run(void *params)
 
             if (m_cmdMeteo == 1)
             {
-	      LOG_TRACE << "RR: async thread run: meteo";
                 vector<float> meteo_val = meteo.Update_sensor();
                 
                 m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("temperature",cdm_config), 2, meteo_val[0]);
@@ -321,7 +315,6 @@ void *AsynchronousThread::run(void *params)
 
             if (m_cmdLogRestart == 1)
             {
-	      //LOG_TRACE << "RR: async thread run: log restart";
                 // Get current UTC time
                 boost::posix_time::ptime time = boost::posix_time::second_clock::universal_time();
                 int h = time.time_of_day().hours();
@@ -344,7 +337,6 @@ void *AsynchronousThread::run(void *params)
         
             if (m_cmdConfigure == 1)
             {
-	      LOG_TRACE << "RR: async thread run: config";
                 // Checks the current FSM state so we can return to that state after Configure is done.
                 int FSM_state=-1;
                 //m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);

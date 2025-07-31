@@ -26,7 +26,6 @@ Helper helper;
 
 int CDM::init(const std::string &chaine)
 {
-    LOG_TRACE << "CDM::init(): Start";
 
     // a rajouter pour recuperer les infos du fichier mapping des datapoints
     cdm_config = new Config(CDM_CONFIGURATION_NAME,"");
@@ -44,12 +43,10 @@ int CDM::init(const std::string &chaine)
     PluginsBase::init(chaine);
 
     return ret;
-    LOG_TRACE << "CDM::init(): End"<<endl;
 }
 
 int CDM::afterStart()
 {
-    LOG_TRACE << "CDM::afterStart(): Start";
     const int connection_failure = -1;
     int namespaceL2 = 2;
     string nodeIdL2 = "";
@@ -154,16 +151,13 @@ int CDM::afterStart()
     COND_LOG_DEBUG << methodToCall << "  method call result = " << res << endl;
     //getDataAccessClientOPCUARef()->setDPQuality("CDM", 1);
 
-    LOG_TRACE << "CDM::afterStart(): End"<<endl;
     return ret;
 }
 
 int CDM::subscribe_DataBroker()
 {
-    LOG_TRACE << "CDM::subscribe_DataBroker(): Start"<<endl;
     if (CDM::connection_result_DataBroker != -1)
     {
-        LOG_TRACE << "CDM::subscribe_DataBroker(): Subscribing to DataBroker datapoints." << endl;
         //delete CDM::dp_monitor_SG;
         //CDM::dp_monitor_SG = new DatapointMonitor(this);
         if (CDM::dp_monitor_DataBroker == NULL)
@@ -178,13 +172,11 @@ int CDM::subscribe_DataBroker()
 
         helper.get_client_DataBroker()->startSubscribe();
     }
-    LOG_TRACE << "CDM::subscribe_DataBroker(): End"<<endl;
     return 0;
 }
 
 int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::string &datapointName, int nameSpace, std::string &result)
 {
-    LOG_TRACE << "CDM::cdmAsynch(): Start"<<endl;
 
     int ret = 0;
     printf("In CMDAsync part: received command with the instruction: %s\n", command.c_str());
@@ -206,7 +198,6 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
             if (subChaine1.compare("GetMultipleImages") == 0)
             {
-                LOG_TRACE << "CDM::cdmAsynch() / GetMultipleImages";
 
                 boost::trim_right(subChaine2);
                 m_Thread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
@@ -216,7 +207,6 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
             if (subChaine1.compare("GetMultipleImagesStacked") == 0)
             {
-                LOG_TRACE << "CDM::cdmAsynch() / GetMultipleImagesStacked";
 
                 boost::trim_right(subChaine2);
                 m_Thread->cmdGetMultipleImagesStacked(datapointName, nameSpace, atoi(subChaine2.c_str()));
@@ -226,7 +216,6 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
             if (subChaine1.compare("StartCDM") == 0)
             {
-                LOG_TRACE << "CDM::cdmAsynch() / StartCDM";
 
                 std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
                 int nameSpace = 2;
@@ -244,7 +233,6 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
             if (subChaine1.compare("StartStream") == 0)
             {
-                LOG_TRACE << "CDM::cdmAsynch() / StartStream";
 
                 std::string datapointName =  helper.searchDatapoint("Configure",cdm_config);
                 int nameSpace = 2;
@@ -262,7 +250,6 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
 int CDM::cmd(const std::string &command, int commandStringAck, std::string &result)
 {
-    LOG_TRACE << "CDM::cmd(): Start";
 
     int ret = 0;
     printf("In CMD part: received command with the instruction: %s\n", command.c_str());
@@ -284,7 +271,6 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
             if (subChaine1.compare("Connect") == 0)
             {
-                LOG_TRACE << "CDM::cdm() / Connect";
 
                 camera.Connect();
 
@@ -303,13 +289,11 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 
                 SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
 		
-		LOG_TRACE << "CDM::cdm() end Connect";
                 //getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 0);
             }
 
             if (subChaine1.compare("Disconnect") == 0)
             {
-                LOG_TRACE << "CDM::cdm() / Disconnect";
                 camera.Disconnect();
                 
                 SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
@@ -317,7 +301,6 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
             if (subChaine1.compare("Configure") == 0)
             {
-                LOG_TRACE << "CDM::cdm() / Configure";
 
                 //TODO: check what will happen if some of the parameters missing. The code below assumes that you received everything! Need to implement some safety guard.
                 // Actually OPCUA should check that all the parameters are in the input, right?
@@ -345,7 +328,6 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
             if (subChaine1.compare("AddComment") == 0)
             {
-                LOG_TRACE << "CDM::cdm() / AddComment";
 
                 // TODO: Make some parsing/safety checks. best inside Comment function.
                 boost::trim_right(subChaine2);
@@ -356,7 +338,6 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
             if (subChaine1.compare("GetImage") == 0)
             {
-                LOG_TRACE << "CDM::cdm() / GetImage";
                 camera.GetImage(getDataAccessClientOPCUARef()); // pushes the image to the datapoint inside the function
                 COND_LOG_DEBUG << "Finished GetImage";
                 SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
@@ -370,49 +351,38 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
             if (subChaine1.compare("GoToTpoint") == 0)
             {
-                LOG_TRACE << "CDM::cdm() / GoToTpoint";                
                 SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
             }
 
             if (subChaine1.compare("GoToReady") == 0)
             {
-                LOG_TRACE << "CDM::cdm() / GoToReady";                
                 SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
             }
 
             if (subChaine1.compare("StopGetMultipleImages") == 0)
             {
-                LOG_TRACE << "CDM::cdm() / StopGetMultipleImages";
                 camera.StopGetMultipleImages();
             }
 
             if (subChaine1.compare("StopCDM") == 0)
             {
-                LOG_TRACE << "CDM::cdm() / StopCDM";
                 camera.StopCDM();
             }
 
             if (subChaine1.compare("StopStream") == 0)
             {
-                LOG_TRACE << "CDM::cdm() / StopStream";
                 camera.StopStream();
             }
 
             if (subChaine1.compare("Error") == 0)
             {
-                LOG_TRACE << "CDM::cdm() / Error";
-		//LOG_TRACE << "RR: try to do error datapoint 1";
                 SetDatapointThread *m_SetDatapointThread_state = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.FSM.state", 2, 5);
-		LOG_TRACE << "RR: try to error: stop CDM";
                 camera.StopCDM();
-		LOG_TRACE << "RR: try to do error datapoint 2";
                 SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.FSM.transition", 2, 0);
-		LOG_TRACE << "RR: CDM:Error done";
             }
 
             if (subChaine1.compare("Acknowledge") == 0)
             {
-                LOG_TRACE << "CDM::cdm() / Acknowledge";
                 camera.Disconnect();
                 SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
             }
@@ -424,7 +394,6 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
     // DAVID
     // int FSM_state;
     // getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
-    LOG_TRACE << "CDM::cdm(): command "<<command<<" ret "<<ret<<" End"<<endl;
     // LOG_TRACE << "End of CDM::cdm(), State of the CDM : "<<FSM_state<<endl;
     return ret;
 }
@@ -582,7 +551,6 @@ int CDM::AddComment(std::string comment)
 
 int CDM::close()
 {
-    LOG_TRACE << "CDM::close()";
 
     // here we do nothing
     int ret = 0;
@@ -673,7 +641,6 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
 
 int CDM::set(const std::string &chaine, int commandStringAck, std::vector<boost::any> &tabValue)
 {
-    //LOG_TRACE << "CDM::set()";
     int ret = 0;
     return ret;
 }
