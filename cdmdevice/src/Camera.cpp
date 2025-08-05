@@ -6,6 +6,7 @@
 #include <boost/date_time/time_facet.hpp>
 
 #include <chrono>
+#include <thread> //for sleep, can be removed after debug
 #include <iostream>
 
 #include "Helper.h"
@@ -448,27 +449,43 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 {
     LOG_TRACE << "Camera::StartCDM(): Start"<<endl;
 
+    //is camera connected
+    if (m_DevicePtr==nullptr) {
+      LOG_ERROR<<"Camera::GetImage camera is not connected"<<std::endl;
+      return -1;
+    }
+    
     b_keep_taking = 1;
     int array_size = 10;
 
     unsigned long int i_images_taken = 0;
-    char *pcImageMemory_arr[n_allocated_memories];
-    int nMemoryId_arr[n_allocated_memories];
-    for (int i = 0; i < n_allocated_memories; i++)
-    {
-      //nRet = is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-      nRet=1;
-      COND_LOG_DEBUG << "Camera::StartCDM(): AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
-        //is_AddToSequence(hCam, pcImageMemory, nMemoryId);
+    ////char *pcImageMemory_arr[n_allocated_memories];
+    //int nMemoryId_arr[n_allocated_memories];
 
-        pcImageMemory_arr[i] = pcImageMemory;
-        nMemoryId_arr[i] = nMemoryId;
+    // Setup for freerun configuration
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")->SetCurrentEntry("Continuous");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")->SetCurrentEntry("ExposureStart");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")->SetCurrentEntry("Off");
+    int payload_size =m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("PayloadSize")->Value();
+    LOG_INFO<<"Camera::StartCDM payload size: "<<payload_size<<std::endl;
+    size_t num_buf_min=m_DatastreamPtr->NumBuffersAnnouncedMinRequired();
+    //check requested number of images
+    if (num_buf_min>n_allocated_memories) {
+      LOG_ERROR<<"Camera::StartCDM: number of allocated memories less than number of buffers needed ("
+	       <<num_buf_min
+	       <<") so increasing number to min"<<std::endl;
+      n_allocated_memories=num_buf_min;
+    } //if (num_buf_min>n_allocated_memories)
+  
+    LOG_INFO<<"Camera::StartCDM auto allocating data buffers"<<std::endl;
+    //automatically alloc raw buffers
+    for (size_t count=0; count<n_allocated_memories; count++) {
+      auto buffer=m_DatastreamPtr->AllocAndAnnounceBuffer(static_cast<size_t>(payload_size),nullptr);
+      m_DatastreamPtr->QueueBuffer(buffer);
     }
-    //is_InitImageQueue(hCam, 0);
 
-    //nRet = is_CaptureVideo(hCam, IS_WAIT);
-    //COND_LOG_DEBUG << "Camera::StartCDM(): is_CaptureVideo returned " << nRet << std::endl;
-
+    LOG_INFO<<"Camera::StartCDM prepare for main loop"<<std::endl;
+    
     int loop_image_count = 0;
     int64_t duration_count = 0;
 
@@ -496,6 +513,12 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     vector<string> timestamp_UTC;
     vector<string> timestamp_epoch;
 
+    LOG_INFO<<"Camera::StartCDM start freerun acquisition"<<std::endl;
+    m_DatastreamPtr->StartAcquisition(peak::core::AcquisitionStartMode::Default, peak::core::DataStream::INFINITE_NUMBER);
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")->SetValue(1);
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStart")->Execute();
+    
+    
     while (b_keep_taking == 1)
     {
         std::chrono::steady_clock::time_point begin_loop = std::chrono::steady_clock::now();
@@ -514,326 +537,313 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
         vector<double> oarl_mean_results;
 
         // Use is_LockSeqBuf when processing image?
+	LOG_INFO<<"Camera::StartCDM loop: wait for image and process, image "<<loop_image_count<<std::endl;
 
-        char *pBuffer = NULL;
-        //nRet = is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
-        std::chrono::steady_clock::time_point begin_loop_after_image = std::chrono::steady_clock::now();
+	try {
+	  m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(1000);
+	  LOG_INFO<<"Camera::StartCDM loop: image acquired, start process "<<std::endl;
+	}
+	
+	// RR TODO manage exceptions
+	catch (const peak::core::TimeoutException& e)
+	  {
+	    LOG_ERROR<<"Camera::startCDM timeout in WaitForFinishedBuffer"<<std::endl;
+	  LOG_ERROR<<e.what()<<std::endl;
+	  }
+	catch (std::exception& e)
+	{
+	  LOG_ERROR<<"Camera::startCDM exception in WaitForFinishedBuffer"<<std::endl;
+	  LOG_ERROR<<e.what()<<std::endl;
+	  //RR: terminate? at least while debugging
+	}
 
-        if (nRet == 1) //IS_SUCCESS)
-        {
-            timestamp_UTC.push_back(currentDateTimeMs());
-            timestamp_epoch.push_back(currentEpochTime());
+	std::chrono::steady_clock::time_point begin_loop_after_image = std::chrono::steady_clock::now();
+	
+	timestamp_UTC.push_back(currentDateTimeMs());
+	timestamp_epoch.push_back(currentEpochTime());
+	
+	auto tp_start = std::chrono::high_resolution_clock::now();
+	
+	if (iBitsPerPixel == 8) {
+	  m1 = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
+	  
+	} else if (iBitsPerPixel == 16) {
+	  m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	  
+	} else  {
+	  LOG_ERROR << "Camera::StartCDM(): Check bitdepth!" << endl;
+	  m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	} // if (iBitsPerPixel == 8) 
+	
+	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+	// Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
+	// This is to be done for incoming camera image or Fake camera image from fits file.
+	LOG_INFO<<"Camera::StartCDM loop: ImageAnalysis create"<<std::endl;
+	ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
 
-            auto tp_start = std::chrono::high_resolution_clock::now();
+	
+	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+	LOG_IMAGE << "Camera::StartCDM(): Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
-            if (iBitsPerPixel == 8)
-                m1 = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
+	begin = std::chrono::steady_clock::now();
+	// RR skip this while there are no LEDs!!!
+	LOG_INFO<<"Camera::StartCDM loop: ImageAnalysis CalculateImage"<<std::endl;
+	// myimage.CalculateImage();
+	std::this_thread::sleep_for(std::chrono::milliseconds(3)); //RR in place of CalculateImage
 
-            else if (iBitsPerPixel == 16)
-                m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+	end = std::chrono::steady_clock::now();
+	LOG_IMAGE << "Camera::StartCDM(): Time difference [CalculateImage] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+	
+	LOG_INFO<<"Camera::StartCDM loop: free buffer after ImageAnalysis"<<std::endl;
+	// queue buffer so that it can be used again
+	m_DatastreamPtr->QueueBuffer(m_ImgbufferPtr);
 
-            else
-            {
-                LOG_ERROR << "Camera::StartCDM(): Check bitdepth!" << endl;
-                m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-            }
+	begin = std::chrono::steady_clock::now();
 
-            std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-            // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
-            // This is to be done for incoming camera image or Fake camera image from fits file.
-            //ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
-            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-            LOG_IMAGE << "Camera::StartCDM(): Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+	//RR: tmp, while no LEDs!!!
+	circle_results = std::vector<double>{0.0,0.0,0.0,0.0}; 
+	led_x_results = std::vector<double>{0.0,0.0,0.0,0.0,
+	                                    0.0,0.0,0.0,0.0,
+	                                    0.0,0.0,0.0,0.0,}; 
+	led_y_results = std::vector<double>{0.0,0.0,0.0,0.0,
+	                                    0.0,0.0,0.0,0.0,
+	                                    0.0,0.0,0.0,0.0,};
+	oarl_x_results = std::vector<double>{0.0,0.0}; 
+	oarl_y_results = std::vector<double>{0.0,0.0}; 
+	displacement_results = std::vector<double>{0.0,0.0,0.0}; 
+	oarl_mean_results = std::vector<double>{0.0,0.0}; 
+	
+	/*
+	circle_results = myimage.GetCircleResults();
+	led_x_results = myimage.GetLEDxResults();
+	led_y_results = myimage.GetLEDyResults();
+	oarl_x_results = myimage.GetOARLxResults();
+	oarl_y_results = myimage.GetOARLyResults();
+	displacement_results = myimage.GetDisplacementResults();
+	oarl_mean_results =myimage.GetOARLmeanResults();
+	*/
+	
+	circle_x.push_back(circle_results[0]);
+	circle_y.push_back(circle_results[1]);
+	circle_R.push_back(circle_results[2]);
+	circle_RMS.push_back(circle_results[3]);
+	
+	displacement_x.push_back(displacement_results[0]);
+	displacement_y.push_back(displacement_results[1]);
+	rotation.push_back(displacement_results[2]);
+	
+	LED_x.push_back(led_x_results);
+	LED_y.push_back(led_y_results);
+	OARL_x.push_back(oarl_x_results);
+	OARL_y.push_back(oarl_y_results);
+	
+	OARL_mean_x.push_back(oarl_mean_results[0]);
+	OARL_mean_y.push_back(oarl_mean_results[1]);
+	
+	end = std::chrono::steady_clock::now();
+	LOG_IMAGE << "Camera::StartCDM(): Time difference [Getting image results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
-            //ImageAnalysis myimage(src);
-            begin = std::chrono::steady_clock::now();
-	    // myimage.CalculateImage();
-            end = std::chrono::steady_clock::now();
-            LOG_IMAGE << "Camera::StartCDM(): Time difference [CalculateImage] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
-
-            begin = std::chrono::steady_clock::now();
-
-            circle_results = std::vector<double>{0.0,0.0,0.0,0.0}; //myimage.GetCircleResults();
-            //led_x_results = 0; // myimage.GetLEDxResults();
-            //led_y_results = 0; // myimage.GetLEDyResults();
-            //oarl_x_results = 0; // myimage.GetOARLxResults();
-            //oarl_y_results = 0; // myimage.GetOARLyResults();
-            //displacement_results = 0; // myimage.GetDisplacementResults();
-            //oarl_mean_results = 0; // myimage.GetOARLmeanResults();
-
-            circle_x.push_back(circle_results[0]);
-            circle_y.push_back(circle_results[1]);
-            circle_R.push_back(circle_results[2]);
-            circle_RMS.push_back(circle_results[3]);
-
-            displacement_x.push_back(displacement_results[0]);
-            displacement_y.push_back(displacement_results[1]);
-            rotation.push_back(displacement_results[2]);
-
-            LED_x.push_back(led_x_results);
-            LED_y.push_back(led_y_results);
-            OARL_x.push_back(oarl_x_results);
-            OARL_y.push_back(oarl_y_results);
-
-            OARL_mean_x.push_back(oarl_mean_results[0]);
-            OARL_mean_y.push_back(oarl_mean_results[1]);
-
-            end = std::chrono::steady_clock::now();
-            LOG_IMAGE << "Camera::StartCDM(): Time difference [Getting image results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
-
-
-
-            auto tp_stop = std::chrono::high_resolution_clock::now();
-            auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
-            duration_count += ms.count();
-
-            if (++loop_image_count == 100)
-            {
-                LOG_INFO << "Camera::StartCDM(): Duration: " << duration_count / loop_image_count << std::endl;
-                loop_image_count = 0;
-                duration_count = 0;
-            }
-
+	auto tp_stop = std::chrono::high_resolution_clock::now();
+	auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
+	duration_count += ms.count();
+	
+	if (++loop_image_count == 100)
+	  {
+	    LOG_INFO << "Camera::StartCDM(): Duration: " << duration_count / loop_image_count << std::endl;
+	    loop_image_count = 0;
+	    duration_count = 0;
+	  } //if (++loop_image_count == 100)
+	
             //is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
-            i_images_taken++;
+	i_images_taken++;
+	
+	// TODO: Optimize this?
+	LOG_DATA
+	  //cout
+	  << setprecision(10)
+	  << helper.get_Zenith() << " "
+	  << helper.get_Azimuth() << " "
+	  << circle_results[0] * px2arcsec << " "
+	  << circle_results[1] * px2arcsec << " "
+	  << circle_results[2] * px2arcsec << " "
+	  << circle_results[3] * px2arcsec << " "
+	  << oarl_mean_results[0] * px2arcsec << " "
+	  << oarl_mean_results[1] * px2arcsec << " "
+	  << displacement_results[0] * px2arcsec << " "
+	  << displacement_results[1] * px2arcsec << " "
+	  << displacement_results[2] * px2arcsec << " "
+	  << led_x_results[0] * px2arcsec << " "
+	  << led_x_results[1] * px2arcsec << " "
+	  << led_x_results[2] * px2arcsec << " "
+	  << led_x_results[3] * px2arcsec << " "
+	  << led_x_results[4] * px2arcsec << " "
+	  << led_x_results[5] * px2arcsec << " "
+	  << led_x_results[6] * px2arcsec << " "
+	  << led_x_results[7] * px2arcsec << " "
+	  << led_x_results[8] * px2arcsec << " "
+	  << led_x_results[9] * px2arcsec << " "
+	  << led_x_results[10] * px2arcsec << " "
+	  << led_x_results[11] * px2arcsec << " "
+	  << led_y_results[0] * px2arcsec << " "
+	  << led_y_results[1] * px2arcsec << " "
+	  << led_y_results[2] * px2arcsec << " "
+	  << led_y_results[3] * px2arcsec << " "
+	  << led_y_results[4] * px2arcsec << " "
+	  << led_y_results[5] * px2arcsec << " "
+	  << led_y_results[6] * px2arcsec << " "
+	  << led_y_results[7] * px2arcsec << " "
+	  << led_y_results[8] * px2arcsec << " "
+	  << led_y_results[9] * px2arcsec << " "
+	  << led_y_results[10] * px2arcsec << " "
+	  << led_y_results[11] * px2arcsec << " "
+	  << oarl_x_results[0] * px2arcsec << " "
+	  << oarl_x_results[1] * px2arcsec << " "
+	  << oarl_y_results[0] * px2arcsec << " "
+	  << oarl_y_results[1] * px2arcsec
+	  << endl; //
+	
+	//TODO: Time this process!
+	if (i_images_taken % array_size == 0)
+	  {
+	    std::chrono::steady_clock::time_point begin_publish = std::chrono::steady_clock::now();
 
-            // TODO: Optimize this?
-            LOG_DATA
-                //cout
-                << setprecision(10)
-                << helper.get_Zenith() << " "
-                << helper.get_Azimuth() << " "
-                << circle_results[0] * px2arcsec << " "
-                << circle_results[1] * px2arcsec << " "
-                << circle_results[2] * px2arcsec << " "
-                << circle_results[3] * px2arcsec << " "
-                << oarl_mean_results[0] * px2arcsec << " "
-                << oarl_mean_results[1] * px2arcsec << " "
-                << displacement_results[0] * px2arcsec << " "
-                << displacement_results[1] * px2arcsec << " "
-                << displacement_results[2] * px2arcsec << " "
-                << led_x_results[0] * px2arcsec << " "
-                << led_x_results[1] * px2arcsec << " "
-                << led_x_results[2] * px2arcsec << " "
-                << led_x_results[3] * px2arcsec << " "
-                << led_x_results[4] * px2arcsec << " "
-                << led_x_results[5] * px2arcsec << " "
-                << led_x_results[6] * px2arcsec << " "
-                << led_x_results[7] * px2arcsec << " "
-                << led_x_results[8] * px2arcsec << " "
-                << led_x_results[9] * px2arcsec << " "
-                << led_x_results[10] * px2arcsec << " "
-                << led_x_results[11] * px2arcsec << " "
-                << led_y_results[0] * px2arcsec << " "
-                << led_y_results[1] * px2arcsec << " "
-                << led_y_results[2] * px2arcsec << " "
-                << led_y_results[3] * px2arcsec << " "
-                << led_y_results[4] * px2arcsec << " "
-                << led_y_results[5] * px2arcsec << " "
-                << led_y_results[6] * px2arcsec << " "
-                << led_y_results[7] * px2arcsec << " "
-                << led_y_results[8] * px2arcsec << " "
-                << led_y_results[9] * px2arcsec << " "
-                << led_y_results[10] * px2arcsec << " "
-                << led_y_results[11] * px2arcsec << " "
-                << oarl_x_results[0] * px2arcsec << " "
-                << oarl_x_results[1] * px2arcsec << " "
-                << oarl_y_results[0] * px2arcsec << " "
-                << oarl_y_results[1] * px2arcsec
-                << endl; //
-
-            //TODO: Time this process!
-            if (i_images_taken % array_size == 0)
-            {
-                std::chrono::steady_clock::time_point begin_publish = std::chrono::steady_clock::now();
-
-                LOG_IMAGE << "Camera::StartCDM(): Gathered " << array_size << " images:" << endl;
-
-                //TODO: Time this transpose!
-                // We transpose the arrays so instead of grouping it by time first we group it by LEDs/OARLs first.
-                // So before we had a rows for one timeslice containing different LED information and after the transpose we have rows for each LED containing information for different timeslices.
-
-                LED_x = transpose(LED_x);
-                LED_y = transpose(LED_y);
-                OARL_x = transpose(OARL_x);
-                OARL_y = transpose(OARL_y);
-
-                int m_nameSpace = 2;
-
-                //TODO: Time this publishing!
-                myclient->setDatapoint(datapointName_circle_x, m_nameSpace, circle_x);
-                myclient->setDatapoint(datapointName_circle_y, m_nameSpace, circle_y);
-                myclient->setDatapoint(datapointName_circle_R, m_nameSpace, circle_R);
-                myclient->setDatapoint(datapointName_circle_RMS, m_nameSpace, circle_RMS);
-
-                myclient->setDatapoint(datapointName_displacement_x, m_nameSpace, displacement_x);
-                myclient->setDatapoint(datapointName_displacement_y, m_nameSpace, displacement_y);
-                myclient->setDatapoint(datapointName_rotation, m_nameSpace, rotation);
-
-                for (int i = 0; i < nLED; i++)
-                {
-                    myclient->setDatapoint(datapointName_LED_x_arrays[i], m_nameSpace, LED_x[i]);
-                    myclient->setDatapoint(datapointName_LED_y_arrays[i], m_nameSpace, LED_y[i]);
-                }
-
-                for (int i = 0; i < nOARL; i++)
-                {
-                    myclient->setDatapoint(datapointName_OARL_x_arrays[i], m_nameSpace, OARL_x[i]);
-                    myclient->setDatapoint(datapointName_OARL_y_arrays[i], m_nameSpace, OARL_y[i]);
-                }
-
+	    LOG_IMAGE << "Camera::StartCDM(): Gathered " << array_size << " images:" << endl;
+	    
+	    //TODO: Time this transpose!
+	    // We transpose the arrays so instead of grouping it by time first we group it by LEDs/OARLs first.
+	    // So before we had a rows for one timeslice containing different LED information and after the transpose we have rows for each LED containing information for different timeslices.
+	    
+	    LED_x = transpose(LED_x);
+	    LED_y = transpose(LED_y);
+	    OARL_x = transpose(OARL_x);
+	    OARL_y = transpose(OARL_y);
+	    
+	    int m_nameSpace = 2;
+	    
+	    //TODO: Time this publishing!
+	    myclient->setDatapoint(datapointName_circle_x, m_nameSpace, circle_x);
+	    myclient->setDatapoint(datapointName_circle_y, m_nameSpace, circle_y);
+	    myclient->setDatapoint(datapointName_circle_R, m_nameSpace, circle_R);
+	    myclient->setDatapoint(datapointName_circle_RMS, m_nameSpace, circle_RMS);
+	    
+	    myclient->setDatapoint(datapointName_displacement_x, m_nameSpace, displacement_x);
+	    myclient->setDatapoint(datapointName_displacement_y, m_nameSpace, displacement_y);
+	    myclient->setDatapoint(datapointName_rotation, m_nameSpace, rotation);
+	    
+	    for (int i = 0; i < nLED; i++)
+	      {
+		myclient->setDatapoint(datapointName_LED_x_arrays[i], m_nameSpace, LED_x[i]);
+		myclient->setDatapoint(datapointName_LED_y_arrays[i], m_nameSpace, LED_y[i]);
+	      } // for (int i = 0; i < nLED; i++)
+	    
+	    for (int i = 0; i < nOARL; i++)
+	      {
+		myclient->setDatapoint(datapointName_OARL_x_arrays[i], m_nameSpace, OARL_x[i]);
+		myclient->setDatapoint(datapointName_OARL_y_arrays[i], m_nameSpace, OARL_y[i]);
+	      } // for (int i = 0; i < nOARL; i++)
+	    
                 // Publish the value
-                myclient->setDatapoint(datapointName_OARL_x_mean, m_nameSpace, OARL_mean_x);
-                myclient->setDatapoint(datapointName_OARL_y_mean, m_nameSpace, OARL_mean_y);
+	    myclient->setDatapoint(datapointName_OARL_x_mean, m_nameSpace, OARL_mean_x);
+	    myclient->setDatapoint(datapointName_OARL_y_mean, m_nameSpace, OARL_mean_y);
+	    
+	    myclient->setDatapoint(datapointName_timestamp_UTC, m_nameSpace, timestamp_UTC);
+	    myclient->setDatapoint(datapointName_timestamp_epoch, m_nameSpace, timestamp_epoch);
+	    
+	    // Publish stddev values
+	    myclient->setDatapoint(datapointName_circle_x_stddev, m_nameSpace, calculateStdDev(circle_x));
+	    myclient->setDatapoint(datapointName_circle_y_stddev, m_nameSpace, calculateStdDev(circle_y));
+	    myclient->setDatapoint(datapointName_circle_R_stddev, m_nameSpace, calculateStdDev(circle_R));
+	    myclient->setDatapoint(datapointName_circle_RMS_stddev, m_nameSpace, calculateStdDev(circle_RMS));
+	    
+	    // Push the image here
+	    std::chrono::steady_clock::time_point begin_getimage = std::chrono::steady_clock::now();
+	    // April 2025 Remove the publication of the image to save bandwidth
+	    //published_image = myimage.GetImageToPublish(currentDateTime());
+	    //myclient->setDatapoint(datapointName_image, m_nameSpace, published_image);
+	    myclient->setDatapoint(datapointName_nImagesGet, m_nameSpace, (int)i_images_taken);
+	    std::chrono::steady_clock::time_point end_getimage = std::chrono::steady_clock::now();
+	    LOG_IMAGE << "Camera::StartCDM(): Time difference [Get image for publishing] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_getimage - begin_getimage).count() << "[ms]" << std::endl;
+	    
+	    // TODO: Delete DatapointThreads or make an object on stack! Or just use setDatapoint if it is quick enough.
+	    
+	    circle_x.clear();
+	    circle_y.clear();
+	    circle_R.clear();
+	    circle_RMS.clear();
+	    
+	    displacement_x.clear();
+	    displacement_y.clear();
+	    rotation.clear();
+	    
+	    LED_x.clear();
+	    LED_y.clear();
+	    OARL_x.clear();
+	    OARL_y.clear();
+	    
+	    OARL_mean_x.clear();
+	    OARL_mean_y.clear();
+	    
+	    timestamp_UTC.clear();
+	    timestamp_epoch.clear();
+	    
+	    std::chrono::steady_clock::time_point end_publish = std::chrono::steady_clock::now();
+	    LOG_IMAGE << "Camera::StartCDM(): Time difference [Publishing results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_publish - begin_publish).count() << "[ms]" << std::endl;
+	    
+	    // Write settings information to log file.
+	    LOG_SETTINGS
+	      << helper.get_Zenith() << " "
+	      << helper.get_Azimuth() << " "
+	      << helper.get_LEDs_state() << " "
+	      << helper.get_OARL_state() << " "
+	      << helper.get_Shutter_state() << " "
+	      << helper.get_SIS_state() << " "
+	      << helper.get_Drive_status_in_motion() << " "
+	      << helper.get_Drive_status_parked() << " "
+	      << helper.get_Drive_status_in_parking_position() << " "
+	      << helper.get_Drive_status_tracking_in_progress() << " "
+	      << helper.get_StarName() << " "
+	      
+	      << Camera::get_exposure() << " "
+	      << Camera::get_master_gain() << " "
+	      << Camera::get_temperature_value() << " "
+	      << Camera::get_temperature_status() << " "
+	      // Add FPS, Pixel format etc. here
+	      
+	      << helper.get_Aux_status_DM_East_Bottom() << " "
+	      << helper.get_Aux_status_DM_East_Top() << " "
+	      << helper.get_Aux_status_DM_West_Bottom() << " "
+	      << helper.get_Aux_status_DM_West_Top() << " "
+	      
+	      //<< helper.get_Comment() << " "
+	      
+	      << endl
+	      << endl; //
+	  } //if i_images_taken % array_size...
+	//} //IS_SUCCESS
 
-                myclient->setDatapoint(datapointName_timestamp_UTC, m_nameSpace, timestamp_UTC);
-                myclient->setDatapoint(datapointName_timestamp_epoch, m_nameSpace, timestamp_epoch);
-
-                // Publish stddev values
-                myclient->setDatapoint(datapointName_circle_x_stddev, m_nameSpace, calculateStdDev(circle_x));
-                myclient->setDatapoint(datapointName_circle_y_stddev, m_nameSpace, calculateStdDev(circle_y));
-                myclient->setDatapoint(datapointName_circle_R_stddev, m_nameSpace, calculateStdDev(circle_R));
-                myclient->setDatapoint(datapointName_circle_RMS_stddev, m_nameSpace, calculateStdDev(circle_RMS));
-
-                // Push the image here
-                std::chrono::steady_clock::time_point begin_getimage = std::chrono::steady_clock::now();
-                // April 2025 Remove the publication of the image to save bandwidth
-                //published_image = myimage.GetImageToPublish(currentDateTime());
-                //myclient->setDatapoint(datapointName_image, m_nameSpace, published_image);
-                myclient->setDatapoint(datapointName_nImagesGet, m_nameSpace, (int)i_images_taken);
-                std::chrono::steady_clock::time_point end_getimage = std::chrono::steady_clock::now();
-                LOG_IMAGE << "Camera::StartCDM(): Time difference [Get image for publishing] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_getimage - begin_getimage).count() << "[ms]" << std::endl;
-
-                // TODO: Delete DatapointThreads or make an object on stack! Or just use setDatapoint if it is quick enough.
-
-                circle_x.clear();
-                circle_y.clear();
-                circle_R.clear();
-                circle_RMS.clear();
-
-                displacement_x.clear();
-                displacement_y.clear();
-                rotation.clear();
-
-                LED_x.clear();
-                LED_y.clear();
-                OARL_x.clear();
-                OARL_y.clear();
-
-                OARL_mean_x.clear();
-                OARL_mean_y.clear();
-
-                timestamp_UTC.clear();
-                timestamp_epoch.clear();
-
-                std::chrono::steady_clock::time_point end_publish = std::chrono::steady_clock::now();
-                LOG_IMAGE << "Camera::StartCDM(): Time difference [Publishing results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_publish - begin_publish).count() << "[ms]" << std::endl;
-
-                // Write settings information to log file.
-                LOG_SETTINGS
-                    << helper.get_Zenith() << " "
-                    << helper.get_Azimuth() << " "
-                    << helper.get_LEDs_state() << " "
-                    << helper.get_OARL_state() << " "
-                    << helper.get_Shutter_state() << " "
-                    << helper.get_SIS_state() << " "
-                    << helper.get_Drive_status_in_motion() << " "
-                    << helper.get_Drive_status_parked() << " "
-                    << helper.get_Drive_status_in_parking_position() << " "
-                    << helper.get_Drive_status_tracking_in_progress() << " "
-                    << helper.get_StarName() << " "
-
-                    << Camera::get_exposure() << " "
-                    << Camera::get_master_gain() << " "
-                    << Camera::get_temperature_value() << " "
-                    << Camera::get_temperature_status() << " "
-                    // Add FPS, Pixel format etc. here
-
-                    << helper.get_Aux_status_DM_East_Bottom() << " "
-                    << helper.get_Aux_status_DM_East_Top() << " "
-                    << helper.get_Aux_status_DM_West_Bottom() << " "
-                    << helper.get_Aux_status_DM_West_Top() << " "
-
-                    //<< helper.get_Comment() << " "
-
-                    << endl
-                    << endl; //
-            }
-        }
-
-        else if (nRet == 0) //IS_CAPTURE_STATUS)
-        {
-            LOG_WARNING << "Camera::StartCDM() / IS_CAPTURE_STATUS"<<endl;
-
-	    /*
-            UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
-            INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
-
-            LOG_WARNING << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
-            LOG_WARNING << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
-            LOG_WARNING << "\tApiNoDestMem:    " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_NO_DEST_MEM] << std::endl;
-            LOG_WARNING << "\tApiImageLocked:  " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_IMAGE_LOCKED] << std::endl;
-            LOG_WARNING << "\tUsbTransferFail: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_USB_TRANSFER_FAILED] << std::endl;
-
-            //	wLinkSpeed_Mb
-            // The camera has the device ID 1
-
-            UINT nDeviceId = 1;
-            IS_DEVICE_INFO deviceInfo;
-            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
-            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
-
-            if (nRet == IS_SUCCESS)
-
-            {
-                WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-                LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
-            }
-
-            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
-	    */
-        }
-        else
-        {
-            LOG_WARNING << "is_WaitForNextImage : " << nRet << std::endl;
-            //	wLinkSpeed_Mb
-            // The camera has the device ID 1
-	    /*
-            UINT nDeviceId = 1;
-            IS_DEVICE_INFO deviceInfo;
-            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
-            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
-
-            WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-            LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
-	    */
-        }
-
+	
         std::chrono::steady_clock::time_point end_loop = std::chrono::steady_clock::now();
         //LOG_INFO << "Time difference [One loop] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop).count() << "[ms]" << std::endl;
-
+	
         LOG_IMAGE << "Camera::StartCDM(): Time difference [One loop after image] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop_after_image).count() << "[ms]" << std::endl;
-
-
+	
+	
     } // while (b_keep_taking == 1)
 
+    //stop acquisition
+    LOG_INFO<<"Camera::startCDM exited loop, stopping acquisition"<<std::endl;
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")->Execute();
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")->SetValue(0);
+    m_DatastreamPtr->StopAcquisition(peak::core::AcquisitionStopMode::Default);
+    
+    LOG_INFO<<"Camera::startCDM flush buffers and release them"<<std::endl;
+    //Flush and delete data buffers
+    m_DatastreamPtr->Flush(peak::core::DataStreamFlushMode::DiscardAll);
+    for (const auto& buffer : m_DatastreamPtr->AnnouncedBuffers())
+      m_DatastreamPtr->RevokeBuffer(buffer);
+    
     // Free the OpenCV memory?
     // Free the allocated memories
-
-    //nRet = is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
-    COND_LOG_DEBUG << "Camera::StartCDM(): is_StopLiveVideo result: " << nRet << endl;
-
-    //nRet = is_ExitImageQueue(hCam);
-    COND_LOG_DEBUG << "Camera::StartCDM(): is_ExitImageQueue: " << nRet << endl;
-
-    //nRet = is_ClearSequence(hCam);
-    COND_LOG_DEBUG << "Camera::StartCDM(): is_ClearSequence: " << nRet << endl;
-
-    for (int i = 0; i < n_allocated_memories; i++)
-    {
-      //nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
-        //LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
-    }
 
     LOG_TRACE << "Camera::StartCDM(): End"<< endl;
     return 0;
@@ -843,24 +853,41 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
 {
     LOG_TRACE << "Camera::StartStream(): Start"<<endl;
 
+    //is camera connected
+    if (m_DevicePtr==nullptr) {
+      LOG_ERROR<<"Camera::GetImage camera is not connected"<<std::endl;
+      return -1;
+    }
+    
     b_keep_taking = 1;
 
     unsigned long int i_images_taken = 0;
     char *pcImageMemory_arr[n_allocated_memories];
     int nMemoryId_arr[n_allocated_memories];
-    for (int i = 0; i < n_allocated_memories; i++)
-    {
-      nRet = 1; //is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-        COND_LOG_DEBUG << "Camera::StartStream(): AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
-        //is_AddToSequence(hCam, pcImageMemory, nMemoryId);
 
-        pcImageMemory_arr[i] = pcImageMemory;
-        nMemoryId_arr[i] = nMemoryId;
+    // Setup for freerun configuration
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")->SetCurrentEntry("Continuous");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")->SetCurrentEntry("ExposureStart");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")->SetCurrentEntry("Off");
+    int payload_size =m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("PayloadSize")->Value();
+    LOG_INFO<<"Camera::StartStream payload size: "<<payload_size<<std::endl;
+    size_t num_buf_min=m_DatastreamPtr->NumBuffersAnnouncedMinRequired();
+    //check requested number of images
+    if (num_buf_min>n_allocated_memories) {
+      LOG_ERROR<<"Camera::StartStream: number of allocated memories less than number of buffers needed ("
+	       <<num_buf_min
+	       <<") so increasing number to min"<<std::endl;
+      n_allocated_memories=num_buf_min;
+    } //if (num_buf_min>n_allocated_memories)
+  
+    LOG_INFO<<"Camera::StartStream auto allocating data buffers"<<std::endl;
+    //automatically alloc raw buffers
+    for (size_t count=0; count<n_allocated_memories; count++) {
+      auto buffer=m_DatastreamPtr->AllocAndAnnounceBuffer(static_cast<size_t>(payload_size),nullptr);
+      m_DatastreamPtr->QueueBuffer(buffer);
     }
-    //is_InitImageQueue(hCam, 0);
 
-    nRet = 2; //is_CaptureVideo(hCam, IS_WAIT);
-    COND_LOG_DEBUG << "Camera::StartStream(): is_CaptureVideo returned " << nRet << std::endl;
+    LOG_INFO<<"Camera::StartStream prepare for main loop"<<std::endl;
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
@@ -869,123 +896,87 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
     // April 2025 Remove the publication of the image to save bandwidth
     // vector<uchar> published_image;
 
+    LOG_INFO<<"Camera::StartStream start freerun acquisition"<<std::endl;
+    m_DatastreamPtr->StartAcquisition(peak::core::AcquisitionStartMode::Default, peak::core::DataStream::INFINITE_NUMBER);
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")->SetValue(1);
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStart")->Execute();
+    
+
     while (b_keep_taking == 1)
     {
 
-        // Use is_LockSeqBuf when processing image?
+      LOG_INFO<<"Camera::StartStream loop: wait for image and process, image "<<loop_image_count<<std::endl;
 
-        char *pBuffer = NULL;
-        nRet = 1; //is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
-        std::chrono::steady_clock::time_point begin_loop_after_image = std::chrono::steady_clock::now();
+      std::chrono::steady_clock::time_point begin_loop = std::chrono::steady_clock::now();
+      
+      try {
+	m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(1000);
+	LOG_INFO<<"Camera::StartStream loop: image acquired, start process "<<std::endl;
+      }
+      // RR TODO manage exceptions
+      catch (const peak::core::TimeoutException& e)
+	{
+	  LOG_ERROR<<"Camera::startStream timeout in WaitForFinishedBuffer"<<std::endl;
+	  LOG_ERROR<<e.what()<<std::endl;
+	}
+      catch (std::exception& e)
+	{
+	  LOG_ERROR<<"Camera::startStream exception in WaitForFinishedBuffer"<<std::endl;
+	  LOG_ERROR<<e.what()<<std::endl;
+	  //RR: terminate? at least while debugging
+	}
+      std::chrono::steady_clock::time_point begin_loop_after_image = std::chrono::steady_clock::now();
 
-        if (nRet == 1) //IS_SUCCESS)
-        {
-            // Vertical flipping of image so it is upright when read from stored old fits files.
-            //ImageAnalysis myimage(m1, "Vertical", 0);
+      if (iBitsPerPixel == 8)
+	m1 = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
+      
+      else if (iBitsPerPixel == 16)
+	m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+      
+      else
+	{
+	  LOG_ERROR << "Camera::StartStream(): Check bitdepth!" << endl;
+	  m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	}
 
-            // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
-            // This is to be done for incoming camera image or Fake camera image from fits file.
-            //ImageAnalysis myimage(m1, "Horizontal", 1, iBitsPerPixel);
+      ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
 
-            if (iBitsPerPixel == 8)
-                m1 = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
+      LOG_INFO<<"Camera::StartStream loop: free buffer after ImageAnalysis"<<std::endl;
+      // queue buffer so that it can be used again
+      m_DatastreamPtr->QueueBuffer(m_ImgbufferPtr);
+      
+      i_images_taken++;
 
-            else if (iBitsPerPixel == 16)
-                m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
 
-            else
-            {
-                LOG_ERROR << "Camera::StartStream(): Check bitdepth!" << endl;
-                m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-            }
+      
+      //int m_nameSpace = 2;
+      // April 2025 Remove the publication of the image to save bandwidth
+      // published_image = myimage.GetImageToPublish(currentDateTime());
+      // myclient->setDatapoint(datapointName_image, m_nameSpace, published_image);
 
-            // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
-            // This is to be done for incoming camera image or Fake camera image from fits file.
-
-            //ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
-
-            //is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
-            i_images_taken++;
-
-            int m_nameSpace = 2;
-            // April 2025 Remove the publication of the image to save bandwidth
-            // published_image = myimage.GetImageToPublish(currentDateTime());
-            // myclient->setDatapoint(datapointName_image, m_nameSpace, published_image);
-        }
-
-        else if (nRet == 0) //IS_CAPTURE_STATUS)
-        {
-            LOG_WARNING << "Camera::StartCDM() / IS_CAPTURE_STATUS"<<endl;
-	    /*
-            UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
-            INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
-
-            LOG_WARNING << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
-            LOG_WARNING << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
-            LOG_WARNING << "\tApiNoDestMem:    " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_NO_DEST_MEM] << std::endl;
-            LOG_WARNING << "\tApiImageLocked:  " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_IMAGE_LOCKED] << std::endl;
-            LOG_WARNING << "\tUsbTransferFail: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_USB_TRANSFER_FAILED] << std::endl;
-
-            //	wLinkSpeed_Mb
-            // The camera has the device ID 1
-
-            UINT nDeviceId = 1;
-            IS_DEVICE_INFO deviceInfo;
-            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
-            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
-
-            if (nRet == IS_SUCCESS)
-
-            {
-                WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-                LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
-            }
-
-            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
-	    */
-        }
-        else
-	  {
-            LOG_WARNING << "is_WaitForNextImage : " << nRet << std::endl;
-            //	wLinkSpeed_Mb
-            // The camera has the device ID 1
-	    /*
-	    UINT nDeviceId = 1;
-            IS_DEVICE_INFO deviceInfo;
-            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
-            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
-
-            WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-            LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
-	    */
-        }
-
-        std::chrono::steady_clock::time_point end_loop = std::chrono::steady_clock::now();
-        //LOG_INFO << "Time difference [One loop] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop).count() << "[ms]" << std::endl;
-
-        LOG_IMAGE << "Camera::StartStream(): Time difference [One loop after image] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop_after_image).count() << "[ms]" << std::endl;
+  
+      std::chrono::steady_clock::time_point end_loop = std::chrono::steady_clock::now();
+      
+      LOG_IMAGE << "Camera::StartStream(): Time difference [One loop after image] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_loop - begin_loop_after_image).count() << "[ms]" << std::endl;
 
 	    
-	  } // while (b_keep_taking == 1)
+    } // while (b_keep_taking == 1)
 
     // Free the OpenCV memory?
     // Free the allocated memories
 
-	nRet = 1; //is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
-    COND_LOG_DEBUG << "Camera::StartStream(): is_StopLiveVideo result: " << nRet << endl;
-
-    //nRet = is_ExitImageQueue(hCam);
-    COND_LOG_DEBUG << "Camera::StartStream(): is_ExitImageQueue: " << nRet << endl;
-
-    //nRet = is_ClearSequence(hCam);
-    COND_LOG_DEBUG << "Camera::StartStream(): is_ClearSequence: " << nRet << endl;
-
-    for (int i = 0; i < n_allocated_memories; i++)
-    {
-      //nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
-        //LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
-    }
-
+    //stop acquisition
+    LOG_INFO<<"Camera::startStream exited loop, stopping acquisition"<<std::endl;
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")->Execute();
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")->SetValue(0);
+    m_DatastreamPtr->StopAcquisition(peak::core::AcquisitionStopMode::Default);
+    
+    LOG_INFO<<"Camera::startStream flush buffers and release them"<<std::endl;
+    //Flush and delete data buffers
+    m_DatastreamPtr->Flush(peak::core::DataStreamFlushMode::DiscardAll);
+    for (const auto& buffer : m_DatastreamPtr->AnnouncedBuffers())
+      m_DatastreamPtr->RevokeBuffer(buffer);
+    
      LOG_TRACE << "Camera::StartStream(): End"<< endl;
      return 0;
 }
@@ -1493,6 +1484,7 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     std::vector<std::string> publish_remoteImagePath; 
     publish_remoteImagePath.push_back(imageName.c_str());
     SetDatapointThread *m_SetDatapointThread_remote_path = new SetDatapointThread(myclient, datapointName_imagePath, 2, publish_remoteImagePath); //Updates the imagePath
+    LOG_INFO<<"GetImage SetDatapointThread for "<<datapointName_imageName<< " at "<<datapointName_imagePath<<std::endl;
     SetDatapointThread(myclient, datapointName_imageName, 2, imageName.c_str()); //Updates the imageName
     SetDatapointThread(myclient, datapointName_imagePath, 2, imageName.c_str()); //Updates the imagePath_cat
 
@@ -1523,47 +1515,54 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     std::vector<boost::any> return_values;
 
     // Set pixel clock
-    nRet = 0;
     LOG_INFO << "Camera::Configure(): pixel clock cannot be set for uEye+ cameras"<< std::endl;
-    return_values.push_back(nPixelClock);
-    
-    
+    //return actual value
+    float pclock = m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("DeviceClockFrequency")->Value();
+    return_values.push_back(static_cast<int>(pclock));
+        
     // Set frame rate
-    double new_fps;
-    //nRet = is_SetFrameRate(hCam, fps, (double *)&new_fps);
-    LOG_INFO << "Camera::Configure(): SetFrameRate returned " << nRet << ". New framerate = " << new_fps << std::endl;
-    //is_SetFrameRate(hCam, IS_GET_FRAMERATE, &fps);
-    LOG_INFO << "Camera::Configure(): Applied framerate " << fps << " fps." << std::endl;
-    return_values.push_back(fps);
+    // Setup for freerun configuration, so frame rate can be set
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")->SetCurrentEntry("Continuous");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")->SetCurrentEntry("ExposureStart");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")->SetCurrentEntry("Off");
+    double current_fps;
+    current_fps=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->Value();
+    LOG_INFO << "Camera::Configure(): Current frame rate is: " << current_fps << std::endl;
+    LOG_INFO << "Camera::Configure(): Value of frame rate to be set is : " << fps << std::endl;
+    m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->SetValue(fps);
+    current_fps=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->Value();
+    LOG_INFO << "Camera::Configure(): Current frame rate is: " << current_fps << std::endl;
+    return_values.push_back(current_fps);
 
     // Set exposure
     double current_exposure;
-    //RR:debug set expected val
-    current_exposure=exposure;
-    //is_Exposure(hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, (void *)&current_exposure, sizeof(current_exposure));
+    current_exposure=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->Value();
     LOG_INFO << "Camera::Configure(): Current exposure is: " << current_exposure << std::endl;
     LOG_INFO << "Camera::Configure(): Value of exposure to be set is : " << exposure << std::endl;
-    //is_Exposure(hCam, IS_EXPOSURE_CMD_SET_EXPOSURE, (void *)&exposure, sizeof(current_exposure));
-    LOG_INFO << "Camera::Configure(): Set exposure is: " << exposure << std::endl;
-    //is_Exposure(hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, (void *)&current_exposure, sizeof(current_exposure));
+    m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->SetValue(exposure);
+    current_exposure=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->Value();
     LOG_INFO << "Camera::Configure(): Current exposure is: " << current_exposure << std::endl;
     return_values.push_back(current_exposure);
     Camera::exposure_setting = current_exposure;
 
     // Set hardware gain
-    LOG_INFO << "Camera::Configure(): Gain to be set is: " << gain << std::endl;
-    //is_SetHardwareGain(hCam, gain, 14, 0, 32); // Master, red, green, blue
-    int master_gain=0;
-    //RR: debug set reasonable value
-    master_gain=gain;
-    //master_gain=is_SetHardwareGain(hCam, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER);
-    return_values.push_back(master_gain);
-    Camera::master_gain_setting = master_gain;
-    LOG_INFO << "Camera::Configure(): Gain set is: " << master_gain << std::endl;
+    // RR: now gain is a float!!!
+    float current_gain;
+    int gain_int;
+    current_gain=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("Gain")->Value();
+    LOG_INFO << "Camera::Configure(): Current gain is: " << current_gain << std::endl;
+    LOG_INFO << "Camera::Configure(): Value of gain to be set is: " << gain << std::endl;
+    m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("Gain")->SetValue(gain);
+    current_gain=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("Gain")->Value();
+    LOG_INFO << "Camera::Configure(): Current gain is: " << current_gain << std::endl;
+    gain_int=static_cast<int>(current_gain);
+    return_values.push_back(gain_int);
+    Camera::master_gain_setting = gain_int;
 
+    // RR: ???
     // Set Display Mode
     //nRet = is_SetDisplayMode(hCam, IS_SET_DM_DIB);
-    LOG_INFO << "Camera::Configure(): SetDisplayMode returned " << nRet << std::endl;
+    //LOG_INFO << "Camera::Configure(): SetDisplayMode returned " << nRet << std::endl;
 
     // Set Color Mode
     //TODO: depending on the chosen pixel format the iBitsPerPixel should also change.
@@ -1600,6 +1599,7 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
 
 double Camera::get_temperature_value()
 {
+  LOG_INFO<<"Camera::get_temperature_value()"<<std::endl;
   // Checks if the camera is connected.
   if (m_DevicePtr==nullptr) {
     LOG_ERROR<<"Camera::get_temperature_value: camera is not connected"<<std::endl;
@@ -1611,6 +1611,7 @@ double Camera::get_temperature_value()
 
 string Camera::get_temperature_status()
 {
+  LOG_INFO<<"Camera::get_temperature_status()"<<std::endl;
   // Checks if the camera is connected.
   if (m_DevicePtr==nullptr) {
     LOG_ERROR<<"Camera::get_temperature_status: camera is not connected"<<std::endl;

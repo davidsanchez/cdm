@@ -23,6 +23,7 @@ extern Helper helper;
 
 AsynchronousThread::AsynchronousThread(DataAccessClientOPCUA *dataAccessClientOPCUA)
 {
+  LOG_INFO<<"new AsynchronousThread"<<std::endl;
     m_pause = false;
     m_stop = false;
     m_command = 0;
@@ -38,7 +39,8 @@ AsynchronousThread::AsynchronousThread(DataAccessClientOPCUA *dataAccessClientOP
 
 AsynchronousThread::~AsynchronousThread()
 {
-    m_pause = true;
+  LOG_INFO<<"end AsynchronousThread"<<std::endl;
+  m_pause = true;
     m_stop = true;
     wait();
 }
@@ -62,6 +64,7 @@ int AsynchronousThread::stop()
 
 int AsynchronousThread::cmdStartMeteo()
 {
+  LOG_INFO<<"AsynchronousThread::cmdStartMeteo()"<<std::endl;
     int ret = 0;
     m_cmdMeteo = true;
     return ret;
@@ -69,6 +72,7 @@ int AsynchronousThread::cmdStartMeteo()
 
 int AsynchronousThread::cmdLogRestart()
 {
+    LOG_INFO<<"AsynchronousThread::cmdLogRestart()"<<std::endl;
     int ret = 0;
     m_cmdLogRestart = true;
     return ret;
@@ -76,7 +80,8 @@ int AsynchronousThread::cmdLogRestart()
 
 int AsynchronousThread::cmdGetMultipleImages(std::string datapointName, int nameSpace, int n_images)
 {
-    int ret = 0;
+  LOG_INFO<<"AsynchronousThread::cmdGetMultipleImages()"<<std::endl;
+  int ret = 0;
     m_cmdGetMultipleImages = true;
     m_datapointName = datapointName;
     m_nameSpace = nameSpace;
@@ -86,6 +91,7 @@ int AsynchronousThread::cmdGetMultipleImages(std::string datapointName, int name
 
 int AsynchronousThread::cmdGetMultipleImagesStacked(std::string datapointName, int nameSpace, int n_images)
 {
+    LOG_INFO<<"AsynchronousThread::cmdGetMultipleImagesStacked()"<<std::endl;
     int ret = 0;
     m_cmdGetMultipleImagesStacked = true;
     m_datapointName = datapointName;
@@ -96,6 +102,7 @@ int AsynchronousThread::cmdGetMultipleImagesStacked(std::string datapointName, i
 
 int AsynchronousThread::cmdStartCDM(std::string datapointName, int nameSpace)
 {
+    LOG_INFO<<"AsynchronousThread::cmdStartCDM()"<<std::endl;
     int ret = 0;
     m_cmdStartCDM = true;
     m_datapointName = datapointName;
@@ -105,6 +112,7 @@ int AsynchronousThread::cmdStartCDM(std::string datapointName, int nameSpace)
 
 int AsynchronousThread::cmdStartStream(std::string datapointName, int nameSpace)
 {
+    LOG_INFO<<"AsynchronousThread::cmdStartStream()"<<std::endl;
     int ret = 0;
     m_cmdStartStream = true;
     m_datapointName = datapointName;
@@ -114,6 +122,7 @@ int AsynchronousThread::cmdStartStream(std::string datapointName, int nameSpace)
 
 int AsynchronousThread::cmdConfigure(std::string datapointName, int nameSpace, int nPixelClock, double exposure, double fps, int gain, std::string pixel_format)
 {
+    LOG_INFO<<"AsynchronousThread::cmdConfigure()"<<std::endl;
     int ret = 0;
     m_cmdConfigure = true;
     m_datapointName = datapointName;
@@ -133,6 +142,7 @@ void *AsynchronousThread::run(void *params)
     // or make a pause with m_pause=true with calling the methods pause() and resume()
     // you implement here your methods who take a long time to execute
     // Here an example with to methods closeShutter and openShutter
+    LOG_INFO<<"AsynchronousThread::run()"<<std::endl;
     std::string temString;
     std::string tempValue;
     int t = 0;
@@ -230,7 +240,7 @@ void *AsynchronousThread::run(void *params)
             {
                 int FSM_state;
 
-                cout << "In AsynchronousThread: cmdStartCDM" << endl;
+                LOG_INFO << "In AsynchronousThread: cmdStartCDM" << std::endl;
                 // Puts the FSM.state to 2
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 2);
                 //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, 2);
@@ -355,6 +365,7 @@ void *AsynchronousThread::run(void *params)
 
                 //Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, std::string pixel_format="IS_CM_MONO8");
 
+		LOG_INFO<<"AsynchronousThread in cmdConfigure: fps "<<fps<<std::endl;
                 std::vector<boost::any> configure_settings = camera.Configure(nPixelClock, exposure, fps, gain, pixel_format);
 
 
@@ -406,6 +417,7 @@ void *AsynchronousThread::run(void *params)
 
 int AsynchronousThread::startRun()
 {
+    LOG_INFO<<"AsynchronousThread::startRun()"<<std::endl;
     int ret = 0;
     start(NULL);
     return ret;

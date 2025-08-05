@@ -179,7 +179,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 {
 
     int ret = 0;
-    printf("In CMDAsync part: received command with the instruction: %s\n", command.c_str());
+    LOG_INFO<<"In CMDAsync part: received command with the instruction: "<<command<<std::endl;
     std::string chaine = command + " ";
     std::string subChaine1 = chaine;
     std::string subChaine2 = chaine;
@@ -216,17 +216,23 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 
             if (subChaine1.compare("StartCDM") == 0)
             {
-
-                std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
-                int nameSpace = 2;
-                m_Thread->cmdConfigure(datapointName,
+	  
+	      //RR: should configure be async?
+	      std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
+	      int nameSpace = 2;
+	      //float exposure=stof(helper.searchDatapoint("ids_exposure_us",cdm_config));
+		//float fps=stof(helper.searchDatapoint("ids_fps",cdm_config));
+		//float gain=stof(helper.searchDatapoint("ids_gain",cdm_config));
+		LOG_INFO<<"CDM::cmdAsynch: StartCDM: config camera"<<std::endl;
+		m_Thread->cmdConfigure(datapointName,
                                        nameSpace,
-                                       216,          // nPixelClock
-                                       50,           // exposure
-                                       10,           // fps
-                                       0,            // gain
+                                       216,          // nPixelClock: not used
+                                       2000.0,     // exposure
+				       1.0,          // fps
+                                       1.0,         // gain
                                        "IS_CM_MONO8" // pixel_format
-                );
+				       );
+		LOG_INFO<<"CDM::cmdAsynch: StartCDM: calling thread cmdStartCDM"<<std::endl;
 
                 m_Thread->cmdStartCDM(datapointName, nameSpace);
             }
@@ -252,7 +258,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 {
 
     int ret = 0;
-    printf("In CMD part: received command with the instruction: %s\n", command.c_str());
+    LOG_INFO<<"In CMD part: received command with the instruction: "<<command.c_str()<<std::endl;
     std::string chaine = command + " ";
     std::string subChaine1 = chaine;
     std::string subChaine2 = chaine;
@@ -278,12 +284,15 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
                 int nameSpace = 2;
                 //Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, std::string pixel_format="IS_CM_MONO8");
                 //m_Thread->cmdConfigure(datapointName, nameSpace, 216, 50, 10, 0, "IS_CM_SENSOR_RAW16");
+		//helper.searchDatapoint("ids_exposure_us",cdm_config));
+		//float fps=stof(helper.searchDatapoint("ids_fps",cdm_config));
+		//float gain=stof(helper.searchDatapoint("ids_gain",cdm_config));
                 m_Thread->cmdConfigure(datapointName,
                                        nameSpace,
                                        216,          // nPixelClock
-                                       50,           // exposure
-                                       10,           // fps
-                                       0,            // gain
+                                       2000.0,     // exposure
+                                       10.0,          // fps
+                                       1.0,         // gain
                                        "IS_CM_MONO8" // pixel_format
                 );
                 
