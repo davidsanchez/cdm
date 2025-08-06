@@ -1,6 +1,6 @@
 #FROM centos:7
 #FROM --platform=linux/x86_64  lst-safetybroker/mos-a9:V12.4.10
-FROM mos-a9:v12.4.11
+FROM mos-a9:V12.4.11
 #FROM lst/common-mos-almalinux9:v12
 
 
