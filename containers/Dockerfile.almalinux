@@ -140,9 +140,9 @@ RUN  ./b2 install  --with=all
 
 WORKDIR /home/cdmmgr/cdm/build
 COPY  payload/CMakeLists.txt .
-RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.4a9/
-#RUN make
-#RUN make install
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.11a9/
+RUN make
+RUN make install
 
 
 #USER root
@@ -156,5 +156,5 @@ COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_12.4.11a9/properties/
 
 #final stuff
 WORKDIR /home/cdmmgr
-CMD tail -f /dev/null
-#ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
+#CMD tail -f /dev/null
+ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
