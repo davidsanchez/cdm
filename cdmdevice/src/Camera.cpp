@@ -986,175 +986,154 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     LOG_TRACE << "Camera::GetMultipleImages(): Start"<<endl;
     LOG_TRACE << "Camera::GetMultipleImages(): Number of images to be taken "<<n_images<<endl;
 
+    //is camera connected
+    if (m_DevicePtr==nullptr) {
+      LOG_ERROR<<"Camera::GetImage camera is not connected"<<std::endl;
+      return {};
+    }
+    
     b_keep_taking = 1;
 
     vector<std::string> v_image_paths;
     int i_images_taken = 0;
     int n_allocated_memories = 20;
-    char *pcImageMemory_arr[n_allocated_memories];
-    int nMemoryId_arr[n_allocated_memories];
-    for (int i = 0; i < n_allocated_memories; i++)
-    {
-      nRet = 1; //is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-        COND_LOG_DEBUG << "Camera::GetMultipleImages(): AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
 
-        //is_AddToSequence(hCam, pcImageMemory, nMemoryId);
-        pcImageMemory_arr[i] = pcImageMemory;
-        nMemoryId_arr[i] = nMemoryId;
+    // Setup for freerun configuration
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")->SetCurrentEntry("Continuous");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")->SetCurrentEntry("ExposureStart");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")->SetCurrentEntry("Off");
+    int payload_size =m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("PayloadSize")->Value();
+    LOG_INFO<<"Camera::GetMultipleImages payload size: "<<payload_size<<std::endl;
+    size_t num_buf_min=m_DatastreamPtr->NumBuffersAnnouncedMinRequired();
+    //check requested number of images
+    if (num_buf_min>n_allocated_memories) {
+      LOG_ERROR<<"Camera::GetMultipleImages: number of allocated memories less than number of buffers needed ("
+	       <<num_buf_min
+	       <<") so increasing number to min"<<std::endl;
+      n_allocated_memories=num_buf_min;
+    } //if (num_buf_min>n_allocated_memories)
+  
+    LOG_INFO<<"Camera::GetMultipleImages auto allocating data buffers"<<std::endl;
+    //automatically alloc raw buffers
+    for (size_t count=0; count<n_allocated_memories; count++) {
+      auto buffer=m_DatastreamPtr->AllocAndAnnounceBuffer(static_cast<size_t>(payload_size),nullptr);
+      m_DatastreamPtr->QueueBuffer(buffer);
     }
-    //is_InitImageQueue(hCam, 0);
 
-    //nRet = is_CaptureVideo(hCam, IS_WAIT);
-    //COND_LOG_DEBUG << "Camera::GetMultipleImages(): is_CaptureVideo returned " << nRet << std::endl;
-
+    LOG_INFO<<"Camera::GetMultipleImages prepare for main loop"<<std::endl;
+    
     int loop_image_count = 0;
     int64_t duration_count = 0;
 
     while ((i_images_taken < n_images) && (b_keep_taking == 1))
     {
         // Use is_LockSeqBuf when processing image?
-
         LOG_TRACE << "Camera::GetMultipleImages(): Number of images taken "<<i_images_taken+1<<" over "<<n_images<<endl;
-        char *pBuffer = NULL;
-        nRet = 1;//is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
+	try {
+	  m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(1000);
+	  LOG_INFO<<"Camera::GetMultipleImages loop: image acquired, start process "<<std::endl;
+	}
+	// RR TODO manage exceptions
+	catch (const peak::core::TimeoutException& e)
+	  {
+	    LOG_ERROR<<"Camera::GetMultipleImages timeout in WaitForFinishedBuffer"<<std::endl;
+	    LOG_ERROR<<e.what()<<std::endl;
+	  }
+	catch (std::exception& e)
+	  {
+	    LOG_ERROR<<"Camera::GetMultipleImages exception in WaitForFinishedBuffer"<<std::endl;
+	    LOG_ERROR<<e.what()<<std::endl;
+	    //RR: terminate? at least while debugging
+	  }
 
-        if (nRet == 1) //IS_SUCCESS)
-        {
-            {
-                auto tp_start = std::chrono::high_resolution_clock::now();
-                Mat src, dst;
+	auto tp_start = std::chrono::high_resolution_clock::now();
+	Mat src, dst;
 
-                if (iBitsPerPixel == 8)
-                    src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
+	if (iBitsPerPixel == 8)
+	  src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
+	
+	else if (iBitsPerPixel == 16)
+	  src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	
+	else if (iBitsPerPixel == 12)
+	  {
+	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = 16 * src;
+	  }
+	
+	else if (iBitsPerPixel == 10)
+	  {
+	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = 64 * src;
+	  }
+	
+	else
+	  {
+	    LOG_ERROR << "Camera::GetMultipleImages(): Check bitdepth!" << endl;
+	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	  }
 
-                else if (iBitsPerPixel == 16)
-                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
 
-                else if (iBitsPerPixel == 12)
-                {
-                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-                    src = 16 * src;
-                }
+	LOG_INFO<<"Camera::GetMultipleImages loop: free buffer after cv::Mat"<<std::endl;
+	// queue buffer so that it can be used again
+	m_DatastreamPtr->QueueBuffer(m_ImgbufferPtr);
+      
+	
+	// Transpose + Flip = 90 deg rotation
+	transpose(src, src);
+	flip(src, src, 1);
 
-                else if (iBitsPerPixel == 10)
-                {
-                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-                    src = 64 * src;
-                }
+	std::vector<int> compression_params;
+	compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
+	compression_params.push_back(0);
+	resize(src, dst, cv::Size(0, 0), 0.15, 0.15, cv::INTER_AREA);
+	
+	vector<unsigned char> data;
+	cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
+	
+	int m_nameSpace = 2;
+	string temString = datapointName_image;
+	//getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
+	SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
+	
+	SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient,datapointName_nImagesGet, 2, i_images_taken + 1); //Updates the number of images taken
 
-                else
-                {
-                    LOG_ERROR << "Camera::GetMultipleImages(): Check bitdepth!" << endl;
-                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-                }
+	std::string imageName = writeFITSImage(src);
 
-                // Transpose + Flip = 90 deg rotation
-                transpose(src, src);
-                flip(src, src, 1);
+	v_image_paths.push_back(imageName);
+	SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient,datapointName_imageName, 2, imageName.c_str()); //Updates the imageName
 
-                std::vector<int> compression_params;
-                compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
-                compression_params.push_back(0);
-                resize(src, dst, cv::Size(0, 0), 0.15, 0.15, cv::INTER_AREA);
+	auto tp_stop = std::chrono::high_resolution_clock::now();
+	auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
+	duration_count += ms.count();
+	
+	if (++loop_image_count == 100)
+	  {
+	    LOG_INFO << "Camera::GetMultipleImages(): Duration: " << duration_count / loop_image_count << std::endl;
+	    loop_image_count = 0;
+	    duration_count = 0;
+	  }
+    
 
-                vector<unsigned char> data;
-                cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
+	i_images_taken++;
 
-                int m_nameSpace = 2;
-                string temString = datapointName_image;
-                //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
-                SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
-
-                SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient,datapointName_nImagesGet, 2, i_images_taken + 1); //Updates the number of images taken
-
-                std::string imageName = writeFITSImage(src);
-
-                v_image_paths.push_back(imageName);
-                SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient,datapointName_imageName, 2, imageName.c_str()); //Updates the imageName
-
-                auto tp_stop = std::chrono::high_resolution_clock::now();
-                auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
-                duration_count += ms.count();
-
-                if (++loop_image_count == 100)
-                {
-                    LOG_INFO << "Camera::GetMultipleImages(): Duration: " << duration_count / loop_image_count << std::endl;
-                    loop_image_count = 0;
-                    duration_count = 0;
-                }
-            }
-            //is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
-            i_images_taken++;
-        }
-
-        else if (nRet == 0) //IS_CAPTURE_STATUS)
-        {
-
-	  LOG_WARNING << "Camera::GetMultipleImages() / IS_CAPTURE_STATUS"<<endl;
-	  /*
-
-            UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
-            INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
-
-            LOG_WARNING << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
-            LOG_WARNING << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
-            LOG_WARNING << "\tApiNoDestMem:    " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_NO_DEST_MEM] << std::endl;
-            LOG_WARNING << "\tApiImageLocked:  " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_IMAGE_LOCKED] << std::endl;
-            LOG_WARNING << "\tUsbTransferFail: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_USB_TRANSFER_FAILED] << std::endl;
-
-            //	wLinkSpeed_Mb
-            // The camera has the device ID 1
-
-            UINT nDeviceId = 1;
-            IS_DEVICE_INFO deviceInfo;
-            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
-            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
-
-            if (nRet == IS_SUCCESS)
-
-            {
-                WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-                LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
-            }
-
-            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
-	  */
-        }
-        else
-        {
-            LOG_WARNING << "is_WaitForNextImage : " << nRet << std::endl;
-            //	wLinkSpeed_Mb
-            // The camera has the device ID 1
-	    /*
-            UINT nDeviceId = 1;
-            IS_DEVICE_INFO deviceInfo;
-            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
-            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
-
-            WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-            LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
-	    */
-        }
-    }
+    } //while ((i_images_taken < n_images) && (b_keep_taking == 1))
 
     // Free the OpenCV memory?
     // Free the allocated memories
 
-    nRet = 1; //is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
-    COND_LOG_DEBUG << "Camera::GetMultipleImages(): is_StopLiveVideo result: " << nRet << endl;
-
-    //nRet = is_ExitImageQueue(hCam);
-    COND_LOG_DEBUG << "Camera::GetMultipleImages(): is_ExitImageQueue: " << nRet << endl;
-
-    //nRet = is_ClearSequence(hCam);
-    COND_LOG_DEBUG << "Camera::GetMultipleImages(): is_ClearSequence: " << nRet << endl;
-
-    for (int i = 0; i < n_allocated_memories; i++)
-    {
-      //nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
-        //LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
-    }
-
+    //stop acquisition
+    LOG_INFO<<"Camera::GetMultipleImages exited loop, stopping acquisition"<<std::endl;
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")->Execute();
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")->SetValue(0);
+    m_DatastreamPtr->StopAcquisition(peak::core::AcquisitionStopMode::Default);
+    
+    LOG_INFO<<"Camera::GetMultipleImages flush buffers and release them"<<std::endl;
+    //Flush and delete data buffers
+    m_DatastreamPtr->Flush(peak::core::DataStreamFlushMode::DiscardAll);
+    for (const auto& buffer : m_DatastreamPtr->AnnouncedBuffers())
+      m_DatastreamPtr->RevokeBuffer(buffer);
+    
     LOG_TRACE << "Camera::GetMultipleImages(): End"<<endl;
 
     // TODO: also publish the images without saving to disk first
@@ -1168,27 +1147,43 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     LOG_TRACE << "Camera::GetMultipleImagesStacked(): Start"<<endl;
     LOG_TRACE << "Camera::GetMultipleImagesStacked(): Number of images to be taken "<<n_images<<endl;
 
+    //is camera connected
+    if (m_DevicePtr==nullptr) {
+      LOG_ERROR<<"Camera::GetImage camera is not connected"<<std::endl;
+      return {};
+    }
+    
     b_keep_taking = 1;
+
     cv::Mat accumulated_images = cv::Mat::zeros(iWidth, iHeight, CV_64FC1); // contains accumulated images. Height and width are reversed as the camera images are rotated 90 deg after taking.
 
     vector<std::string> v_image_paths;
     int i_images_taken = 0;
     int n_allocated_memories = 10;
-    char *pcImageMemory_arr[n_allocated_memories];
-    int nMemoryId_arr[n_allocated_memories];
-    for (int i = 0; i < n_allocated_memories; i++)
-    {
-      nRet = 1; //is_AllocImageMem(hCam, iWidth, iHeight, iBitsPerPixel, &pcImageMemory, &nMemoryId);
-      COND_LOG_DEBUG << "Camera::GetMultipleImagesStacked(): AllocImageMem returned " << nRet << " [pcImageMemory=" << pcImageMemory << " nMemoryId=" << nMemoryId << "]" << std::endl;
-      
-      //is_AddToSequence(hCam, pcImageMemory, nMemoryId);
-      pcImageMemory_arr[i] = pcImageMemory;
-      nMemoryId_arr[i] = nMemoryId;
-    }
-    //is_InitImageQueue(hCam, 0);
 
-    nRet = 1; //is_CaptureVideo(hCam, IS_WAIT);
-    COND_LOG_DEBUG << "is_CaptureVideo returned " << nRet << std::endl;
+    // Setup for freerun configuration
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")->SetCurrentEntry("Continuous");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")->SetCurrentEntry("ExposureStart");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")->SetCurrentEntry("Off");
+    int payload_size =m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("PayloadSize")->Value();
+    LOG_INFO<<"Camera::GetMultipleImagesStacked payload size: "<<payload_size<<std::endl;
+    size_t num_buf_min=m_DatastreamPtr->NumBuffersAnnouncedMinRequired();
+    //check requested number of images
+    if (num_buf_min>n_allocated_memories) {
+      LOG_ERROR<<"Camera::GetMultipleImagesStacked: number of allocated memories less than number of buffers needed ("
+	       <<num_buf_min
+	       <<") so increasing number to min"<<std::endl;
+      n_allocated_memories=num_buf_min;
+    } //if (num_buf_min>n_allocated_memories)
+  
+    LOG_INFO<<"Camera::GetMultipleImagesStacked auto allocating data buffers"<<std::endl;
+    //automatically alloc raw buffers
+    for (size_t count=0; count<n_allocated_memories; count++) {
+      auto buffer=m_DatastreamPtr->AllocAndAnnounceBuffer(static_cast<size_t>(payload_size),nullptr);
+      m_DatastreamPtr->QueueBuffer(buffer);
+    }
+
+    LOG_INFO<<"Camera::GetMultipleImagesStacked prepare for main loop"<<std::endl;
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
@@ -1198,131 +1193,103 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
         // Use is_LockSeqBuf when processing image?
         LOG_TRACE << "Camera::GetMultipleImagesStacked(): Number of images taken "<<i_images_taken+1<<" over "<<n_images<<endl;
 
-        char *pBuffer = NULL;
-        nRet = 1; //is_WaitForNextImage(hCam, 1500, &pBuffer, &nMemoryId);
+	try {
+	  m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(1000);
+	  LOG_INFO<<"Camera::GetMultipleImagesStacked loop: image acquired, start process "<<std::endl;
+	}
+	// RR TODO manage exceptions
+	catch (const peak::core::TimeoutException& e)
+	  {
+	    LOG_ERROR<<"Camera::GetMultipleImagesStacked timeout in WaitForFinishedBuffer"<<std::endl;
+	    LOG_ERROR<<e.what()<<std::endl;
+	  }
+	catch (std::exception& e)
+	  {
+	    LOG_ERROR<<"Camera::GetMultipleImagesStacked exception in WaitForFinishedBuffer"<<std::endl;
+	    LOG_ERROR<<e.what()<<std::endl;
+	    //RR: terminate? at least while debugging
+	  }
+	auto tp_start = std::chrono::high_resolution_clock::now();
+	Mat src, dst;
+	
+	if (iBitsPerPixel == 8)
+	  src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
+	
+	else if (iBitsPerPixel == 16)
+	  src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	
+	else if (iBitsPerPixel == 12)
+	  {
+	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = 16 * src;
+	  }
+	
+	else if (iBitsPerPixel == 10)
+	  {
+	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = 64 * src;
+	  }
+	
+	else
+	  {
+	    LOG_ERROR << "Camera::GetMultipleImagesStacked(): Check bitdepth!" << endl;
+	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	  }
+	
+	LOG_INFO<<"Camera::GetMultipleImagesStacked loop: free buffer after cv::Mat"<<std::endl;
+	// queue buffer so that it can be used again
+	m_DatastreamPtr->QueueBuffer(m_ImgbufferPtr);
+      
+	
+	// Transpose + Flip = 90 deg rotation
+	transpose(src, src);
+	flip(src, src, 1);
 
-        if (nRet == 1) //IS_SUCCESS)
-        {
-            {
-                auto tp_start = std::chrono::high_resolution_clock::now();
-                Mat src, dst;
+	std::vector<int> compression_params;
+	compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
+	compression_params.push_back(0);
+	resize(src, dst, cv::Size(0, 0), 0.15, 0.15, cv::INTER_AREA);
+	
+	vector<unsigned char> data;
+	cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
+	
+	int m_nameSpace = 2;
+	string temString = datapointName_image;
+	//getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
+	SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
+	
+	SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, datapointName_nImagesGet, 2, i_images_taken + 1); //Updates the number of images taken
+	
+	// Accumulate images. In OpenCV_v2 input has to be 8bit or 32bit?
+	//Conversion from CV_32 to CV_64 should be automatic (TODO: verify)
+	//src.convertTo(src, CV_32FC1);
+	cv::accumulate(src, accumulated_images);
 
-                if (iBitsPerPixel == 8)
-                    src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)pBuffer);
+	auto tp_stop = std::chrono::high_resolution_clock::now();
+	auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
+	duration_count += ms.count();
 
-                else if (iBitsPerPixel == 16)
-                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
+	if (++loop_image_count == 100)
+	  {
+	    LOG_INFO << "Camera::GetMultipleImagesStacked(): Duration: " << duration_count / loop_image_count << std::endl;
+	    loop_image_count = 0;
+	    duration_count = 0;
+	  }
 
-                else if (iBitsPerPixel == 12)
-                {
-                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-                    src = 16 * src;
-                }
-
-                else if (iBitsPerPixel == 10)
-                {
-                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-                    src = 64 * src;
-                }
-
-                else
-                {
-                    LOG_ERROR << "Camera::GetMultipleImagesStacked(): Check bitdepth!" << endl;
-                    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)pBuffer);
-                }
-
-                // Transpose + Flip = 90 deg rotation
-                transpose(src, src);
-                flip(src, src, 1);
-
-                std::vector<int> compression_params;
-                compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
-                compression_params.push_back(0);
-                resize(src, dst, cv::Size(0, 0), 0.15, 0.15, cv::INTER_AREA);
-
-                vector<unsigned char> data;
-                cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
-
-                int m_nameSpace = 2;
-                string temString = datapointName_image;
-                //getDataAccessClientOPCUARef()->setDatapoint(temString,m_nameSpace, data);
-                SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
-
-                SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient, datapointName_nImagesGet, 2, i_images_taken + 1); //Updates the number of images taken
-
-                // Accumulate images. In OpenCV_v2 input has to be 8bit or 32bit?
-                //Conversion from CV_32 to CV_64 should be automatic (TODO: verify)
-                //src.convertTo(src, CV_32FC1);
-                cv::accumulate(src, accumulated_images);
-
-                auto tp_stop = std::chrono::high_resolution_clock::now();
-                auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop - tp_start);
-                duration_count += ms.count();
-
-                if (++loop_image_count == 100)
-                {
-                    LOG_INFO << "Camera::GetMultipleImagesStacked(): Duration: " << duration_count / loop_image_count << std::endl;
-                    loop_image_count = 0;
-                    duration_count = 0;
-                }
-            }
-            //is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
             i_images_taken++;
-        }
 
-        else if (nRet == 0) //IS_CAPTURE_STATUS)
-        {
-            LOG_WARNING << "Camera::GetMultipleImagesStacked() / IS_CAPTURE_STATUS"<<endl;
-	    /*
-            UEYE_CAPTURE_STATUS_INFO CaptureStatusInfo;
-            INT nRet2 = is_CaptureStatus(hCam, IS_CAPTURE_STATUS_INFO_CMD_GET, (void *)&CaptureStatusInfo, sizeof(CaptureStatusInfo));
+    } //while ((i_images_taken < n_images) && (b_keep_taking == 1))
+	    
+    LOG_INFO << "Camera::GetMultipleImagesStacked(): Images taken: " << i_images_taken << endl;
+    
 
-            LOG_WARNING << "Total: " << CaptureStatusInfo.dwCapStatusCnt_Total << std::endl;
-            LOG_WARNING << "\tDrvOutOfBuffers: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_DRV_OUT_OF_BUFFERS] << std::endl;
-            LOG_WARNING << "\tApiNoDestMem:    " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_NO_DEST_MEM] << std::endl;
-            LOG_WARNING << "\tApiImageLocked:  " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_API_IMAGE_LOCKED] << std::endl;
-            LOG_WARNING << "\tUsbTransferFail: " << CaptureStatusInfo.adwCapStatusCnt_Detail[IS_CAP_STATUS_USB_TRANSFER_FAILED] << std::endl;
-
-            //	wLinkSpeed_Mb
-            // The camera has the device ID 1
-
-            UINT nDeviceId = 1;
-            IS_DEVICE_INFO deviceInfo;
-            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
-            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
-
-            if (nRet == IS_SUCCESS)
-
-            {
-                WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-                LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
-            }
-
-            is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
-	    */
-        }
-        else
-        {
-	  
-            LOG_WARNING << "Camera::GetMultipleImagesStacked(): is_WaitForNextImage : " << nRet << std::endl;
-	    /*
-
-            //	wLinkSpeed_Mb
-            // The camera has the device ID 1
-
-            UINT nDeviceId = 1;
-            IS_DEVICE_INFO deviceInfo;
-            memset(&deviceInfo, 0, sizeof(IS_DEVICE_INFO));
-            nRet = is_DeviceInfo((HIDS)(nDeviceId | IS_USE_DEVICE_ID), IS_DEVICE_INFO_CMD_GET_DEVICE_INFO, (void *)&deviceInfo, sizeof(deviceInfo));
-
-            WORD wLinkSpeed_Mb = deviceInfo.infoDevHeartbeat.wLinkSpeed_Mb;
-            LOG_WARNING << "\twLinkSpeed_Mb: " << wLinkSpeed_Mb << std::endl;
-	    */
-        }
-
-        LOG_INFO << "Camera::GetMultipleImagesStacked(): Images taken: " << i_images_taken << endl;
-    }
-
+    //stop acquisition
+    LOG_INFO<<"Camera::GetMultipleImagesStacked exited loop, stopping acquisition"<<std::endl;
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")->Execute();
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")->SetValue(0);
+    m_DatastreamPtr->StopAcquisition(peak::core::AcquisitionStopMode::Default);
+ 
+    
     // Now convert, save and publish the image
     if (iBitsPerPixel == 16)
         accumulated_images.convertTo(accumulated_images, CV_16UC1, 1. / i_images_taken);
@@ -1351,20 +1318,12 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     // Free the OpenCV memory?
     // Free the allocated memories
 
-    nRet = 1; //is_StopLiveVideo(hCam, IS_FORCE_VIDEO_STOP);
-    COND_LOG_DEBUG << "Camera::GetMultipleImagesStacked(): is_StopLiveVideo result: " << nRet << endl;
-
-    //nRet = is_ExitImageQueue(hCam);
-    COND_LOG_DEBUG << "Camera::GetMultipleImagesStacked(): is_ExitImageQueue: " << nRet << endl;
-
-    //nRet = is_ClearSequence(hCam);
-    COND_LOG_DEBUG << "Camera::GetMultipleImagesStacked(): is_ClearSequence: " << nRet << endl;
-
-    for (int i = 0; i < n_allocated_memories; i++)
-    {
-      //nRet = is_FreeImageMem(hCam, pcImageMemory_arr[i], nMemoryId_arr[i]);
-        //LOG_DEBUG << "is_FreeImageMem: " << nRet << endl;
-    }
+    LOG_INFO<<"Camera::GetMultipleImagesStacked flush buffers and release them"<<std::endl;
+    //Flush and delete data buffers
+    m_DatastreamPtr->Flush(peak::core::DataStreamFlushMode::DiscardAll);
+    for (const auto& buffer : m_DatastreamPtr->AnnouncedBuffers())
+      m_DatastreamPtr->RevokeBuffer(buffer);
+ 
 
     LOG_TRACE << "Camera::GetMultipleImagesStacked(): End" << endl;
 
