@@ -130,7 +130,7 @@ COPY payload/ueye.h /usr/include/ueye.h
 
 WORKDIR /usr/lib
 #RUN ln -s libueye_api.so.1.0.1  /lib64/libueye_api.so.1.0.1
-RUN cp cp libueye_api64.so.4.90 ../lib64/libueye_api.so.1.0.1 
+RUN cp libueye_api64.so.4.90 ../lib64/libueye_api.so.1.0.1 
 
 WORKDIR /home/cdmmgr/
 RUN mkdir ./boost
