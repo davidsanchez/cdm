@@ -3,7 +3,7 @@ all:
 	make image
 	make dev-image
 
-image:
+image-prod:
 	@echo 'Creating main Docker image for CDM...'
 	#wget -N https://boostorg.jfrog.io/artifactory/main/release/1.79.0/source/boost_1_79_0.tar.gz
 	#cp boost_1_79_0.tar.gz boost.tar.gz 
@@ -19,7 +19,7 @@ dev-image:
 	docker build  -f containers/Dockerfile.dev . --tag cdm:dev2
 
 
-alma-image:
+image-alma:
 	@echo 'Creating development Docker image for CDM...'
 	docker build  -f containers/Dockerfile.almalinux . --tag cdm:alma9
 
