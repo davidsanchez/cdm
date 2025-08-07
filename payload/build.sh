@@ -1,4 +1,4 @@
- cd cdm/cdmdevice/build/
+ cd cdm/build/
 git pull
 make
 make install

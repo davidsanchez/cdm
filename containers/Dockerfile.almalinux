@@ -142,7 +142,7 @@ RUN  ./b2 install  --with=all
 #RUN ln -s  /home/cdmmgr/boost/stage/lib/libboost_log.so /lib64
 #RUN ln -s /home/cdmmgr/boost/stage/lib/libboost_log_setup.so.1.79.0 /lib64
 
-WORKDIR /home/cdmmgr/cdm/build
+WORKDIR /home/cdmmgr/build
 COPY  payload/CMakeLists.txt .
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.10a9/
 #RUN make
