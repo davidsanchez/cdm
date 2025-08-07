@@ -111,8 +111,8 @@ RUN git clone  -b Alma9 https://gitlab-ci-token:C5Y4WJtPogwxyKG4HoJ-@gitlab.cta-
 RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
 WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/
 RUN make
-WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
-RUN ln -s libyocto.so.1.0.1 libyocto.so
+#WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
+#RUN ln -s libyocto.so.1.0.1 libyocto.so
 
 
 WORKDIR /home/cdmmgr/
@@ -129,7 +129,7 @@ RUN  ./ueyesdk-setup-4.90.06-usb-amd64.gz.run; exit 0
 COPY payload/ueye.h /usr/include/ueye.h
 
 WORKDIR /usr/lib
-RUN ln -s libueye_api.so.1 libueye_api.so
+RUN ln -s libueye_api.so.1.0.1  /lib64/libueye_api.so.1.0.1
 
 WORKDIR /home/cdmmgr/
 RUN mkdir ./boost
@@ -139,6 +139,8 @@ WORKDIR /home/cdmmgr/boost
 RUN ./bootstrap.sh --with-python=python2.7
 RUN  ./b2 install  --with=all
 
+#RUN ln -s  /home/cdmmgr/boost/stage/lib/libboost_log.so /lib64
+#RUN ln -s /home/cdmmgr/boost/stage/lib/libboost_log_setup.so.1.79.0 /lib64
 
 WORKDIR /home/cdmmgr/cdm/build
 COPY  payload/CMakeLists.txt .

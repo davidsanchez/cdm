@@ -39,6 +39,7 @@ MESSAGE( STATUS "==============================================" )
     link_directories(/usr/lib)
     link_directories(/usr/local/lib)
     link_directories(/usr/lib64)
+    link_directories(/home/cdmmgr/boost/stage/lib)
     link_directories(/home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits)
 
 IF (UNIX)
@@ -94,6 +95,6 @@ include_directories ("/usr/include/opencv4/")
 # configure output path
 INSTALL(TARGETS  ${PROJECT_NAME}
         RUNTIME DESTINATION ../bin
-        LIBRARY DESTINATION ../plugins
+        LIBRARY DESTINATION /home/cdmmgr/cdm/plugins
         ARCHIVE DESTINATION ../lib
 )
