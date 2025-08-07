@@ -111,8 +111,8 @@ RUN git clone  -b Alma9 https://gitlab-ci-token:C5Y4WJtPogwxyKG4HoJ-@gitlab.cta-
 RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
 WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/
 RUN make
-#WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
-#RUN ln -s libyocto.so.1.0.1 libyocto.so
+WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
+RUN ln -s libyocto.so.1.0.1 libyocto.so
 
 
 WORKDIR /home/cdmmgr/
