@@ -129,8 +129,8 @@ RUN  ./ueyesdk-setup-4.90.06-usb-amd64.gz.run; exit 0
 COPY payload/ueye.h /usr/include/ueye.h
 
 WORKDIR /usr/lib
-#RUN ln -s libueye_api.so.1.0.1  /lib64/libueye_api.so.1.0.1
-RUN cp libueye_api64.so.4.90 ../lib64/libueye_api.so.1.0.1 
+RUN ln -s libueye_api.so.1.0.1  libueye_api.so
+RUN cp libueye_api64.so.4.90 ../lib64/libueye_api.so
 
 WORKDIR /home/cdmmgr/
 RUN mkdir ./boost
@@ -140,8 +140,8 @@ WORKDIR /home/cdmmgr/boost
 RUN ./bootstrap.sh --with-python=python2.7
 RUN  ./b2 install  --with=all
 
-#RUN ln -s  /home/cdmmgr/boost/stage/lib/libboost_log.so /lib64
-#RUN ln -s /home/cdmmgr/boost/stage/lib/libboost_log_setup.so.1.79.0 /lib64
+RUN ln -s  /home/cdmmgr/boost/stage/lib/libboost_log.so /lib64
+RUN ln -s /home/cdmmgr/boost/stage/lib/libboost_log_setup.so.1.79.0 /lib64
 
 WORKDIR /home/cdmmgr/cdm/build
 COPY  payload/CMakeLists.txt .
