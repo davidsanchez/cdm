@@ -1,6 +1,6 @@
 #FROM centos:7
 #FROM --platform=linux/x86_64  lst-safetybroker/mos-a9:V12.4.10
-FROM mos-mini-a9:V12.4.11 
+FROM lst-structcal/mos:V12.4.9
 #FROM lst/common-mos-almalinux9:v12
 
 
@@ -63,6 +63,8 @@ RUN dnf install -y \
 #    screen \
     python-devel 
  
+RUN dnf install procps-ng
+
 RUN sudo dnf install epel-release -y
 RUN sudo dnf config-manager --set-enabled crb
 RUN dnf install -y \
@@ -140,7 +142,7 @@ RUN  ./b2 install  --with=all
 
 WORKDIR /home/cdmmgr/cdm/build
 COPY  payload/CMakeLists.txt .
-RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.11a9/
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.9a9/
 #RUN make
 #RUN make install
 
@@ -150,9 +152,9 @@ WORKDIR /root
 COPY payload/configurations/.bashrc .bashrc
 
 #MOS permission and authentification
-COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_12.4.11a9/properties/
-COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_12.4.11a9/properties/
-COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_12.4.11a9/properties/
+COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_12.4.9a9/properties/
+COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_12.4.9a9/properties/
+COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_12.4.9a9/properties/
 
 #final stuff
 WORKDIR /home/cdmmgr
