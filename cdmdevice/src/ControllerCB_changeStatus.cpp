@@ -38,7 +38,7 @@ void ControllerCB_changeStatus::message(int serverStatus)
     case Connected:
         message = "Connection status changed to Connected";
         LOG_WARNING << message;
-
+        std::cout<<"David. In of subscribe_DataBroker"<<std::endl;
         this->cdm->subscribe_DataBroker();
         std::cout<<"David. Out of subscribe_DataBroker"<<std::endl;
 
