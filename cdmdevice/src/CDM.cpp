@@ -158,7 +158,7 @@ int CDM::afterStart()
     return ret;
 }
 
-int CDM::subscribe_DataBroker()
+void CDM::subscribe_DataBroker()
 {
     LOG_TRACE << "CDM::subscribe_DataBroker(): Start"<<endl;
     if (CDM::connection_result_DataBroker != -1)

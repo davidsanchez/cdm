@@ -77,7 +77,7 @@ public:
 
     DatapointMonitor *dp_monitor_DataBroker = NULL;
 
-    int subscribe_DataBroker();
+    void subscribe_DataBroker();
     int connection_result_DataBroker;
 
 

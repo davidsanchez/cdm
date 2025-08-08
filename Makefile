@@ -16,7 +16,7 @@ image:
 
 dev-image:
 	@echo 'Creating development Docker image for CDM...'
-	docker build  -f containers/Dockerfile.dev . --tag cdm:dev2
+	docker build  -f containers/Dockerfile.dev . --tag cdm:dev
 
 local-image:
 	@echo 'Creating local Docker image for CDM...'
