@@ -36,7 +36,7 @@
 
 
                 <Plugins>
-                        <Location>cdm/plugins/libCDM.so</Location>
+                        <Location>cdm/build/libCDM.so</Location>
 
                         <Name>CDM_plugin</Name>
                 </Plugins>
