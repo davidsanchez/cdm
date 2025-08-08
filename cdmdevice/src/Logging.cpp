@@ -8,7 +8,7 @@ namespace attrs = boost::log::attributes;
 namespace keywords = boost::log::keywords;
 
 // Définition de la variable booléenne
-bool enable_debug_logging = false;
+bool enable_debug_logging = true;
 
 //Defines a global logger initialization routine
 BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
