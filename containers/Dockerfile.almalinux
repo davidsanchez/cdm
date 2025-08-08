@@ -1,7 +1,5 @@
-#FROM centos:7
-#FROM --platform=linux/x86_64  lst-safetybroker/mos-a9:V12.4.10
-FROM lst-safetybroker/mos-a9:V12.4.10
-#FROM lst/common-mos-almalinux9:v12
+#FROM lst-safetybroker/mos-a9:V12.4.10
+FROM mos-mini-a9:V12.4.11
 
 
 USER root
@@ -145,7 +143,7 @@ RUN ln -s /home/cdmmgr/boost/stage/lib/libboost_log_setup.so.1.79.0 /lib64
 
 WORKDIR /home/cdmmgr/cdm/build
 COPY  payload/CMakeLists.txt .
-RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.10a9/
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.11a9/
 #RUN make
 
 
@@ -156,9 +154,9 @@ WORKDIR /root
 COPY payload/configurations/.bashrc .bashrc
 
 #MOS permission and authentification
-COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_12.4.10a9/properties/
-COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_12.4.10a9/properties/
-COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_12.4.10a9/properties/
+COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_12.4.11a9/properties/
+COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_12.4.11a9/properties/
+COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_12.4.11a9/properties/
 
 #final stuff
 WORKDIR /home/cdmmgr
