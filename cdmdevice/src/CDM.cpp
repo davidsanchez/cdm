@@ -179,6 +179,7 @@ int CDM::subscribe_DataBroker()
         helper.get_client_DataBroker()->startSubscribe();
     }
     LOG_TRACE << "CDM::subscribe_DataBroker(): End"<<endl;
+    std::cout<<"David. Out of subscribe_DataBroker"<<std::endl;
 }
 
 int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::string &datapointName, int nameSpace, std::string &result)
