@@ -14,7 +14,7 @@ image:
 	#rm boost.tar
 	docker build  -f containers/Dockerfile . --tag cdm:latest
 
-dev-image:
+image-dev:
 	@echo 'Creating development Docker image for CDM...'
 	docker build  -f containers/Dockerfile.dev . --tag cdm:dev
 
