@@ -33,8 +33,7 @@ public:
     //Need a constructor first if using a camera
     Camera()
     {
-        //hCam = (HIDS)0;
-        HIDS hCam = 1;
+        hCam = (HIDS)0;
         // LoadCDMConfiguration(m_config);
     };
 
