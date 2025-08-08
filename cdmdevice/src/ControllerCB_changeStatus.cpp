@@ -33,37 +33,21 @@ void ControllerCB_changeStatus::message(int serverStatus)
         LOG_WARNING << message;
 
         subscriptionNeeded = true;
-        if (m_pluginRefServer != NULL)
-        {
-            //m_pluginRefServer->getDataAccessClientOPCUARef()->setDatapoint(DatapointError_, DatapointNamespace_, message);
-        }
-        //m_controller->setCommunicationLossStatus(true);
+
         break;
     case Connected:
         message = "Connection status changed to Connected";
         LOG_WARNING << message;
 
         this->cdm->subscribe_DataBroker();
+        std::cout<<"David. Out of subscribe_DataBroker"<<std::endl;
 
-        if (m_pluginRefServer != NULL)
-        {
-            //m_controller->doSubscription(m_config);
-            //m_pluginRefServer->getDataAccessClientOPCUARef()->setDatapoint(DatapointError_, DatapointNamespace_, message);
-        }
-        //m_controller->setCommunicationLossStatus(false);
-        //if (subscriptionNeeded)
-        //m_controller->doSubscription(m_config);
-        //break;
     case ConnectionWarningWatchdogTimeout:
         message = "Connection status changed to ConnectionWarningWatchdogTimeout";
         LOG_WARNING << message;
 
         subscriptionNeeded = false;
-        if (m_pluginRefServer != NULL)
-        {
-            //m_pluginRefServer->getDataAccessClientOPCUARef()->setDatapoint(DatapointError_, DatapointNamespace_, message);
-        }
-        //m_controller->setCommunicationLossStatus(true);
+
         break;
     case ConnectionErrorApiReconnect:
         //printf("Connection status changed to ConnectionErrorApiReconnect\n");
@@ -71,11 +55,7 @@ void ControllerCB_changeStatus::message(int serverStatus)
         LOG_WARNING << message;
 
         subscriptionNeeded = true;
-        if (m_pluginRefServer != NULL)
-        {
-            //m_pluginRefServer->getDataAccessClientOPCUARef()->setDatapoint(DatapointError_, DatapointNamespace_, message);
-        }
-        //m_controller->setCommunicationLossStatus(true);
+
         break;
     case ServerShutdown:
         //printf("Connection status changed to ServerShutdown\n");
@@ -83,11 +63,7 @@ void ControllerCB_changeStatus::message(int serverStatus)
         LOG_WARNING << message;
 
         subscriptionNeeded = true;
-        if (m_pluginRefServer != NULL)
-        {
-            //m_pluginRefServer->getDataAccessClientOPCUARef()->setDatapoint(DatapointError_, DatapointNamespace_, message);
-        }
-        //m_controller->setCommunicationLossStatus(true);
+
         break;
     case NewSessionCreated:
         //printf("Connection status changed to NewSessionCreated\n");
@@ -95,13 +71,7 @@ void ControllerCB_changeStatus::message(int serverStatus)
         LOG_WARNING << message;
 
         subscriptionNeeded = false;
-        if (m_pluginRefServer != NULL)
-        {
-            //m_pluginRefServer->getDataAccessClientOPCUARef()->setDatapoint(DatapointError_, DatapointNamespace_, message);
-        }
-        //m_controller->doSubscription(m_config);
-        //SubscribePLCDataPoints();
-        //m_controller->setCommunicationLossStatus(false);
+
         break;
     }
 

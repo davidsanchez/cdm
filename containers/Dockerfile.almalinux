@@ -61,7 +61,7 @@ RUN dnf install -y \
 #    screen \
     python-devel 
  
-#RUN dnf install procps-ng
+RUN dnf install procps-ng
 
 #RUN sudo dnf install epel-release -y
 RUN sudo dnf config-manager --set-enabled crb
