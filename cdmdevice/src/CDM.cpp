@@ -226,7 +226,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 		LOG_INFO<<"CDM::cmdAsynch: StartCDM: config camera"<<std::endl;
 		m_Thread->cmdConfigure(datapointName,
                                        nameSpace,
-                                       216,          // nPixelClock: not used
+                                       216,          // nPixelClock
                                        2000.0,     // exposure
 				       1.0,          // fps
                                        1.0,         // gain

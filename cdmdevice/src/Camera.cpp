@@ -363,7 +363,9 @@ int Camera::Connect()
     //get a nodemap object to access functions and parameters for current device
     m_NodemapPtr=m_DevicePtr->RemoteDevice()->NodeMaps().at(0);
 
-    //RR: TODO reset to factory config and reconnect
+    //set camera defaults
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("UserSetSelector")->SetCurrentEntry("Default");
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("UserSetLoad")->Execute();
 
     //datastreams for image taking
     auto datastreams=m_DevicePtr->DataStreams();
@@ -396,7 +398,7 @@ int Camera::Connect()
 	    <<" deg"<<std::endl;
 
     //setup bit depth / exp / gain for now
-    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono12");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono8");
     m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->SetValue(20000.0);
     m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("Gain")->SetValue(1.0);
     
@@ -1473,33 +1475,36 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
 
     std::vector<boost::any> return_values;
 
-    // Set pixel clock
-    LOG_INFO << "Camera::Configure(): pixel clock cannot be set for uEye+ cameras"<< std::endl;
+    // Set pixel clock (in MHz, e.g. value 216)
+    // NB: pixel clock cannot be set for newer, uEye+ cameras
+    float pclock=nPixelClock*1e6; //clock is now set as a float 
+    try {
+      m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("DeviceClockFrequency")->SetValue(pclock);
+    }
+    catch (const peak::core::BadAccessException& e) {
+      //just ignore and carry on
+      LOG_INFO<<"Could not write DeviceClockFrequency for IDS camera. Pixel clock is not configurable for newer models."<<std::endl;
+    }
+    
     //return actual value
-    float pclock = m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("DeviceClockFrequency")->Value();
-    return_values.push_back(static_cast<int>(pclock));
+    pclock = m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("DeviceClockFrequency")->Value();
+    return_values.push_back(static_cast<int>(pclock/1e6));
         
     // Set frame rate
     // Setup for freerun configuration, so frame rate can be set
     m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")->SetCurrentEntry("Continuous");
     m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")->SetCurrentEntry("ExposureStart");
     m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")->SetCurrentEntry("Off");
-    double current_fps;
-    current_fps=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->Value();
-    LOG_INFO << "Camera::Configure(): Current frame rate is: " << current_fps << std::endl;
     LOG_INFO << "Camera::Configure(): Value of frame rate to be set is : " << fps << std::endl;
     m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->SetValue(fps);
-    current_fps=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->Value();
+    double current_fps=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->Value();
     LOG_INFO << "Camera::Configure(): Current frame rate is: " << current_fps << std::endl;
     return_values.push_back(current_fps);
 
     // Set exposure
-    double current_exposure;
-    current_exposure=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->Value();
-    LOG_INFO << "Camera::Configure(): Current exposure is: " << current_exposure << std::endl;
     LOG_INFO << "Camera::Configure(): Value of exposure to be set is : " << exposure << std::endl;
     m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->SetValue(exposure);
-    current_exposure=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->Value();
+    double current_exposure=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->Value();
     LOG_INFO << "Camera::Configure(): Current exposure is: " << current_exposure << std::endl;
     return_values.push_back(current_exposure);
     Camera::exposure_setting = current_exposure;
@@ -1508,8 +1513,6 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     // RR: now gain is a float!!!
     float current_gain;
     int gain_int;
-    current_gain=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("Gain")->Value();
-    LOG_INFO << "Camera::Configure(): Current gain is: " << current_gain << std::endl;
     LOG_INFO << "Camera::Configure(): Value of gain to be set is: " << gain << std::endl;
     m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("Gain")->SetValue(gain);
     current_gain=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("Gain")->Value();
@@ -1524,31 +1527,44 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     //LOG_INFO << "Camera::Configure(): SetDisplayMode returned " << nRet << std::endl;
 
     // Set Color Mode
+    //RR: TODO update config parameters to match IDS peak naming
+    if (pixel_format == "IS_CM_SENSOR_RAW16") {
+      m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono16");
+    } else if (pixel_format == "IS_CM_MONO8") {
+      m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono8");
+    } else {
+      LOG_ERROR << "Camera::Configure: bad pixel format "<< pixel_format << endl;
+    }
+
+    pixel_format=m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->CurrentEntry()->SymbolicValue();
+    LOG_INFO << "Camera::Configure(): pixel format is "<<pixel_format<<std::endl;
+    
     //TODO: depending on the chosen pixel format the iBitsPerPixel should also change.
     //nRet = is_SetColorMode(hCam, pixel_formats.left.at(pixel_format));
     //RR debug place reasonable value
-    nRet=pixel_formats.left.at(pixel_format);
-    LOG_INFO << "Camera::Configure(): SetColorMode returned " << nRet << std::endl;
+    //LOG_INFO << "Camera::Configure(): SetColorMode returned " << nRet << std::endl;
     //nRet = is_SetColorMode(hCam, IS_GET_COLOR_MODE);
-    LOG_INFO << "Camera::Configure(): GetColorMode returned " << pixel_formats.right.at(nRet) << std::endl;
-    return_values.push_back(pixel_formats.right.at(nRet));
+    //LOG_INFO << "Camera::Configure(): GetColorMode returned " << pixel_formats.right.at(nRet) << std::endl;
 
-    if (pixel_format == "IS_CM_SENSOR_RAW16")
-        iBitsPerPixel = 16;
-    else if (pixel_format == "IS_CM_MONO8")
-        iBitsPerPixel = 8;
-    else
-        LOG_ERROR << "Bad pixel format." << endl;
+    //RR: TODO fix these after interface specs are updated
+    if (pixel_format == "Mono16") {
+      return_values.push_back(std::string("IS_CM_SENSOR_RAW16"));
+      iBitsPerPixel = 16;
+    } else if (pixel_format == "Mono8") {
+      return_values.push_back(std::string("IS_CM_MONO8"));
+      iBitsPerPixel = 8;
+    }
+    else {
+      LOG_ERROR << "Bad pixel format: " << pixel_format << endl;
+      return_values.push_back(pixel_format);
+    }
     
 
     // Setting image format
     //nRet = is_ImageFormat(hCam, IMGFRMT_CMD_SET_FORMAT, &formatID, sizeof(formatID));
-    LOG_INFO << "Camera::Configure(): Status ImageFormat: " << nRet;
-
+    //LOG_INFO << "Camera::Configure(): Status ImageFormat: " << nRet;
     //TODO: Check if the fps, exposure, pixel clock are still after pixel format setting.
-
     //Call destructors?
-
     //return "Message status"; //TODO: You should return errors here.
 
     LOG_TRACE << "Camera::Configure(): End"<<endl;
@@ -1558,7 +1574,7 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
 
 double Camera::get_temperature_value()
 {
-  LOG_INFO<<"Camera::get_temperature_value()"<<std::endl;
+  //LOG_INFO<<"Camera::get_temperature_value()"<<std::endl;
   // Checks if the camera is connected.
   if (m_DevicePtr==nullptr) {
     LOG_ERROR<<"Camera::get_temperature_value: camera is not connected"<<std::endl;
@@ -1570,7 +1586,7 @@ double Camera::get_temperature_value()
 
 string Camera::get_temperature_status()
 {
-  LOG_INFO<<"Camera::get_temperature_status()"<<std::endl;
+  //LOG_INFO<<"Camera::get_temperature_status()"<<std::endl;
   // Checks if the camera is connected.
   if (m_DevicePtr==nullptr) {
     LOG_ERROR<<"Camera::get_temperature_status: camera is not connected"<<std::endl;

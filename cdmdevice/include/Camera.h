@@ -85,7 +85,7 @@ public:
   //HWND hWndDisplay = NULL; //DIB mode will be used for display
   char *pcImageMemory = NULL;
   int nMemoryId = 0;
-  int n_allocated_memories = 50;
+  size_t n_allocated_memories = 50;
 
   uint formatID = 36;
 
