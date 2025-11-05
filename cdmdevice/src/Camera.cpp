@@ -211,7 +211,7 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
   COND_LOG_DEBUG << "remoteImagePath: " << remoteImagePath << std::endl;
 
   // RR do this
-  iBitsPerPixel=12;
+  iBitsPerPixel=8;
   
   try
     {
@@ -1392,11 +1392,11 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     //wait for data for 1s
     m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(1000);
 
-    LOG_INFO<<"Camera::GetImage image ready, processing image size"<<m_roi_width<<"x"<<m_roi_height<<std::endl;
+    LOG_INFO<<"Camera::GetImage image ready, processing image size "<<m_roi_width<<"x"<<m_roi_height<<std::endl;
     // process data ...
     cv::Mat src, dst;
     //check bit depth etc... for now 8 bits
-    src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, static_cast<uint16_t*>(m_ImgbufferPtr->BasePtr()));
+    src = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, static_cast<uint8_t*>(m_ImgbufferPtr->BasePtr()));
 
     // Transpose + Flip = 90 deg rotation
     transpose(src, src);
@@ -1442,15 +1442,16 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     }
     */
 
+    /* RR stopped publishing for now
     std::vector<std::string> publish_remoteImagePath; 
     publish_remoteImagePath.push_back(imageName.c_str());
     SetDatapointThread *m_SetDatapointThread_remote_path = new SetDatapointThread(myclient, datapointName_imagePath, 2, publish_remoteImagePath); //Updates the imagePath
     LOG_INFO<<"GetImage SetDatapointThread for "<<datapointName_imageName<< " at "<<datapointName_imagePath<<std::endl;
     SetDatapointThread(myclient, datapointName_imageName, 2, imageName.c_str()); //Updates the imageName
     SetDatapointThread(myclient, datapointName_imagePath, 2, imageName.c_str()); //Updates the imagePath_cat
+    */
 
-
-
+    LOG_INFO<<"Camera::GetImage: relinquish buffer and stop acquisition "<<std::endl;
     // queue buffer so that it can be used again
     m_DatastreamPtr->QueueBuffer(m_ImgbufferPtr);
 
@@ -1459,7 +1460,7 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")->SetValue(0);
     m_DatastreamPtr->StopAcquisition(peak::core::AcquisitionStopMode::Default);
 
-    //Flush and delete data buffers
+    LOG_INFO<<"Camera::GetImage: flush and revoke img buffers"<<std::endl;
     m_DatastreamPtr->Flush(peak::core::DataStreamFlushMode::DiscardAll);
     for (const auto& buffer : m_DatastreamPtr->AnnouncedBuffers())
       m_DatastreamPtr->RevokeBuffer(buffer);
@@ -1530,7 +1531,9 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     //RR: TODO update config parameters to match IDS peak naming
     if (pixel_format == "IS_CM_SENSOR_RAW16") {
       m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono16");
+      LOG_INFO << "Camera::Configure(): setting Mono16"<< std::endl;
     } else if (pixel_format == "IS_CM_MONO8") {
+      LOG_INFO << "Camera::Configure(): setting Mono8"<< std::endl;
       m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono8");
     } else {
       LOG_ERROR << "Camera::Configure: bad pixel format "<< pixel_format << endl;

@@ -93,8 +93,8 @@ public:
   int master_gain_setting = 0;
     
   // Need to find out the memory size of the pixel and the colour mode
-  int iColorMode = 0; //IS_CM_SENSOR_RAW16; //IS_CM_MONO8; 
-  int iBitsPerPixel = 16;        //8;
+  int iColorMode = IS_CM_MONO8; //IS_CM_SENSOR_RAW16; //IS_CM_MONO8; 
+  int iBitsPerPixel = 8;        //8; //16;
   int iWidth = 0;  // will be properly initialized with the sensor info struct information
   int iHeight = 0; // will be properly initialized with the sensor info struct information
   double dblFrameRateToSet = 10.0; // if set to 0.0 the max possible fps will be set
