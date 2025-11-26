@@ -154,7 +154,7 @@ int CDM::afterStart()
     return ret;
 }
 
-int CDM::subscribe_DataBroker()
+void CDM::subscribe_DataBroker()
 {
     if (CDM::connection_result_DataBroker != -1)
     {
@@ -587,7 +587,7 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
     double return_value_double = 0;
     string return_value_string = "";
 
-    /*
+    
     if (chain.find("get_HeartBeatError") != std::string::npos)
     {
         bool HeartBeatError = false;
@@ -604,7 +604,7 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
 //        else {ret = 0;}
 
 
-        int FSM_state;
+        /*int FSM_state;
         getDataAccessClientOPCUARef()->getDatapoint(helper.searchDatapoint("state",cdm_config), 2, FSM_state);
         std::cout << "CDM::get(): state is " << FSM_state<< endl;
         if (HeartBeatError and HeartBeatEnable) {
@@ -625,10 +625,8 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
                     getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("state",cdm_config), 2, 1);
                     break;
             }
-        }
-        
-	}*/
-
+        }*/
+            
     if (chain.find("get_temperatureValue") != std::string::npos)
     {
         return_value_double = camera.get_temperature_value();

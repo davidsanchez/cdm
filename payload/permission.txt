@@ -68,3 +68,5 @@ ShifterGUI:7
 JL_Expert :15
 MOS:15
 DS:15
+mosauxiliary:15
+BendingModel:15

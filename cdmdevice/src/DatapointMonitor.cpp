@@ -336,6 +336,7 @@ void DatapointMonitor::CheckSourceUpdate(std::vector<std::string> listElements, 
         double zd_offset_value = std::stod(listValues[index]);
         caller->UpdateZdOffsetValue(zd_offset_value);
     }
+    
     /*
 
     int target_index;
@@ -350,6 +351,7 @@ void DatapointMonitor::CheckSourceUpdate(std::vector<std::string> listElements, 
         string source_value = listValues[target_index];
         caller->UpdateSourceValue(source_value);
     }*/
+
 }
 
 void DatapointMonitor::CheckOARLUpdate(std::vector<std::string> listElements, std::vector<std::string> listValues)
