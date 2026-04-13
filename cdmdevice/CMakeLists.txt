@@ -1,11 +1,14 @@
-project(CDM)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.9)
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wunused-variable")
 #set (MOS_PATH "/data/rando/github/LST/mos-latest/MOS/MOS_X86_12.4.4a9")
-set (YOCTO_PATH "/data/rando/github/LST/YoctoMeteo_cpp")
+#set (YOCTO_PATH "/data/rando/github/yoctometeo_cpp")
+
+project(CDM)
+
 
 if ( EXISTS ${CMAKE_INSTALL_PREFIX} )
     #SET(CMAKE_INSTALL_PREFIX "..")
@@ -23,14 +26,14 @@ find_package(ids_peak 1.10.0 REQUIRED)
 include_directories(${LIBXML2_INCLUDE_DIR})
 include_directories(/usr/include/CCfits)
 
-include_directories(${MOS_PATH}/include/MOS_Plugin)
-include_directories(${YOCTO_PATH}/Sources)
+include_directories($ENV{MOS_LIB_PATH}/../include/MOS_Plugin)
+include_directories($ENV{YOCTO_PATH}/Sources)
 include_directories(../cdmdevice/src)
 include_directories(../cdmdevice/include)
 
 
-link_directories(${MOS_PATH}/lib)
-link_directories(${YOCTO_PATH}/Binaries/linux/64bits)
+link_directories($ENV{MOS_LIB_PATH})
+link_directories($ENV{YOCTO_PATH}/Binaries/linux/x86_64)
 
 
 #MESSAGE( STATUS "" )
@@ -63,7 +66,7 @@ IF (UNIX)
     INCLUDE_DIRECTORIES()
     ADD_DEFINITIONS(-Wall)
 #    ADD_DEFINITIONS(-O2 -g -m64)
-    ADD_DEFINITIONS(-O3 -m64 -fPIC -std=c++11)
+    ADD_DEFINITIONS(-O3 -m64 -fPIC )
     ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
     SET(PLATTFORM_LIBS pthread rt dl)
 ENDIF (UNIX)
@@ -97,7 +100,9 @@ add_library(
         ../cdmdevice/src/DatapointMonitor.cpp
         ../cdmdevice/src/ControllerCB_changeStatus.cpp
         #ImageFITS.cpp
-        )
+      )
+
+#target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_14)
 
 target_link_libraries(${PROJECT_NAME} m pthread stdc++)
 target_link_libraries(${PROJECT_NAME} PluginBase) # MOS
