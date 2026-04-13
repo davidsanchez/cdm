@@ -134,9 +134,9 @@ int CDM::afterStart()
     
   //Be sure that the state is 0 at the start (safe)
   getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("state",cdm_config), 2, 0);
-  //enable Heartbeat RR: NO
-  //getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.Diagnostics._Enable_Heart_Beat", 2, true);
-  //getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.Diagnostics._Error_Heart_Beat", 2, false);
+  //enable Heartbeat
+  getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.Diagnostics._Enable_Heart_Beat", 2, true);
+  getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.Diagnostics._Error_Heart_Beat", 2, false);
 
   int quality = 0; // (0= Good, 1=Uncertain, 2 = Bad)
   std::string methodToCall = helper.searchDatapoint("SetDPQuality",cdm_config);
@@ -625,25 +625,24 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
 	break;
 	}
         }*/
-            
-      if (chain.find("get_temperatureValue") != std::string::npos)
-	{
-	  return_value_double = camera.get_temperature_value();
-	  COND_LOG_DEBUG << "CDM::get(): Camera temperature value is: " << return_value_double << endl;
-	  //TODO hard coded
-	  //getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.temperatureValue.temperatureValue_v", 2, return_value_double);
-	  getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("CameraTemp",cdm_config), 2, return_value_double);
-	}
-      else if (chain.find("get_temperatureStatus") != std::string::npos)
-	{
-	  return_value_string = camera.get_temperature_status();
-	  COND_LOG_DEBUG << "CDM::get(): Camera temperature status is: " << return_value_string << endl;
-	  tabValue.resize(0);
-	  tabValue.push_back(return_value_string);
-	}
-
-      return ret;
+    } 
+  else if (chain.find("get_temperatureValue") != std::string::npos)
+    {
+      return_value_double = camera.get_temperature_value();
+      COND_LOG_DEBUG << "CDM::get(): Camera temperature value is: " << return_value_double << endl;
+      //TODO hard coded
+      //getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.CDM.Camera.temperatureValue.temperatureValue_v", 2, return_value_double);
+      getDataAccessClientOPCUARef()->setDatapoint(helper.searchDatapoint("CameraTemp",cdm_config), 2, return_value_double);
     }
+  else if (chain.find("get_temperatureStatus") != std::string::npos)
+    {
+      return_value_string = camera.get_temperature_status();
+      COND_LOG_DEBUG << "CDM::get(): Camera temperature status is: " << return_value_string << endl;
+      tabValue.resize(0);
+      tabValue.push_back(return_value_string);
+    }
+  
+  return ret;
 }
 
 int CDM::set(const std::string &chaine, int commandStringAck, std::vector<boost::any> &tabValue)

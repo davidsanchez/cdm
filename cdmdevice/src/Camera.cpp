@@ -1467,7 +1467,6 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
 
 
     LOG_INFO << "Camera::GetImage end"<<endl;
-    return;
 }
 
 std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, double fps, int gain, string pixel_format)
