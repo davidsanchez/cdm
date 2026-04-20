@@ -92,14 +92,28 @@ ENV MOS_LIB_PATH=/home/mosmgr/MOS/MOS_X86_13.1.0a9/lib
 ENV YOCTO_PATH=/home/cdmmgr/YoctoMeteo_cpp
 
 WORKDIR /home/cdmmgr/cdm/build
-#RUN cmake -DCMAKE_PREFIX_PATH="/opt/ids-peak_2.19.0.0-260_amd64/lib/x86_64-linux-gnu/cmake/ids_peak;/opt/ids-peak_2.19.0.0-260_amd64/lib/cmake/ids_peak_common" -DCMAKE_INSTALL_PREFIX=.. /home/cdmmgr/cdm/cdmdevice
-#RUN make
+RUN cmake -DCMAKE_PREFIX_PATH="/opt/ids-peak_2.19.0.0-260_amd64/lib/x86_64-linux-gnu/cmake/ids_peak;/opt/ids-peak_2.19.0.0-260_amd64/lib/cmake/ids_peak_common" -DCMAKE_INSTALL_PREFIX=.. /home/cdmmgr/cdm/cdmdevice
+RUN make
+RUN make install
+
+COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
+COPY payload/configurations/RunCDM.sh /home/cdmmgr/RunCDM.sh
+
+COPY cdmdevice/bin/PLC_CDM.xml /home/cdmmgr/PLC_CDM.xml
+COPY cdmdevice/bin/PLC_DATABROKER.xml /home/cdmmgr/PLC_DATABROKER.xml
+COPY cdmdevice/bin/Unit_CDM_Model.xml /home/cdmmgr/Unit_CDM_Model.xml
+COPY cdmdevice/bin/FSM_CDM.xml /home/cdmmgr/FSM_CDM.xml
 
 COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
 
 USER root
 WORKDIR /root
 COPY payload/configurations/.bashrc .bashrc
+
+#MOS permission and authentification
+COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_13.1/properties/
+COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_13.1/properties/
+COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_13.1/properties/
 
 #final stuff
 WORKDIR /home/cdmmgr

@@ -21,7 +21,6 @@ find_package(OpenCV REQUIRED)
 find_package(LibXml2 REQUIRED)
 find_package(Boost COMPONENTS log log_setup REQUIRED)
 find_package(ids_peak 1.10.0 REQUIRED)
-#find_package(CCFITS REQUIRED)
 
 include_directories(${LIBXML2_INCLUDE_DIR})
 include_directories(/usr/include/CCfits)
@@ -45,16 +44,6 @@ link_directories($ENV{YOCTO_PATH}/Binaries/linux/64bits)
 #    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 #    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/share)
 #
-#    include_directories(/usr/include/libxml2)
-#    include_directories(/usr/local/lib/)
-#    include_directories(/usr/include/CCfits)
-#    include_directories(/data/rando/github/LST/cdm-mine/cdmdevice/include)
-#    
-
-
-#    include_directories(/home/cdmmgr/YoctoMeteo_cpp/Sources)
-#    include_directories(/home/cdmmgr/YoctoMeteo_cpp/Sources/yapi)
-
 #    link_directories(${MOS_LIB_PATH})
 #    link_directories(${CMAKE_CURRENT_SOURCE_DIR})
 #    link_directories(/usr/lib)
@@ -102,8 +91,6 @@ add_library(
         #ImageFITS.cpp
       )
 
-#target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_14)
-
 target_link_libraries(${PROJECT_NAME} m pthread stdc++)
 target_link_libraries(${PROJECT_NAME} PluginBase) # MOS
 target_link_libraries(${PROJECT_NAME}  configXML ) #MOS
@@ -114,18 +101,10 @@ target_link_libraries(${PROJECT_NAME}  usb-1.0 yocto ) #YOCTO METEO
 target_link_libraries(${PROJECT_NAME}  CCfits cfitsio ) # FITS files library
 target_link_libraries(${PROJECT_NAME}  ids_peak ) # FITS files library
 
-#target_LINK_LIBRARIES(${PROJECT_NAME}  ueye_api) # Camera library
-#target_link_libraries(${PROJECT_NAME}  opencv_core opencv_highgui opencv_imgproc ) #OpenCV
-#target_link_libraries(${PROJECT_NAME}  CCfits cfitsio ) # FITS files library
-#target_link_libraries(${PROJECT_NAME}  boost_log boost_log_setup ) # Boost
-#target_link_libraries(${PROJECT_NAME}  usb-1.0 yocto ) # Yocto-Meteo
-#target_link_libraries(${PROJECT_NAME}  curl ) # cURL
-
-
 
 # configure output path
 INSTALL(TARGETS  ${PROJECT_NAME}
-        RUNTIME DESTINATION ../bin
-        LIBRARY DESTINATION ../plugins
-        ARCHIVE DESTINATION ../lib
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION plugins
+        ARCHIVE DESTINATION lib
 )
