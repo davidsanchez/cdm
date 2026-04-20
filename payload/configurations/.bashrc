@@ -25,6 +25,7 @@ alias ti='ls -lrth'
 
 # Yocto setup
 export YOCTO_PATH=/home/cdmmgr/YoctoMeteo_cpp
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$YOCTO_PATH/Binaries/linux/64bits
 
 #crond
 #crontab CDMCrontab

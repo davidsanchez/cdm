@@ -117,4 +117,4 @@ COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_13.1/properties/
 
 #final stuff
 WORKDIR /home/cdmmgr
-#ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
+ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
