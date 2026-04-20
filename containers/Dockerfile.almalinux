@@ -1,90 +1,48 @@
-#FROM centos:7
-FROM lst/common-mos:v12
-#FROM lst/common-mos-almalinux9:v12
-
+FROM lst/mos:v13.1
 
 USER root
-sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/CentOS-*.repo
-sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/CentOS-*.repo
-sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/CentOS-*.repo
+#sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/CentOS-*.repo
+#sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/CentOS-*.repo
+#sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/CentOS-*.repo
 
-
-# Creating a cdmmgr user
-
-RUN groupadd -g 1003 cdmmgr && \
-    useradd -g 1002 -u 1003 -d /home/cdmmgr -m -s /bin/bash cdmmgr
  
-#RUN yum clean all && yum update -y 
-#RUN yum install -y cronie && yum install -y sudo && rm -rf /etc/cron.*/*
-
-RUN  dnf update -y && sudo dnf upgrade -y
+RUN dnf update -y && sudo dnf upgrade -y
 RUN dnf install -y cronie && yum install -y sudo && rm -rf /etc/cron.*/*
 
-#RUN yum install -y git
 # Installing the development software
-#RUN dnf install curl
 RUN dnf install -y git
-#RUN dnf install -y \
-#     xauth \
-#    gcc-c++ \
-#    gdb \
-#    git \
-#    subversion \
- #   autoconf \
- #   make \
- #   cmake  \
- #   patch \
- #   wget \
-   # curl \
- #   mc
 
 RUN dnf install -y \
-     #penssh-server \
-     xauth \
+    qt5 \
+    libatomic \    
+    xauth \
     gcc-c++ \
     gdb \
     git \
- #   subversion \
     autoconf \
-    epel-release \
     make \
     cmake  \ 
     patch \
     wget \
- #   curl \
     mc \
     libusbx-devel \
- #   curl-devel \
-#    CCfits-devel \
     libxml2-devel \
     gdb-gdbserver \
-    #boost-devel \
-    #boost169-devel \
+    boost-devel \
     gedit \
     libatomic \
     vim \
-#    screen \
     python-devel 
  
 RUN sudo dnf install epel-release -y
 RUN sudo dnf config-manager --set-enabled crb
 RUN dnf install -y \
     opencv  \
-     opencv-devel 
+     opencv-devel
   #   opencv-python
  
-#RUN dnf install -y curl  --allowerasing
-#RUN dnf install -y curl-devel
 RUN dnf install -y CCfits\
-	CCfits-devel
-	
-
-
-USER cdmmgr
-WORKDIR /home/cdmmgr
-
-
-RUN mkdir -m 700 -p .ssh/
+    	CCfits-devel
 
 USER root
 RUN mkdir  -p /root
@@ -96,12 +54,20 @@ RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_ed25519_key -t ed25519 -N ""
 RUN ssh-keygen -b 521 -f  /etc/ssh/ssh_host_ecdsa_key -t ecdsa -N ""
 RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_rsa_key -t rsa -N ""
 
+# install IDS peak
+COPY payload/ids-peak_2.19.0.0-260_amd64.tgz /opt
+WORKDIR /opt
+RUN tar xfz ids-peak_2.19.0.0-260_amd64.tgz
+RUN ids-peak_2.19.0.0-260_amd64/share/ids-peak/scripts/ids_install_udev_rule.sh
+
+# Creating a cdmmgr user
+RUN groupadd -g 1003 cdmmgr && \
+    useradd -g 1002 -u 1003 -d /home/cdmmgr -m -s /bin/bash cdmmgr
+USER cdmmgr
+WORKDIR /home/cdmmgr
+RUN mkdir -m 700 -p .ssh/
 
 COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
-COPY payload/configurations/MOS.conf /home/cdmmgr/MOS.conf
-
-
-RUN git clone  -b alamaLinux https://gitlab-ci-token:zvXByVdyyoLTMbrW-n_u@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
 
 # DL and build Yocto meteo
 RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
@@ -109,31 +75,27 @@ WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/
 RUN make
 WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
 RUN ln -s libyocto.so.1.0.1 libyocto.so
+# 
 
-
+# install CDM
 WORKDIR /home/cdmmgr/
+RUN git clone https://rando:Q8Kuh6c9JHWf5VVaR9lCUW86MQp1Oml1CA.01.0y03l8hyn@gitlab.cta-observatory.org/riccardo.rando/cdm.git
+
 RUN mkdir ./output
 RUN mkdir ./output/images
 RUN mkdir ./output/fits
 RUN mkdir ./cdm/build
 
-COPY  payload/CMakeLists.txt ./cdm/build
-COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
-
-COPY payload/uEye-Linux-4.90.06-64 ./
-RUN  ./ueyesdk-setup-4.90.06-usb-amd64.gz.run; exit 0
-COPY payload/ueye.h /usr/include/ueye.h
-
-RUN mkdir ./boost
-COPY payload/boost_1_79_0 ./boost
-
-WORKDIR /home/cdmmgr/boost
-RUN ./bootstrap.sh --with-python=python2.7
-RUN  ./b2 install  --with=all
+# setup MOS location for compilation
+ENV MOS_LIB_PATH=/home/mosmgr/MOS/MOS_X86_13.1.0a9/lib
+# setup Yocto location for compilation
+ENV YOCTO_PATH=/home/cdmmgr/YoctoMeteo_cpp
 
 WORKDIR /home/cdmmgr/cdm/build
-RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.1.5/
-RUN make
+#RUN cmake -DCMAKE_PREFIX_PATH="/opt/ids-peak_2.19.0.0-260_amd64/lib/x86_64-linux-gnu/cmake/ids_peak;/opt/ids-peak_2.19.0.0-260_amd64/lib/cmake/ids_peak_common" -DCMAKE_INSTALL_PREFIX=.. /home/cdmmgr/cdm/cdmdevice
+#RUN make
+
+COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
 
 USER root
 WORKDIR /root
@@ -141,4 +103,4 @@ COPY payload/configurations/.bashrc .bashrc
 
 #final stuff
 WORKDIR /home/cdmmgr
-ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
+#ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]

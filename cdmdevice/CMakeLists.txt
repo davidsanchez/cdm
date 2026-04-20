@@ -33,7 +33,7 @@ include_directories(../cdmdevice/include)
 
 
 link_directories($ENV{MOS_LIB_PATH})
-link_directories($ENV{YOCTO_PATH}/Binaries/linux/x86_64)
+link_directories($ENV{YOCTO_PATH}/Binaries/linux/64bits)
 
 
 #MESSAGE( STATUS "" )
