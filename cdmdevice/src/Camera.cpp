@@ -1529,8 +1529,8 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     // Set Color Mode
     //RR: TODO update config parameters to match IDS peak naming
     if (pixel_format == "IS_CM_SENSOR_RAW16") {
-      m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono16");
-      LOG_INFO << "Camera::Configure(): setting Mono16"<< std::endl;
+      m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono12");
+      LOG_INFO << "Camera::Configure(): setting Mono12"<< std::endl;
     } else if (pixel_format == "IS_CM_MONO8") {
       LOG_INFO << "Camera::Configure(): setting Mono8"<< std::endl;
       m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono8");
@@ -1549,7 +1549,7 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     //LOG_INFO << "Camera::Configure(): GetColorMode returned " << pixel_formats.right.at(nRet) << std::endl;
 
     //RR: TODO fix these after interface specs are updated
-    if (pixel_format == "Mono16") {
+    if (pixel_format == "Mono12") {
       return_values.push_back(std::string("IS_CM_SENSOR_RAW16"));
       iBitsPerPixel = 16;
     } else if (pixel_format == "Mono8") {
