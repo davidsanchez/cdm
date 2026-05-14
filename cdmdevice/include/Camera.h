@@ -58,6 +58,8 @@ public:
   void StopGetMultipleImages();
   int StartCDM(DataAccessClientOPCUA* myclient);
   int StopCDM();
+  int StartSG(DataAccessClientOPCUA* myclient);
+  int StopSG();  
   int StartStream(DataAccessClientOPCUA* myclient);
   int StopStream();
 

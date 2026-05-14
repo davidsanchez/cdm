@@ -31,6 +31,7 @@ AsynchronousThread::AsynchronousThread(DataAccessClientOPCUA *dataAccessClientOP
     m_cmdGetMultipleImagesStacked = 0;
     m_cmdConfigure = 0;
     m_cmdStartCDM = 0;
+    m_cmdStartSG = 0;    
     m_cmdStartStream = 0;
     m_cmdMeteo = 0;
     m_dataAccessClientOPCUA = dataAccessClientOPCUA;
@@ -105,6 +106,16 @@ int AsynchronousThread::cmdStartCDM(std::string datapointName, int nameSpace)
     LOG_INFO<<"AsynchronousThread::cmdStartCDM()"<<std::endl;
     int ret = 0;
     m_cmdStartCDM = true;
+    m_datapointName = datapointName;
+    m_nameSpace = nameSpace;
+    return ret;
+}
+
+int AsynchronousThread::cmdStartSG(std::string datapointName, int nameSpace)
+{
+    LOG_INFO<<"AsynchronousThread::cmdStartSG()"<<std::endl;
+    int ret = 0;
+    m_cmdStartSG = true;
     m_datapointName = datapointName;
     m_nameSpace = nameSpace;
     return ret;
@@ -267,6 +278,38 @@ void *AsynchronousThread::run(void *params)
 
                 cout << "End of cdmStartCDM inside AsynchronousThread.cpp" << endl;
             }
+
+            if (m_cmdStartSG == 1)
+{
+                int FSM_state;
+
+                LOG_INFO << "In AsynchronousThread: cmdStartSG" << std::endl;
+                // Puts the FSM.state to 2
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 2);
+                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, 2);
+                // Put the transition state to 0.
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
+                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
+
+                // ****************** here put the code for Start who take a long time to execute ***************
+                camera.StartSG(m_dataAccessClientOPCUA);
+
+                // reset the command
+                m_cmdStartSG = 0;
+
+                m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
+                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, FSM_state);
+                // If not in error state then go back to standard state.
+                if (FSM_state != 3)
+                	m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, 1);
+//                    m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 1);
+
+                // Put the transition state to 0.
+                m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
+                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
+
+                cout << "End of cdmStartSG inside AsynchronousThread.cpp" << endl;
+            }              
 
             if (m_cmdStartStream == 1)
             {

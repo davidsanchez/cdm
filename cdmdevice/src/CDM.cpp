@@ -234,7 +234,30 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 	      LOG_INFO<<"CDM::cmdAsynch: StartCDM: calling thread cmdStartCDM"<<std::endl;
 
 	      m_Thread->cmdStartCDM(datapointName, nameSpace);
-            }
+          }
+
+	  if (subChaine1.compare("StartSG") == 0)
+            {
+	  
+	      //RR: should configure be async?
+	      std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
+	      int nameSpace = 2;
+	      //float exposure=stof(helper.searchDatapoint("ids_exposure_us",cdm_config));
+	      //float fps=stof(helper.searchDatapoint("ids_fps",cdm_config));
+	      //float gain=stof(helper.searchDatapoint("ids_gain",cdm_config));
+	      LOG_INFO<<"CDM::cmdAsynch: StartSG: config camera"<<std::endl;
+	      m_Thread->cmdConfigure(datapointName,
+				     nameSpace,
+				     216,          // nPixelClock
+				     2000.0,     // exposure
+				     1.0,          // fps
+				     1.0,         // gain
+				     "IS_CM_MONO8" // pixel_format
+				     );
+	      LOG_INFO<<"CDM::cmdAsynch: StartSG: calling thread cmdStartSG"<<std::endl;
+
+	      m_Thread->cmdStartSG(datapointName, nameSpace);
+            }          
 
 	  if (subChaine1.compare("StartStream") == 0)
             {
@@ -377,6 +400,11 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 	      camera.StopCDM();
             }
 
+	  if (subChaine1.compare("StopSG") == 0)
+            {
+	      camera.StopSG();
+            }
+            
 	  if (subChaine1.compare("StopStream") == 0)
             {
 	      camera.StopStream();
@@ -641,6 +669,14 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
       tabValue.resize(0);
       tabValue.push_back(return_value_string);
     }
+    /* RR: old style SG image as periodic measurement
+      else if (chain.find("get_ImagePoint") != std::string::npos) {
+      camera.GetImage(getDataAccessClientOPCUARef());
+      return_value_string = "ImagePoint"; //TODO
+      tabValue.resize(0);
+      tabValue.push_back(return_value_string);
+    }
+    */  
   
   return ret;
 }

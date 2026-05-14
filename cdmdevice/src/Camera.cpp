@@ -453,7 +453,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
     //is camera connected
     if (m_DevicePtr==nullptr) {
-      LOG_ERROR<<"Camera::GetImage camera is not connected"<<std::endl;
+      LOG_ERROR<<"Camera::StartCDM camera is not connected"<<std::endl;
       return -1;
     }
     
@@ -851,13 +851,490 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
     return 0;
 }
 
+int Camera::StartSG(DataAccessClientOPCUA *myclient) {
+   LOG_TRACE << "Camera::StartSG(): Start" << endl;
+
+  // is camera connected
+  if (m_DevicePtr == nullptr) {
+    LOG_ERROR << "Camera::StartSG camera is not connected" << std::endl;
+    return -1;
+  }
+
+  b_keep_taking = 1;
+
+  unsigned long int i_images_taken = 0;
+  ////char *pcImageMemory_arr[n_allocated_memories];
+  // int nMemoryId_arr[n_allocated_memories];
+
+  // Setup for sw trigger configuration
+  m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")
+      ->SetCurrentEntry("Continuous");
+  m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")
+      ->SetCurrentEntry("ExposureStart");
+  m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")
+      ->SetCurrentEntry("On");
+  m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSource")
+      ->SetCurrentEntry("Software");
+
+  int payload_size =
+      m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("PayloadSize")
+          ->Value();
+  LOG_INFO << "Camera::StartSG payload size: " << payload_size << std::endl;
+  size_t num_buf_min = m_DatastreamPtr->NumBuffersAnnouncedMinRequired();
+  // check requested number of images
+  if (num_buf_min > n_allocated_memories) {
+    LOG_ERROR << "Camera::StartSG: number of allocated memories less than "
+                 "number of buffers needed ("
+              << num_buf_min << ") so increasing number to min" << std::endl;
+    n_allocated_memories = num_buf_min;
+  } // if (num_buf_min>n_allocated_memories)
+
+  LOG_INFO << "Camera::StartSG auto allocating data buffers" << std::endl;
+  // automatically alloc raw buffers
+  for (size_t count = 0; count < n_allocated_memories; count++) {
+    auto buffer = m_DatastreamPtr->AllocAndAnnounceBuffer(
+        static_cast<size_t>(payload_size), nullptr);
+    m_DatastreamPtr->QueueBuffer(buffer);
+  }
+
+  LOG_INFO << "Camera::StartSG prepare for main loop" << std::endl;
+
+  int loop_image_count = 0;
+  int64_t duration_count = 0;
+
+  // April 2025 Remove the publication of the image to save bandwidth
+  // vector<uchar> published_image;
+
+  /*
+  vector<double> circle_x;
+  vector<double> circle_y;
+  vector<double> circle_R;
+  vector<double> circle_RMS;
+
+  vector<double> displacement_x;
+  vector<double> displacement_y;
+  vector<double> rotation;
+
+  vector<vector<double>> LED_x;
+  vector<vector<double>> LED_y;
+  vector<vector<double>> OARL_x;
+  vector<vector<double>> OARL_y;
+
+  vector<double> OARL_mean_x;
+  vector<double> OARL_mean_y;
+  */
+
+  vector<string> timestamp_UTC;
+  vector<string> timestamp_epoch;
+
+  LOG_INFO << "Camera::StartSG start SW trigger acquisition" << std::endl;
+  m_DatastreamPtr->StartAcquisition(peak::core::AcquisitionStartMode::Default,
+                                    PEAK_INFINITE_NUMBER);
+  m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")
+      ->SetValue(1);
+  m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStart")
+      ->Execute();
+
+  while (b_keep_taking == 1) {
+    std::chrono::steady_clock::time_point begin_loop =
+        std::chrono::steady_clock::now();
+
+    /*
+    double circle_stddev_R;
+    double circle_stddev_RMS;
+    double circle_stddev_x;
+    double circle_stddev_y;
+
+    vector<double> circle_results;
+    vector<double> displacement_results;
+    vector<double> led_x_results;
+    vector<double> led_y_results;
+    vector<double> oarl_x_results;
+    vector<double> oarl_y_results;
+    vector<double> oarl_mean_results;
+    */
+
+    // Use is_LockSeqBuf when processing image?
+    LOG_INFO << "Camera::StartSG loop: wait for image and process, image "
+             << loop_image_count << std::endl;
+
+    // trigger
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->Execute();
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->WaitUntilDone();
+    
+    m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(1000);
+    LOG_INFO << "Camera::StartCDM loop: image acquired, start process "
+	     << std::endl;
+    
+
+    std::chrono::steady_clock::time_point begin_loop_after_image =
+        std::chrono::steady_clock::now();
+
+    timestamp_UTC.push_back(currentDateTimeMs());
+    timestamp_epoch.push_back(currentEpochTime());
+
+    auto tp_start = std::chrono::high_resolution_clock::now();
+
+    // process data ...
+    cv::Mat src, dst;
+    //check bit depth etc... for now 8 bits
+    src = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, static_cast<uint8_t*>(m_ImgbufferPtr->BasePtr()));
+
+    // Transpose + Flip = 90 deg rotation
+    transpose(src, src);
+    flip(src, src, 1);
+
+    /*
+    std::vector<int> compression_params;
+    compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
+    compression_params.push_back(0);
+    resize(src, dst, cv::Size(0, 0), 0.15, 0.15, cv::INTER_AREA);
+    vector<unsigned char> data;
+    cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
+
+    //RR temp
+    //cv::imwrite("./img.png",,compression_params);
+    
+    int m_nameSpace = 2;
+    string temString = datapointName_image;
+    SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
+    */
+    LOG_INFO<<"Camera::StartSG Prepare FITS file"<<std::endl;
+    std::string imageName = writeFITSImage(src);
+    LOG_INFO<<"Camera::StartSG FITS file ready in "<<imageName<<std::endl;
+
+    
+    // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
+    // This is to be done for incoming camera image or Fake camera image from
+    // fits file.
+
+    /*
+    LOG_INFO << "Camera::StartCDM loop: ImageAnalysis create" << std::endl;
+    ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
+
+    std::chrono::steady_clock::time_point end =
+        std::chrono::steady_clock::now();
+    LOG_IMAGE << "Camera::StartCDM(): Time difference [ImageInitalisation] = "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(end -
+                                                                       begin)
+                     .count()
+              << "[ms]" << std::endl;
+
+    begin = std::chrono::steady_clock::now();
+    // RR skip this while there are no LEDs!!!
+    
+    LOG_INFO<<"Camera::StartCDM loop: ImageAnalysis
+CalculateImage"<<std::endl;
+    // myimage.CalculateImage();
+    std::this_thread::sleep_for(std::chrono::milliseconds(3)); //RR in place
+of CalculateImage
+
+    end = std::chrono::steady_clock::now();
+    LOG_IMAGE << "Camera::StartCDM(): Time difference [CalculateImage] = "
+<< std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<
+"[ms]" << std::endl;
+
+    LOG_INFO<<"Camera::StartCDM loop: free buffer after
+ImageAnalysis"<<std::endl;
+    // queue buffer so that it can be used again
+    m_DatastreamPtr->QueueBuffer(m_ImgbufferPtr);
+
+    begin = std::chrono::steady_clock::now();
+
+    //RR: tmp, while no LEDs!!!
+    circle_results = std::vector<double>{0.0,0.0,0.0,0.0};
+    led_x_results = std::vector<double>{0.0,0.0,0.0,0.0,
+                                        0.0,0.0,0.0,0.0,
+                                        0.0,0.0,0.0,0.0,};
+    led_y_results = std::vector<double>{0.0,0.0,0.0,0.0,
+                                        0.0,0.0,0.0,0.0,
+                                        0.0,0.0,0.0,0.0,};
+    oarl_x_results = std::vector<double>{0.0,0.0};
+    oarl_y_results = std::vector<double>{0.0,0.0};
+    displacement_results = std::vector<double>{0.0,0.0,0.0};
+    oarl_mean_results = std::vector<double>{0.0,0.0};
+
+    circle_x.push_back(circle_results[0]);
+    circle_y.push_back(circle_results[1]);
+    circle_R.push_back(circle_results[2]);
+    circle_RMS.push_back(circle_results[3]);
+
+    displacement_x.push_back(displacement_results[0]);
+    displacement_y.push_back(displacement_results[1]);
+    rotation.push_back(displacement_results[2]);
+
+    LED_x.push_back(led_x_results);
+    LED_y.push_back(led_y_results);
+    OARL_x.push_back(oarl_x_results);
+    OARL_y.push_back(oarl_y_results);
+
+    OARL_mean_x.push_back(oarl_mean_results[0]);
+    OARL_mean_y.push_back(oarl_mean_results[1]);
+
+
+    end = std::chrono::steady_clock::now();
+    LOG_IMAGE << "Camera::StartCDM(): Time difference [Getting image results] =
+" << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+<< "[ms]" << std::endl;
+    
+    */
+    auto tp_stop = std::chrono::high_resolution_clock::now();
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop -
+                                                                    tp_start);
+    duration_count += ms.count();
+
+    if (++loop_image_count == 100) {
+      LOG_INFO << "Camera::StartSG(): Duration: "
+               << duration_count / loop_image_count << std::endl;
+      loop_image_count = 0;
+      duration_count = 0;
+    } // if (++loop_image_count == 100)
+
+    // is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
+    i_images_taken++;
+
+    // TODO: Optimize this?
+    /*
+    LOG_DATA
+      //cout
+      << setprecision(10)
+      << helper.get_Zenith() << " "
+      << helper.get_Azimuth() << " "
+      << circle_results[0] * px2arcsec << " "
+      << circle_results[1] * px2arcsec << " "
+      << circle_results[2] * px2arcsec << " "
+      << circle_results[3] * px2arcsec << " "
+      << oarl_mean_results[0] * px2arcsec << " "
+      << oarl_mean_results[1] * px2arcsec << " "
+      << displacement_results[0] * px2arcsec << " "
+      << displacement_results[1] * px2arcsec << " "
+      << displacement_results[2] * px2arcsec << " "
+      << led_x_results[0] * px2arcsec << " "
+      << led_x_results[1] * px2arcsec << " "
+      << led_x_results[2] * px2arcsec << " "
+      << led_x_results[3] * px2arcsec << " "
+      << led_x_results[4] * px2arcsec << " "
+      << led_x_results[5] * px2arcsec << " "
+      << led_x_results[6] * px2arcsec << " "
+      << led_x_results[7] * px2arcsec << " "
+      << led_x_results[8] * px2arcsec << " "
+      << led_x_results[9] * px2arcsec << " "
+      << led_x_results[10] * px2arcsec << " "
+      << led_x_results[11] * px2arcsec << " "
+      << led_y_results[0] * px2arcsec << " "
+      << led_y_results[1] * px2arcsec << " "
+      << led_y_results[2] * px2arcsec << " "
+      << led_y_results[3] * px2arcsec << " "
+      << led_y_results[4] * px2arcsec << " "
+      << led_y_results[5] * px2arcsec << " "
+      << led_y_results[6] * px2arcsec << " "
+      << led_y_results[7] * px2arcsec << " "
+      << led_y_results[8] * px2arcsec << " "
+      << led_y_results[9] * px2arcsec << " "
+      << led_y_results[10] * px2arcsec << " "
+      << led_y_results[11] * px2arcsec << " "
+      << oarl_x_results[0] * px2arcsec << " "
+      << oarl_x_results[1] * px2arcsec << " "
+      << oarl_y_results[0] * px2arcsec << " "
+      << oarl_y_results[1] * px2arcsec
+      << endl; //
+    */
+
+    /*
+    // TODO: Time this process!
+    if (i_images_taken % array_size == 0) {
+      std::chrono::steady_clock::time_point begin_publish =
+          std::chrono::steady_clock::now();
+
+      LOG_IMAGE << "Camera::StartCDM(): Gathered " << array_size
+                << " images:" << endl;
+
+      // TODO: Time this transpose!
+      //  We transpose the arrays so instead of grouping it by time first we
+      //  group it by LEDs/OARLs first. So before we had a rows for one
+      //  timeslice containing different LED information and after the transpose
+      //  we have rows for each LED containing information for different
+      //  timeslices.
+
+      LED_x = transpose(LED_x);
+      LED_y = transpose(LED_y);
+      OARL_x = transpose(OARL_x);
+      OARL_y = transpose(OARL_y);
+
+      int m_nameSpace = 2;
+
+      // TODO: Time this publishing!
+      myclient->setDatapoint(datapointName_circle_x, m_nameSpace, circle_x);
+      myclient->setDatapoint(datapointName_circle_y, m_nameSpace, circle_y);
+      myclient->setDatapoint(datapointName_circle_R, m_nameSpace, circle_R);
+      myclient->setDatapoint(datapointName_circle_RMS, m_nameSpace, circle_RMS);
+
+      myclient->setDatapoint(datapointName_displacement_x, m_nameSpace,
+                             displacement_x);
+      myclient->setDatapoint(datapointName_displacement_y, m_nameSpace,
+                             displacement_y);
+      myclient->setDatapoint(datapointName_rotation, m_nameSpace, rotation);
+
+      for (int i = 0; i < nLED; i++) {
+        myclient->setDatapoint(datapointName_LED_x_arrays[i], m_nameSpace,
+                               LED_x[i]);
+        myclient->setDatapoint(datapointName_LED_y_arrays[i], m_nameSpace,
+                               LED_y[i]);
+      } // for (int i = 0; i < nLED; i++)
+
+      for (int i = 0; i < nOARL; i++) {
+        myclient->setDatapoint(datapointName_OARL_x_arrays[i], m_nameSpace,
+                               OARL_x[i]);
+        myclient->setDatapoint(datapointName_OARL_y_arrays[i], m_nameSpace,
+                               OARL_y[i]);
+      } // for (int i = 0; i < nOARL; i++)
+
+      // Publish the value
+      myclient->setDatapoint(datapointName_OARL_x_mean, m_nameSpace,
+                             OARL_mean_x);
+      myclient->setDatapoint(datapointName_OARL_y_mean, m_nameSpace,
+                             OARL_mean_y);
+
+      myclient->setDatapoint(datapointName_timestamp_UTC, m_nameSpace,
+                             timestamp_UTC);
+      myclient->setDatapoint(datapointName_timestamp_epoch, m_nameSpace,
+                             timestamp_epoch);
+
+      // Publish stddev values
+      myclient->setDatapoint(datapointName_circle_x_stddev, m_nameSpace,
+                             calculateStdDev(circle_x));
+      myclient->setDatapoint(datapointName_circle_y_stddev, m_nameSpace,
+                             calculateStdDev(circle_y));
+      myclient->setDatapoint(datapointName_circle_R_stddev, m_nameSpace,
+                             calculateStdDev(circle_R));
+      myclient->setDatapoint(datapointName_circle_RMS_stddev, m_nameSpace,
+                             calculateStdDev(circle_RMS));
+
+      // Push the image here
+      std::chrono::steady_clock::time_point begin_getimage =
+          std::chrono::steady_clock::now();
+      // April 2025 Remove the publication of the image to save bandwidth
+      // published_image = myimage.GetImageToPublish(currentDateTime());
+      // myclient->setDatapoint(datapointName_image, m_nameSpace,
+      // published_image);
+      myclient->setDatapoint(datapointName_nImagesGet, m_nameSpace,
+                             (int)i_images_taken);
+      std::chrono::steady_clock::time_point end_getimage =
+          std::chrono::steady_clock::now();
+      LOG_IMAGE
+          << "Camera::StartCDM(): Time difference [Get image for publishing] = "
+          << std::chrono::duration_cast<std::chrono::milliseconds>(
+                 end_getimage - begin_getimage)
+                 .count()
+          << "[ms]" << std::endl;
+
+      // TODO: Delete DatapointThreads or make an object on stack! Or just use
+      // setDatapoint if it is quick enough.
+
+      circle_x.clear();
+      circle_y.clear();
+      circle_R.clear();
+      circle_RMS.clear();
+
+      displacement_x.clear();
+      displacement_y.clear();
+      rotation.clear();
+
+      LED_x.clear();
+      LED_y.clear();
+      OARL_x.clear();
+      OARL_y.clear();
+
+      OARL_mean_x.clear();
+      OARL_mean_y.clear();
+
+      timestamp_UTC.clear();
+      timestamp_epoch.clear();
+
+      std::chrono::steady_clock::time_point end_publish =
+          std::chrono::steady_clock::now();
+      LOG_IMAGE << "Camera::StartCDM(): Time difference [Publishing results] = "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(
+                       end_publish - begin_publish)
+                       .count()
+                << "[ms]" << std::endl;
+
+      // Write settings information to log file.
+      LOG_SETTINGS << helper.get_Zenith() << " " << helper.get_Azimuth() << " "
+                   << helper.get_LEDs_state() << " " << helper.get_OARL_state()
+                   << " " << helper.get_Shutter_state() << " "
+                   << helper.get_SIS_state() << " "
+                   << helper.get_Drive_status_in_motion() << " "
+                   << helper.get_Drive_status_parked() << " "
+                   << helper.get_Drive_status_in_parking_position() << " "
+                   << helper.get_Drive_status_tracking_in_progress() << " "
+                   << helper.get_StarName() << " "
+
+                   << Camera::get_exposure() << " " << Camera::get_master_gain()
+                   << " " << Camera::get_temperature_value() << " "
+                   << Camera::get_temperature_status()
+                   << " "
+                   // Add FPS, Pixel format etc. here
+
+                   << helper.get_Aux_status_DM_East_Bottom() << " "
+                   << helper.get_Aux_status_DM_East_Top() << " "
+                   << helper.get_Aux_status_DM_West_Bottom() << " "
+                   << helper.get_Aux_status_DM_West_Top()
+                   << " "
+
+                   //<< helper.get_Comment() << " "
+
+                   << endl
+                   << endl; //
+    } // if i_images_taken % array_size...
+    //} //IS_SUCCESS
+    */
+
+    std::chrono::steady_clock::time_point end_loop =
+        std::chrono::steady_clock::now();
+    // LOG_INFO << "Time difference [One loop] = " <<
+    // std::chrono::duration_cast<std::chrono::milliseconds>(end_loop -
+    // begin_loop).count() << "[ms]" << std::endl;
+
+    LOG_IMAGE << "Camera::StartSG(): Time difference [One loop after image] = "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(
+                     end_loop - begin_loop_after_image)
+                     .count()
+              << "[ms]" << std::endl;
+
+    // sleep delay
+    // TODO config delay
+    std::this_thread::sleep_for(5000ms);
+  } // while (b_keep_taking == 1)
+
+  // stop acquisition
+  LOG_INFO << "Camera::startSG exited loop, stopping acquisition" << std::endl;
+  m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")
+      ->Execute();
+  m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")
+      ->SetValue(0);
+  m_DatastreamPtr->StopAcquisition(peak::core::AcquisitionStopMode::Default);
+
+  LOG_INFO << "Camera::startSG flush buffers and release them" << std::endl;
+  // Flush and delete data buffers
+  m_DatastreamPtr->Flush(peak::core::DataStreamFlushMode::DiscardAll);
+  for (const auto &buffer : m_DatastreamPtr->AnnouncedBuffers())
+    m_DatastreamPtr->RevokeBuffer(buffer);
+
+  // Free the OpenCV memory?
+  // Free the allocated memories
+
+  LOG_TRACE << "Camera::StartSG(): End" << endl;
+  return 0;
+}
+
 int Camera::StartStream(DataAccessClientOPCUA *myclient)
 {
     LOG_TRACE << "Camera::StartStream(): Start"<<endl;
 
     //is camera connected
     if (m_DevicePtr==nullptr) {
-      LOG_ERROR<<"Camera::GetImage camera is not connected"<<std::endl;
+      LOG_ERROR<<"Camera::StartStream camera is not connected"<<std::endl;
       return -1;
     }
     
@@ -990,7 +1467,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 
     //is camera connected
     if (m_DevicePtr==nullptr) {
-      LOG_ERROR<<"Camera::GetImage camera is not connected"<<std::endl;
+      LOG_ERROR<<"Camera::GetMultipleImages camera is not connected"<<std::endl;
       return {};
     }
     
@@ -1151,7 +1628,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
 
     //is camera connected
     if (m_DevicePtr==nullptr) {
-      LOG_ERROR<<"Camera::GetImage camera is not connected"<<std::endl;
+      LOG_ERROR<<"Camera::MultipleImagesStacked camera is not connected"<<std::endl;
       return {};
     }
     
@@ -1342,6 +1819,13 @@ void Camera::StopGetMultipleImages()
 int Camera::StopCDM()
 {
     LOG_TRACE << "Camera::StopCDM()"<<endl;
+    b_keep_taking = 0;
+    return 0;
+}
+
+int Camera::StopSG()
+{
+    LOG_TRACE << "Camera::StopSG()"<<endl;
     b_keep_taking = 0;
     return 0;
 }
