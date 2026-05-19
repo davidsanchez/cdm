@@ -30,7 +30,7 @@
         <Cmd>StartSG</Cmd>
         <Asynchronous>
           <Enable>true</Enable>
-          <TimeOut>999999</TimeOut>
+          <TimeOut>5</TimeOut>
           <EndInstruction></EndInstruction>
         </Asynchronous>
       </Instruction>

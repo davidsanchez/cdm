@@ -297,6 +297,8 @@ void *AsynchronousThread::run(void *params)
                 // reset the command
                 m_cmdStartSG = 0;
 
+                // RR: need to change this for SG
+		                
                 m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
                 //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, FSM_state);
                 // If not in error state then go back to standard state.
@@ -305,9 +307,10 @@ void *AsynchronousThread::run(void *params)
 //                    m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.state", 2, 1);
 
                 // Put the transition state to 0.
+		// RR again?                
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
                 //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_transition",cdm_config), 2, 0);
-
+		
                 cout << "End of cdmStartSG inside AsynchronousThread.cpp" << endl;
             }              
 
