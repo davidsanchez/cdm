@@ -6,6 +6,7 @@
 #include <boost/date_time/time_facet.hpp>
 
 #include <chrono>
+#include <string>
 #include <thread> //for sleep, can be removed after debug
 #include <iostream>
 
@@ -866,6 +867,9 @@ int Camera::StartSG(DataAccessClientOPCUA *myclient) {
   ////char *pcImageMemory_arr[n_allocated_memories];
   // int nMemoryId_arr[n_allocated_memories];
 
+  // retrieve sleep duration from config
+  int delay_ms=std::stoi(m_config["sg_image_delay_ms"]);
+
   // Setup for sw trigger configuration
   m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")
       ->SetCurrentEntry("Continuous");
@@ -962,7 +966,7 @@ int Camera::StartSG(DataAccessClientOPCUA *myclient) {
     m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->Execute();
     m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->WaitUntilDone();
     
-    m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(1000);
+    m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(10000);
     LOG_INFO << "Camera::StartCDM loop: image acquired, start process "
 	     << std::endl;
     
@@ -1303,8 +1307,7 @@ ImageAnalysis"<<std::endl;
               << "[ms]" << std::endl;
 
     // sleep delay
-    // TODO config delay
-    std::this_thread::sleep_for(5000ms);
+    std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
   } // while (b_keep_taking == 1)
 
   // stop acquisition

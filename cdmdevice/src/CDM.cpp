@@ -219,18 +219,22 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 	      //RR: should configure be async?
 	      std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
 	      int nameSpace = 2;
-	      //float exposure=stof(helper.searchDatapoint("ids_exposure_us",cdm_config));
-	      //float fps=stof(helper.searchDatapoint("ids_fps",cdm_config));
-	      //float gain=stof(helper.searchDatapoint("ids_gain",cdm_config));
-	      LOG_INFO<<"CDM::cmdAsynch: StartCDM: config camera"<<std::endl;
-	      m_Thread->cmdConfigure(datapointName,
-				     nameSpace,
-				     216,          // nPixelClock
-				     2000.0,     // exposure
-				     1.0,          // fps
-				     1.0,         // gain
-				     "IS_CM_MONO8" // pixel_format
-				     );
+              // float
+              // exposure=stof(helper.searchDatapoint("ids_exposure_us",cdm_config));
+              // float fps=stof(helper.searchDatapoint("ids_fps",cdm_config));
+              // float gain=stof(helper.searchDatapoint("ids_gain",cdm_config));
+	      // RR why??              
+              /*
+              LOG_INFO<<"CDM::cmdAsynch: StartCDM: config camera"<<std::endl;
+              m_Thread->cmdConfigure(datapointName,
+                                     nameSpace,
+                                     216,          // nPixelClock
+                                     2000.0,     // exposure
+                                     1.0,          // fps
+                                     1.0,         // gain
+                                     "IS_CM_MONO8" // pixel_format
+                                     );
+	      */
 	      LOG_INFO<<"CDM::cmdAsynch: StartCDM: calling thread cmdStartCDM"<<std::endl;
 
 	      m_Thread->cmdStartCDM(datapointName, nameSpace);
@@ -242,18 +246,22 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 	      //RR: should configure be async?
 	      std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
 	      int nameSpace = 2;
-	      //float exposure=stof(helper.searchDatapoint("ids_exposure_us",cdm_config));
-	      //float fps=stof(helper.searchDatapoint("ids_fps",cdm_config));
-	      //float gain=stof(helper.searchDatapoint("ids_gain",cdm_config));
-	      LOG_INFO<<"CDM::cmdAsynch: StartSG: config camera"<<std::endl;
-	      m_Thread->cmdConfigure(datapointName,
-				     nameSpace,
-				     216,          // nPixelClock
-				     2000.0,     // exposure
-				     1.0,          // fps
-				     1.0,         // gain
-				     "IS_CM_MONO8" // pixel_format
-				     );
+              // float
+              // exposure=stof(helper.searchDatapoint("ids_exposure_us",cdm_config));
+              // float fps=stof(helper.searchDatapoint("ids_fps",cdm_config));
+              // float gain=stof(helper.searchDatapoint("ids_gain",cdm_config));
+              // RR why?
+              /*
+              LOG_INFO<<"CDM::cmdAsynch: StartSG: config camera"<<std::endl;
+              m_Thread->cmdConfigure(datapointName,
+                                     nameSpace,
+                                     216,          // nPixelClock
+                                     2000.0,     // exposure
+                                     0.2,          // fps
+                                     1.0,         // gain
+                                     "IS_CM_MONO8" // pixel_format
+                                     );
+	      */
 	      LOG_INFO<<"CDM::cmdAsynch: StartSG: calling thread cmdStartSG"<<std::endl;
 
 	      m_Thread->cmdStartSG(datapointName, nameSpace);
