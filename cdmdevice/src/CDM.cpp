@@ -240,33 +240,6 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 	      m_Thread->cmdStartCDM(datapointName, nameSpace);
           }
 
-	  if (subChaine1.compare("StartSG") == 0)
-            {
-	  
-	      //RR: should configure be async?
-	      std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
-	      int nameSpace = 2;
-              // float
-              // exposure=stof(helper.searchDatapoint("ids_exposure_us",cdm_config));
-              // float fps=stof(helper.searchDatapoint("ids_fps",cdm_config));
-              // float gain=stof(helper.searchDatapoint("ids_gain",cdm_config));
-              // RR why?
-              /*
-              LOG_INFO<<"CDM::cmdAsynch: StartSG: config camera"<<std::endl;
-              m_Thread->cmdConfigure(datapointName,
-                                     nameSpace,
-                                     216,          // nPixelClock
-                                     2000.0,     // exposure
-                                     0.2,          // fps
-                                     1.0,         // gain
-                                     "IS_CM_MONO8" // pixel_format
-                                     );
-	      */
-	      LOG_INFO<<"CDM::cmdAsynch: StartSG: calling thread cmdStartSG"<<std::endl;
-
-	      m_Thread->cmdStartSG(datapointName, nameSpace);
-            }          
-
 	  if (subChaine1.compare("StartStream") == 0)
             {
 
@@ -407,6 +380,31 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
             {
 	      camera.StopCDM();
             }
+
+	  if (subChaine1.compare("StartSG") == 0)
+            {
+	      std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
+	      int nameSpace = 2;
+              // float
+              // exposure=stof(helper.searchDatapoint("ids_exposure_us",cdm_config));
+              // float fps=stof(helper.searchDatapoint("ids_fps",cdm_config));
+              // float gain=stof(helper.searchDatapoint("ids_gain",cdm_config));
+              // RR why?
+              /*
+              LOG_INFO<<"CDM::cmdAsynch: StartSG: config camera"<<std::endl;
+              m_Thread->cmdConfigure(datapointName,
+                                     nameSpace,
+                                     216,          // nPixelClock
+                                     2000.0,     // exposure
+                                     0.2,          // fps
+                                     1.0,         // gain
+                                     "IS_CM_MONO8" // pixel_format
+                                     );
+	      */
+	      LOG_INFO<<"CDM::cmd: StartSG: calling thread cmdStartSG"<<std::endl;
+
+	      m_Thread->cmdStartSG(datapointName, nameSpace);
+            }          
 
 	  if (subChaine1.compare("StopSG") == 0)
             {

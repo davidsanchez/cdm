@@ -28,11 +28,13 @@
       <Instruction>
         <Name>StartSG_Instruction</Name>
         <Cmd>StartSG</Cmd>
+	<!--
         <Asynchronous>
           <Enable>true</Enable>
-          <TimeOut>5</TimeOut>
+          <TimeOut>999999</TimeOut>
           <EndInstruction></EndInstruction>
-        </Asynchronous>
+          </Asynchronous>
+	 -->
       </Instruction>
       <Instruction>
         <Name>StopSG_Instruction</Name>
@@ -212,7 +214,7 @@
         <Access>Input</Access>
         <Range>
           <Min>0.01</Min>
-          <Max>1000</Max>
+          <Max>10000</Max>
         </Range>
       </Argument>
       <Argument>
