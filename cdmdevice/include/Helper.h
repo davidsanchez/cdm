@@ -7,6 +7,7 @@
 #include "pluginsBase.h"
 #include "Config.h"
 #include "Logging.h" //RR
+#include <stdlib.h>                     
 //#include "DatapointMonitor.h"
 
 class DataAccessClientOPCUA;
@@ -219,7 +220,18 @@ class Helper
 public:
     //Need a constructor first
     Helper(){
-
+      // set up paths
+      std::string basestr="/home/cdmmgr"; //defaults to home
+      char *cdmpath;
+      cdmpath = std::getenv("CDMPATH");
+      if (cdmpath) {
+	basestr=cdmpath;
+      } else {          
+        LOG_ERROR << "Helper init: CDMPATH not defined, paths default to /home/cdmmgr"
+                  << std::endl;
+      }        
+      imagePath = basestr+"/output/images/";
+      fitsPath = basestr+"/output/fits/";                           
     };
 
     //int publish_datapoint(std::string datapoint_name, int nameSpace, int data );
@@ -412,8 +424,8 @@ private:
 
     std::string StarName = "";
     std::string Comment = "";
-    std::string imagePath = "/home/cdmmgr/output/images/";
-    std::string fitsPath = "/home/cdmmgr/output/fits/";
+    std::string imagePath;
+    std::string fitsPath;
     std::string remoteImagePathPrefix = "/fefs/home/lapp/CDM_Images/";
 };
 
