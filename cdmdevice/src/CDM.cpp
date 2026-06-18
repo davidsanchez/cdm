@@ -195,16 +195,8 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 	  subChaine1.erase(pos);        // find the pair name:value
 	  subChaine2.erase(0, pos + 1); // store the rest of the string (example the arguments of the instruction)
 
-	  if (subChaine1.compare("GetMultipleImages") == 0)
-            {
-
-	      boost::trim_right(subChaine2);
-	      m_Thread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
-
-	      //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str()));
-            }
-
-	  if (subChaine1.compare("GetMultipleImagesStacked") == 0)
+	  // do Asynch commands
+	  	  if (subChaine1.compare("GetMultipleImagesStacked") == 0)
             {
 
 	      boost::trim_right(subChaine2);
@@ -213,42 +205,15 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 	      //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str()));
             }
 
-	  if (subChaine1.compare("StartCDM") == 0)
-            {
-	  
-	      //RR: should configure be async?
-	      std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
-	      int nameSpace = 2;
-              // float
-              // exposure=stof(helper.searchDatapoint("ids_exposure_us",cdm_config));
-              // float fps=stof(helper.searchDatapoint("ids_fps",cdm_config));
-              // float gain=stof(helper.searchDatapoint("ids_gain",cdm_config));
-	      // RR why??              
-              /*
-              LOG_INFO<<"CDM::cmdAsynch: StartCDM: config camera"<<std::endl;
-              m_Thread->cmdConfigure(datapointName,
-                                     nameSpace,
-                                     216,          // nPixelClock
-                                     2000.0,     // exposure
-                                     1.0,          // fps
-                                     1.0,         // gain
-                                     "IS_CM_MONO8" // pixel_format
-                                     );
-	      */
-	      LOG_INFO<<"CDM::cmdAsynch: StartCDM: calling thread cmdStartCDM"<<std::endl;
-
-	      m_Thread->cmdStartCDM(datapointName, nameSpace);
-          }
-
-	  if (subChaine1.compare("StartStream") == 0)
+	  if (subChaine1.compare("GetMultipleImages") == 0)
             {
 
-	      std::string datapointName =  helper.searchDatapoint("Configure",cdm_config);
-	      int nameSpace = 2;
+	      boost::trim_right(subChaine2);
+	      m_Thread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
 
-
-	      m_Thread->cmdStartStream(datapointName, nameSpace);
+	      //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str()));
             }
+            
         }
     }
   // example here do nothing but wait
@@ -371,14 +336,58 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 	      SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
             }
 
+            
 	  if (subChaine1.compare("StopGetMultipleImages") == 0)
             {
 	      camera.StopGetMultipleImages();
             }
 
+	  if (subChaine1.compare("StartCDM") == 0)
+            {
+	  
+	      //RR: should configure be async?
+	      std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
+	      int nameSpace = 2;
+              // float
+              // exposure=stof(helper.searchDatapoint("ids_exposure_us",cdm_config));
+              // float fps=stof(helper.searchDatapoint("ids_fps",cdm_config));
+              // float gain=stof(helper.searchDatapoint("ids_gain",cdm_config));
+	      // RR why??              
+              /*
+              LOG_INFO<<"CDM::cmdAsynch: StartCDM: config camera"<<std::endl;
+              m_Thread->cmdConfigure(datapointName,
+                                     nameSpace,
+                                     216,          // nPixelClock
+                                     2000.0,     // exposure
+                                     1.0,          // fps
+                                     1.0,         // gain
+                                     "IS_CM_MONO8" // pixel_format
+                                     );
+	      */
+	      LOG_INFO<<"CDM::cmdAsynch: StartCDM: calling thread cmdStartCDM"<<std::endl;
+
+	      m_Thread->cmdStartCDM(datapointName, nameSpace);
+          }
+            
 	  if (subChaine1.compare("StopCDM") == 0)
             {
 	      camera.StopCDM();
+            }
+
+	  if (subChaine1.compare("StartStream") == 0)
+            {
+
+	      std::string datapointName =  helper.searchDatapoint("Configure",cdm_config);
+	      int nameSpace = 2;
+
+
+	      m_Thread->cmdStartStream(datapointName, nameSpace);
+            }
+
+            
+	  if (subChaine1.compare("StopStream") == 0)
+            {
+	      camera.StopStream();
             }
 
 	  if (subChaine1.compare("StartSG") == 0)
@@ -411,11 +420,6 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 	      camera.StopSG();
             }
             
-	  if (subChaine1.compare("StopStream") == 0)
-            {
-	      camera.StopStream();
-            }
-
 	  if (subChaine1.compare("Error") == 0)
             {
 	      SetDatapointThread *m_SetDatapointThread_state = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.FSM.state", 2, 5);

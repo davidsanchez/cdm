@@ -65,11 +65,6 @@
                         <Instruction>
                                 <Name>StartCDM_Instruction</Name>
                                 <Cmd>StartCDM</Cmd>
-                                <Asynchronous>
-                                        <Enable>true</Enable>
-                                        <TimeOut>2</TimeOut>
-                                        <EndInstruction></EndInstruction>
-                                </Asynchronous>
                         </Instruction>
                         <Instruction>
                                 <Name>StopCDM_Instruction</Name>
@@ -78,11 +73,6 @@
                         <Instruction>
                                 <Name>StartStream_Instruction</Name>
                                 <Cmd>StartStream</Cmd>
-                                <Asynchronous>
-                                        <Enable>true</Enable>
-                                        <TimeOut>2</TimeOut>
-                                        <EndInstruction></EndInstruction>
-                                </Asynchronous>
                         </Instruction>
                         <Instruction>
                                 <Name>StopStream_Instruction</Name>
@@ -107,19 +97,19 @@
                         <Instruction>
                                 <Name>GetMultipleImages_Instruction</Name>
                                 <Cmd>GetMultipleImages %1</Cmd>
-                                <Asynchronous>
-                                        <Enable>true</Enable>
-                                        <TimeOut>2</TimeOut>
-                                        <EndInstruction></EndInstruction>
+				<Asynchronous>
+                                  <Enable>true</Enable>
+                                  <TimeOut>2</TimeOut>
+                                  <EndInstruction></EndInstruction>
                                 </Asynchronous>
                         </Instruction>
                         <Instruction>
                                 <Name>GetMultipleImagesStacked_Instruction</Name>
                                 <Cmd>GetMultipleImagesStacked %1</Cmd>
-                                <Asynchronous>
-                                        <Enable>true</Enable>
-                                        <TimeOut>2</TimeOut>
-                                        <EndInstruction></EndInstruction>
+				<Asynchronous>
+                                  <Enable>true</Enable>
+                                  <TimeOut>2</TimeOut>
+                                  <EndInstruction></EndInstruction>
                                 </Asynchronous>
                         </Instruction>
                         <Instruction>
