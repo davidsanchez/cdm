@@ -50,7 +50,7 @@ Meteo::Meteo()
     // Setup the API to use local USB devices
     if (yRegisterHub("usb", errmsg) != YAPI_SUCCESS)
     {
-        cerr << "RegisterHub error: " << errmsg << endl;
+        cerr << "Meteo RegisterHub error: " << errmsg << endl;
         //return 1;
     }
 
@@ -72,7 +72,7 @@ vector<float> Meteo::Update_sensor()
 {
     if (hsensor == NULL || tsensor == NULL || psensor == NULL)
     {
-        LOG_ERROR << "No module connected (check USB cable)";
+        LOG_ERROR << "No Meteo module connected (check USB cable)";
         val = {0.0, 0.0, 0.0, 0.0};
         return val;
     }
@@ -87,7 +87,7 @@ vector<float> Meteo::Update_sensor()
     }
     else
     {
-        LOG_ERROR << "Module not connected (check identification and USB cable)";
+        LOG_ERROR << "Meteo module not connected (check identification and USB cable)";
         val = {0.0, 0.0, 0.0, 0.0};
     }
 
