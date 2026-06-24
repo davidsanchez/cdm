@@ -6,6 +6,8 @@
 #include "lappThread.h" // needed for MOS
 #include "pluginsBase.h"
 #include "Config.h"
+#include "Logging.h" //RR
+#include <stdlib.h>                     
 //#include "DatapointMonitor.h"
 
 class DataAccessClientOPCUA;
@@ -78,6 +80,7 @@ public:
         start(&m_varType);
     };
 
+  
     SetDatapointThread(DataAccessClientOPCUA *dataAccessClientOPCUA, std::string datapointName, int nameSpace,
                        float data)
     {
@@ -89,7 +92,7 @@ public:
         m_varType = varType::isFloat;
         start(&m_varType);
     };
-
+  
     SetDatapointThread(DataAccessClientOPCUA *dataAccessClientOPCUA, std::string datapointName, int nameSpace,
                        double data)
     {
@@ -111,34 +114,78 @@ public:
         m_data_int = data;
 
         m_varType = varType::isInt;
+
         start(&m_varType);
     };
 
     ~SetDatapointThread(){};
-
-    void *run(void *params)
-    {
-        //  std::string temString = m_datapointName + "._Done";
-        //std::cout << "Params: " << *(static_cast<varType*>(params)) << std::endl;
-
-        if (*(static_cast<varType *>(params)) == varType::isVectorByte)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vbyte);
-        else if (*(static_cast<varType *>(params)) == varType::isVectorString)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vstring);
-        else if (*(static_cast<varType *>(params)) == varType::isVectorDouble)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vdouble);
-        else if (*(static_cast<varType *>(params)) == varType::isVectorFloat)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vfloat);
-        else if (*(static_cast<varType *>(params)) == varType::isString)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_str);
-        else if (*(static_cast<varType *>(params)) == varType::isInt)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_int);
-        else if (*(static_cast<varType *>(params)) == varType::isFloat)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_float);
-        else if (*(static_cast<varType *>(params)) == varType::isDouble)
-            m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_double);
-    };
-
+  
+  void *run(void *params)
+  {
+    //  std::string temString = m_datapointName + "._Done";
+    //std::cout << "RR: run params: " << *(static_cast<varType*>(params)) << std::endl;
+    //LOG_TRACE << "RR: SetDatapointThread::run"<<std::endl;
+    //if (*(static_cast<varType *>(params)) == varType::isVectorByte) {
+    if (m_varType == varType::isVectorByte) {
+      //LOG_TRACE << "RR: SetDatapointThread::run VectorByte: "<<m_datapointName<<std::endl;
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vbyte);
+      return nullptr;
+    }
+    //else if (*(static_cast<varType *>(params)) == varType::isVectorString) {
+    else if (m_varType == varType::isVectorString) {
+      //LOG_TRACE << "RR: SetDatapointThread::run VectorString: "<<m_datapointName<<std::endl;
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vstring);
+      return nullptr;
+    }
+    //else if (*(static_cast<varType *>(params)) == varType::isVectorDouble) {
+    else if (m_varType == varType::isVectorDouble) {
+      //LOG_TRACE << "RR: SetDatapointThread::run VectorDouble: "<<m_datapointName<<std::endl;
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vdouble);
+      return nullptr;
+    }
+    //else if (*(static_cast<varType *>(params)) == varType::isVectorFloat) {
+    else if (m_varType == varType::isVectorFloat) {
+      //LOG_TRACE << "RR: SetDatapointThread::run VectorFloat: "<<m_datapointName<<std::endl;
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_vfloat);
+      return nullptr;
+    }
+    //else if (*(static_cast<varType *>(params)) == varType::isString) {
+    else if (m_varType == varType::isString) {
+      //LOG_TRACE << "RR: SetDatapointThread::run String: "<<m_datapointName<<std::endl;
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_str);
+      return nullptr;
+    }
+    //else if (*(static_cast<varType *>(params)) == varType::isInt) {
+    else if (m_varType == varType::isInt) {
+      /* LOG_TRACE << "RR: SetDatapointThread::run Int: "<<m_datapointName
+		<<" namespace "<<m_nameSpace
+		<<" value "<<m_data_int
+		<< " params "<< (*(static_cast<varType *>(params)))
+		<< " vartype "<<m_varType
+		<<std::endl;	       */
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_int);
+      return nullptr;
+    }
+    //else if (*(static_cast<varType *>(params)) == varType::isFloat) {
+    else if (m_varType == varType::isFloat) {
+      /*  LOG_TRACE << "RR: SetDatapointThread::run Float: "<<m_datapointName
+		<< " namespace " << m_nameSpace
+		<< " value "<<m_data_float
+		<< " params "<< (*(static_cast<varType *>(params)))
+		<< " vartype "<<m_varType
+		<< " and for ref int val "<<m_data_int
+		<<std::endl; */		
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_float);
+      return nullptr;
+    }
+    //else if (*(static_cast<varType *>(params)) == varType::isDouble) {
+    else if (m_varType == varType::isDouble) {
+      // LOG_TRACE << "RR: SetDatapointThread::run Double:"<<m_datapointName<<std::endl;
+      m_dataAccessClientOPCUA->setDatapoint(m_datapointName, m_nameSpace, m_data_double);
+      return nullptr;
+    }
+  };
+  
 private:
     int m_nameSpace;
     std::string m_datapointName;
@@ -173,7 +220,18 @@ class Helper
 public:
     //Need a constructor first
     Helper(){
-
+      // set up paths
+      std::string basestr="/home/cdmmgr"; //defaults to home
+      char *cdmpath;
+      cdmpath = std::getenv("CDMPATH");
+      if (cdmpath) {
+	basestr=cdmpath;
+      } else {          
+        LOG_ERROR << "Helper init: CDMPATH not defined, paths default to /home/cdmmgr"
+                  << std::endl;
+      }        
+      imagePath = basestr+"/output/images/";
+      fitsPath = basestr+"/output/fits/";                           
     };
 
     //int publish_datapoint(std::string datapoint_name, int nameSpace, int data );
@@ -366,8 +424,8 @@ private:
 
     std::string StarName = "";
     std::string Comment = "";
-    std::string imagePath = "/home/cdmmgr/output/images/";
-    std::string fitsPath = "/home/cdmmgr/output/fits/";
+    std::string imagePath;
+    std::string fitsPath;
     std::string remoteImagePathPrefix = "/fefs/home/lapp/CDM_Images/";
 };
 

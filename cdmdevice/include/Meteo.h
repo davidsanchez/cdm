@@ -49,7 +49,7 @@ private:
     YTemperature *tsensor;
     YPressure *psensor;
     float temperature, humidity_abs, humidity_rel, pressure;
-    vector<float> val{0, 0, 0, 0};
+    vector<float> val{0.0, 0.0, 0.0, 0.0};
 
 };
 

@@ -41,7 +41,7 @@ public:
 
     //private:
 
-    std::vector<int> compression_params = {CV_IMWRITE_PNG_COMPRESSION, 0};
+    std::vector<int> compression_params = {IMWRITE_PNG_COMPRESSION, 0};
     Mat resized_image;
     vector<unsigned char> published_image;
 

@@ -5,7 +5,7 @@
 #include <string>
 
 #include "ControllerCB_changeStatus.h"
-#include "Logging.h"
+//RR #include "Logging.h"
 #include "Config.h"
 #include "CDM.h"
 
@@ -17,12 +17,12 @@ std::string  Helper::searchDatapoint (string element, Config *config)
         std::string rootElement = "";
         std::string nodeIdL1 = "";
 
+	
         myElement = config->searchElement(element);
         rootElement = config->getRootName() + ".";
         if (myElement)
         {
 		nodeIdL1 = rootElement + myElement->NodeId;
-        COND_LOG_DEBUG<<"Reading the node nodeIdL1 "<<nodeIdL1<< '\n';
                 return(nodeIdL1);
         }
         return("");

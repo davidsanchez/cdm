@@ -1,0 +1,55 @@
+<FSM_Definition>
+	<TransitionFSM>
+		<Name>Connect</Name>
+		<StateCondition>0</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>Disconnect</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>0</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>Configure</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>false</AutomaticChangeTransition>
+	</TransitionFSM>
+	
+	<TransitionFSM>
+		<Name>StartSG</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>2</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>StopSG</Name>
+		<StateCondition>2</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+
+	
+	<TransitionFSM>
+		<Name>GetImage</Name>
+		<StateCondition>1</StateCondition>
+		<FinalTransition>1</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>Error</Name>
+		<StateCondition>0</StateCondition>
+		<StateCondition>1</StateCondition>
+		<StateCondition>2</StateCondition>
+		<FinalTransition>3</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+	<TransitionFSM>
+		<Name>Acknowledge</Name>
+		<StateCondition>3</StateCondition> 
+		<FinalTransition>0</FinalTransition>
+		<AutomaticChangeTransition>true</AutomaticChangeTransition>
+	</TransitionFSM>
+</FSM_Definition>
