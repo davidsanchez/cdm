@@ -1929,14 +1929,12 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     }
     */
 
-    /* RR stopped publishing for now
     std::vector<std::string> publish_remoteImagePath; 
     publish_remoteImagePath.push_back(imageName.c_str());
     SetDatapointThread *m_SetDatapointThread_remote_path = new SetDatapointThread(myclient, datapointName_imagePath, 2, publish_remoteImagePath); //Updates the imagePath
     LOG_INFO<<"GetImage SetDatapointThread for "<<datapointName_imageName<< " at "<<datapointName_imagePath<<std::endl;
     SetDatapointThread(myclient, datapointName_imageName, 2, imageName.c_str()); //Updates the imageName
     SetDatapointThread(myclient, datapointName_imagePath, 2, imageName.c_str()); //Updates the imagePath_cat
-    */
 
     LOG_INFO<<"Camera::GetImage: relinquish buffer and stop acquisition "<<std::endl;
     // queue buffer so that it can be used again
