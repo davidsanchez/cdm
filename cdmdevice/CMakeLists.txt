@@ -25,7 +25,7 @@ find_package(ids_peak 1.10.0 REQUIRED)
 include_directories(${LIBXML2_INCLUDE_DIR})
 include_directories(/usr/include/CCfits)
 
-include_directories($ENV{MOS_LIB_PATH}/../include/MOS_Plugin)
+#include_directories($ENV{MOS_LIB_PATH}/../include/MOS_Plugin)
 include_directories($ENV{YOCTO_PATH}/Sources)
 include_directories(../cdmdevice/src)
 include_directories(../cdmdevice/include)
@@ -41,10 +41,22 @@ MESSAGE( STATUS "==============================================" )
 MESSAGE( STATUS "Now configuring server_OPCUA CMakeLists.txt" )
 MESSAGE( STATUS "==============================================" )
 
+
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/share)
+    include_directories(${MOS_PATH}/include/MOS_Plugin)
+    include_directories(/usr/include/libxml2)
+    include_directories(/usr/local/lib/)
+    include_directories(/usr/include/CCfits)
+    include_directories(/home/cdmmgr/cdm/cdmdevice/include)
+    include_directories(/home/cdmmgr/cdm/cdmdevice/src)
 
-    link_directories(${MOS_LIB_PATH})
+    include_directories(Source)
+
+    include_directories(/home/cdmmgr/YoctoMeteo_cpp/Sources)
+    include_directories(/home/cdmmgr/YoctoMeteo_cpp/Sources/yapi)
+
+    link_directories(${MOS_PATH}/lib)
     link_directories(${CMAKE_CURRENT_SOURCE_DIR})
     link_directories(/usr/lib)
     link_directories(/usr/local/lib)
