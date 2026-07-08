@@ -568,14 +568,14 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 	auto tp_start = std::chrono::high_resolution_clock::now();
 	
 	if (iBitsPerPixel == 8) {
-	  m1 = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
+	  m1 = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
 	  
 	} else if (iBitsPerPixel == 16) {
-	  m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	  m1 = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	  
 	} else  {
 	  LOG_ERROR << "Camera::StartCDM(): Check bitdepth!" << endl;
-	  m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	  m1 = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	} // if (iBitsPerPixel == 8) 
 	
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -1410,15 +1410,15 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
       std::chrono::steady_clock::time_point begin_loop_after_image = std::chrono::steady_clock::now();
 
       if (iBitsPerPixel == 8)
-	m1 = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
+	m1 = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
       
       else if (iBitsPerPixel == 16)
-	m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	m1 = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
       
       else
 	{
 	  LOG_ERROR << "Camera::StartStream(): Check bitdepth!" << endl;
-	  m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	  m1 = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	}
 
       ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
@@ -1545,32 +1545,32 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 	    LOG_ERROR<<e.what()<<std::endl;
 	    //RR: terminate? at least while debugging
 	  }
-
+	
 	auto tp_start = std::chrono::high_resolution_clock::now();
 	Mat src, dst;
 
 	if (iBitsPerPixel == 8)
-	  src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
+	  src = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
 	
 	else if (iBitsPerPixel == 16)
-	  src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	  src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	
 	else if (iBitsPerPixel == 12)
 	  {
-	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	    src = 16 * src;
 	  }
 	
 	else if (iBitsPerPixel == 10)
 	  {
-	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	    src = 64 * src;
 	  }
 	
 	else
 	  {
 	    LOG_ERROR << "Camera::GetMultipleImages(): Check bitdepth!" << endl;
-	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	  }
 
 	
@@ -1652,7 +1652,7 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     
     b_keep_taking = 1;
 
-    cv::Mat accumulated_images = cv::Mat::zeros(iWidth, iHeight, CV_64FC1); // contains accumulated images. Height and width are reversed as the camera images are rotated 90 deg after taking.
+    cv::Mat accumulated_images = cv::Mat::zeros(m_roi_width, m_roi_height, CV_64FC1); // contains accumulated images. Height and width are reversed as the camera images are rotated 90 deg after taking.
 
     vector<std::string> v_image_paths;
     int i_images_taken = 0;
@@ -1710,27 +1710,27 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
 	Mat src, dst;
 	
 	if (iBitsPerPixel == 8)
-	  src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
+	  src = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
 	
 	else if (iBitsPerPixel == 16)
-	  src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	  src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	
 	else if (iBitsPerPixel == 12)
 	  {
-	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	    src = 16 * src;
 	  }
 	
 	else if (iBitsPerPixel == 10)
 	  {
-	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	    src = 64 * src;
 	  }
 	
 	else
 	  {
 	    LOG_ERROR << "Camera::GetMultipleImagesStacked(): Check bitdepth!" << endl;
-	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	  }
 	
 	LOG_INFO<<"Camera::GetMultipleImagesStacked loop: free buffer after cv::Mat"<<std::endl;
