@@ -112,9 +112,9 @@ WORKDIR /root
 COPY payload/configurations/.bashrc .bashrc
 
 #MOS permission and authentification
-COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_13.1.0a9/properties/
-COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_13.1.0a9/properties/
-COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_13.1.0a9/properties/
+COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_13.1.4a9/properties/
+COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_13.1.4a9/properties/
+COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_13.1.4a9/properties/
 
 #final stuff
 WORKDIR /home/cdmmgr
