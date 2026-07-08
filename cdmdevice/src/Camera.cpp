@@ -1481,28 +1481,43 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     int n_allocated_memories = 20;
 
     // Setup for freerun configuration
-    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")->SetCurrentEntry("Continuous");
-    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")->SetCurrentEntry("ExposureStart");
-    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")->SetCurrentEntry("Off");
-    int payload_size =m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("PayloadSize")->Value();
-    LOG_INFO<<"Camera::GetMultipleImages payload size: "<<payload_size<<std::endl;
-    size_t num_buf_min=m_DatastreamPtr->NumBuffersAnnouncedMinRequired();
-    //check requested number of images
-    if (num_buf_min>n_allocated_memories) {
-      LOG_ERROR<<"Camera::GetMultipleImages: number of allocated memories less than number of buffers needed ("
-	       <<num_buf_min
-	       <<") so increasing number to min"<<std::endl;
-      n_allocated_memories=num_buf_min;
-    } //if (num_buf_min>n_allocated_memories)
-  
-    LOG_INFO<<"Camera::GetMultipleImages auto allocating data buffers"<<std::endl;
-    //automatically alloc raw buffers
-    for (size_t count=0; count<n_allocated_memories; count++) {
-      auto buffer=m_DatastreamPtr->AllocAndAnnounceBuffer(static_cast<size_t>(payload_size),nullptr);
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")
+      ->SetCurrentEntry("Continuous");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")
+      ->SetCurrentEntry("ExposureStart");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")
+      ->SetCurrentEntry("On");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSource")
+      ->SetCurrentEntry("Software");
+
+    int payload_size =
+      m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("PayloadSize")
+      ->Value();
+    LOG_INFO << "Camera::GetMultipleImages payload size: " << payload_size << std::endl;
+    size_t num_buf_min = m_DatastreamPtr->NumBuffersAnnouncedMinRequired();
+    // check requested number of images
+    if (num_buf_min > n_allocated_memories) {
+      LOG_ERROR << "Camera::GetMultipleImages: number of allocated memories less than "
+	"number of buffers needed ("
+		<< num_buf_min << ") so increasing number to min" << std::endl;
+      n_allocated_memories = num_buf_min;
+    } // if (num_buf_min>n_allocated_memories)
+
+    LOG_INFO << "Camera::GetMultipleImages auto allocating data buffers" << std::endl;
+    // automatically alloc raw buffers
+    for (size_t count = 0; count < n_allocated_memories; count++) {
+      auto buffer = m_DatastreamPtr->AllocAndAnnounceBuffer(static_cast<size_t>(payload_size), nullptr);
       m_DatastreamPtr->QueueBuffer(buffer);
     }
 
     LOG_INFO<<"Camera::GetMultipleImages prepare for main loop"<<std::endl;
+
+    m_DatastreamPtr->StartAcquisition(peak::core::AcquisitionStartMode::Default,
+				      PEAK_INFINITE_NUMBER);
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")
+      ->SetValue(1);
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStart")
+      ->Execute();
     
     int loop_image_count = 0;
     int64_t duration_count = 0;
@@ -1511,9 +1526,12 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     {
         // Use is_LockSeqBuf when processing image?
         LOG_TRACE << "Camera::GetMultipleImages(): Number of images taken "<<i_images_taken+1<<" over "<<n_images<<endl;
-	try {
-	  m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(1000);
-	  LOG_INFO<<"Camera::GetMultipleImages loop: image acquired, start process "<<std::endl;
+        try {
+	  m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->Execute();
+	  m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->WaitUntilDone();
+
+          m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(1000);
+	  LOG_INFO<<"Camera::GetMultipleImages loop: image acquired"<<std::endl;
 	}
 	// RR TODO manage exceptions
 	catch (const peak::core::TimeoutException& e)
@@ -1555,11 +1573,6 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	  }
 
-
-	LOG_INFO<<"Camera::GetMultipleImages loop: free buffer after cv::Mat"<<std::endl;
-	// queue buffer so that it can be used again
-	m_DatastreamPtr->QueueBuffer(m_ImgbufferPtr);
-      
 	
 	// Transpose + Flip = 90 deg rotation
 	transpose(src, src);
@@ -1604,17 +1617,19 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     // Free the OpenCV memory?
     // Free the allocated memories
 
-    //stop acquisition
-    LOG_INFO<<"Camera::GetMultipleImages exited loop, stopping acquisition"<<std::endl;
-    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")->Execute();
-    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")->SetValue(0);
+    LOG_INFO << "Camera::GetMultipleImages() exited loop, stopping acquisition" << std::endl;
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")
+      ->Execute();
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")
+      ->SetValue(0);
     m_DatastreamPtr->StopAcquisition(peak::core::AcquisitionStopMode::Default);
     
-    LOG_INFO<<"Camera::GetMultipleImages flush buffers and release them"<<std::endl;
-    //Flush and delete data buffers
+    LOG_INFO << "Camera::GetMultipleImages() flush buffers and release them" << std::endl;
+    // Flush and delete data buffers
     m_DatastreamPtr->Flush(peak::core::DataStreamFlushMode::DiscardAll);
-    for (const auto& buffer : m_DatastreamPtr->AnnouncedBuffers())
-      m_DatastreamPtr->RevokeBuffer(buffer);
+    for (const auto &buffer : m_DatastreamPtr->AnnouncedBuffers())
+      m_DatastreamPtr->RevokeBuffer(buffer);       
+    
     
     LOG_TRACE << "Camera::GetMultipleImages(): End"<<endl;
 
