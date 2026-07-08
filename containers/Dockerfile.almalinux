@@ -1,9 +1,11 @@
 FROM lst/mos:v13.1
+ARG MOS_VERSION=MOS_X86_13.1.4a9
 
 USER root
-#sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/CentOS-*.repo
-#sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/CentOS-*.repo
-#sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/CentOS-*.repo
+
+# setup MOS location for compilation
+ENV MOS_LIB_PATH=/home/mosmgr/MOS/${MOS_VERSION}/lib
+
 
  
 RUN dnf update -y && sudo dnf upgrade -y
@@ -89,8 +91,7 @@ RUN mkdir ./output/images
 RUN mkdir ./output/fits
 RUN mkdir ./cdm/build
 
-# setup MOS location for compilation
-ENV MOS_LIB_PATH=/home/mosmgr/MOS/MOS_X86_13.1.4a9/lib
+
 # setup Yocto location for compilation
 ENV YOCTO_PATH=/home/cdmmgr/YoctoMeteo_cpp
 
@@ -114,10 +115,10 @@ WORKDIR /root
 COPY payload/configurations/.bashrc .bashrc
 
 #MOS permission and authentification
-COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_13.1.4a9/properties/
-COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_13.1.4a9/properties/
-COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_13.1.4a9/properties/
-COPY payload/pluginPasswd.txt /home/mosmgr/MOS/MOS_X86_13.1.4a9/properties/
+COPY payload/permission.txt /home/mosmgr/MOS/${MOS_VERSION}properties/
+COPY payload/password.txt /home/mosmgr/MOS/${MOS_VERSION}/properties/
+COPY payload/ServerConfig.xml /home/mosmgr/MOS/${MOS_VERSION}/properties/
+COPY payload/pluginPasswd.txt /home/mosmgr/MOS/${MOS_VERSION}/properties/
 
 
 #final stuff
