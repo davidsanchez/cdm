@@ -5,7 +5,7 @@ all:
 
 image:
 	@echo 'Creating main Docker image for CDM...'
-	docker build  -f containers/Dockerfile.almalinux . --tag cdm:latest
+	docker build --no-cache -f  -f containers/Dockerfile.almalinux . --tag cdm:latest
 
 image-dev:
 	@echo 'Creating development Docker image for CDM...'
