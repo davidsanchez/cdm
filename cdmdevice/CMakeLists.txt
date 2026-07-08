@@ -35,21 +35,21 @@ link_directories($ENV{MOS_LIB_PATH})
 link_directories($ENV{YOCTO_PATH}/Binaries/linux/64bits)
 
 
-#MESSAGE( STATUS "" )
-#
-#MESSAGE( STATUS "==============================================" )
-#MESSAGE( STATUS "Now configuring server_OPCUA CMakeLists.txt" )
-#MESSAGE( STATUS "==============================================" )
+MESSAGE( STATUS "" )
 
-#    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-#    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/share)
-#
-#    link_directories(${MOS_LIB_PATH})
-#    link_directories(${CMAKE_CURRENT_SOURCE_DIR})
-#    link_directories(/usr/lib)
-#    link_directories(/usr/local/lib)
-#    link_directories(/usr/lib64)
-#    link_directories(/home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits)
+MESSAGE( STATUS "==============================================" )
+MESSAGE( STATUS "Now configuring server_OPCUA CMakeLists.txt" )
+MESSAGE( STATUS "==============================================" )
+
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/share)
+
+    link_directories(${MOS_LIB_PATH})
+    link_directories(${CMAKE_CURRENT_SOURCE_DIR})
+    link_directories(/usr/lib)
+    link_directories(/usr/local/lib)
+    link_directories(/usr/lib64)
+    link_directories(/home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits)
 
 IF (UNIX)
     INCLUDE_DIRECTORIES()
