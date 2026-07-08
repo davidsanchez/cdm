@@ -14,6 +14,7 @@ RUN dnf install -y git
 
 RUN dnf install -y \
     openssh-server \
+    procps \
     qt5 \
     libatomic \    
     xauth \
@@ -64,11 +65,12 @@ RUN ids-peak_2.19.0.0-260_amd64/share/ids-peak/scripts/ids_install_udev_rule.sh
 # Creating a cdmmgr user
 RUN groupadd -g 1003 cdmmgr && \
     useradd -g 1002 -u 1003 -d /home/cdmmgr -m -s /bin/bash cdmmgr
+
 USER cdmmgr
 WORKDIR /home/cdmmgr
 RUN mkdir -m 700 -p .ssh/
 
-COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
+#COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
 
 # DL and build Yocto meteo
 RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
@@ -88,7 +90,7 @@ RUN mkdir ./output/fits
 RUN mkdir ./cdm/build
 
 # setup MOS location for compilation
-ENV MOS_LIB_PATH=/home/mosmgr/MOS/MOS_X86_13.1.0a9/lib
+ENV MOS_LIB_PATH=/home/mosmgr/MOS/MOS_X86_13.1.4a9/lib
 # setup Yocto location for compilation
 ENV YOCTO_PATH=/home/cdmmgr/YoctoMeteo_cpp
 
