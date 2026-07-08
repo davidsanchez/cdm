@@ -70,7 +70,7 @@ USER cdmmgr
 WORKDIR /home/cdmmgr
 RUN mkdir -m 700 -p .ssh/
 
-#COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
+COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
 
 # DL and build Yocto meteo
 RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
