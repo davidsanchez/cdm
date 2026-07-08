@@ -96,8 +96,8 @@ ENV YOCTO_PATH=/home/cdmmgr/YoctoMeteo_cpp
 
 WORKDIR /home/cdmmgr/cdm/build
 RUN cmake -DCMAKE_PREFIX_PATH="/opt/ids-peak_2.19.0.0-260_amd64/lib/x86_64-linux-gnu/cmake/ids_peak;/opt/ids-peak_2.19.0.0-260_amd64/lib/cmake/ids_peak_common" -DCMAKE_INSTALL_PREFIX=.. /home/cdmmgr/cdm/cdmdevice
-RUN make
-RUN make install
+#RUN make
+#RUN make install
 
 COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
 COPY payload/configurations/RunCDM.sh /home/cdmmgr/RunCDM.sh
@@ -117,6 +117,8 @@ COPY payload/configurations/.bashrc .bashrc
 COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_13.1.4a9/properties/
 COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_13.1.4a9/properties/
 COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_13.1.4a9/properties/
+COPY payload/pluginPasswd.txt /home/mosmgr/MOS/MOS_X86_13.1.4a9/properties/
+
 
 #final stuff
 WORKDIR /home/cdmmgr
