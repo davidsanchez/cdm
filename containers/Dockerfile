@@ -7,9 +7,11 @@ USER root
 ENV MOS_LIB_PATH=/home/mosmgr/MOS/${MOS_VERSION}/lib 
 ENV MOS_PATH=/home/mosmgr/MOS/${MOS_VERSION}/bin
 
-
-
-RUN dnf update -y && sudo dnf upgrade -y
+RUN dnf update -y \
+    --setopt=fastestmirror=1 \
+    --setopt=max_parallel_downloads=10 \
+    --nodocs
+    
 RUN dnf install -y cronie && yum install -y sudo && rm -rf /etc/cron.*/*
 
 # Installing the development software
