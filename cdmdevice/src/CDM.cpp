@@ -196,23 +196,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 	  subChaine2.erase(0, pos + 1); // store the rest of the string (example the arguments of the instruction)
 
 	  // do Asynch commands
-	  	  if (subChaine1.compare("GetMultipleImagesStacked") == 0)
-            {
-
-	      boost::trim_right(subChaine2);
-	      m_Thread->cmdGetMultipleImagesStacked(datapointName, nameSpace, atoi(subChaine2.c_str()));
-
-	      //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str()));
-            }
-
-	  if (subChaine1.compare("GetMultipleImages") == 0)
-            {
-
-	      boost::trim_right(subChaine2);
-	      m_Thread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
-
-	      //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str()));
-            }
+	  	  
             
         }
     }
@@ -418,6 +402,27 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 	  if (subChaine1.compare("StopSG") == 0)
             {
 	      camera.StopSG();
+            }
+
+	  if (subChaine1.compare("GetMultipleImagesStacked") == 0)
+            {
+	      std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
+	      int nameSpace = 2;
+            
+	      boost::trim_right(subChaine2);
+	      m_Thread->cmdGetMultipleImagesStacked(datapointName, nameSpace, atoi(subChaine2.c_str()));
+
+	      //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str()));
+            }
+
+            if (subChaine1.compare("GetMultipleImages") == 0) {
+	      std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
+	      int nameSpace = 2;              
+
+	      boost::trim_right(subChaine2);
+	      m_Thread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
+
+	      //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str()));
             }
             
 	  if (subChaine1.compare("Error") == 0)

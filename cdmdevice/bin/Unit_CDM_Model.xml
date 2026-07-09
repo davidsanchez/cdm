@@ -97,20 +97,10 @@
                         <Instruction>
                                 <Name>GetMultipleImages_Instruction</Name>
                                 <Cmd>GetMultipleImages %1</Cmd>
-				<Asynchronous>
-                                  <Enable>true</Enable>
-                                  <TimeOut>2</TimeOut>
-                                  <EndInstruction></EndInstruction>
-                                </Asynchronous>
                         </Instruction>
                         <Instruction>
                                 <Name>GetMultipleImagesStacked_Instruction</Name>
                                 <Cmd>GetMultipleImagesStacked %1</Cmd>
-				<Asynchronous>
-                                  <Enable>true</Enable>
-                                  <TimeOut>2</TimeOut>
-                                  <EndInstruction></EndInstruction>
-                                </Asynchronous>
                         </Instruction>
                         <Instruction>
                                 <Name>StopGetMultipleImages_Instruction</Name>
