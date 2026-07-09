@@ -12,7 +12,7 @@ services:
         - "48011:48011"
     ipc: host
     volumes:
-      - /home/lstoperator/log/:/home/cdmmgr/log
+      - /home/shifter/CDM/log/:/home/cdmmgr/log
       #- /dev:/dev
       #- /var/run:/var/run
-      - /home/lstoperator/CDM/:/home/cdmmgr/output
+      - /home/shifter/CDM/:/home/cdmmgr/output
