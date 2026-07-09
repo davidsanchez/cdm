@@ -4,10 +4,10 @@ ARG MOS_VERSION=MOS_X86_13.1.4a9
 USER root
 
 # setup MOS location for compilation
-ENV MOS_LIB_PATH=/home/mosmgr/MOS/${MOS_VERSION}/lib
+ENV MOS_LIB_PATH=/home/mosmgr/MOS/${MOS_VERSION}/lib 
 
 
- 
+
 RUN dnf update -y && sudo dnf upgrade -y
 RUN dnf install -y cronie && yum install -y sudo && rm -rf /etc/cron.*/*
 

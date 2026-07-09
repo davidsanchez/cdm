@@ -6,12 +6,12 @@ services:
     container_name: "MOS-CDM-DEV"
     image: "cdm:dev"
     # restart: unless-stopped
-
+    stdin_open: true 
+    tty: true
     ports:
         - "48011:48011"
     ipc: host
     volumes:
-      #- /home/shifter/Docker/cdm:/home/cdmmgr/cdm
       - /home/lstoperator/log/:/home/cdmmgr/log
       - /dev:/dev
       - /var/run:/var/run
