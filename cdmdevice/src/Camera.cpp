@@ -1659,9 +1659,15 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     int n_allocated_memories = 10;
 
     // Setup for freerun configuration
-    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")->SetCurrentEntry("Continuous");
-    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")->SetCurrentEntry("ExposureStart");
-    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")->SetCurrentEntry("Off");
+        m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")
+      ->SetCurrentEntry("Continuous");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")
+      ->SetCurrentEntry("ExposureStart");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")
+      ->SetCurrentEntry("On");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSource")
+      ->SetCurrentEntry("Software");
+    
     int payload_size =m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("PayloadSize")->Value();
     LOG_INFO<<"Camera::GetMultipleImagesStacked payload size: "<<payload_size<<std::endl;
     size_t num_buf_min=m_DatastreamPtr->NumBuffersAnnouncedMinRequired();
@@ -1680,7 +1686,14 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
       m_DatastreamPtr->QueueBuffer(buffer);
     }
 
-    LOG_INFO<<"Camera::GetMultipleImagesStacked prepare for main loop"<<std::endl;
+    LOG_INFO << "Camera::GetMultipleImagesStacked prepare for main loop"
+             << std::endl;
+    m_DatastreamPtr->StartAcquisition(peak::core::AcquisitionStartMode::Default,
+				      PEAK_INFINITE_NUMBER);
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")
+      ->SetValue(1);
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStart")
+      ->Execute();    
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
@@ -1690,7 +1703,10 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
         // Use is_LockSeqBuf when processing image?
         LOG_TRACE << "Camera::GetMultipleImagesStacked(): Number of images taken "<<i_images_taken+1<<" over "<<n_images<<endl;
 
-	try {
+        try {
+	  m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->Execute();
+	  m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->WaitUntilDone();
+          
 	  m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(1000);
 	  LOG_INFO<<"Camera::GetMultipleImagesStacked loop: image acquired, start process "<<std::endl;
 	}
@@ -1779,13 +1795,13 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
 	    
     LOG_INFO << "Camera::GetMultipleImagesStacked(): Images taken: " << i_images_taken << endl;
     
-
-    //stop acquisition
-    LOG_INFO<<"Camera::GetMultipleImagesStacked exited loop, stopping acquisition"<<std::endl;
-    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")->Execute();
-    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")->SetValue(0);
+    LOG_INFO << "Camera::GetMultipleImages() exited loop, stopping acquisition" << std::endl;
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")
+      ->Execute();
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")
+      ->SetValue(0);
     m_DatastreamPtr->StopAcquisition(peak::core::AcquisitionStopMode::Default);
- 
+
     
     // Now convert, save and publish the image
     if (iBitsPerPixel == 16)
