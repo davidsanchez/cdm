@@ -13,6 +13,6 @@ services:
     ipc: host
     volumes:
       - /Users/david/CDM/newCode/instalCode/log:/home/cdmmgr/log
-      - /dev:/dev
-      - /var/run:/var/run
+      #- /dev:/dev
+      #- /var/run:/var/run
       - /Users/david/CDM/newCode/instalCode/output:/home/cdmmgr/output

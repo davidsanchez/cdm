@@ -14,8 +14,8 @@ services:
     volumes:
 
       - /home/lstoperator/log/:/home/cdmmgr/log
-      - /dev:/dev
-      - /var/run:/var/run
+      #- /dev:/dev
+      #- /var/run:/var/run
       - /home/lstoperator/CDM/:/home/cdmmgr/output
 
 
