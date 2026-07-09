@@ -5,6 +5,7 @@ USER root
 
 # setup MOS location for compilation
 ENV MOS_LIB_PATH=/home/mosmgr/MOS/${MOS_VERSION}/lib 
+ENV MOS_PATH=/home/mosmgr/MOS/${MOS_VERSION}/bin
 
 
 
@@ -86,19 +87,22 @@ RUN ln -s libyocto.so.1.0.1 libyocto.so
 WORKDIR /home/cdmmgr/
 RUN git clone https://rando:Q8Kuh6c9JHWf5VVaR9lCUW86MQp1Oml1CA.01.0y03l8hyn@gitlab.cta-observatory.org/riccardo.rando/cdm.git
 
-RUN mkdir ./output
-RUN mkdir ./output/images
-RUN mkdir ./output/fits
 RUN mkdir ./cdm/build
-
+RUN mkdir ./output
+WORKDIR /home/cdmmgr/output
+RUN mkdir ./images
+RUN mkdir ./fits
+WORKDIR /home/cdmmgr/
 
 # setup Yocto location for compilation
 ENV YOCTO_PATH=/home/cdmmgr/YoctoMeteo_cpp
 
+COPY  payload/CMakeLists.txt ./cdm/build
+
 WORKDIR /home/cdmmgr/cdm/build
 RUN cmake -DCMAKE_PREFIX_PATH="/opt/ids-peak_2.19.0.0-260_amd64/lib/x86_64-linux-gnu/cmake/ids_peak;/opt/ids-peak_2.19.0.0-260_amd64/lib/cmake/ids_peak_common" -DCMAKE_INSTALL_PREFIX=.. /home/cdmmgr/cdm/cdmdevice
-#RUN make
-#RUN make install
+RUN make
+RUN make install
 
 COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
 COPY payload/configurations/RunCDM.sh /home/cdmmgr/RunCDM.sh
@@ -115,7 +119,7 @@ WORKDIR /root
 COPY payload/configurations/.bashrc .bashrc
 
 #MOS permission and authentification
-COPY payload/permission.txt /home/mosmgr/MOS/${MOS_VERSION}properties/
+COPY payload/permission.txt /home/mosmgr/MOS/${MOS_VERSION}/properties/
 COPY payload/password.txt /home/mosmgr/MOS/${MOS_VERSION}/properties/
 COPY payload/ServerConfig.xml /home/mosmgr/MOS/${MOS_VERSION}/properties/
 COPY payload/pluginPasswd.txt /home/mosmgr/MOS/${MOS_VERSION}/properties/

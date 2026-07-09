@@ -11,9 +11,9 @@ image-dev:
 	@echo 'Creating development Docker image for CDM...'
 	docker build  -f containers/Dockerfile.almalinux . --tag cdm:dev
 
-local-image:
+image-local:
 	@echo 'Creating local Docker image for CDM...'
-	docker build  -f containers/Dockerfile.local . --tag cdm:local
+	docker build --platform linux/x86_64  -f containers/Dockerfile.local  --tag cdm:local --progress=plain  . 
 
 
 clean:
