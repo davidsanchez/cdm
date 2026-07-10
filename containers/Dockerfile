@@ -16,10 +16,10 @@ RUN dnf install -y cronie && yum install -y sudo && rm -rf /etc/cron.*/*
 
 # Installing the development software
 RUN dnf install -y git
+RUN dnf install -y procps
 
 RUN dnf install -y \
     openssh-server \
-    procps \
     qt5 \
     libatomic \    
     xauth \

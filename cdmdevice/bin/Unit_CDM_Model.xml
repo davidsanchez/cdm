@@ -272,7 +272,7 @@
                                 <Type>double</Type>
                                 <Access>Input</Access>
                                 <Range>
-                                        <Min>17</Min>
+                                        <Min>20</Min>
                                         <Max>2000000</Max>
                                 </Range>
                         </Argument>
@@ -281,8 +281,8 @@
                                 <Type>double</Type>
                                 <Access>Input</Access>
                                 <Range>
-                                        <Min>1</Min>
-                                        <Max>20</Max>
+                                        <Min>0.5</Min>
+                                        <Max>26</Max>
                                 </Range>
                         </Argument>
                         <Argument>
