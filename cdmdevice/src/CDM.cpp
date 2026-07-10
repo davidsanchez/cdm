@@ -242,9 +242,9 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 	      m_Thread->cmdConfigure(datapointName,
 				     nameSpace,
 				     216,          // nPixelClock
-				     2000.0,     // exposure
+				     100000.0,     // exposure
 				     10.0,          // fps
-				     1.0,         // gain
+				     5.0,         // gain
 				     "IS_CM_MONO8" // pixel_format
 				     );
                 
