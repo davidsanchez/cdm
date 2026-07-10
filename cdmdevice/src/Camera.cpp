@@ -1841,12 +1841,11 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     LOG_INFO<<"Camera::GetImage image ready, processing image size "<<m_roi_width<<"x"<<m_roi_height<<std::endl;
     // process data ...
     cv::Mat src, dst;
-    //check bit depth etc... for now 8 bits
-    src = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, static_cast<uint8_t*>(m_ImgbufferPtr->BasePtr()));
-
-    // Transpose + Flip = 90 deg rotation
-    transpose(src, src);
-    flip(src, src, 1);
+    if (iBitsPerPixel == 8)
+      src = cv::Mat(m_roi_height, m_roi_width, CV_8UC1,
+                    static_cast<uint8_t *>(m_ImgbufferPtr->BasePtr()));
+    else
+      src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, static_cast<uint16_t *>(m_ImgbufferPtr->BasePtr()));
 
     std::vector<int> compression_params;
     compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
