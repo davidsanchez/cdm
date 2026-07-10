@@ -86,7 +86,7 @@ RUN ln -s libyocto.so.1.0.1 libyocto.so
 
 # install CDM for SG
 WORKDIR /home/sgmgr/
-RUN git clone https://rando:Q8Kuh6c9JHWf5VVaR9lCUW86MQp1Oml1CA.01.0y03l8hyn@gitlab.cta-observatory.org/riccardo.rando/cdm.git
+RUN git clone --depth 1 https://rando:Q8Kuh6c9JHWf5VVaR9lCUW86MQp1Oml1CA.01.0y03l8hyn@gitlab.cta-observatory.org/riccardo.rando/cdm.git
 
 RUN mkdir ./cdm/build
 RUN mkdir ./output
