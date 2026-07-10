@@ -2006,6 +2006,16 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     pclock = m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("DeviceClockFrequency")->Value();
     return_values.push_back(static_cast<int>(pclock/1e6));
         
+
+
+    // Set exposure
+    LOG_INFO << "Camera::Configure(): Value of exposure to be set is : " << exposure << std::endl;
+    m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->SetValue(exposure);
+    double current_exposure=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->Value();
+    LOG_INFO << "Camera::Configure(): Current exposure is: " << current_exposure << std::endl;
+    return_values.push_back(current_exposure);
+    Camera::exposure_setting = current_exposure;
+
     // Set frame rate
     // Setup for freerun configuration, so frame rate can be set
     m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")->SetCurrentEntry("Continuous");
@@ -2016,14 +2026,6 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     double current_fps=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->Value();
     LOG_INFO << "Camera::Configure(): Current frame rate is: " << current_fps << std::endl;
     return_values.push_back(current_fps);
-
-    // Set exposure
-    LOG_INFO << "Camera::Configure(): Value of exposure to be set is : " << exposure << std::endl;
-    m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->SetValue(exposure);
-    double current_exposure=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->Value();
-    LOG_INFO << "Camera::Configure(): Current exposure is: " << current_exposure << std::endl;
-    return_values.push_back(current_exposure);
-    Camera::exposure_setting = current_exposure;
 
     // Set hardware gain
     // RR: now gain is a float!!!
