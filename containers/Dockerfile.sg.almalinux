@@ -1,0 +1,131 @@
+FROM lst/mos:v13.1
+ARG MOS_VERSION=MOS_X86_13.1.4a9
+
+USER root
+
+# setup MOS location for compilation
+ENV MOS_LIB_PATH=/home/mosmgr/MOS/${MOS_VERSION}/lib 
+ENV MOS_PATH=/home/mosmgr/MOS/${MOS_VERSION}/bin
+
+RUN dnf update -y \
+    --setopt=fastestmirror=1 \
+    --setopt=max_parallel_downloads=10 \
+    --nodocs
+RUN dnf install -y cronie && yum install -y sudo && rm -rf /etc/cron.*/*
+
+# Installing the development software
+RUN dnf install -y git
+
+RUN dnf install -y \
+    openssh-server \
+    procps \
+    qt5 \
+    libatomic \    
+    xauth \
+    gcc-c++ \
+    gdb \
+    git \
+    autoconf \
+    make \
+    cmake  \ 
+    patch \
+    wget \
+    mc \
+    libusbx-devel \
+    libxml2-devel \
+    gdb-gdbserver \
+    boost-devel \
+    gedit \
+    libatomic \
+    vim \
+    python-devel 
+ 
+RUN sudo dnf install epel-release -y
+RUN sudo dnf config-manager --set-enabled crb
+RUN dnf install -y \
+    opencv  \
+     opencv-devel
+  #   opencv-python
+ 
+RUN dnf install -y CCfits\
+    	CCfits-devel
+
+USER root
+RUN mkdir  -p /root
+RUN mkdir -m 700 -p /root/.ssh/
+COPY  payload/configurations/id_rsa /root/.ssh/
+RUN chmod 600  /root/.ssh/id_rsa
+
+RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_ed25519_key -t ed25519 -N ""
+RUN ssh-keygen -b 521 -f  /etc/ssh/ssh_host_ecdsa_key -t ecdsa -N ""
+RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_rsa_key -t rsa -N ""
+
+# install IDS peak
+COPY payload/ids-peak_2.19.0.0-260_amd64.tgz /opt
+WORKDIR /opt
+RUN tar xfz ids-peak_2.19.0.0-260_amd64.tgz
+RUN ids-peak_2.19.0.0-260_amd64/share/ids-peak/scripts/ids_install_udev_rule.sh
+
+# Creating a sgmgr user
+RUN groupadd -g 1003 sgmgr && \
+    useradd -g 1002 -u 1003 -d /home/sgmgr -m -s /bin/bash sgmgr
+
+USER sgmgr
+WORKDIR /home/sgmgr
+RUN mkdir -m 700 -p .ssh/
+
+COPY payload/configurations/MOSStart.sh /home/sgmgr/MOSStart.sh
+
+# DL and build Yocto meteo
+RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/sgmgr/YoctoMeteo_cpp
+WORKDIR /home/sgmgr/YoctoMeteo_cpp/Binaries/
+RUN make
+WORKDIR /home/sgmgr/YoctoMeteo_cpp/Binaries/linux/64bits
+RUN ln -s libyocto.so.1.0.1 libyocto.so
+# 
+
+# install CDM for SG
+WORKDIR /home/sgmgr/
+RUN git clone https://rando:Q8Kuh6c9JHWf5VVaR9lCUW86MQp1Oml1CA.01.0y03l8hyn@gitlab.cta-observatory.org/riccardo.rando/cdm.git
+
+RUN mkdir ./cdm/build
+RUN mkdir ./output
+WORKDIR /home/sgmgr/output
+RUN mkdir ./images
+RUN mkdir ./fits
+WORKDIR /home/sgmgr/
+
+# setup Yocto location for compilation
+ENV YOCTO_PATH=/home/sgmgr/YoctoMeteo_cpp
+
+COPY  payload/CMakeLists.txt ./cdm/build
+
+WORKDIR /home/sgmgr/cdm/build
+RUN cmake -DCMAKE_PREFIX_PATH="/opt/ids-peak_2.19.0.0-260_amd64/lib/x86_64-linux-gnu/cmake/ids_peak;/opt/ids-peak_2.19.0.0-260_amd64/lib/cmake/ids_peak_common" -DCMAKE_INSTALL_PREFIX=.. /home/sgmgr/cdm/cdmdevice
+RUN make
+RUN make install
+
+COPY payload/configurations/MOSStart.sh /home/sgmgr/MOSStartSG.sh
+COPY payload/configurations/RunCDM.sh /home/sgmgr/RunSG.sh
+
+COPY cdmdevice/bin/PLC_CDM.xml /home/sgmgr/PLC_CDM.xml
+COPY cdmdevice/bin/PLC_DATABROKER.xml /home/sgmgr/PLC_DATABROKER.xml
+COPY cdmdevice/bin/Unit_SG_Model.xml /home/sgmgr/Unit_SG_Model.xml
+COPY cdmdevice/bin/FSM_SG.xml /home/sgmgr/FSM_SG.xml
+
+COPY payload/configurations/Run_cron_SG.sh /home/sgmgr/
+
+USER root
+WORKDIR /root
+COPY payload/configurations/.bashrc .bashrc
+
+#MOS permission and authentification
+COPY payload/permission.txt /home/sgmgr/MOS/${MOS_VERSION}/properties/
+COPY payload/password.txt /home/sgmgr/MOS/${MOS_VERSION}/properties/
+COPY payload/ServerConfig.xml /home/sgmgr/MOS/${MOS_VERSION}/properties/
+COPY payload/pluginPasswd.txt /home/sgmgr/MOS/${MOS_VERSION}/properties/
+
+
+#final stuff
+WORKDIR /home/sgmgr
+#ENTRYPOINT ["/home/sgmgr/MOSStartSG.sh"]
