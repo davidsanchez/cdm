@@ -1458,7 +1458,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 	  m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->Execute();
 	  m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->WaitUntilDone();
 
-          m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(1000);
+          m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(3000);
 	  LOG_INFO<<"Camera::GetMultipleImages loop: image acquired"<<std::endl;
 	}
 	// RR TODO manage exceptions
@@ -1940,7 +1940,7 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->SetValue(exposure);
     double current_exposure=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->Value();
     LOG_INFO << "Camera::Configure(): Current exposure is: " << current_exposure << std::endl;
-    return_values.push_back(current_exposure);
+
     Camera::exposure_setting = current_exposure;
 
     // Set frame rate
@@ -1952,8 +1952,10 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->SetValue(fps);
     double current_fps=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->Value();
     LOG_INFO << "Camera::Configure(): Current frame rate is: " << current_fps << std::endl;
-    return_values.push_back(current_fps);
 
+    //pushback FPS first and then exposure
+    return_values.push_back(current_fps);
+    return_values.push_back(current_exposure);
     // Set hardware gain
     // RR: now gain is a float!!!
     float current_gain;
