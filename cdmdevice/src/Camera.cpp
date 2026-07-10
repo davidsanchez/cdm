@@ -981,107 +981,35 @@ int Camera::StartSG(DataAccessClientOPCUA *myclient) {
 
     // process data ...
     cv::Mat src, dst;
-    //check bit depth etc... for now 8 bits
-    src = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, static_cast<uint8_t*>(m_ImgbufferPtr->BasePtr()));
+    if (iBitsPerPixel == 8)
+      src = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, static_cast<uint8_t*>(m_ImgbufferPtr->BasePtr()));
+    else
+      src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, static_cast<uint16_t *>(m_ImgbufferPtr->BasePtr()));
 
-    // Transpose + Flip = 90 deg rotation
-    transpose(src, src);
-    flip(src, src, 1);
+    //rotate image, camera is upside down
+    rotate(src, src, ROTATE_180);
 
-    /*
-    std::vector<int> compression_params;
-    compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
-    compression_params.push_back(0);
-    resize(src, dst, cv::Size(0, 0), 0.15, 0.15, cv::INTER_AREA);
-    vector<unsigned char> data;
-    cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
 
-    //RR temp
-    //cv::imwrite("./img.png",,compression_params);
-    
-    int m_nameSpace = 2;
-    string temString = datapointName_image;
-    SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
-    */
     LOG_INFO<<"Camera::StartSG Prepare FITS file"<<std::endl;
     std::string imageName = writeFITSImage(src);
     LOG_INFO<<"Camera::StartSG FITS file ready in "<<imageName<<std::endl;
 
-    
-    // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
-    // This is to be done for incoming camera image or Fake camera image from
-    // fits file.
+    // move to remote location
+    // RR: legacy code, replace with DataBroker
+    char exec[300];
+    sprintf(exec,
+            "scp %s "
+            "ccddev@10.200.100.102:/fefs/onsite/data/aux/lst1/cdm/SG_images/",
+            imageName.c_str());
+    int scp_result = system(exec);
+    if (scp_result == 0) {
+      LOG_INFO<<"Camera::StartSG FITS file succesfully transferred"<<std::endl;
+      std::remove(imageName.c_str()); // deletes the file
+    } else {
+      LOG_ERROR<<"Camera::StartSG could not transfer FITS file"<<std::endl;      
+    }
+  
 
-    /*
-    LOG_INFO << "Camera::StartCDM loop: ImageAnalysis create" << std::endl;
-    ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
-
-    std::chrono::steady_clock::time_point end =
-        std::chrono::steady_clock::now();
-    LOG_IMAGE << "Camera::StartCDM(): Time difference [ImageInitalisation] = "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(end -
-                                                                       begin)
-                     .count()
-              << "[ms]" << std::endl;
-
-    begin = std::chrono::steady_clock::now();
-    // RR skip this while there are no LEDs!!!
-    
-    LOG_INFO<<"Camera::StartCDM loop: ImageAnalysis
-CalculateImage"<<std::endl;
-    // myimage.CalculateImage();
-    std::this_thread::sleep_for(std::chrono::milliseconds(3)); //RR in place
-of CalculateImage
-
-    end = std::chrono::steady_clock::now();
-    LOG_IMAGE << "Camera::StartCDM(): Time difference [CalculateImage] = "
-<< std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<
-"[ms]" << std::endl;
-
-    LOG_INFO<<"Camera::StartCDM loop: free buffer after
-ImageAnalysis"<<std::endl;
-    // queue buffer so that it can be used again
-    m_DatastreamPtr->QueueBuffer(m_ImgbufferPtr);
-
-    begin = std::chrono::steady_clock::now();
-
-    //RR: tmp, while no LEDs!!!
-    circle_results = std::vector<double>{0.0,0.0,0.0,0.0};
-    led_x_results = std::vector<double>{0.0,0.0,0.0,0.0,
-                                        0.0,0.0,0.0,0.0,
-                                        0.0,0.0,0.0,0.0,};
-    led_y_results = std::vector<double>{0.0,0.0,0.0,0.0,
-                                        0.0,0.0,0.0,0.0,
-                                        0.0,0.0,0.0,0.0,};
-    oarl_x_results = std::vector<double>{0.0,0.0};
-    oarl_y_results = std::vector<double>{0.0,0.0};
-    displacement_results = std::vector<double>{0.0,0.0,0.0};
-    oarl_mean_results = std::vector<double>{0.0,0.0};
-
-    circle_x.push_back(circle_results[0]);
-    circle_y.push_back(circle_results[1]);
-    circle_R.push_back(circle_results[2]);
-    circle_RMS.push_back(circle_results[3]);
-
-    displacement_x.push_back(displacement_results[0]);
-    displacement_y.push_back(displacement_results[1]);
-    rotation.push_back(displacement_results[2]);
-
-    LED_x.push_back(led_x_results);
-    LED_y.push_back(led_y_results);
-    OARL_x.push_back(oarl_x_results);
-    OARL_y.push_back(oarl_y_results);
-
-    OARL_mean_x.push_back(oarl_mean_results[0]);
-    OARL_mean_y.push_back(oarl_mean_results[1]);
-
-
-    end = std::chrono::steady_clock::now();
-    LOG_IMAGE << "Camera::StartCDM(): Time difference [Getting image results] =
-" << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
-<< "[ms]" << std::endl;
-    
-    */
     auto tp_stop = std::chrono::high_resolution_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop -
                                                                     tp_start);
