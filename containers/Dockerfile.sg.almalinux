@@ -74,7 +74,7 @@ USER sgmgr
 WORKDIR /home/sgmgr
 RUN mkdir -m 700 -p .ssh/
 
-COPY payload/configurations/MOSStart.sh /home/sgmgr/MOSStart.sh
+COPY payload/configurations/MOSStartSG.sh /home/sgmgr/MOSStart.sh
 
 # DL and build Yocto meteo
 RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/sgmgr/YoctoMeteo_cpp
