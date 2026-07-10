@@ -1458,7 +1458,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 	  m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->Execute();
 	  m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->WaitUntilDone();
 
-          m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(1000);
+          m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(3000);
 	  LOG_INFO<<"Camera::GetMultipleImages loop: image acquired"<<std::endl;
 	}
 	// RR TODO manage exceptions
