@@ -1,5 +1,6 @@
 #!/bin/bash
-#source /home/mosmgr/MOS.conf
+#
+source /home/cdmmgr/env.bash
 PROCESS="MOS_Device -d Unit_CDM_Model.xml -p 48011 -i"
 
 count=`ps aux | grep -v grep | grep "$PROCESS" | awk {'print $5'} | wc -l`
