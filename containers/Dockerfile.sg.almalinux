@@ -105,8 +105,8 @@ RUN cmake -DCMAKE_PREFIX_PATH="/opt/ids-peak_2.19.0.0-260_amd64/lib/x86_64-linux
 RUN make
 RUN make install
 
-COPY payload/configurations/MOSStartSG.sh /home/sgmgr/MOSStartSG.sh
-COPY payload/configurations/RunSG.sh /home/sgmgr/RunSG.sh
+COPY payload/configurations/MOSStartSG.sh /home/sgmgr/
+COPY payload/configurations/RunSG.sh /home/sgmgr/
 
 COPY cdmdevice/bin/PLC_CDM.xml /home/sgmgr/PLC_CDM.xml
 COPY cdmdevice/bin/PLC_DATABROKER.xml /home/sgmgr/PLC_DATABROKER.xml
@@ -117,7 +117,7 @@ COPY payload/configurations/Run_cron_SG.sh /home/sgmgr/
 
 USER root
 WORKDIR /root
-COPY payload/configurations/.bashrc .bashrc
+COPY payload/configurations/.bashrc.sg .bashrc
 
 #MOS permission and authentification
 COPY payload/permission.txt /home/sgmgr/MOS/${MOS_VERSION}/properties/
