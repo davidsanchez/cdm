@@ -606,20 +606,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
 	begin = std::chrono::steady_clock::now();
 
-	//RR: tmp, while no LEDs!!!
-	circle_results = std::vector<double>{0.0,0.0,0.0,0.0}; 
-	led_x_results = std::vector<double>{0.0,0.0,0.0,0.0,
-	                                    0.0,0.0,0.0,0.0,
-	                                    0.0,0.0,0.0,0.0,}; 
-	led_y_results = std::vector<double>{0.0,0.0,0.0,0.0,
-	                                    0.0,0.0,0.0,0.0,
-	                                    0.0,0.0,0.0,0.0,};
-	oarl_x_results = std::vector<double>{0.0,0.0}; 
-	oarl_y_results = std::vector<double>{0.0,0.0}; 
-	displacement_results = std::vector<double>{0.0,0.0,0.0}; 
-	oarl_mean_results = std::vector<double>{0.0,0.0}; 
 	
-	/*
 	circle_results = myimage.GetCircleResults();
 	led_x_results = myimage.GetLEDxResults();
 	led_y_results = myimage.GetLEDyResults();
@@ -627,7 +614,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 	oarl_y_results = myimage.GetOARLyResults();
 	displacement_results = myimage.GetDisplacementResults();
 	oarl_mean_results =myimage.GetOARLmeanResults();
-	*/
+	
 	
 	circle_x.push_back(circle_results[0]);
 	circle_y.push_back(circle_results[1]);
