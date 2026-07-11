@@ -763,8 +763,9 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 	    // Push the image here
 	    std::chrono::steady_clock::time_point begin_getimage = std::chrono::steady_clock::now();
 	    // April 2025 Remove the publication of the image to save bandwidth
-	    //published_image = myimage.GetImageToPublish(currentDateTime());
-	    //myclient->setDatapoint(datapointName_image, m_nameSpace, published_image);
+	    //TODO REMOVE ME Jul 2027
+      published_image = myimage.GetImageToPublish(currentDateTime());
+	    myclient->setDatapoint(datapointName_image, m_nameSpace, published_image);
 	    myclient->setDatapoint(datapointName_nImagesGet, m_nameSpace, (int)i_images_taken);
 	    std::chrono::steady_clock::time_point end_getimage = std::chrono::steady_clock::now();
 	    LOG_IMAGE << "Camera::StartCDM(): Time difference [Get image for publishing] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_getimage - begin_getimage).count() << "[ms]" << std::endl;
