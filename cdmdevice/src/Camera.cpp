@@ -1398,7 +1398,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 
     vector<std::string> v_image_paths;
     int i_images_taken = 0;
-    int n_allocated_memories = 20;
+    int n_allocated_memories = 100;
 
     // Setup for freerun configuration
     m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")
