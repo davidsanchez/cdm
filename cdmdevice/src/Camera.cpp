@@ -592,9 +592,8 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 	LOG_IMAGE << "Camera::StartCDM(): Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
 	begin = std::chrono::steady_clock::now();
-	// RR skip this while there are no LEDs!!!
 	LOG_INFO<<"Camera::StartCDM loop: ImageAnalysis CalculateImage"<<std::endl;
-	// myimage.CalculateImage();
+	myimage.CalculateImage();
 	std::this_thread::sleep_for(std::chrono::milliseconds(3)); //RR in place of CalculateImage
 
 	end = std::chrono::steady_clock::now();
