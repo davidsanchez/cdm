@@ -198,6 +198,8 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
   streamObj << helper.get_Aux_status_DM_West_Bottom();
   streamObj << helper.get_Aux_status_DM_West_Top();
   
+
+
   if (n_stack > 1)
     streamObj << "-stack=" << n_stack;
   streamObj << ".fits.gz";
@@ -1401,7 +1403,8 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
       LOG_ERROR<<"Camera::GetMultipleImages camera is not connected"<<std::endl;
       return {};
     }
-    
+    LOG_WARNING<< "Camera::GetMultipleImages(): Zenith = "<<helper.get_Zenith()<<std::endl;
+    LOG_WARNING<< "Camera::GetMultipleImages(): Azimuth = "<<helper.get_Azimuth()<<std::endl;
     b_keep_taking = 1;
 
     vector<std::string> v_image_paths;
