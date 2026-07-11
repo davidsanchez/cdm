@@ -496,7 +496,8 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
     Mat m1;
     // April 2025 Remove the publication of the image to save bandwidth
-    // vector<uchar> published_image;
+    // TODO REMOVE ME
+     vector<uchar> published_image;
 
     vector<double> circle_x;
     vector<double> circle_y;
