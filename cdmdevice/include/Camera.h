@@ -137,7 +137,7 @@ public:
 
   const int nLED = 12;
   const int nOARL = 2;
-  const double px2arcsec = 7.35;
+  const double px2arcsec = 1;//TODO DS. change7.35;
 
   // TODO: initalize vectors with the proper size immediately.    
   std::vector<std::string> datapointName_LED_x_arrays =

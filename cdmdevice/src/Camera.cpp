@@ -648,10 +648,11 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 	
             //is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
 	i_images_taken++;
-	px2arcsec = 1;
+	
 	// TODO: Optimize this?
 	LOG_DATA
 	  //cout
+
 	  << setprecision(10)
 	  << helper.get_Zenith() << " "
 	  << helper.get_Azimuth() << " "
