@@ -636,11 +636,11 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
       bool HeartBeatEnable = false;
       bool HeartBeat = false;
       getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.Diagnostics._Heart_Beat", 2, HeartBeat);
-      std::cout << "CDM::get(): HeartBeat " << HeartBeat<< endl;
+      //std::cout << "CDM::get(): HeartBeat " << HeartBeat<< endl;
       getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.Diagnostics._Enable_Heart_Beat", 2, HeartBeatEnable);
-      std::cout << "CDM::get(): HeartBeatEnable " << HeartBeatEnable<< endl;
+      //std::cout << "CDM::get(): HeartBeatEnable " << HeartBeatEnable<< endl;
       getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.Diagnostics._Error_Heart_Beat", 2, HeartBeatError);
-      std::cout << "CDM::get(): HeartBeatError " << HeartBeatError<< endl;
+      //std::cout << "CDM::get(): HeartBeatError " << HeartBeatError<< endl;
 
       //        if (HeartBeatError ) {ret = 1;}
       //        else {ret = 0;}
