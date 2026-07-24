@@ -192,7 +192,8 @@ public:
 
 private:
   map<std::string,std::string> m_config;
-   
+    static const std::unordered_map<std::string, std::string> pixelFormatMap;
+    bool setPixelFormat(const std::string &pixel_format);
 
 };
 

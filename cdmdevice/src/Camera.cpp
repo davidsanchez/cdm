@@ -22,7 +22,11 @@ using namespace CCfits;
 using namespace std;
 using namespace cv;
 
-
+const std::unordered_map<std::string, std::string> Camera::pixelFormatMap = {
+    {"IS_CM_SENSOR_RAW16", "Mono12"},
+    {"IS_CM_MONO8",        "Mono8"},
+    // ajoutez ici les autres formats IS_CM_* utilisés
+};
 
 std::string currentDateTime()
 {
@@ -137,6 +141,39 @@ Camera::~Camera() {
   peak::Library::Close();
 }
 
+
+bool Camera::setPixelFormat(const std::string &pixel_format)
+{
+    LOG_INFO << "Camera::setPixelFormat(): requested '" << pixel_format << "'" << std::endl;
+
+    auto it = pixelFormatMap.find(pixel_format);
+    if (it == pixelFormatMap.end())
+    {
+        LOG_ERROR << "Camera::setPixelFormat(): unsupported pixel_format '"
+                   << pixel_format << "'" << std::endl;
+        return false;
+    }
+
+    const std::string &genICamFormat = it->second;
+
+    try
+    {
+        auto pixelFormatNode =
+            m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat");
+
+        pixelFormatNode->SetCurrentEntry(genICamFormat);
+
+        LOG_INFO << "Camera::setPixelFormat(): set to '" << genICamFormat << "'" << std::endl;
+        return true;
+    }
+    catch (const std::exception &e)
+    {
+        LOG_ERROR << "Camera::setPixelFormat(): failed to set '" << genICamFormat
+                   << "': " << e.what() << std::endl;
+        return false;
+    }
+}
+
 std::string Camera::writeFITSImage(Mat image, int n_stack)
 {
   LOG_INFO << "Camera::writeFITSImage()"<<std::endl;
@@ -226,7 +263,10 @@ else
     return "-1";
 }
 
-
+double minVal, maxVal;
+cv::minMaxLoc(image, &minVal, &maxVal);
+LOG_INFO << "Camera::writeFITSImage(): pixel min=" << minVal 
+          << " max=" << maxVal << std::endl;
   try
     {
       if ((iBitsPerPixel == 16) || (iBitsPerPixel == 12) || (iBitsPerPixel == 10))
@@ -1983,7 +2023,7 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     {
       LOG_INFO << "PixelFormat disponible: " << entry->SymbolicValue() << std::endl;
     }
-    //RR: TODO update config parameters to match IDS peak naming
+    /*//RR: TODO update config parameters to match IDS peak naming
     if (pixel_format == "IS_CM_SENSOR_RAW16") {
       m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono12");
       LOG_INFO << "Camera::Configure(): setting Mono12"<< std::endl;
@@ -1992,6 +2032,12 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
       m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono8");
     } else {
       LOG_ERROR << "Camera::Configure: bad pixel format "<< pixel_format << endl;
+    }*/
+
+    if (!setPixelFormat(pixel_format))
+    {
+      LOG_ERROR << "Camera::Configure(): failed to configure pixel format" << std::endl;
+      // gérer l'erreur selon la logique de votre fonction (return, throw, valeur par défaut...)
     }
 
     pixel_format=m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->CurrentEntry()->SymbolicValue();
