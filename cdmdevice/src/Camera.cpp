@@ -1977,6 +1977,12 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     //LOG_INFO << "Camera::Configure(): SetDisplayMode returned " << nRet << std::endl;
 
     // Set Color Mode
+    auto pixelFormatNode = m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat");
+    auto entries = pixelFormatNode->EnumEntries();
+    for (auto &entry : entries)
+    {
+      LOG_INFO << "PixelFormat disponible: " << entry->SymbolicValue() << std::endl;
+    }
     //RR: TODO update config parameters to match IDS peak naming
     if (pixel_format == "IS_CM_SENSOR_RAW16") {
       m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono12");
