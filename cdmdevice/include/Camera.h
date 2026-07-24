@@ -45,9 +45,6 @@ struct PixelFormatInfo {
     int bitsPerPixel;
 };
 
-// Déclaration externe des maps (définition dans le .cpp)
-static const std::unordered_map<std::string, PixelFormatInfo> pixelFormatByInterface;
-static const std::unordered_map<std::string, PixelFormatInfo> pixelFormatByGenICam;
 
 class Camera
 {
