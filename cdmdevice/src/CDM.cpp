@@ -272,10 +272,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 	      { return c == ' '; });
 
 	      // Check that the input string is some sensible value
-	      if (results[4] == "IS_CM_MONO8")
-                {
-		  camera.iBitsPerPixel = 8;
-                }
+	      if (results[4] == "IS_CM_MONO8"){camera.iBitsPerPixel = 8;}
 	      else
                 {
 		  results[4] = "IS_CM_SENSOR_RAW16";

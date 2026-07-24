@@ -213,9 +213,17 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
   COND_LOG_DEBUG << "filePath: " << filePath << std::endl;
   COND_LOG_DEBUG << "remoteImagePath: " << remoteImagePath << std::endl;
 
-  // RR do this
-  iBitsPerPixel=8;
-  
+  if (image.depth() == CV_8U)
+    iBitsPerPixel = 8;
+else if (image.depth() == CV_16U)
+    iBitsPerPixel = 16;
+    
+  {
+    LOG_ERROR << "writeFITSImage: unsupported Mat depth" << std::endl;
+    return "-1";
+}
+
+
   try
     {
       if ((iBitsPerPixel == 16) || (iBitsPerPixel == 12) || (iBitsPerPixel == 10))
@@ -248,7 +256,7 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
       std::vector<uint16_t> array;
       if (image.isContinuous())
         {
-	  array.assign((uint16_t *)image.data, (uint16_t *)image.data + image.total());
+	  array.assign((uint16_t *)image.data, (uint16_t *)image.data + image.total()*image.channels());
         }
       else
         {
