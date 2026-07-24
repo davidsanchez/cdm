@@ -22,11 +22,6 @@ using namespace CCfits;
 using namespace std;
 using namespace cv;
 
-struct PixelFormatInfo {
-    std::string genICamName;
-    std::string interfaceName;
-    int bitsPerPixel;
-};
 
 static const std::unordered_map<std::string, PixelFormatInfo> pixelFormatByInterface = {
     {"IS_CM_SENSOR_RAW16", {"Mono12", "IS_CM_SENSOR_RAW16", 16}},
