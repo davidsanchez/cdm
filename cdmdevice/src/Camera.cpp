@@ -456,7 +456,7 @@ int Camera::Connect()
 	    <<" deg"<<std::endl;
 
     //setup bit depth / exp / gain for now
-    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono8");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono12");
     m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->SetValue(20000.0);
     m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("Gain")->SetValue(1.0);
     

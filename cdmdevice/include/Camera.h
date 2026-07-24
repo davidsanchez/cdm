@@ -101,8 +101,8 @@ public:
   int master_gain_setting = 0;
     
   // Need to find out the memory size of the pixel and the colour mode
-  int iColorMode = IS_CM_MONO8; //IS_CM_SENSOR_RAW16; //IS_CM_MONO8; 
-  int iBitsPerPixel = 8;        //8; //16;
+  int iColorMode = IS_CM_SENSOR_RAW16; //IS_CM_MONO8; 
+  int iBitsPerPixel = 16;        //8; //16;
   int iWidth = 0;  // will be properly initialized with the sensor info struct information
   int iHeight = 0; // will be properly initialized with the sensor info struct information
   double dblFrameRateToSet = 10.0; // if set to 0.0 the max possible fps will be set
@@ -112,11 +112,11 @@ public:
   bool b_keep_taking=1;
 
   
-  typedef boost::bimap< std::string, int > bimap;
+  /*typedef boost::bimap< std::string, int > bimap;
   const bimap pixel_formats = boost::assign::list_of< bimap::relation >
     ( "IS_CM_MONO8", IS_CM_MONO8 )
     ( "IS_CM_SENSOR_RAW8", IS_CM_SENSOR_RAW8 )
-    ( "IS_CM_SENSOR_RAW16", IS_CM_SENSOR_RAW16 );
+    ( "IS_CM_SENSOR_RAW16", IS_CM_SENSOR_RAW16 );*/
   
   
   Config *cdm_config = new Config(CDM_CONFIGURATION_NAME,"");
