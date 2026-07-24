@@ -22,10 +22,9 @@ using namespace CCfits;
 using namespace std;
 using namespace cv;
 
-
-static const std::unordered_map<std::string, PixelFormatInfo> pixelFormatByInterface = {
-    {"IS_CM_SENSOR_RAW16", {"Mono12", "IS_CM_SENSOR_RAW16", 16}},
-    {"IS_CM_MONO8",        {"Mono8",  "IS_CM_MONO8",        8}},
+const std::map<std::string, std::string> Camera::pixelFormatMap = {
+    {"IS_CM_SENSOR_RAW16", "Mono12"},
+    {"IS_CM_MONO8", "Mono8"},
 };
 
 // Recherche inverse (GenICam -> interface)
