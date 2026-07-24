@@ -38,7 +38,16 @@ extern Helper helper;
 #define IS_GET_MASTER_GAIN                  0x8000
 #define IS_IGNORE_PARAMETER                 (-1)
 
+// Structure décrivant un format de pixel
+struct PixelFormatInfo {
+    std::string genICamName;
+    std::string interfaceName;
+    int bitsPerPixel;
+};
 
+// Déclaration externe des maps (définition dans le .cpp)
+extern const std::unordered_map<std::string, PixelFormatInfo> pixelFormatByInterface;
+extern const std::unordered_map<std::string, PixelFormatInfo> pixelFormatByGenICam;
 
 class Camera
 {
@@ -194,7 +203,16 @@ private:
   map<std::string,std::string> m_config;
     static const std::unordered_map<std::string, std::string> pixelFormatMap;
     bool setPixelFormat(const std::string &pixel_format);
+    // Nouveau membre temporaire pour transmettre l'exposure entre setExposure() et setFrameRate()
+    double m_lastExposure = 0.0;
 
+    // Nouvelles méthodes privées extraites de Configure()
+    void setPixelClock(int nPixelClock, std::vector<boost::any> &return_values);
+    void setExposure(double exposure, std::vector<boost::any> &return_values);
+    void setAcquisitionMode();
+    void setFrameRate(double fps, std::vector<boost::any> &return_values);
+    void setGain(int gain, std::vector<boost::any> &return_values);
+    void setPixelFormatAndReport(std::string pixel_format, std::vector<boost::any> &return_values);
 };
 
 #endif //  Camera_H_
