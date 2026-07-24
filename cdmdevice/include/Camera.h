@@ -38,12 +38,6 @@ extern Helper helper;
 #define IS_GET_MASTER_GAIN                  0x8000
 #define IS_IGNORE_PARAMETER                 (-1)
 
-// Structure décrivant un format de pixel
-struct PixelFormatInfo {
-    std::string genICamName;
-    std::string interfaceName;
-    int bitsPerPixel;
-};
 
 
 class Camera
@@ -101,8 +95,8 @@ public:
   int master_gain_setting = 0;
     
   // Need to find out the memory size of the pixel and the colour mode
-  int iColorMode = IS_CM_SENSOR_RAW16; //IS_CM_MONO8; 
-  int iBitsPerPixel = 16;        //8; //16;
+  int iColorMode = IS_CM_MONO8; //IS_CM_SENSOR_RAW16; //IS_CM_MONO8; 
+  int iBitsPerPixel = 8;        //8; //16;
   int iWidth = 0;  // will be properly initialized with the sensor info struct information
   int iHeight = 0; // will be properly initialized with the sensor info struct information
   double dblFrameRateToSet = 10.0; // if set to 0.0 the max possible fps will be set
@@ -112,11 +106,11 @@ public:
   bool b_keep_taking=1;
 
   
-  /*typedef boost::bimap< std::string, int > bimap;
+  typedef boost::bimap< std::string, int > bimap;
   const bimap pixel_formats = boost::assign::list_of< bimap::relation >
     ( "IS_CM_MONO8", IS_CM_MONO8 )
     ( "IS_CM_SENSOR_RAW8", IS_CM_SENSOR_RAW8 )
-    ( "IS_CM_SENSOR_RAW16", IS_CM_SENSOR_RAW16 );*/
+    ( "IS_CM_SENSOR_RAW16", IS_CM_SENSOR_RAW16 );
   
   
   Config *cdm_config = new Config(CDM_CONFIGURATION_NAME,"");
@@ -198,19 +192,9 @@ public:
 
 private:
   map<std::string,std::string> m_config;
-    static const std::map<std::string, std::string> pixelFormatMap;
-
+    static const std::unordered_map<std::string, std::string> pixelFormatMap;
     bool setPixelFormat(const std::string &pixel_format);
-    // Nouveau membre temporaire pour transmettre l'exposure entre setExposure() et setFrameRate()
-    double m_lastExposure = 0.0;
 
-    // Nouvelles méthodes privées extraites de Configure()
-    void setPixelClock(int nPixelClock, std::vector<boost::any> &return_values);
-    void setExposure(double exposure, std::vector<boost::any> &return_values);
-    void setAcquisitionMode();
-    void setFrameRate(double fps, std::vector<boost::any> &return_values);
-    void setGain(int gain, std::vector<boost::any> &return_values);
-    void setPixelFormatAndReport(std::string pixel_format, std::vector<boost::any> &return_values);
 };
 
 #endif //  Camera_H_
