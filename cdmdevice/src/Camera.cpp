@@ -215,9 +215,9 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
 
 
   LOG_TRACE<<image.depth() << std::endl;
-  if (image.depth() == CV_8U)
+  if (image.depth() == 0)
     iBitsPerPixel = 8;
-else if (image.depth() == CV_16U)
+else if (image.depth() == 2)
     iBitsPerPixel = 16;
     
   {
