@@ -214,13 +214,14 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
   COND_LOG_DEBUG << "remoteImagePath: " << remoteImagePath << std::endl;
 
 
-  LOG_TRACE<<image.depth() << std::endl;
-  if (image.depth() == 0)
+LOG_TRACE << image.depth() << std::endl;
+
+if (image.depth() == CV_8U)       // 0
     iBitsPerPixel = 8;
-else if (image.depth() == 2)
+else if (image.depth() == CV_16U) // 2
     iBitsPerPixel = 16;
-    
-  {
+else
+{
     LOG_ERROR << "writeFITSImage: unsupported Mat depth" << std::endl;
     return "-1";
 }
