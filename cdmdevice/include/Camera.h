@@ -78,6 +78,7 @@ public:
   double get_temperature_value();
   std::string get_temperature_status();
     
+  static const std::map<std::string, std::string> pixelFormatMap;
 
   //private:
   // Camera stuff
