@@ -213,6 +213,8 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
   COND_LOG_DEBUG << "filePath: " << filePath << std::endl;
   COND_LOG_DEBUG << "remoteImagePath: " << remoteImagePath << std::endl;
 
+
+  LOG_TRACE<<image.depth() << std::endl;
   if (image.depth() == CV_8U)
     iBitsPerPixel = 8;
 else if (image.depth() == CV_16U)
