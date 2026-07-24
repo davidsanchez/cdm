@@ -78,7 +78,6 @@ public:
   double get_temperature_value();
   std::string get_temperature_status();
     
-  static const std::map<std::string, std::string> pixelFormatMap;
 
   //private:
   // Camera stuff
@@ -199,7 +198,8 @@ public:
 
 private:
   map<std::string,std::string> m_config;
-    static const std::unordered_map<std::string, std::string> pixelFormatMap;
+    static const std::map<std::string, std::string> pixelFormatMap;
+
     bool setPixelFormat(const std::string &pixel_format);
     // Nouveau membre temporaire pour transmettre l'exposure entre setExposure() et setFrameRate()
     double m_lastExposure = 0.0;
