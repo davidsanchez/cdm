@@ -246,7 +246,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 				     95000.0,     // exposure
 				     10.0,          // fps
 				     5.0,         // gain
-				     "IS_CM_MONO8" // pixel_format
+				     "IS_CM_SENSOR_RAW16" // pixel_format
 				     );
                 
 	      SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
