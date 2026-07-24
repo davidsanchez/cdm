@@ -1978,7 +1978,7 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
 
     // Set Color Mode
     auto pixelFormatNode = m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat");
-    auto entries = pixelFormatNode->EnumEntries();
+    auto entries = pixelFormatNode->Entries();
     for (auto &entry : entries)
     {
       LOG_INFO << "PixelFormat disponible: " << entry->SymbolicValue() << std::endl;
