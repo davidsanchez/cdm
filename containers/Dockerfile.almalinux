@@ -89,6 +89,7 @@ WORKDIR /home/cdmmgr/
 RUN git clone  https://gitlgab-ci-token:yABEkVcH-fS-3D7zoov3Um86MQp1OjE1cAk.01.0z1h3jvja@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/aux/cdm.git --depth 1
 
 RUN mkdir ./cdm/build
+RUN mkdir ./LSTDeviceController
 RUN mkdir ./LSTDeviceController/build
 RUN mkdir ./output
 
@@ -100,7 +101,7 @@ WORKDIR /home/cdmmgr/
 
 WORKDIR LSTDeviceController/build
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH="/home/mosmgr/MOS/${MOS_VERSION}/" ..
-RUN make
+
 
 # setup Yocto location for compilation
 ENV YOCTO_PATH=/home/cdmmgr/YoctoMeteo_cpp
