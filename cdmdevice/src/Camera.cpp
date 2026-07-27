@@ -22,12 +22,16 @@ using namespace CCfits;
 using namespace std;
 using namespace cv;
 
-const std::unordered_map<std::string, std::string> Camera::pixelFormatMap = {
+const std::map<std::string, std::string> Camera::pixelFormatMap = {
     {"IS_CM_SENSOR_RAW16", "Mono12"},
-    {"IS_CM_MONO8",        "Mono8"},
-    // ajoutez ici les autres formats IS_CM_* utilisés
+    {"IS_CM_MONO8", "Mono8"},
 };
 
+// Recherche inverse (GenICam -> interface)
+static const std::unordered_map<std::string, PixelFormatInfo> pixelFormatByGenICam = {
+    {"Mono12", {"Mono12", "IS_CM_SENSOR_RAW16", 16}},
+    {"Mono8",  {"Mono8",  "IS_CM_MONO8",        8}},
+};
 std::string currentDateTime()
 {
     using namespace boost::posix_time;
@@ -452,7 +456,7 @@ int Camera::Connect()
 	    <<" deg"<<std::endl;
 
     //setup bit depth / exp / gain for now
-    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono8");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono12");
     m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->SetValue(20000.0);
     m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("Gain")->SetValue(1.0);
     
@@ -1954,125 +1958,131 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
 
     LOG_INFO << "Camera::GetImage end"<<endl;
 }
-
-std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, double fps, int gain, string pixel_format)
+void Camera::setPixelClock(int nPixelClock, std::vector<boost::any> &return_values)
 {
-    LOG_TRACE << "Camera::Configure(): Start"<<endl;
-
-    std::vector<boost::any> return_values;
-
-    // Set pixel clock (in MHz, e.g. value 216)
-    // NB: pixel clock cannot be set for newer, uEye+ cameras
-    float pclock=nPixelClock*1e6; //clock is now set as a float 
-    try {
-      m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("DeviceClockFrequency")->SetValue(pclock);
+    float pclock = nPixelClock * 1e6f;
+    try
+    {
+        m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("DeviceClockFrequency")->SetValue(pclock);
     }
-    catch (const peak::core::BadAccessException& e) {
-      //just ignore and carry on
-      LOG_INFO<<"Could not write DeviceClockFrequency for IDS camera. Pixel clock is not configurable for newer models."<<std::endl;
+    catch (const peak::core::BadAccessException &e)
+    {
+        LOG_INFO << "Camera::setPixelClock(): DeviceClockFrequency not writable "
+                    "(pixel clock not configurable on this model)" << std::endl;
     }
-    
-    //return actual value
+
     pclock = m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("DeviceClockFrequency")->Value();
-    return_values.push_back(static_cast<int>(pclock/1e6));
-        
+    LOG_INFO << "Camera::setPixelClock(): actual pixel clock = " << pclock / 1e6 << " MHz" << std::endl;
+    return_values.push_back(static_cast<int>(pclock / 1e6));
+}
 
-
-    // Set exposure
-    LOG_INFO << "Camera::Configure(): Value of exposure to be set is : " << exposure << std::endl;
+void Camera::setExposure(double exposure, std::vector<boost::any> &return_values)
+{
+    LOG_INFO << "Camera::setExposure(): requested = " << exposure << std::endl;
     m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->SetValue(exposure);
-    double current_exposure=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->Value();
-    LOG_INFO << "Camera::Configure(): Current exposure is: " << current_exposure << std::endl;
+
+    double current_exposure = m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->Value();
+    LOG_INFO << "Camera::setExposure(): actual = " << current_exposure << std::endl;
 
     Camera::exposure_setting = current_exposure;
+    // Note: on pousse exposure plus tard, après fps, pour garder l'ordre original de return_values
+    m_lastExposure = current_exposure; // stocker temporairement
+}
 
-    // Set frame rate
-    // Setup for freerun configuration, so frame rate can be set
+void Camera::setAcquisitionMode()
+{
     m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")->SetCurrentEntry("Continuous");
     m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")->SetCurrentEntry("ExposureStart");
     m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")->SetCurrentEntry("Off");
-    LOG_INFO << "Camera::Configure(): Value of frame rate to be set is : " << fps << std::endl;
-    m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->SetValue(fps);
-    double current_fps=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->Value();
-    LOG_INFO << "Camera::Configure(): Current frame rate is: " << current_fps << std::endl;
+}
 
-    //pushback FPS first and then exposure
+void Camera::setFrameRate(double fps, std::vector<boost::any> &return_values)
+{
+    LOG_INFO << "Camera::setFrameRate(): requested = " << fps << std::endl;
+    m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->SetValue(fps);
+
+    double current_fps = m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->Value();
+    LOG_INFO << "Camera::setFrameRate(): actual = " << current_fps << std::endl;
+
     return_values.push_back(current_fps);
-    return_values.push_back(current_exposure);
-    // Set hardware gain
-    // RR: now gain is a float!!!
-    float current_gain;
-    int gain_int;
-    LOG_INFO << "Camera::Configure(): Value of gain to be set is: " << gain << std::endl;
+    return_values.push_back(m_lastExposure); // exposure pushed here to keep original order
+}
+
+void Camera::setGain(int gain, std::vector<boost::any> &return_values)
+{
+    LOG_INFO << "Camera::setGain(): requested = " << gain << std::endl;
     m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("Gain")->SetValue(gain);
-    current_gain=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("Gain")->Value();
-    LOG_INFO << "Camera::Configure(): Current gain is: " << current_gain << std::endl;
-    gain_int=static_cast<int>(current_gain);
+
+    float current_gain = m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("Gain")->Value();
+    LOG_INFO << "Camera::setGain(): actual = " << current_gain << std::endl;
+
+    int gain_int = static_cast<int>(current_gain);
     return_values.push_back(gain_int);
     Camera::master_gain_setting = gain_int;
+}
 
-    // RR: ???
-    // Set Display Mode
-    //nRet = is_SetDisplayMode(hCam, IS_SET_DM_DIB);
-    //LOG_INFO << "Camera::Configure(): SetDisplayMode returned " << nRet << std::endl;
-
-    // Set Color Mode
-    auto pixelFormatNode = m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat");
-    auto entries = pixelFormatNode->Entries();
-    for (auto &entry : entries)
-    {
-      LOG_INFO << "PixelFormat disponible: " << entry->SymbolicValue() << std::endl;
-    }
-    /*//RR: TODO update config parameters to match IDS peak naming
-    if (pixel_format == "IS_CM_SENSOR_RAW16") {
-      m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono12");
-      LOG_INFO << "Camera::Configure(): setting Mono12"<< std::endl;
-    } else if (pixel_format == "IS_CM_MONO8") {
-      LOG_INFO << "Camera::Configure(): setting Mono8"<< std::endl;
-      m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono8");
-    } else {
-      LOG_ERROR << "Camera::Configure: bad pixel format "<< pixel_format << endl;
-    }*/
-
+void Camera::setPixelFormatAndReport(std::string pixel_format, std::vector<boost::any> &return_values)
+{
     if (!setPixelFormat(pixel_format))
     {
-      LOG_ERROR << "Camera::Configure(): failed to configure pixel format" << std::endl;
-      // gérer l'erreur selon la logique de votre fonction (return, throw, valeur par défaut...)
+        LOG_ERROR << "Camera::setPixelFormatAndReport(): failed to configure pixel format '"
+                   << pixel_format << "'" << std::endl;
+        throw std::runtime_error("Camera::Configure(): unsupported pixel format: " + pixel_format);
     }
 
-    pixel_format=m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->CurrentEntry()->SymbolicValue();
-    LOG_INFO << "Camera::Configure(): pixel format is "<<pixel_format<<std::endl;
-    
-    //TODO: depending on the chosen pixel format the iBitsPerPixel should also change.
-    //nRet = is_SetColorMode(hCam, pixel_formats.left.at(pixel_format));
-    //RR debug place reasonable value
-    //LOG_INFO << "Camera::Configure(): SetColorMode returned " << nRet << std::endl;
-    //nRet = is_SetColorMode(hCam, IS_GET_COLOR_MODE);
-    //LOG_INFO << "Camera::Configure(): GetColorMode returned " << pixel_formats.right.at(nRet) << std::endl;
+    std::string actualGenICamFormat =
+        m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")
+                    ->CurrentEntry()->SymbolicValue();
 
-    //RR: TODO fix these after interface specs are updated
-    if (pixel_format == "Mono12") {
-      return_values.push_back(std::string("IS_CM_SENSOR_RAW16"));
-      iBitsPerPixel = 16;
-    } else if (pixel_format == "Mono8") {
-      return_values.push_back(std::string("IS_CM_MONO8"));
-      iBitsPerPixel = 8;
+    LOG_INFO << "Camera::setPixelFormatAndReport(): actual pixel format = "
+             << actualGenICamFormat << std::endl;
+
+    auto it = pixelFormatByGenICam.find(actualGenICamFormat);
+    if (it == pixelFormatByGenICam.end())
+    {
+        LOG_ERROR << "Camera::setPixelFormatAndReport(): unknown GenICam format returned by camera: "
+                   << actualGenICamFormat << std::endl;
+        throw std::runtime_error("Unknown pixel format reported by camera: " + actualGenICamFormat);
     }
-    else {
-      LOG_ERROR << "Bad pixel format: " << pixel_format << endl;
-      return_values.push_back(pixel_format);
+
+    return_values.push_back(it->second.interfaceName);
+    iBitsPerPixel = it->second.bitsPerPixel;
+
+    LOG_INFO << "Camera::setPixelFormatAndReport(): iBitsPerPixel = " << iBitsPerPixel << std::endl;
+}
+
+std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, double fps, int gain, string pixel_format)
+{
+    LOG_TRACE << "Camera::Configure(): Start" << endl;
+
+    std::vector<boost::any> return_values;
+
+    try
+    {
+        // --- Pixel clock ---
+        setPixelClock(nPixelClock, return_values);
+
+        // --- Exposure ---
+        setExposure(exposure, return_values);
+
+        // --- Trigger / acquisition mode + FPS ---
+        setAcquisitionMode();
+        setFrameRate(fps, return_values);
+
+        // --- Gain ---
+        setGain(gain, return_values);
+
+        // --- Pixel format ---
+        setPixelFormatAndReport(pixel_format, return_values);
     }
-    
+    catch (const std::exception &e)
+    {
+        LOG_ERROR << "Camera::Configure(): exception during configuration: " << e.what() << std::endl;
+        // Selon la logique voulue : throw; ou return return_values partiel
+        throw;
+    }
 
-    // Setting image format
-    //nRet = is_ImageFormat(hCam, IMGFRMT_CMD_SET_FORMAT, &formatID, sizeof(formatID));
-    //LOG_INFO << "Camera::Configure(): Status ImageFormat: " << nRet;
-    //TODO: Check if the fps, exposure, pixel clock are still after pixel format setting.
-    //Call destructors?
-    //return "Message status"; //TODO: You should return errors here.
-
-    LOG_TRACE << "Camera::Configure(): End"<<endl;
-
+    LOG_TRACE << "Camera::Configure(): End" << endl;
     return return_values;
 }
 
