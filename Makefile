@@ -9,7 +9,7 @@ image:
 
 image-dev:
 	@echo 'Creating development Docker image for CDM...'
-	docker build  -f containers/Dockerfile.almalinux . --tag cdm:dev2
+	docker build  -f containers/Dockerfile.almalinux . --tag cdm:dev
 
 image-local:
 	@echo 'Creating local Docker image for CDM...'
@@ -28,5 +28,5 @@ clean-local:
 
 clean-dev:
 	@echo 'Cleaning all Docker images'
-	docker rmi cdm:dev2
+	docker rmi cdm:dev
 	docker builder prune
