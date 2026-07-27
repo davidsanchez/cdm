@@ -103,14 +103,14 @@ WORKDIR /home/cdmmgr/
 
 
 WORKDIR ./LSTDeviceController/build
-RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH="/home/mosmgr/MOS/${MOS_VERSION}/"
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH="/home/mosmgr/MOS/${MOS_VERSION}/" ..
 
 
 # setup Yocto location for compilation
 ENV YOCTO_PATH=/home/cdmmgr/YoctoMeteo_cpp
 COPY  payload/CMakeLists.txt ./cdm/build
 WORKDIR /home/cdmmgr/cdm/build
-RUN cmake -DCMAKE_PREFIX_PATH="/opt/ids-peak_2.19.0.0-260_amd64/lib/x86_64-linux-gnu/cmake/ids_peak;/opt/ids-peak_2.19.0.0-260_amd64/lib/cmake/ids_peak_common" -DCMAKE_INSTALL_PREFIX=.. /home/cdmmgr/cdm/cdmdevice ..
+RUN cmake -DCMAKE_PREFIX_PATH="/opt/ids-peak_2.19.0.0-260_amd64/lib/x86_64-linux-gnu/cmake/ids_peak;/opt/ids-peak_2.19.0.0-260_amd64/lib/cmake/ids_peak_common" -DCMAKE_INSTALL_PREFIX=.. /home/cdmmgr/cdm/cdmdevice 
 RUN make
 RUN make install
 

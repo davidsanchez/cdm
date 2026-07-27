@@ -1,4 +1,0 @@
-[submodule "devicecontroller"]
-	path = devicecontroller
-    url = https://gitlgab-ci-token:s08z76ls5exw8coWjkTP3W86MQp1OjE1cQk.01.0z0vz0if2@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/drive/devicecontroller.git
-	branch = al9
