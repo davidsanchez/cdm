@@ -1,12 +1,12 @@
 #!/bin/bash
-PROCESS="MOS-CDM-DEV"
+PROCESS="MOS-SG-DEV"
 
 count=`docker ps | grep -v grep | grep "$PROCESS" | awk {'print $5'} | wc -l`
 if [ "$count" = 0 ]; then
         echo "No docker image"
-        # cd /home/cdmmgr/cdm/
+        # cd /home/sgmgr/cdm/
         # fuser -k -n tcp 48011
-        docker compose -f /home/shifter/code/cdm/containers/compose/Dev-CDM-config.yaml up -d
+        docker compose -f /home/shifter/code/cdm/containers/compose/Dev-SG-config.yaml up -d
 
         sleep 2
         docker exec -dt $PROCESS  rm /var/run/crond.pid

@@ -1,0 +1,18 @@
+version: '3.3'
+services:
+  dev-sg:
+    privileged: true
+    hostname: dev-sg
+    container_name: "MOS-SG-DEV"
+    image: "sg:dev"
+    # restart: unless-stopped
+    stdin_open: true 
+    tty: true
+    ports:
+        - "48012:48012"
+    ipc: host
+    volumes:
+      - /home/shifter/SG/log/:/home/sgmgr/log
+      #- /dev:/dev
+      #- /var/run:/var/run
+      - /home/shifter/SG/:/home/sgmgr/output

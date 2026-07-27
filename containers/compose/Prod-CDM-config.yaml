@@ -6,15 +6,16 @@ services:
     container_name: "MOS-CDM"
     image: "cdm:latest"
     # restart: unless-stopped
-
+    stdin_open: true 
+    tty: true
     ports:
        - "48011:48011"
     ipc: host
     volumes:
 
-      - /home/lstoperator/log/:/home/cdmmgr/log
-      - /dev:/dev
-      - /var/run:/var/run
-      - /home/lstoperator/CDM/:/home/cdmmgr/output
+      - /home/shifter/CDM/log/:/home/cdmmgr/log
+      #- /dev:/dev
+      #- /var/run:/var/run
+      - /home/shifter/CDM/:/home/cdmmgr/output
 
 

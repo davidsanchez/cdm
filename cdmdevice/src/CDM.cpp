@@ -120,9 +120,10 @@ int CDM::afterStart()
   // Creating datapoint monitor that will notify us when the subscribed datapoints change.
   if (connection_result_DataBroker != connection_failure)
     {
-      LOG_TRACE << "CDM::afterStart(): Connected to DataBroker.";
+      LOG_TRACE << "CDM::afterStart(): Connected to DataBroker. subscribe now";
       // Subscription now happens in ControllerCB which calls the subscribe method.
-      //subscribe_DataBroker();
+      subscribe_DataBroker();
+      LOG_TRACE << "CDM::afterStart(): subscribe to DataBroker";
     }
   else
     {
@@ -196,23 +197,7 @@ int CDM::cmdAsynch(const std::string &command, int commandStringAck, const std::
 	  subChaine2.erase(0, pos + 1); // store the rest of the string (example the arguments of the instruction)
 
 	  // do Asynch commands
-	  	  if (subChaine1.compare("GetMultipleImagesStacked") == 0)
-            {
-
-	      boost::trim_right(subChaine2);
-	      m_Thread->cmdGetMultipleImagesStacked(datapointName, nameSpace, atoi(subChaine2.c_str()));
-
-	      //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str()));
-            }
-
-	  if (subChaine1.compare("GetMultipleImages") == 0)
-            {
-
-	      boost::trim_right(subChaine2);
-	      m_Thread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
-
-	      //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str()));
-            }
+	  	  
             
         }
     }
@@ -258,10 +243,10 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 	      m_Thread->cmdConfigure(datapointName,
 				     nameSpace,
 				     216,          // nPixelClock
-				     2000.0,     // exposure
+				     95000.0,     // exposure
 				     10.0,          // fps
-				     1.0,         // gain
-				     "IS_CM_MONO8" // pixel_format
+				     5.0,         // gain
+				     "IS_CM_SENSOR_RAW16" // pixel_format
 				     );
                 
 	      SetDatapointThread *m_SetDatapointThread_transition = new SetDatapointThread(getDataAccessClientOPCUARef(), helper.searchDatapoint("transition",cdm_config), 2, 0);
@@ -287,10 +272,7 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 	      { return c == ' '; });
 
 	      // Check that the input string is some sensible value
-	      if (results[4] == "IS_CM_MONO8")
-                {
-		  camera.iBitsPerPixel = 8;
-                }
+	      if (results[4] == "IS_CM_MONO8"){camera.iBitsPerPixel = 8;}
 	      else
                 {
 		  results[4] = "IS_CM_SENSOR_RAW16";
@@ -418,6 +400,27 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 	  if (subChaine1.compare("StopSG") == 0)
             {
 	      camera.StopSG();
+            }
+
+	  if (subChaine1.compare("GetMultipleImagesStacked") == 0)
+            {
+	      std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
+	      int nameSpace = 2;
+            
+	      boost::trim_right(subChaine2);
+	      m_Thread->cmdGetMultipleImagesStacked(datapointName, nameSpace, atoi(subChaine2.c_str()));
+
+	      //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str()));
+            }
+
+            if (subChaine1.compare("GetMultipleImages") == 0) {
+	      std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
+	      int nameSpace = 2;              
+
+	      boost::trim_right(subChaine2);
+	      m_Thread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
+
+	      //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str()));
             }
             
 	  if (subChaine1.compare("Error") == 0)
@@ -631,11 +634,11 @@ int CDM::get(const std::string &chain, int commandStringAck, std::vector<boost::
       bool HeartBeatEnable = false;
       bool HeartBeat = false;
       getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.Diagnostics._Heart_Beat", 2, HeartBeat);
-      std::cout << "CDM::get(): HeartBeat " << HeartBeat<< endl;
+      //std::cout << "CDM::get(): HeartBeat " << HeartBeat<< endl;
       getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.Diagnostics._Enable_Heart_Beat", 2, HeartBeatEnable);
-      std::cout << "CDM::get(): HeartBeatEnable " << HeartBeatEnable<< endl;
+      //std::cout << "CDM::get(): HeartBeatEnable " << HeartBeatEnable<< endl;
       getDataAccessClientOPCUARef()->getDatapoint("Unit_CDM.Diagnostics._Error_Heart_Beat", 2, HeartBeatError);
-      std::cout << "CDM::get(): HeartBeatError " << HeartBeatError<< endl;
+      //std::cout << "CDM::get(): HeartBeatError " << HeartBeatError<< endl;
 
       //        if (HeartBeatError ) {ret = 1;}
       //        else {ret = 0;}

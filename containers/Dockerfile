@@ -1,59 +1,55 @@
-FROM lst-structcal/mos:v12.4.3
-
+FROM lst/mos:v13.1
+ARG MOS_VERSION=MOS_X86_13.1.4a9
 
 USER root
-# legacy mirror for centOS
-RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/CentOS-*.repo
-RUN sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/CentOS-*.repo
-RUN sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/CentOS-*.repo
 
-# Creating a cdmmgr user
+# setup MOS location for compilation
+ENV MOS_LIB_PATH=/home/mosmgr/MOS/${MOS_VERSION}/lib 
+ENV MOS_PATH=/home/mosmgr/MOS/${MOS_VERSION}/bin
 
-RUN groupadd -g 1003 cdmmgr && \
-    useradd -g 1002 -u 1003 -d /home/cdmmgr -m -s /bin/bash cdmmgr
- 
-RUN yum clean all && yum update -y 
-RUN yum install -y cronie && yum install -y sudo && rm -rf /etc/cron.*/*
+RUN dnf update -y \
+    --setopt=fastestmirror=1 \
+    --setopt=max_parallel_downloads=10 \
+    --nodocs
+    
+RUN dnf install -y cronie && yum install -y sudo && rm -rf /etc/cron.*/*
 
-RUN yum install -y git
 # Installing the development software
-RUN yum install -y \
-     openssh-server \
-     xauth \
+RUN dnf install -y git
+RUN dnf install -y procps
+
+RUN dnf install -y \
+    openssh-server \
+    qt5 \
+    libatomic \    
+    xauth \
     gcc-c++ \
     gdb \
     git \
-    subversion \
     autoconf \
-    epel-release \
     make \
     cmake  \ 
     patch \
     wget \
-    curl \
     mc \
     libusbx-devel \
-    curl-devel \
     libxml2-devel \
     gdb-gdbserver \
-    CCfits-devel \
+    boost-devel \
     gedit \
     libatomic \
     vim \
-    screen \
-    python-devel \
+    python-devel 
+ 
+RUN sudo dnf install epel-release -y
+RUN sudo dnf config-manager --set-enabled crb
+RUN dnf install -y \
     opencv  \
-    opencv-devel  \
-    opencv-python
-
-RUN yum install -y  CCfits-devel
-
-
-USER cdmmgr
-WORKDIR /home/cdmmgr
-
-
-RUN mkdir -m 700 -p .ssh/
+     opencv-devel
+  #   opencv-python
+ 
+RUN dnf install -y CCfits\
+    	CCfits-devel
 
 USER root
 RUN mkdir  -p /root
@@ -65,45 +61,17 @@ RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_ed25519_key -t ed25519 -N ""
 RUN ssh-keygen -b 521 -f  /etc/ssh/ssh_host_ecdsa_key -t ecdsa -N ""
 RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_rsa_key -t rsa -N ""
 
-COPY payload/build.sh /home/cdmmgr/build.sh
+# install IDS peak
+COPY payload/ids-peak_2.19.0.0-260_amd64.tgz /opt
+WORKDIR /opt
+RUN tar xfz ids-peak_2.19.0.0-260_amd64.tgz
+RUN ids-peak_2.19.0.0-260_amd64/share/ids-peak/scripts/ids_install_udev_rule.sh
+
+USER cdmmgr
+WORKDIR /home/cdmmgr
+RUN mkdir -m 700 -p .ssh/
+
 COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
-COPY payload/configurations/RunCDM.sh /home/cdmmgr/RunCDM.sh
-COPY cdmdevice/bin/PLC_CDM.xml /home/cdmmgr/PLC_CDM.xml
-COPY cdmdevice/bin/PLC_DATABROKER.xml /home/cdmmgr/PLC_DATABROKER.xml
-COPY cdmdevice/bin/Unit_CDM_Model.xml /home/cdmmgr/Unit_CDM_Model.xml
-COPY cdmdevice/bin/FSM_CDM.xml /home/cdmmgr/FSM_CDM.xml
-
-
-#COPY cdm_mount/ /home/cdmmgr/
-
-#WORKDIR /home/cdmmgr/
-RUN mkdir ./output
-RUN mkdir ./output/images
-RUN mkdir ./output/fits
-
-RUN git  clone  --branch  main  https://gitlgab-ci-token:u8nz7deWHHs6nM-UBEK9@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/aux/cdm.git
-RUN mkdir -p cdm/cdmdevice/build
-
-#COPY  payload/CMakeLists.txt ./cdm/build
-COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
-
-COPY payload/uEye-Linux-4.90.06-64 ./
-RUN yes | ./ueyesdk-setup-4.90.06-usb-amd64.gz.run
-COPY payload/ueye.h /usr/include/ueye.h
-
-
-RUN mkdir ./boost
-COPY payload/boost_1_79_0 ./boost
-
-WORKDIR /home/cdmmgr/boost
-RUN ./bootstrap.sh --with-python=python2.7
-RUN  ./b2 install  --with=all
-RUN rm -r /home/cdmmgr/boost
-
-
-# to be change by linking better in cmake 
-RUN cp /usr/local/lib/libboost_* /usr/lib64/  
-#RUN cp payload/boost/libboost* /usr/lib64/
 
 # DL and build Yocto meteo
 RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
@@ -111,29 +79,53 @@ WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/
 RUN make
 WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
 RUN ln -s libyocto.so.1.0.1 libyocto.so
-RUN cp libyocto.so.1.0.1 /lib64/
-WORKDIR /home/cdmmgr/cdm/cdmdevice/build
-COPY  payload/CMakeLists.txt .
-RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
+# 
+
+# install CDM
+WORKDIR /home/cdmmgr/
+RUN git clone https://rando:Q8Kuh6c9JHWf5VVaR9lCUW86MQp1Oml1CA.01.0y03l8hyn@gitlab.cta-observatory.org/riccardo.rando/cdm.git
+
+RUN mkdir ./cdm/build
+RUN mkdir ./output
+WORKDIR /home/cdmmgr/output
+RUN mkdir ./images
+RUN mkdir ./fits
+WORKDIR /home/cdmmgr/
 
 
+
+# setup Yocto location for compilation
+ENV YOCTO_PATH=/home/cdmmgr/YoctoMeteo_cpp
+
+COPY  payload/CMakeLists.txt ./cdm/build
+
+WORKDIR /home/cdmmgr/cdm/build
+RUN cmake -DCMAKE_PREFIX_PATH="/opt/ids-peak_2.19.0.0-260_amd64/lib/x86_64-linux-gnu/cmake/ids_peak;/opt/ids-peak_2.19.0.0-260_amd64/lib/cmake/ids_peak_common" -DCMAKE_INSTALL_PREFIX=.. /home/cdmmgr/cdm/cdmdevice
 RUN make
 RUN make install
 
+COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
+COPY payload/configurations/RunCDM.sh /home/cdmmgr/RunCDM.sh
 
-#USER root
+COPY cdmdevice/bin/PLC_CDM.xml /home/cdmmgr/PLC_CDM.xml
+COPY cdmdevice/bin/PLC_DATABROKER.xml /home/cdmmgr/PLC_DATABROKER.xml
+COPY cdmdevice/bin/Unit_CDM_Model.xml /home/cdmmgr/Unit_CDM_Model.xml
+COPY cdmdevice/bin/FSM_CDM.xml /home/cdmmgr/FSM_CDM.xml
+
+COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
+
+USER root
 WORKDIR /root
 COPY payload/configurations/.bashrc .bashrc
 
 #MOS permission and authentification
-COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_12.4.3/properties/
-COPY payload/password.txt /home/mosmgr/MOS/MOS_X86_12.4.3/properties/
-COPY payload/ServerConfig.xml /home/mosmgr/MOS/MOS_X86_12.4.3/properties/
+COPY payload/permission.txt /home/mosmgr/MOS/${MOS_VERSION}/properties/
+COPY payload/password.txt /home/mosmgr/MOS/${MOS_VERSION}/properties/
+COPY payload/ServerConfig.xml /home/mosmgr/MOS/${MOS_VERSION}/properties/
+COPY payload/pluginPasswd.txt /home/mosmgr/MOS/${MOS_VERSION}/properties/
+
 
 #final stuff
 WORKDIR /home/cdmmgr
-#CMD tail -f /dev/null
+USER cdmmgr
 ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
-
-
-#export LD_LIBRARY=$LD_LIBRARY_PATH:/usr/local/lib

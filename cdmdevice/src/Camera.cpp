@@ -22,7 +22,11 @@ using namespace CCfits;
 using namespace std;
 using namespace cv;
 
-
+const std::unordered_map<std::string, std::string> Camera::pixelFormatMap = {
+    {"IS_CM_SENSOR_RAW16", "Mono12"},
+    {"IS_CM_MONO8",        "Mono8"},
+    // ajoutez ici les autres formats IS_CM_* utilisés
+};
 
 std::string currentDateTime()
 {
@@ -137,6 +141,39 @@ Camera::~Camera() {
   peak::Library::Close();
 }
 
+
+bool Camera::setPixelFormat(const std::string &pixel_format)
+{
+    LOG_INFO << "Camera::setPixelFormat(): requested '" << pixel_format << "'" << std::endl;
+
+    auto it = pixelFormatMap.find(pixel_format);
+    if (it == pixelFormatMap.end())
+    {
+        LOG_ERROR << "Camera::setPixelFormat(): unsupported pixel_format '"
+                   << pixel_format << "'" << std::endl;
+        return false;
+    }
+
+    const std::string &genICamFormat = it->second;
+
+    try
+    {
+        auto pixelFormatNode =
+            m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat");
+
+        pixelFormatNode->SetCurrentEntry(genICamFormat);
+
+        LOG_INFO << "Camera::setPixelFormat(): set to '" << genICamFormat << "'" << std::endl;
+        return true;
+    }
+    catch (const std::exception &e)
+    {
+        LOG_ERROR << "Camera::setPixelFormat(): failed to set '" << genICamFormat
+                   << "': " << e.what() << std::endl;
+        return false;
+    }
+}
+
 std::string Camera::writeFITSImage(Mat image, int n_stack)
 {
   LOG_INFO << "Camera::writeFITSImage()"<<std::endl;
@@ -198,6 +235,8 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
   streamObj << helper.get_Aux_status_DM_West_Bottom();
   streamObj << helper.get_Aux_status_DM_West_Top();
   
+
+
   if (n_stack > 1)
     streamObj << "-stack=" << n_stack;
   streamObj << ".fits.gz";
@@ -211,9 +250,23 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
   COND_LOG_DEBUG << "filePath: " << filePath << std::endl;
   COND_LOG_DEBUG << "remoteImagePath: " << remoteImagePath << std::endl;
 
-  // RR do this
-  iBitsPerPixel=8;
-  
+
+LOG_TRACE << image.depth() << std::endl;
+
+if (image.depth() == CV_8U)       // 0
+    iBitsPerPixel = 8;
+else if (image.depth() == CV_16U) // 2
+    iBitsPerPixel = 16;
+else
+{
+    LOG_ERROR << "writeFITSImage: unsupported Mat depth" << std::endl;
+    return "-1";
+}
+
+double minVal, maxVal;
+cv::minMaxLoc(image, &minVal, &maxVal);
+LOG_INFO << "Camera::writeFITSImage(): pixel min=" << minVal 
+          << " max=" << maxVal << std::endl;
   try
     {
       if ((iBitsPerPixel == 16) || (iBitsPerPixel == 12) || (iBitsPerPixel == 10))
@@ -246,7 +299,7 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
       std::vector<uint16_t> array;
       if (image.isContinuous())
         {
-	  array.assign((uint16_t *)image.data, (uint16_t *)image.data + image.total());
+	  array.assign((uint16_t *)image.data, (uint16_t *)image.data + image.total()*image.channels());
         }
       else
         {
@@ -494,7 +547,8 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
     Mat m1;
     // April 2025 Remove the publication of the image to save bandwidth
-    // vector<uchar> published_image;
+    // TODO REMOVE ME
+     vector<uchar> published_image;
 
     vector<double> circle_x;
     vector<double> circle_y;
@@ -568,14 +622,14 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 	auto tp_start = std::chrono::high_resolution_clock::now();
 	
 	if (iBitsPerPixel == 8) {
-	  m1 = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
+	  m1 = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
 	  
 	} else if (iBitsPerPixel == 16) {
-	  m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	  m1 = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	  
 	} else  {
 	  LOG_ERROR << "Camera::StartCDM(): Check bitdepth!" << endl;
-	  m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	  m1 = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	} // if (iBitsPerPixel == 8) 
 	
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -589,9 +643,8 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 	LOG_IMAGE << "Camera::StartCDM(): Time difference [ImageInitalisation] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
 	begin = std::chrono::steady_clock::now();
-	// RR skip this while there are no LEDs!!!
 	LOG_INFO<<"Camera::StartCDM loop: ImageAnalysis CalculateImage"<<std::endl;
-	// myimage.CalculateImage();
+	myimage.CalculateImage();
 	std::this_thread::sleep_for(std::chrono::milliseconds(3)); //RR in place of CalculateImage
 
 	end = std::chrono::steady_clock::now();
@@ -603,20 +656,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 
 	begin = std::chrono::steady_clock::now();
 
-	//RR: tmp, while no LEDs!!!
-	circle_results = std::vector<double>{0.0,0.0,0.0,0.0}; 
-	led_x_results = std::vector<double>{0.0,0.0,0.0,0.0,
-	                                    0.0,0.0,0.0,0.0,
-	                                    0.0,0.0,0.0,0.0,}; 
-	led_y_results = std::vector<double>{0.0,0.0,0.0,0.0,
-	                                    0.0,0.0,0.0,0.0,
-	                                    0.0,0.0,0.0,0.0,};
-	oarl_x_results = std::vector<double>{0.0,0.0}; 
-	oarl_y_results = std::vector<double>{0.0,0.0}; 
-	displacement_results = std::vector<double>{0.0,0.0,0.0}; 
-	oarl_mean_results = std::vector<double>{0.0,0.0}; 
 	
-	/*
 	circle_results = myimage.GetCircleResults();
 	led_x_results = myimage.GetLEDxResults();
 	led_y_results = myimage.GetLEDyResults();
@@ -624,7 +664,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 	oarl_y_results = myimage.GetOARLyResults();
 	displacement_results = myimage.GetDisplacementResults();
 	oarl_mean_results =myimage.GetOARLmeanResults();
-	*/
+	
 	
 	circle_x.push_back(circle_results[0]);
 	circle_y.push_back(circle_results[1]);
@@ -663,6 +703,7 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 	// TODO: Optimize this?
 	LOG_DATA
 	  //cout
+
 	  << setprecision(10)
 	  << helper.get_Zenith() << " "
 	  << helper.get_Azimuth() << " "
@@ -761,8 +802,9 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 	    // Push the image here
 	    std::chrono::steady_clock::time_point begin_getimage = std::chrono::steady_clock::now();
 	    // April 2025 Remove the publication of the image to save bandwidth
-	    //published_image = myimage.GetImageToPublish(currentDateTime());
-	    //myclient->setDatapoint(datapointName_image, m_nameSpace, published_image);
+	    //TODO REMOVE ME Jul 2027
+      published_image = myimage.GetImageToPublish(currentDateTime());
+	    myclient->setDatapoint(datapointName_image, m_nameSpace, published_image);
 	    myclient->setDatapoint(datapointName_nImagesGet, m_nameSpace, (int)i_images_taken);
 	    std::chrono::steady_clock::time_point end_getimage = std::chrono::steady_clock::now();
 	    LOG_IMAGE << "Camera::StartCDM(): Time difference [Get image for publishing] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_getimage - begin_getimage).count() << "[ms]" << std::endl;
@@ -981,107 +1023,35 @@ int Camera::StartSG(DataAccessClientOPCUA *myclient) {
 
     // process data ...
     cv::Mat src, dst;
-    //check bit depth etc... for now 8 bits
-    src = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, static_cast<uint8_t*>(m_ImgbufferPtr->BasePtr()));
+    if (iBitsPerPixel == 8)
+      src = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, static_cast<uint8_t*>(m_ImgbufferPtr->BasePtr()));
+    else
+      src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, static_cast<uint16_t *>(m_ImgbufferPtr->BasePtr()));
 
-    // Transpose + Flip = 90 deg rotation
-    transpose(src, src);
-    flip(src, src, 1);
+    //rotate image, camera is upside down
+    rotate(src, src, ROTATE_180);
 
-    /*
-    std::vector<int> compression_params;
-    compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
-    compression_params.push_back(0);
-    resize(src, dst, cv::Size(0, 0), 0.15, 0.15, cv::INTER_AREA);
-    vector<unsigned char> data;
-    cv::imencode(".png", dst, data, compression_params); // Compresses and converts image to memory buffer (bytestring) so that it can be published to OPCUA datapoint
 
-    //RR temp
-    //cv::imwrite("./img.png",,compression_params);
-    
-    int m_nameSpace = 2;
-    string temString = datapointName_image;
-    SetDatapointThread *m_SetDatapointThread = new SetDatapointThread(myclient, temString, m_nameSpace, data); //pushes the image to the datapoint
-    */
     LOG_INFO<<"Camera::StartSG Prepare FITS file"<<std::endl;
     std::string imageName = writeFITSImage(src);
     LOG_INFO<<"Camera::StartSG FITS file ready in "<<imageName<<std::endl;
 
-    
-    // Flipping=Horizontal + Transpose=1 -> Rotating 90 deg clockwise
-    // This is to be done for incoming camera image or Fake camera image from
-    // fits file.
+    // move to remote location
+    // RR: legacy code, replace with DataBroker
+    char exec[300];
+    sprintf(exec,
+            "scp %s "
+            "ccddev@10.200.100.102:/fefs/onsite/data/aux/lst1/cdm/SG_images/",
+            imageName.c_str());
+    int scp_result = system(exec);
+    if (scp_result == 0) {
+      LOG_INFO<<"Camera::StartSG FITS file succesfully transferred"<<std::endl;
+      std::remove(imageName.c_str()); // deletes the file
+    } else {
+      LOG_ERROR<<"Camera::StartSG could not transfer FITS file"<<std::endl;      
+    }
+  
 
-    /*
-    LOG_INFO << "Camera::StartCDM loop: ImageAnalysis create" << std::endl;
-    ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
-
-    std::chrono::steady_clock::time_point end =
-        std::chrono::steady_clock::now();
-    LOG_IMAGE << "Camera::StartCDM(): Time difference [ImageInitalisation] = "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(end -
-                                                                       begin)
-                     .count()
-              << "[ms]" << std::endl;
-
-    begin = std::chrono::steady_clock::now();
-    // RR skip this while there are no LEDs!!!
-    
-    LOG_INFO<<"Camera::StartCDM loop: ImageAnalysis
-CalculateImage"<<std::endl;
-    // myimage.CalculateImage();
-    std::this_thread::sleep_for(std::chrono::milliseconds(3)); //RR in place
-of CalculateImage
-
-    end = std::chrono::steady_clock::now();
-    LOG_IMAGE << "Camera::StartCDM(): Time difference [CalculateImage] = "
-<< std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<
-"[ms]" << std::endl;
-
-    LOG_INFO<<"Camera::StartCDM loop: free buffer after
-ImageAnalysis"<<std::endl;
-    // queue buffer so that it can be used again
-    m_DatastreamPtr->QueueBuffer(m_ImgbufferPtr);
-
-    begin = std::chrono::steady_clock::now();
-
-    //RR: tmp, while no LEDs!!!
-    circle_results = std::vector<double>{0.0,0.0,0.0,0.0};
-    led_x_results = std::vector<double>{0.0,0.0,0.0,0.0,
-                                        0.0,0.0,0.0,0.0,
-                                        0.0,0.0,0.0,0.0,};
-    led_y_results = std::vector<double>{0.0,0.0,0.0,0.0,
-                                        0.0,0.0,0.0,0.0,
-                                        0.0,0.0,0.0,0.0,};
-    oarl_x_results = std::vector<double>{0.0,0.0};
-    oarl_y_results = std::vector<double>{0.0,0.0};
-    displacement_results = std::vector<double>{0.0,0.0,0.0};
-    oarl_mean_results = std::vector<double>{0.0,0.0};
-
-    circle_x.push_back(circle_results[0]);
-    circle_y.push_back(circle_results[1]);
-    circle_R.push_back(circle_results[2]);
-    circle_RMS.push_back(circle_results[3]);
-
-    displacement_x.push_back(displacement_results[0]);
-    displacement_y.push_back(displacement_results[1]);
-    rotation.push_back(displacement_results[2]);
-
-    LED_x.push_back(led_x_results);
-    LED_y.push_back(led_y_results);
-    OARL_x.push_back(oarl_x_results);
-    OARL_y.push_back(oarl_y_results);
-
-    OARL_mean_x.push_back(oarl_mean_results[0]);
-    OARL_mean_y.push_back(oarl_mean_results[1]);
-
-
-    end = std::chrono::steady_clock::now();
-    LOG_IMAGE << "Camera::StartCDM(): Time difference [Getting image results] =
-" << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
-<< "[ms]" << std::endl;
-    
-    */
     auto tp_stop = std::chrono::high_resolution_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp_stop -
                                                                     tp_start);
@@ -1410,15 +1380,15 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
       std::chrono::steady_clock::time_point begin_loop_after_image = std::chrono::steady_clock::now();
 
       if (iBitsPerPixel == 8)
-	m1 = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
+	m1 = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
       
       else if (iBitsPerPixel == 16)
-	m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	m1 = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
       
       else
 	{
 	  LOG_ERROR << "Camera::StartStream(): Check bitdepth!" << endl;
-	  m1 = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	  m1 = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	}
 
       ImageAnalysis myimage(m1, m_config, "Horizontal", 1, iBitsPerPixel);
@@ -1473,36 +1443,52 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
       LOG_ERROR<<"Camera::GetMultipleImages camera is not connected"<<std::endl;
       return {};
     }
-    
+    LOG_WARNING<< "Camera::GetMultipleImages(): Zenith = "<<helper.get_Zenith()<<std::endl;
+    LOG_WARNING<< "Camera::GetMultipleImages(): Azimuth = "<<helper.get_Azimuth()<<std::endl;
     b_keep_taking = 1;
 
     vector<std::string> v_image_paths;
     int i_images_taken = 0;
-    int n_allocated_memories = 20;
+    int n_allocated_memories = 100;
 
     // Setup for freerun configuration
-    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")->SetCurrentEntry("Continuous");
-    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")->SetCurrentEntry("ExposureStart");
-    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")->SetCurrentEntry("Off");
-    int payload_size =m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("PayloadSize")->Value();
-    LOG_INFO<<"Camera::GetMultipleImages payload size: "<<payload_size<<std::endl;
-    size_t num_buf_min=m_DatastreamPtr->NumBuffersAnnouncedMinRequired();
-    //check requested number of images
-    if (num_buf_min>n_allocated_memories) {
-      LOG_ERROR<<"Camera::GetMultipleImages: number of allocated memories less than number of buffers needed ("
-	       <<num_buf_min
-	       <<") so increasing number to min"<<std::endl;
-      n_allocated_memories=num_buf_min;
-    } //if (num_buf_min>n_allocated_memories)
-  
-    LOG_INFO<<"Camera::GetMultipleImages auto allocating data buffers"<<std::endl;
-    //automatically alloc raw buffers
-    for (size_t count=0; count<n_allocated_memories; count++) {
-      auto buffer=m_DatastreamPtr->AllocAndAnnounceBuffer(static_cast<size_t>(payload_size),nullptr);
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")
+      ->SetCurrentEntry("Continuous");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")
+      ->SetCurrentEntry("ExposureStart");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")
+      ->SetCurrentEntry("On");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSource")
+      ->SetCurrentEntry("Software");
+
+    int payload_size =
+      m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("PayloadSize")
+      ->Value();
+    LOG_INFO << "Camera::GetMultipleImages payload size: " << payload_size << std::endl;
+    size_t num_buf_min = m_DatastreamPtr->NumBuffersAnnouncedMinRequired();
+    // check requested number of images
+    if (num_buf_min > n_allocated_memories) {
+      LOG_ERROR << "Camera::GetMultipleImages: number of allocated memories less than "
+	"number of buffers needed ("
+		<< num_buf_min << ") so increasing number to min" << std::endl;
+      n_allocated_memories = num_buf_min;
+    } // if (num_buf_min>n_allocated_memories)
+
+    LOG_INFO << "Camera::GetMultipleImages auto allocating data buffers" << std::endl;
+    // automatically alloc raw buffers
+    for (size_t count = 0; count < n_allocated_memories; count++) {
+      auto buffer = m_DatastreamPtr->AllocAndAnnounceBuffer(static_cast<size_t>(payload_size), nullptr);
       m_DatastreamPtr->QueueBuffer(buffer);
     }
 
     LOG_INFO<<"Camera::GetMultipleImages prepare for main loop"<<std::endl;
+
+    m_DatastreamPtr->StartAcquisition(peak::core::AcquisitionStartMode::Default,
+				      PEAK_INFINITE_NUMBER);
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")
+      ->SetValue(1);
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStart")
+      ->Execute();
     
     int loop_image_count = 0;
     int64_t duration_count = 0;
@@ -1511,9 +1497,12 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     {
         // Use is_LockSeqBuf when processing image?
         LOG_TRACE << "Camera::GetMultipleImages(): Number of images taken "<<i_images_taken+1<<" over "<<n_images<<endl;
-	try {
-	  m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(1000);
-	  LOG_INFO<<"Camera::GetMultipleImages loop: image acquired, start process "<<std::endl;
+        try {
+	  m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->Execute();
+	  m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->WaitUntilDone();
+
+          m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(3000);
+	  LOG_INFO<<"Camera::GetMultipleImages loop: image acquired"<<std::endl;
 	}
 	// RR TODO manage exceptions
 	catch (const peak::core::TimeoutException& e)
@@ -1527,39 +1516,34 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 	    LOG_ERROR<<e.what()<<std::endl;
 	    //RR: terminate? at least while debugging
 	  }
-
+	
 	auto tp_start = std::chrono::high_resolution_clock::now();
 	Mat src, dst;
 
 	if (iBitsPerPixel == 8)
-	  src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
+	  src = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
 	
 	else if (iBitsPerPixel == 16)
-	  src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	  src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	
 	else if (iBitsPerPixel == 12)
 	  {
-	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	    src = 16 * src;
 	  }
 	
 	else if (iBitsPerPixel == 10)
 	  {
-	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	    src = 64 * src;
 	  }
 	
 	else
 	  {
 	    LOG_ERROR << "Camera::GetMultipleImages(): Check bitdepth!" << endl;
-	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	  }
 
-
-	LOG_INFO<<"Camera::GetMultipleImages loop: free buffer after cv::Mat"<<std::endl;
-	// queue buffer so that it can be used again
-	m_DatastreamPtr->QueueBuffer(m_ImgbufferPtr);
-      
 	
 	// Transpose + Flip = 90 deg rotation
 	transpose(src, src);
@@ -1604,17 +1588,19 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     // Free the OpenCV memory?
     // Free the allocated memories
 
-    //stop acquisition
-    LOG_INFO<<"Camera::GetMultipleImages exited loop, stopping acquisition"<<std::endl;
-    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")->Execute();
-    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")->SetValue(0);
+    LOG_INFO << "Camera::GetMultipleImages() exited loop, stopping acquisition" << std::endl;
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")
+      ->Execute();
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")
+      ->SetValue(0);
     m_DatastreamPtr->StopAcquisition(peak::core::AcquisitionStopMode::Default);
     
-    LOG_INFO<<"Camera::GetMultipleImages flush buffers and release them"<<std::endl;
-    //Flush and delete data buffers
+    LOG_INFO << "Camera::GetMultipleImages() flush buffers and release them" << std::endl;
+    // Flush and delete data buffers
     m_DatastreamPtr->Flush(peak::core::DataStreamFlushMode::DiscardAll);
-    for (const auto& buffer : m_DatastreamPtr->AnnouncedBuffers())
-      m_DatastreamPtr->RevokeBuffer(buffer);
+    for (const auto &buffer : m_DatastreamPtr->AnnouncedBuffers())
+      m_DatastreamPtr->RevokeBuffer(buffer);       
+    
     
     LOG_TRACE << "Camera::GetMultipleImages(): End"<<endl;
 
@@ -1637,16 +1623,22 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
     
     b_keep_taking = 1;
 
-    cv::Mat accumulated_images = cv::Mat::zeros(iWidth, iHeight, CV_64FC1); // contains accumulated images. Height and width are reversed as the camera images are rotated 90 deg after taking.
+    cv::Mat accumulated_images = cv::Mat::zeros(m_roi_width, m_roi_height, CV_64FC1); // contains accumulated images. Height and width are reversed as the camera images are rotated 90 deg after taking.
 
     vector<std::string> v_image_paths;
     int i_images_taken = 0;
     int n_allocated_memories = 10;
 
     // Setup for freerun configuration
-    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")->SetCurrentEntry("Continuous");
-    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")->SetCurrentEntry("ExposureStart");
-    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")->SetCurrentEntry("Off");
+        m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")
+      ->SetCurrentEntry("Continuous");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSelector")
+      ->SetCurrentEntry("ExposureStart");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")
+      ->SetCurrentEntry("On");
+    m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("TriggerSource")
+      ->SetCurrentEntry("Software");
+    
     int payload_size =m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("PayloadSize")->Value();
     LOG_INFO<<"Camera::GetMultipleImagesStacked payload size: "<<payload_size<<std::endl;
     size_t num_buf_min=m_DatastreamPtr->NumBuffersAnnouncedMinRequired();
@@ -1665,7 +1657,14 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
       m_DatastreamPtr->QueueBuffer(buffer);
     }
 
-    LOG_INFO<<"Camera::GetMultipleImagesStacked prepare for main loop"<<std::endl;
+    LOG_INFO << "Camera::GetMultipleImagesStacked prepare for main loop"
+             << std::endl;
+    m_DatastreamPtr->StartAcquisition(peak::core::AcquisitionStartMode::Default,
+				      PEAK_INFINITE_NUMBER);
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")
+      ->SetValue(1);
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStart")
+      ->Execute();    
 
     int loop_image_count = 0;
     int64_t duration_count = 0;
@@ -1675,7 +1674,10 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
         // Use is_LockSeqBuf when processing image?
         LOG_TRACE << "Camera::GetMultipleImagesStacked(): Number of images taken "<<i_images_taken+1<<" over "<<n_images<<endl;
 
-	try {
+        try {
+	  m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->Execute();
+	  m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("TriggerSoftware")->WaitUntilDone();
+          
 	  m_ImgbufferPtr = m_DatastreamPtr->WaitForFinishedBuffer(1000);
 	  LOG_INFO<<"Camera::GetMultipleImagesStacked loop: image acquired, start process "<<std::endl;
 	}
@@ -1695,27 +1697,27 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
 	Mat src, dst;
 	
 	if (iBitsPerPixel == 8)
-	  src = cv::Mat(iHeight, iWidth, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
+	  src = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, (uchar *)m_ImgbufferPtr->BasePtr());
 	
 	else if (iBitsPerPixel == 16)
-	  src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	  src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	
 	else if (iBitsPerPixel == 12)
 	  {
-	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	    src = 16 * src;
 	  }
 	
 	else if (iBitsPerPixel == 10)
 	  {
-	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	    src = 64 * src;
 	  }
 	
 	else
 	  {
 	    LOG_ERROR << "Camera::GetMultipleImagesStacked(): Check bitdepth!" << endl;
-	    src = cv::Mat(iHeight, iWidth, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
+	    src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, (uint16_t *)m_ImgbufferPtr->BasePtr());
 	  }
 	
 	LOG_INFO<<"Camera::GetMultipleImagesStacked loop: free buffer after cv::Mat"<<std::endl;
@@ -1764,13 +1766,13 @@ vector<std::string> Camera::GetMultipleImagesStacked(int n_images, DataAccessCli
 	    
     LOG_INFO << "Camera::GetMultipleImagesStacked(): Images taken: " << i_images_taken << endl;
     
-
-    //stop acquisition
-    LOG_INFO<<"Camera::GetMultipleImagesStacked exited loop, stopping acquisition"<<std::endl;
-    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")->Execute();
-    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")->SetValue(0);
+    LOG_INFO << "Camera::GetMultipleImages() exited loop, stopping acquisition" << std::endl;
+    m_NodemapPtr->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")
+      ->Execute();
+    m_NodemapPtr->FindNode<peak::core::nodes::IntegerNode>("TLParamsLocked")
+      ->SetValue(0);
     m_DatastreamPtr->StopAcquisition(peak::core::AcquisitionStopMode::Default);
- 
+
     
     // Now convert, save and publish the image
     if (iBitsPerPixel == 16)
@@ -1882,12 +1884,11 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     LOG_INFO<<"Camera::GetImage image ready, processing image size "<<m_roi_width<<"x"<<m_roi_height<<std::endl;
     // process data ...
     cv::Mat src, dst;
-    //check bit depth etc... for now 8 bits
-    src = cv::Mat(m_roi_height, m_roi_width, CV_8UC1, static_cast<uint8_t*>(m_ImgbufferPtr->BasePtr()));
-
-    // Transpose + Flip = 90 deg rotation
-    transpose(src, src);
-    flip(src, src, 1);
+    if (iBitsPerPixel == 8)
+      src = cv::Mat(m_roi_height, m_roi_width, CV_8UC1,
+                    static_cast<uint8_t *>(m_ImgbufferPtr->BasePtr()));
+    else
+      src = cv::Mat(m_roi_height, m_roi_width, CV_16UC1, static_cast<uint16_t *>(m_ImgbufferPtr->BasePtr()));
 
     std::vector<int> compression_params;
     compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
@@ -1929,14 +1930,12 @@ void Camera::GetImage(DataAccessClientOPCUA *myclient)
     }
     */
 
-    /* RR stopped publishing for now
     std::vector<std::string> publish_remoteImagePath; 
     publish_remoteImagePath.push_back(imageName.c_str());
     SetDatapointThread *m_SetDatapointThread_remote_path = new SetDatapointThread(myclient, datapointName_imagePath, 2, publish_remoteImagePath); //Updates the imagePath
     LOG_INFO<<"GetImage SetDatapointThread for "<<datapointName_imageName<< " at "<<datapointName_imagePath<<std::endl;
     SetDatapointThread(myclient, datapointName_imageName, 2, imageName.c_str()); //Updates the imageName
     SetDatapointThread(myclient, datapointName_imagePath, 2, imageName.c_str()); //Updates the imagePath_cat
-    */
 
     LOG_INFO<<"Camera::GetImage: relinquish buffer and stop acquisition "<<std::endl;
     // queue buffer so that it can be used again
@@ -1977,6 +1976,16 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     pclock = m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("DeviceClockFrequency")->Value();
     return_values.push_back(static_cast<int>(pclock/1e6));
         
+
+
+    // Set exposure
+    LOG_INFO << "Camera::Configure(): Value of exposure to be set is : " << exposure << std::endl;
+    m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->SetValue(exposure);
+    double current_exposure=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->Value();
+    LOG_INFO << "Camera::Configure(): Current exposure is: " << current_exposure << std::endl;
+
+    Camera::exposure_setting = current_exposure;
+
     // Set frame rate
     // Setup for freerun configuration, so frame rate can be set
     m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("AcquisitionMode")->SetCurrentEntry("Continuous");
@@ -1986,16 +1995,10 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->SetValue(fps);
     double current_fps=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate")->Value();
     LOG_INFO << "Camera::Configure(): Current frame rate is: " << current_fps << std::endl;
+
+    //pushback FPS first and then exposure
     return_values.push_back(current_fps);
-
-    // Set exposure
-    LOG_INFO << "Camera::Configure(): Value of exposure to be set is : " << exposure << std::endl;
-    m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->SetValue(exposure);
-    double current_exposure=m_NodemapPtr->FindNode<peak::core::nodes::FloatNode>("ExposureTime")->Value();
-    LOG_INFO << "Camera::Configure(): Current exposure is: " << current_exposure << std::endl;
     return_values.push_back(current_exposure);
-    Camera::exposure_setting = current_exposure;
-
     // Set hardware gain
     // RR: now gain is a float!!!
     float current_gain;
@@ -2014,7 +2017,13 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     //LOG_INFO << "Camera::Configure(): SetDisplayMode returned " << nRet << std::endl;
 
     // Set Color Mode
-    //RR: TODO update config parameters to match IDS peak naming
+    auto pixelFormatNode = m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat");
+    auto entries = pixelFormatNode->Entries();
+    for (auto &entry : entries)
+    {
+      LOG_INFO << "PixelFormat disponible: " << entry->SymbolicValue() << std::endl;
+    }
+    /*//RR: TODO update config parameters to match IDS peak naming
     if (pixel_format == "IS_CM_SENSOR_RAW16") {
       m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono12");
       LOG_INFO << "Camera::Configure(): setting Mono12"<< std::endl;
@@ -2023,6 +2032,12 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
       m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->SetCurrentEntry("Mono8");
     } else {
       LOG_ERROR << "Camera::Configure: bad pixel format "<< pixel_format << endl;
+    }*/
+
+    if (!setPixelFormat(pixel_format))
+    {
+      LOG_ERROR << "Camera::Configure(): failed to configure pixel format" << std::endl;
+      // gérer l'erreur selon la logique de votre fonction (return, throw, valeur par défaut...)
     }
 
     pixel_format=m_NodemapPtr->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat")->CurrentEntry()->SymbolicValue();
