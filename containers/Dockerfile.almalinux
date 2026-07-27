@@ -103,7 +103,7 @@ WORKDIR /home/cdmmgr/
 
 
 WORKDIR ./LSTDeviceController/build
-COPY  ./cdm/devicecontroller/CMakeLists.txt ./LSTDeviceController/build
+COPY  ./devicecontroller/CMakeLists.txt ./LSTDeviceController/build
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH="/home/mosmgr/MOS/${MOS_VERSION}/"
 
 
