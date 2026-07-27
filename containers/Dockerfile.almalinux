@@ -86,12 +86,11 @@ RUN ln -s libyocto.so.1.0.1 libyocto.so
 
 # install CDM
 WORKDIR /home/cdmmgr/
-RUN git clone --branch DeviceControler https://gitlgab-ci-token:yABEkVcH-fS-3D7zoov3Um86MQp1OjE1cAk.01.0z1h3jvja@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/aux/cdm.git --depth 1
+RUN git clone --branch DeviceControler https://gitlgab-ci-token:yABEkVcH-fS-3D7zoov3Um86MQp1OjE1cAk.01.0z1h3jvja@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/aux/cdm.git  --recursive
 
 RUN mkdir ./cdm/build
-
 RUN mkdir ./LSTDeviceController
-COPY  ./devicecontroller/ ./LSTDeviceController
+COPY  ./cdm/devicecontroller/ ./LSTDeviceController
 RUN mkdir ./LSTDeviceController/build
 
 RUN mkdir ./output
