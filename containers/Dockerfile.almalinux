@@ -99,8 +99,8 @@ WORKDIR /home/cdmmgr/
 
 
 WORKDIR LSTDeviceController/build
-cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH="/home/mosmgr/MOS/${MOS_VERSION}/" ..
-
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH="/home/mosmgr/MOS/${MOS_VERSION}/" ..
+RUN make
 
 # setup Yocto location for compilation
 ENV YOCTO_PATH=/home/cdmmgr/YoctoMeteo_cpp
