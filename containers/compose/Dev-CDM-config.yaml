@@ -4,7 +4,7 @@ services:
     privileged: true
     hostname: dev-cdm
     container_name: "MOS-CDM-DEV"
-    image: "cdm:dev2"
+    image: "cdm:dev"
     # restart: unless-stopped
     stdin_open: true 
     tty: true
