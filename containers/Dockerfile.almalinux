@@ -90,9 +90,9 @@ RUN git clone --branch DeviceControler https://gitlgab-ci-token:yABEkVcH-fS-3D7z
 RUN git clone --branch al9 https://gitlgab-ci-token:s08z76ls5exw8coWjkTP3W86MQp1OjE1cQk.01.0z0vz0if2@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/drive/devicecontroller.git /home/cdmmgr/LSTDeviceController
 
 RUN mkdir ./cdm/build
-RUN mkdir ./LSTDeviceController/build
 
 WORKDIR ./LSTDeviceController/build
+run rm -rf *
 RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH="/home/mosmgr/MOS/${MOS_VERSION}/" ..
 RUN make
 
