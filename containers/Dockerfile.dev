@@ -27,7 +27,7 @@ RUN yum install -y \
     autoconf \
     epel-release \
     make \
-    cmake  \ 
+    cmake \ 
     patch \
     wget \
     curl \
