@@ -106,6 +106,81 @@ target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} )
 target_link_libraries(${PROJECT_NAME}  usb-1.0 yocto ) #YOCTO METEO
 target_link_libraries(${PROJECT_NAME}  CCfits cfitsio ) # FITS files library
 target_link_libraries(${PROJECT_NAME}  ids_peak ) # FITS files library
+target_link_libraries(
+	${PROJECT_NAME}
+	PluginBase
+	DeviceController
+#	libfftw3.a 
+PROJECT (PluginAuxiliaryController)
+CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
+
+if (CMAKE_BUILD_TYPE STREQUAL Debug)
+      SET(CMAKE_DEBUG_POSTFIX "d")
+endif (CMAKE_BUILD_TYPE STREQUAL Debug)
+
+
+# convert build type to lower case
+IF (CMAKE_BUILD_TYPE)
+  STRING(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_TOLOWER)
+ELSE(CMAKE_BUILD_TYPE)
+  # set default configuration to release
+  SET(CMAKE_BUILD_TYPE "Release")
+  STRING(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_TOLOWER)
+ENDIF(CMAKE_BUILD_TYPE)
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../lib/)
+
+FIND_PACKAGE( LibXml2 )
+
+    include_directories(${LIBXML2_INCLUDE_DIR})
+    INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}/include")
+    include_directories($ENV{MOS_PATH}/../include/MOS_Plugin)
+    include_directories(${MOS_PATH}/../include/MOS_Plugin)
+    include_directories(../LSTDeviceController/include/)
+
+# rajout pour specifique DriveController
+    INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}/include/Callbacks")
+
+#    INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}/../sofa/include")
+#    INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}/../JPLEphemx/include")
+#    INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}/fftw-3.3.8/api/")
+
+    MESSAGE( STATUS " include = ${CMAKE_INSTALL_PREFIX}/include" )
+
+
+    LINK_DIRECTORIES($ENV{MOS_PATH}/../lib)
+    link_directories(${MOS_PATH}/../lib)
+    link_directories(${MOS_PATH}/lib)
+    link_directories(${MOS_PATH}/lib)
+
+# rajout pour specifique DriveController
+    LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../LSTDeviceController/lib)
+#    LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../JPLEphemx/lib)
+#    LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/fftw-3.3.8/.libs)
+#    LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/sofa/lib)
+
+add_library(
+	${PROJECT_NAME}
+        SHARED
+
+	source/PluginAuxiliaryController.cpp 
+	source/AuxiliaryController.cpp
+	source/Callbacks/CB_arch.cpp
+        source/Callbacks/CB_cdm.cpp
+        source/Callbacks/CB_im.cpp
+        source/Callbacks/CB_dm.cpp
+        source/Callbacks/CB_encoders.cpp
+        source/Callbacks/CB_calib.cpp
+        source/Callbacks/CB_torque.cpp
+        source/Callbacks/CB_power.cpp
+        source/Callbacks/CB_AuxLog.cpp
+        source/XMLParser.cpp
+)
+target_link_libraries(
+	${PROJECT_NAME}
+	PluginBase
+	DeviceController
+)
 
 
 # configure output path
