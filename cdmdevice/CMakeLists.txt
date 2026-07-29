@@ -54,6 +54,7 @@ link_directories($ENV{YOCTO_PATH}/Binaries/linux/64bits)
     link_directories(/usr/local/lib)
     link_directories(/usr/lib64)
     link_directories(/home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits)
+    link_directories(/home/cdmmgr/LSTDeviceController/lib)
 
 IF (UNIX)
     INCLUDE_DIRECTORIES()
@@ -105,6 +106,7 @@ target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} )
 target_link_libraries(${PROJECT_NAME}  usb-1.0 yocto ) #YOCTO METEO
 target_link_libraries(${PROJECT_NAME}  CCfits cfitsio ) # FITS files library
 target_link_libraries(${PROJECT_NAME}  ids_peak ) # FITS files library
+target_link_libraries(${PROJECT_NAME} LSTDeviceController)  # nom exact de la lib à adapter
 
 
 # configure output path
