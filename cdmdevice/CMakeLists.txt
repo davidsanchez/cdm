@@ -106,7 +106,6 @@ target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} )
 target_link_libraries(${PROJECT_NAME}  usb-1.0 yocto ) #YOCTO METEO
 target_link_libraries(${PROJECT_NAME}  CCfits cfitsio ) # FITS files library
 target_link_libraries(${PROJECT_NAME}  ids_peak ) # FITS files library
-target_link_libraries(${PROJECT_NAME} LSTDeviceController)  # nom exact de la lib à adapter
 
 
 # configure output path
