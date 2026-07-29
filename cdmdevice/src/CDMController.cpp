@@ -441,8 +441,8 @@ int CDMController::UpdateAuxDMWestTopValue(bool newvalue)
 // Be careful, always need to allow to connect this Plugin with MOS
 extern "C"
 {
-    CDM *CDM_plugin()
+    CDMController *CDM_plugin()
     {
-      return new CDM();
+      return new CDMController();
     }
 }
