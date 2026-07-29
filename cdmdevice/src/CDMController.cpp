@@ -33,8 +33,8 @@ using namespace std;
 // Variables globales camera et helper (conservées du code original)
 // TODO: à remplacer par des membres du Controller si possible
 // ============================================================
-extern Camera camera;
-extern Helper helper;
+Camera camera;
+Helper helper;
 
 // ============================================================
 // Constructeur sans PluginsBase
