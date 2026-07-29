@@ -75,7 +75,9 @@ add_library(
          ${PROJECT_NAME}
         SHARED
         #/usr/include/ueye.h
-        ../cdmdevice/src/CDM.cpp
+        #../cdmdevice/src/CDM.cpp
+        ../cdmdevice/src/CDMControlle.cpp
+        ../cdmdevince/src/PluginCDM.cpp
         ../cdmdevice/src/AsynchronousThread.cpp
         ../cdmdevice/src/Camera.cpp
         ../cdmdevice/src/Helper.cpp
