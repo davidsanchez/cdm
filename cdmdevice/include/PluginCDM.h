@@ -32,6 +32,7 @@
 
 // Forward declaration
 class CDMController;
+class Config;
 
 #define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
 

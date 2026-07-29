@@ -34,7 +34,6 @@
 #include <map>
 
 #include <boost/any.hpp>
-
 #include "Controller.h"
 #include "Config.h"
 #include "AsynchronousThread.h"
@@ -42,6 +41,7 @@
 
 // Configuration XML pour les datapoints OPC-UA du CDM
 #define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
+#define DATABROKER_CONFIGURATION_NAME "PLC_DataBroker.xml"
 
 class Helper; // Forward declaration (Helper.h à inclure dans le .cpp)
 
@@ -150,6 +150,11 @@ private:
     void startCameraThread();
     void startMeteoThread();
     void startLogRestartThread();
+
+
+        // --- Réactions aux pertes de connexion (obligatoires, Controller pures virtuelles) ---
+    void applyServerConnectionLossReaction() override;
+    void applyClientConnectionLossReaction(Config*) override;
 };
 
 #endif // CDMCONTROLLER_H_

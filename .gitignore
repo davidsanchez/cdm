@@ -50,3 +50,4 @@ build/*
 # VSCode
 *.code-workspace
 *.vscode
+CDM_log.txt

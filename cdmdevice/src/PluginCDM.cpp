@@ -27,6 +27,7 @@
 #include <sstream>
 #include <iostream>
 
+#include "Logging.h"
 #include "PluginCDM.h"
 #include "CDMController.h"
 #include "Config.h"
@@ -69,6 +70,8 @@ PluginCDM::PluginCDM()
 */
 int PluginCDM::init(const std::string& parameters) 
 {
+    LOG_TRACE<<"PluginCDM::init() : initialisation of the CDM\n";
+
     int ret = 0;
     ret = PluginsBase::init(parameters);
     return ret;
@@ -80,11 +83,16 @@ int PluginCDM::close()
 {
     int ret = 0;
     // Délégué au Controller via disconnect propre
+    LOG_TRACE << "PluginCDMController::close called" << std::endl;
     if (m_cdmController != NULL) 
     {
-        // Le Controller se charge du cleanup via ses propres ressources
-    }
+    
+        m_cdmController->close();
+        delete m_cdmController;
+        m_cdmController = NULL;
+    
     return ret;
+    }
 }
 
 //****************************************************
@@ -338,8 +346,12 @@ int PluginCDM::cmd(const std::string& parameters,
 //****************************************************
 int PluginCDM::afterStart() 
 {
+    LOG_TRACE << "PluginCDM::afterStart(): start of the function";
     int ret = 0;
     ret = PluginsBase::afterStart();
+    m_cdmController = new CDMController(&ret, this);
+    COND_LOG_DEBUG << "PluginCDM::afterStart(): SetDPQuality ";
+    std::cout<<getDataAccessClientOPCUARef()<<std::endl;
     return ret;
 }
 

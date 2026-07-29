@@ -22,7 +22,7 @@
 #include "CDMController.h"
 #include "Camera.h"
 #include "Helper.h"
-#include "Logging.h"
+
 #include "ConfigCDM.h"   // LoadCDMConfiguration()
 #include "Config.h"
 #include "pluginsBase.h"
@@ -60,7 +60,8 @@ CDMController::CDMController(int *status_Client_Connection)
 
 // Constructeur standard (pattern de référence, comme AuxiliaryController)
 CDMController::CDMController(int *status_Client_Connection, PluginsBase *plugin)
-    : Controller(status_Client_Connection, plugin, CDM_CONFIGURATION_NAME)
+    : Controller(status_Client_Connection, plugin, "Unit_CDM.AuxControl")
+
 {
     m_cdmConfig = NULL;
     m_dbConfig = NULL;
@@ -435,4 +436,24 @@ int CDMController::UpdateAuxDMWestTopValue(bool newvalue)
 {
     m_helper->SetAuxDMWestTop(newvalue);
     return 0;
+}
+
+void CDMController::applyServerConnectionLossReaction()
+{
+    Error("CDMController: Perte de connexion au serveur OPC-UA détectée.");
+    // Ajouter ici toute action nécessaire (ex: arrêt sécurisé du CDM)
+    // StopCDM();
+}
+
+void CDMController::applyClientConnectionLossReaction(Config* config)
+{
+    if (config != nullptr)
+    {
+        Error("CDMController: Perte de connexion client pour la config: " + config->getFileName());
+    }
+    else
+    {
+        Error("CDMController: Perte de connexion client (config null).");
+    }
+    // Ajouter ici toute action nécessaire
 }
