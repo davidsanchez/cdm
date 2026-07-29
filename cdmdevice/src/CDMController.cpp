@@ -436,13 +436,3 @@ int CDMController::UpdateAuxDMWestTopValue(bool newvalue)
     m_helper->SetAuxDMWestTop(newvalue);
     return 0;
 }
-
-
-// Be careful, always need to allow to connect this Plugin with MOS
-extern "C"
-{
-    CDMController *CDM_plugin()
-    {
-      return new CDMController();
-    }
-}
