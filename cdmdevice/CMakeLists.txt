@@ -56,6 +56,13 @@ link_directories($ENV{YOCTO_PATH}/Binaries/linux/64bits)
     link_directories(/home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits)
     link_directories(/home/cdmmgr/LSTDeviceController/lib)
 
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    INSTALL_RPATH "/home/cdmmgr/LSTDeviceController/lib"
+    BUILD_RPATH "/home/cdmmgr/LSTDeviceController/lib"
+)
+
+
 IF (UNIX)
     INCLUDE_DIRECTORIES()
     ADD_DEFINITIONS(-Wall)
