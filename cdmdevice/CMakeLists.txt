@@ -29,18 +29,11 @@ include_directories($ENV{MOS_PATH}/../include/MOS_Plugin)
 include_directories($ENV{YOCTO_PATH}/Sources)
 include_directories(../cdmdevice/src)
 include_directories(../cdmdevice/include)
+include_directories(/home/cdmmgr/LSTDeviceController/include/)
 
 
 link_directories($ENV{MOS_LIB_PATH})
 link_directories($ENV{YOCTO_PATH}/Binaries/linux/64bits)
-
-
-MESSAGE( STATUS "" )
-
-MESSAGE( STATUS "==============================================" )
-MESSAGE( STATUS "Now configuring server_OPCUA CMakeLists.txt" )
-MESSAGE( STATUS "==============================================" )
-
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/share)
@@ -86,7 +79,8 @@ add_library(
          ${PROJECT_NAME}
         SHARED
         #/usr/include/ueye.h
-        ../cdmdevice/src/CDM.cpp
+        ../cdmdevice/src/CDMController.cpp
+        ../cdmdevice/src/PluginCDM.cpp
         ../cdmdevice/src/AsynchronousThread.cpp
         ../cdmdevice/src/Camera.cpp
         ../cdmdevice/src/Helper.cpp

@@ -13,7 +13,7 @@ image-dev:
 
 image-local:
 	@echo 'Creating local Docker image for CDM...'
-	docker build --platform linux/x86_64  -f containers/Dockerfile.local  --tag cdm:local --progress=plain  . 
+	docker build --platform linux/x86_64  -f containers/Dockerfile.local  --tag cdm:local   . 
 
 
 clean:

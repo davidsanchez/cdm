@@ -12,7 +12,8 @@ services:
        - "48011:48011"
     ipc: host
     volumes:
-      - /Users/david/CDM/newCode/instalCode/log:/home/cdmmgr/log
+      - /Users/david/CDM/newCode/log:/home/cdmmgr/log
+      - /Users/david/CDM/newCode/cdm:/home/cdmmgr/cdm
       #- /dev:/dev
       #- /var/run:/var/run
-      - /Users/david/CDM/newCode/instalCode/output:/home/cdmmgr/output
+      - /Users/david/CDM/newCode/cdm/output:/home/cdmmgr/output

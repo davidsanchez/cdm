@@ -1,0 +1,15 @@
+No Serveur_OPCUA instance, starting...
+/home/cdmmgr/Run_cron_CDM.sh: line 28: fuser: command not found
+
+[36m================================================================================
+                          M.O.S. V13.1.4a9 (01/06/2026) 
+================================================================================
+
+
+[0m[32m(MOS) : Info : 2026-07-29.09:22:02 : LogFile=/tmp//MOS.log
+
+[0m[32m(MOS) : Info : 2026-07-29.09:22:02 : Config File=ServerConfig.xml
+
+[0m[32m(MOS) : Info : 2026-07-29.09:22:02 : Description File=Unit_CDM_Model.xml
+
+[0m|0xFE826740| 09:22:02.341Z OpcUa_P_Socket_InitializeNetwork: RLIMIT_NOFILE:1048576 larger than supported FD_SETSIZE:1024

@@ -1,4 +1,4 @@
-FROM lst/mos:v13.1
+FROM  --platform=linux/x86_64 lst-safetybroker/mos-a9:V12.4.13a9 
 ARG MOS_VERSION=MOS_X86_13.1.4a9
 
 USER root
@@ -7,16 +7,18 @@ USER root
 ENV MOS_LIB_PATH=/home/mosmgr/MOS/${MOS_VERSION}/lib 
 ENV MOS_PATH=/home/mosmgr/MOS/${MOS_VERSION}/bin
 
-
-RUN dnf update -y && sudo dnf upgrade -y
+RUN dnf update -y \
+    --setopt=fastestmirror=1 \
+    --setopt=max_parallel_downloads=10 \
+    --nodocs
 RUN dnf install -y cronie && yum install -y sudo && rm -rf /etc/cron.*/*
 
 # Installing the development software
 RUN dnf install -y git
+RUN dnf install -y procps
 
 RUN dnf install -y \
     openssh-server \
-    procps \
     qt5 \
     libatomic \    
     xauth \
@@ -75,7 +77,7 @@ RUN mkdir -m 700 -p .ssh/
 COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
 
 # DL and build Yocto meteo
-RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
+RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp --depth 1
 WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/
 RUN make
 WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
@@ -84,25 +86,33 @@ RUN ln -s libyocto.so.1.0.1 libyocto.so
 
 # install CDM
 WORKDIR /home/cdmmgr/
-RUN git clone https://rando:Q8Kuh6c9JHWf5VVaR9lCUW86MQp1Oml1CA.01.0y03l8hyn@gitlab.cta-observatory.org/riccardo.rando/cdm.git
+RUN git clone --branch DeviceControler https://gitlgab-ci-token:yABEkVcH-fS-3D7zoov3Um86MQp1OjE1cAk.01.0z1h3jvja@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/aux/cdm.git --depth 1 
+RUN git clone --branch al9 https://gitlgab-ci-token:s08z76ls5exw8coWjkTP3W86MQp1OjE1cQk.01.0z0vz0if2@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/drive/devicecontroller.git /home/cdmmgr/LSTDeviceController
 
 RUN mkdir ./cdm/build
+
+WORKDIR ./LSTDeviceController/build
+run rm -rf *
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH="/home/mosmgr/MOS/${MOS_VERSION}/" ..
+RUN make
+
+
+# setup Yocto location for compilation
+ENV YOCTO_PATH=/home/cdmmgr/YoctoMeteo_cpp
+WORKDIR /home/cdmmgr/cdm/build
+RUN cmake -DCMAKE_PREFIX_PATH="/opt/ids-peak_2.19.0.0-260_amd64/lib/x86_64-linux-gnu/cmake/ids_peak;/opt/ids-peak_2.19.0.0-260_amd64/lib/cmake/ids_peak_common" -DCMAKE_INSTALL_PREFIX=.. /home/cdmmgr/cdm/cdmdevice 
+#RUN make
+#RUN make install
+
+
+WORKDIR /home/cdmmgr/
 RUN mkdir ./output
 WORKDIR /home/cdmmgr/output
 RUN mkdir ./images
 RUN mkdir ./fits
 WORKDIR /home/cdmmgr/
 
-# setup Yocto location for compilation
-ENV YOCTO_PATH=/home/cdmmgr/YoctoMeteo_cpp
 
-COPY payload/configurations/.bashrc .bashrc
-COPY  payload/CMakeLists.txt ./cdm/build
-
-WORKDIR /home/cdmmgr/cdm/build
-RUN cmake -DCMAKE_PREFIX_PATH="/opt/ids-peak_2.19.0.0-260_amd64/lib/x86_64-linux-gnu/cmake/ids_peak;/opt/ids-peak_2.19.0.0-260_amd64/lib/cmake/ids_peak_common" -DCMAKE_INSTALL_PREFIX=.. /home/cdmmgr/cdm/cdmdevice
-RUN make
-RUN make install
 
 COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
 COPY payload/configurations/RunCDM.sh /home/cdmmgr/RunCDM.sh
@@ -127,4 +137,4 @@ COPY payload/pluginPasswd.txt /home/mosmgr/MOS/${MOS_VERSION}/properties/
 
 #final stuff
 WORKDIR /home/cdmmgr
-#ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
+ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
