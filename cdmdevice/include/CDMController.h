@@ -35,13 +35,13 @@
 
 #include <boost/any.hpp>
 #include "Controller.h"
-#include "Config.h"
+
 #include "AsynchronousThread.h"
 #include "DatapointMonitor.h"
 
 // Configuration XML pour les datapoints OPC-UA du CDM
 #define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
-#define DATABROKER_CONFIGURATION_NAME "PLC_DataBroker.xml"
+#define DATABROKER_CONFIGURATION_NAME "Mapping_Aux_DB.xml"
 
 class Helper; // Forward declaration (Helper.h à inclure dans le .cpp)
 
@@ -61,8 +61,6 @@ public:
     // --- Caméra ---
     void ConnectCamera();
     void DisconnectCamera();
-    void ConfigureCamera(int nPixelClock, double exposure, double fps, 
-                         double gain, const std::string& pixel_format);
     void ConfigureThreadCamera(int nPixelClock, double exposure, double fps, 
                                double gain, const std::string& pixel_format);
     void GetImage();
@@ -78,6 +76,15 @@ public:
     void StartCDM();
     void StopCDM();
 
+    void setCameraThread(DataAccessClientOPCUA *dataAccessClientOPCUA) {m_Thread = new AsynchronousThread(dataAccessClientOPCUA);}
+    void setMeteoThread(DataAccessClientOPCUA *dataAccessClientOPCUA) {m_ThreadMeteo = new AsynchronousThread(dataAccessClientOPCUA);}
+    void setLogThread(DataAccessClientOPCUA *dataAccessClientOPCUA) {m_ThreadLogRestart = new AsynchronousThread(dataAccessClientOPCUA);}
+
+    void setState(int state);
+    void enableHeartbeat();
+    void setDPQuality();
+
+    void startThread();
     // --- Commentaire ---
     void AddComment(const std::string& comment);
 

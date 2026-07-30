@@ -55,10 +55,10 @@ PluginCDM::PluginCDM()
     fSubscribeDataBrokerFlag = false;
 
     fConfigurePixelClock = 216;
-    fConfigureExposure = 2000.0;
+    fConfigureExposure = 95000.0;
     fConfigureFps = 10.0;
-    fConfigureGain = 1.0;
-    fConfigurePixelFormat = "IS_CM_MONO8";
+    fConfigureGain = 5.0;
+    fConfigurePixelFormat = "IS_CM_SENSOR_RAW16";
 }
 
 //****************************************************
@@ -70,7 +70,7 @@ PluginCDM::PluginCDM()
 */
 int PluginCDM::init(const std::string& parameters) 
 {
-    LOG_TRACE<<"PluginCDM::init() : initialisation of the CDM\n";
+    LOG_TRACE<<"PluginCDM::init() : initialisation of the CDM with parameters "<<parameters<<endl;
 
     int ret = 0;
     ret = PluginsBase::init(parameters);
@@ -101,7 +101,7 @@ int PluginCDM::cmd(const std::string& parameters,
                    int commandStringAck,
                    std::string& result) 
 {
-    std::cout << std::endl;
+    LOG_INFO<<"PluginCDM::cmd: received command with the instruction: "<<parameters.c_str()<<std::endl;
     int ret = 0;
 
     if (parameters.length() == 0)
@@ -352,6 +352,32 @@ int PluginCDM::afterStart()
     m_cdmController = new CDMController(&ret, this);
     COND_LOG_DEBUG << "PluginCDM::afterStart(): SetDPQuality ";
     std::cout<<getDataAccessClientOPCUARef()<<std::endl;
+    m_cdmController->setCameraThread(getDataAccessClientOPCUARef());
+    m_cdmController->setMeteoThread(getDataAccessClientOPCUARef());
+    m_cdmController->setLogThread(getDataAccessClientOPCUARef());
+    m_cdmController->startThread();
+    //TODO
+    m_cdmController->setState(0);
+    
+    //TODO add heartBeat
+
+    
+    // TODO fix DP quality workarround
+    std::string resultCall;
+    int quality = 0; // (0= Good, 1=Uncertain, 2 = Bad)
+    std::string methodToCall = "Auxiliary.AuxControl.CDM.SetDPQuality";
+    std::string completeNodeName = "AuxControl";
+            
+    boost::any completeNodeNameAny = completeNodeName;
+            
+    std::vector<boost::any> callRequest;
+    callRequest.push_back(completeNodeNameAny);
+    callRequest.push_back(quality);
+    int res = getDataAccessClientOPCUARef()->callMethod(methodToCall, 4, callRequest, resultCall);
+    COND_LOG_DEBUG << methodToCall << "  method call result = " << res << endl;
+
+    //TODO what should be ret?
+
     return ret;
 }
 
@@ -501,7 +527,7 @@ void *PluginCDM::run(void *params)
         fConfigureFlag = false;
         if (m_cdmController != NULL)
         {
-            m_cdmController->ConfigureCamera(
+            m_cdmController->ConfigureThreadCamera(
                 fConfigurePixelClock,
                 fConfigureExposure,
                 fConfigureFps,

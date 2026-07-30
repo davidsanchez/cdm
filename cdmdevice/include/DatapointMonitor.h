@@ -9,7 +9,7 @@ class CDM;
 #include "Config.h"
 using namespace std;
 
-#define DATABROKER_CONFIGURATION_NAME "PLC_DATABROKER.xml"
+#define DATABROKER_CONFIGURATION_NAM "PLC_DATABROKER.xml"
 
 extern Helper helper;
 
@@ -30,7 +30,7 @@ private:
     CDM *caller;
     
     //Read the configuration and set up DP names
-    Config *DB_config = new Config(DATABROKER_CONFIGURATION_NAME,"");
+    Config *DB_config = new Config(DATABROKER_CONFIGURATION_NAM,"");
     const std::string leds_var_name =    helper.searchDatapoint("LEDPositions",DB_config);
     const std::string shutter_var_name =  helper.searchDatapoint("Shutter",DB_config); 
     const std::string sis_var_name =    helper.searchDatapoint("SIS",DB_config); 

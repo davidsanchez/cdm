@@ -552,8 +552,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>FSM.state</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>FSM.state.state_v</NodeRootL2>
-                                    <NodeIdL2></NodeIdL2>
+                                    <NodeRootL2>FSM</NodeRootL2>
+                                    <NodeIdL2>state.state_v</NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>

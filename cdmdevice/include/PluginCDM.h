@@ -34,8 +34,6 @@
 class CDMController;
 class Config;
 
-#define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
-
 class PluginCDM : public PluginsBase, public LAPPThread
 {
 public:

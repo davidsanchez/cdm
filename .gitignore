@@ -51,3 +51,4 @@ build/*
 *.code-workspace
 *.vscode
 CDM_log.txt
+.DS_Store
