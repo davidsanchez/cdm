@@ -16,3 +16,5 @@ services:
       #- /dev:/dev
       #- /var/run:/var/run
       - /home/shifter/CDM/:/home/cdmmgr/output
+    extra_hosts:
+      - "databrokerserver:10.1.8.7"

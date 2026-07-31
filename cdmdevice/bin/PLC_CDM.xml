@@ -15,7 +15,7 @@
     -->
 
     <GeneralInfo>
-                <OPCUA_Address>opc.tcp://CDMserver:48011</OPCUA_Address>
+                <OPCUA_Address>opc.tcp://localhost:48011</OPCUA_Address>
                 <RootName>Unit_CDM.AuxControl</RootName>
                 <CtrlComErrorDPName>Auxiliary.AuxControl.Connections.CDM_Connection_InError.CDM_Connection_InError_v</CtrlComErrorDPName>
 		<MethodQuality>Auxiliary.AuxControl.SetDPQuality</MethodQuality>
@@ -90,8 +90,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_R.circle_R_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
-                                    <NodeIdL2>circle_R.circle_R_v</NodeIdL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Circle.</NodeRootL2>
+                                    <NodeIdL2>circle_R</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>n</Subscribe_L2>
@@ -552,8 +552,8 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>FSM.state</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>FSM</NodeRootL2>
-                                    <NodeIdL2>state.state_v</NodeIdL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.</NodeRootL2>
+                                    <NodeIdL2>FSM.state</NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
