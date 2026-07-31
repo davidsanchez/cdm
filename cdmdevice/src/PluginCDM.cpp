@@ -142,7 +142,7 @@ int PluginCDM::cmd(const std::string& parameters,
                 fConfigureFps,
                 fConfigureGain,
                 fConfigurePixelFormat);*/
-            m_cdmController->setTransition(0);
+            m_cdmController->set_FSM_in_transition(0);
         }
     }
 
@@ -153,7 +153,7 @@ int PluginCDM::cmd(const std::string& parameters,
         if (m_cdmController != NULL)
         {
             m_cdmController->DisconnectCamera();
-            m_cdmController->setTransition(0);
+            m_cdmController->set_FSM_in_transition(0);
         }
     }
 
@@ -360,7 +360,7 @@ int PluginCDM::afterStart()
     m_cdmController->setLogThread(getDataAccessClientOPCUARef());
     m_cdmController->startThread();
     //TODO
-    m_cdmController->setState(0);
+    m_cdmController->set_FSM(0);
     
     //TODO add heartBeat
 

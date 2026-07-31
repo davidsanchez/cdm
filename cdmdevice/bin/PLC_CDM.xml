@@ -505,7 +505,7 @@
                                     <Traitement>n</Traitement>
                         </Element>
                         <Element>
-                                    <Name>transition</Name>
+                                    <Name>FSM_transition</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
                                     <NodeId>FSM.transition</NodeId>
@@ -519,7 +519,7 @@
                                     <Traitement>n</Traitement>
                         </Element>
                         <Element>
-                                    <Name>state</Name>
+                                    <Name>FSM_state</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
                                     <NodeId>FSM.state</NodeId>

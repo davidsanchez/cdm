@@ -294,29 +294,39 @@ void CDMController::enableHeartbeat()
     getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("_Error_Heart_Beat", false);
 }
 
-void CDMController::setState(int state)
-{
-    COND_LOG_DEBUG<<"Set State to "<<state<<std::endl;
-        std::string datapointName = ""; // à récupérer depuis la config
-        int nameSpace = 2;
-        getDataPointFinderRef(CDM_CONFIGURATION_NAME)->searchDatapointL2("state", datapointName, nameSpace);
-        std::cout<<datapointName<<endl;
 
-    getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("state", state);
+
+
+/**
+ * @brief Sets the FSM state to in transition.
+ * @param transition The transition state.
+ */
+void CDMController::set_FSM_in_transition (bool transition)
+{
+	LOG_TRACE << "[CDM] Set FSM to in transition " << transition << std::endl;
+	int transition_state = (transition) ? 1 : 0;
+	getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("FSM_transition", transition_state);
+	return;
+}
+
+
+/**
+ * @brief Sets the FSM state.
+ * @param state The FSM state.
+ */
+void CDMController::set_FSM (int state)
+{
+	LOG_TRACE << "[CDM] Set FSM to " << state << std::endl;
+	// Case if we do not force state change and the FSM is in error
+
+	getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("FSM_state", state);
+	return;
 
 }
 
-void CDMController::setTransition(int transition)
-{
-    COND_LOG_DEBUG<<"Set Transition to "<<transition<<std::endl;
-        std::string datapointName = ""; // à récupérer depuis la config
-        int nameSpace = 2;
-        getDataPointFinderRef(CDM_CONFIGURATION_NAME)->searchDatapointL2("transition", datapointName, nameSpace);
-        std::cout<<datapointName<<endl;
 
-    getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("transition", transition);
 
-}
+
 
 void CDMController::setDPQuality()
 {

@@ -80,8 +80,8 @@ public:
     void setMeteoThread(DataAccessClientOPCUA *dataAccessClientOPCUA) {m_ThreadMeteo = new AsynchronousThread(dataAccessClientOPCUA);}
     void setLogThread(DataAccessClientOPCUA *dataAccessClientOPCUA) {m_ThreadLogRestart = new AsynchronousThread(dataAccessClientOPCUA);}
 
-    void setState(int state);
-    void setTransition(int transition);
+    void set_FSM(int state);
+    void set_FSM_in_transition(bool transition);
 
     void setbitsPerPixel(int input){m_bitsPerPixel=input;}
     int getbitsPerPixel(){return m_bitsPerPixel;
