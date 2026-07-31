@@ -12,6 +12,11 @@
  * dans ce Controller via startRun() / cmd*().
  */
 
+    #include <thread>
+#include <chrono>
+
+
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -319,6 +324,8 @@ void CDMController::set_FSM (int state)
 	LOG_TRACE << "[CDM] Set FSM to " << state << std::endl;
 	// Case if we do not force state change and the FSM is in error
 
+
+std::this_thread::sleep_for(std::chrono::milliseconds(500)); // 500 ms
 	getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("FSM_state", state);
 	return;
 
