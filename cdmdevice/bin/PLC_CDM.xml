@@ -34,7 +34,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_x.circle_x_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Circle.</NodeRootL2>
                                     <NodeIdL2>circle_x.circle_x_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
@@ -48,7 +48,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_x_stddev.circle_x_stddev_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Circle.</NodeRootL2>
                                     <NodeIdL2>circle_x_stddev.circle_x_stddev_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
@@ -62,7 +62,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_y.circle_y_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Circle.</NodeRootL2>
                                     <NodeIdL2>circle_y.circle_y_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
@@ -76,7 +76,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_y_stddev.circle_y_stddev_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Circle.</NodeRootL2>
                                     <NodeIdL2>circle_y_stddev.circle_y_stddev_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
@@ -104,7 +104,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_RMS.circle_RMS_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Circle.</NodeRootL2>
                                     <NodeIdL2>circle_RMS.circle_RMS_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
@@ -118,7 +118,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_RMS_stddev.circle_RMS_stddev_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Circle.</NodeRootL2>
                                     <NodeIdL2>circle_RMS_stddev.circle_RMS_stddev_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
@@ -132,7 +132,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Circle.circle_R_stddev.circle_R_stddev_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Circle.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Circle.</NodeRootL2>
                                     <NodeIdL2>circle_R_stddev.circle_R_stddev_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
@@ -146,7 +146,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Displacement.displacement_x.displacement_x_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Displacement.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Displacement.</NodeRootL2>
                                     <NodeIdL2>displacement_x.displacement_x_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
@@ -160,7 +160,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Displacement.displacement_y.displacement_y_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Displacement.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Displacement.</NodeRootL2>
                                     <NodeIdL2>displacement_y.displacement_y_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
@@ -174,7 +174,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Displacement.rotation.rotation_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Displacement.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Displacement.</NodeRootL2>
                                     <NodeIdL2>rotation.rotation_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
@@ -188,7 +188,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Camera.FPS.FPS_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Camera.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Camera.</NodeRootL2>
                                     <NodeIdL2>FPS.FPS_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
@@ -202,7 +202,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Camera.exposure.exposure_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Camera.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Camera.</NodeRootL2>
                                     <NodeIdL2>exposure.exposure_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
@@ -216,7 +216,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Camera.gain.gain_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Camera.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Camera.</NodeRootL2>
                                     <NodeIdL2>gain.gain_v</NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
@@ -230,7 +230,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Camera.pixelClock.pixelClock_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Camera.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Camera.</NodeRootL2>
                                     <NodeIdL2>pixelClock.pixelClock_v</NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
@@ -244,7 +244,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Camera.pixelFormat.pixelFormat_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Camera.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Camera.</NodeRootL2>
                                     <NodeIdL2>pixelFormat.pixelFormat_v</NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
@@ -258,7 +258,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Camera.temperatureValue.temperatureValue_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Camera.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Camera.</NodeRootL2>
                                     <NodeIdL2>temperatureValue.temperatureValue_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
@@ -272,7 +272,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.Camera.temperatureStatus.temperatureStatus_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.Camera.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.Camera.</NodeRootL2>
                                     <NodeIdL2>temperatureStatus.temperatureStatus_v</NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
@@ -286,7 +286,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.timestamp.timestamp_UTC.timestamp_UTC_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.timestamp.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.timestamp.</NodeRootL2>
                                     <NodeIdL2>timestamp_UTC.timestamp_UTC_v</NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
@@ -300,7 +300,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.timestamp.timestamp_epoch.timestamp_epoch_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.timestamp.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.timestamp.</NodeRootL2>
                                     <NodeIdL2>timestamp_epoch.timestamp_epoch_v</NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
@@ -314,7 +314,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.image.image_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.</NodeRootL2>
                                     <NodeIdL2>image.image_v</NodeIdL2>
                                     <Type>ByteString</Type>
                                     <Subscribe>y</Subscribe>
@@ -328,7 +328,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.imageName.imageName_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.</NodeRootL2>
                                     <NodeIdL2>imageName.imageName_v</NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
@@ -342,7 +342,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.imagePath.imagePath_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.</NodeRootL2>
                                     <NodeIdL2>imagePath.imagePath_v</NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
@@ -356,7 +356,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.nImagesGet.nImagesGet_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.</NodeRootL2>
                                     <NodeIdL2>nImagesGet.nImagesGet_v</NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
@@ -370,7 +370,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.imagePath_cat.imagePath_cat_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.</NodeRootL2>
                                     <NodeIdL2>imagePath_cat.imagePath_cat_v</NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
@@ -384,7 +384,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>Sensor.humidity_absolute.humidity_absolute_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.Sensor.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.Sensor.</NodeRootL2>
                                     <NodeIdL2>humidity_absolute.humidity_absolute_v</NodeIdL2>
                                     <Type>REAL</Type>
                                     <Subscribe>y</Subscribe>
@@ -398,7 +398,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>Sensor.humidity_relative.humidity_relative_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.Sensor.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.Sensor.</NodeRootL2>
                                     <NodeIdL2>humidity_relative.humidity_relative_v</NodeIdL2>
                                     <Type>REAL</Type>
                                     <Subscribe>y</Subscribe>
@@ -412,7 +412,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>Sensor.pressure.pressure_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.Sensor.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.Sensor.</NodeRootL2>
                                     <NodeIdL2>pressure.pressure_v</NodeIdL2>
                                     <Type>REAL</Type>
                                     <Subscribe>y</Subscribe>
@@ -426,7 +426,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>Sensor.temperature.temperature_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.Sensor.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.Sensor.</NodeRootL2>
                                     <NodeIdL2>temperature.temperature_v</NodeIdL2>
                                     <Type>REAL</Type>
                                     <Subscribe>y</Subscribe>
@@ -440,7 +440,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.libVersion.libVersion_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.</NodeRootL2>
                                     <NodeIdL2>libVersion.libVersion_v</NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
@@ -454,7 +454,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.numIntegrateImage.numIntegrateImage_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.</NodeRootL2>
                                     <NodeIdL2>numIntegrateImage.numIntegrateImage_v</NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
@@ -468,7 +468,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.status.status_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.</NodeRootL2>
                                     <NodeIdL2>status.status_v</NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
@@ -482,7 +482,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.comment.comment_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.</NodeRootL2>
                                     <NodeIdL2>comment.comment_v</NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
@@ -496,7 +496,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.swVersion.swVersion_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.</NodeRootL2>
                                     <NodeIdL2>swVersion.swVersion_v</NodeIdL2>
                                     <Type>STRING</Type>
                                     <Subscribe>y</Subscribe>
@@ -510,7 +510,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>SetDPQuality</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.</NodeRootL2>
                                     <NodeIdL2>SetDPQuality</NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
@@ -524,7 +524,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>FSM.Configure</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.FSM.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.FSM.</NodeRootL2>
                                     <NodeIdL2>Configure</NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
@@ -566,7 +566,7 @@
                                     <NameSpace>2</NameSpace>
                                     <NodeId>CDM.LED_x.LED_x_01.LED_x_01_v</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Auxiliary.AuxControl.CDM.LED_x.</NodeRootL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.LED_x.</NodeRootL2>
                                     <NodeIdL2>LED_x_01.LED_x_01_v</NodeIdL2>
                                     <Type>DOUBLE</Type>
                                     <Subscribe>y</Subscribe>
