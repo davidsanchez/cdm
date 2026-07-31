@@ -366,9 +366,9 @@ int PluginCDM::afterStart()
     // TODO fix DP quality workarround
     std::string resultCall;
     int quality = 0; // (0= Good, 1=Uncertain, 2 = Bad)
-    std::string methodToCall = "Auxiliary.AuxControl.CDM.SetDPQuality";
-    std::string completeNodeName = "AuxControl";
-            
+    std::string methodToCall = "Unit_CDM.AuxControl.SetDPQuality";
+    std::string completeNodeName = "";
+
     boost::any completeNodeNameAny = completeNodeName;
             
     std::vector<boost::any> callRequest;
