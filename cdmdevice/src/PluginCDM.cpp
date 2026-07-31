@@ -141,8 +141,8 @@ int PluginCDM::cmd(const std::string& parameters,
                 fConfigureExposure,
                 fConfigureFps,
                 fConfigureGain,
-                fConfigurePixelFormat);
-        }/*
+                fConfigurePixelFormat);*/
+        }
     }
 
     // --- Disconnect ---
