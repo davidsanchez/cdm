@@ -142,6 +142,7 @@ int PluginCDM::cmd(const std::string& parameters,
                 fConfigureFps,
                 fConfigureGain,
                 fConfigurePixelFormat);*/
+            m_cdmController->setTransition(0);
         }
     }
 
@@ -152,6 +153,7 @@ int PluginCDM::cmd(const std::string& parameters,
         if (m_cdmController != NULL)
         {
             m_cdmController->DisconnectCamera();
+            m_cdmController->setTransition(0);
         }
     }
 

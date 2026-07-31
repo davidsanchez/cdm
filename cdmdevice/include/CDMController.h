@@ -81,6 +81,7 @@ public:
     void setLogThread(DataAccessClientOPCUA *dataAccessClientOPCUA) {m_ThreadLogRestart = new AsynchronousThread(dataAccessClientOPCUA);}
 
     void setState(int state);
+    void setTransition(int transition);
 
     void setbitsPerPixel(int input){m_bitsPerPixel=input;}
     int getbitsPerPixel(){return m_bitsPerPixel;

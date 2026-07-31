@@ -505,27 +505,13 @@
                                     <Traitement>n</Traitement>
                         </Element>
                         <Element>
-                                    <Name>Configure</Name>
-                                    <Description></Description>
-                                    <NameSpace>2</NameSpace>
-                                    <NodeId>FSM.Configure</NodeId>
-                                    <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Unit_CDM.AuxControl.</NodeRootL2>
-                                    <NodeIdL2>FSM.Configure</NodeIdL2>
-                                    <Type>INT</Type>
-                                    <Subscribe>y</Subscribe>
-                                    <Subscribe_L2>y</Subscribe_L2>
-                                    <Log>n</Log>
-                                    <Traitement>n</Traitement>
-                        </Element>
-                        <Element>
                                     <Name>transition</Name>
                                     <Description></Description>
                                     <NameSpace>2</NameSpace>
                                     <NodeId>FSM.transition</NodeId>
                                     <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>FSM.transition.transition_v</NodeRootL2>
-                                    <NodeIdL2></NodeIdL2>
+                                    <NodeRootL2>Unit_CDM.AuxControl.</NodeRootL2>
+                                    <NodeIdL2>FSM.transition</NodeIdL2>
                                     <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>

@@ -306,6 +306,18 @@ void CDMController::setState(int state)
 
 }
 
+void CDMController::setTransition(int transition)
+{
+    COND_LOG_DEBUG<<"Set Transition to "<<transition<<std::endl;
+        std::string datapointName = ""; // à récupérer depuis la config
+        int nameSpace = 2;
+        getDataPointFinderRef(CDM_CONFIGURATION_NAME)->searchDatapointL2("transition", datapointName, nameSpace);
+        std::cout<<datapointName<<endl;
+
+    getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("transition", transition);
+
+}
+
 void CDMController::setDPQuality()
 {
 
