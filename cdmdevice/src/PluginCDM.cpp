@@ -142,7 +142,7 @@ int PluginCDM::cmd(const std::string& parameters,
                 fConfigureFps,
                 fConfigureGain,
                 fConfigurePixelFormat);*/
-            m_cdmController->set_FSM_in_transition(0);
+            //m_cdmController->set_FSM_in_transition(0);
         }
     }
 
