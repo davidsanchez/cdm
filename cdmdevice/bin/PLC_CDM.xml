@@ -17,8 +17,8 @@
     <GeneralInfo>
                 <OPCUA_Address>opc.tcp://localhost:48011</OPCUA_Address>
                 <RootName>Unit_CDM.AuxControl</RootName>
-                <CtrlComErrorDPName>Auxiliary.AuxControl.Connections.CDM_Connection_InError.CDM_Connection_InError_v</CtrlComErrorDPName>
-		<MethodQuality>Auxiliary.AuxControl.SetDPQuality</MethodQuality>
+                <CtrlComErrorDPName>Unit_CDM.AuxControl.Connections.CDM_Connection_InError.CDM_Connection_InError_v</CtrlComErrorDPName>
+		<MethodQuality>Unit_CDM.AuxControl.SetDPQuality</MethodQuality>
 		<NodeQuality>AuxControl</NodeQuality>
     </GeneralInfo>
 
@@ -499,20 +499,6 @@
                                     <NodeRootL2>Unit_CDM.AuxControl.CDM.</NodeRootL2>
                                     <NodeIdL2>swVersion.swVersion_v</NodeIdL2>
                                     <Type>STRING</Type>
-                                    <Subscribe>y</Subscribe>
-                                    <Subscribe_L2>y</Subscribe_L2>
-                                    <Log>n</Log>
-                                    <Traitement>n</Traitement>
-                        </Element>
-                        <Element>
-                                    <Name>SetDPQuality</Name>
-                                    <Description></Description>
-                                    <NameSpace>2</NameSpace>
-                                    <NodeId>SetDPQuality</NodeId>
-                                    <NameSpaceL2>2</NameSpaceL2>
-                                    <NodeRootL2>Unit_CDM.AuxControl.CDM.</NodeRootL2>
-                                    <NodeIdL2>SetDPQuality</NodeIdL2>
-                                    <Type>INT</Type>
                                     <Subscribe>y</Subscribe>
                                     <Subscribe_L2>y</Subscribe_L2>
                                     <Log>n</Log>

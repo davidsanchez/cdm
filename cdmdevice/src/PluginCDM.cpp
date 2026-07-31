@@ -374,8 +374,8 @@ int PluginCDM::afterStart()
     std::vector<boost::any> callRequest;
     callRequest.push_back(completeNodeNameAny);
     callRequest.push_back(quality);
-    int res = getDataAccessClientOPCUARef()->callMethod(methodToCall, 4, callRequest, resultCall);
-    COND_LOG_DEBUG << methodToCall << "  method call result = " << res << endl;
+    //int res = getDataAccessClientOPCUARef()->callMethod(methodToCall, 4, callRequest, resultCall);
+    //COND_LOG_DEBUG << methodToCall << "  method call result = " << res << endl;
 
     //TODO what should be ret?
 
