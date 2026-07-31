@@ -125,7 +125,7 @@ public:
     std::string searchDatapoint(const std::string& element);
 
     std::map<std::string, std::string>  getCDMConfig(){ return m_config; }
-    int loadCDMConfiguration();
+    bool loadCDMConfiguration();
     void setupCameraFromConfig();
 
     private:
