@@ -122,6 +122,7 @@ COPY cdmdevice/bin/PLC_DATABROKER.xml /home/cdmmgr/PLC_DATABROKER.xml
 COPY cdmdevice/bin/Unit_CDM_Model.xml /home/cdmmgr/Unit_CDM_Model.xml
 COPY cdmdevice/bin/FSM_CDM.xml /home/cdmmgr/FSM_CDM.xml
 COPY cdmdevice/bin/config.ini /home/cdmmgr/config.ini
+COPY cdmdevice/bin/Mapping_Aux_DB.xml /home/cdmmgr/Mapping_Aux_DB.xml
 
 COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
 
