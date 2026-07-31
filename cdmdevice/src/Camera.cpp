@@ -25,7 +25,7 @@ using namespace cv;
 const std::map<std::string, std::string> Camera::pixelFormatMap = {
     {"IS_CM_SENSOR_RAW16", "Mono12"},
     {"IS_CM_MONO8", "Mono8"},
-};
+}; 
 
 // Recherche inverse (GenICam -> interface)
 static const std::unordered_map<std::string, PixelFormatInfo> pixelFormatByGenICam = {
@@ -402,6 +402,7 @@ int Camera::Connect()
     //update list of installed libraries
     m_DeviceManagerPtr->Update();
     //TODO: read serial no from config
+    COND_LOG_DEBUG<<"Camera::Connect() : Connection to camera "<<m_config["ids_serial_no"]<<endl;
     std::string serial_no =m_config["ids_serial_no"]; //"4108904530";
     //enumerate all attached IDS devices, look for the correct SN
     for (const auto& descriptor: m_DeviceManagerPtr->Devices()) {

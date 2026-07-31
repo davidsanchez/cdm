@@ -143,9 +143,9 @@ CDMController::~CDMController()
 // loadCDMConfiguration — charge la config depuis le fichier
 // CHOIX: extraite de afterStart() original
 // ============================================================
-int CDMController::loadCDMConfiguration(std::map<std::string, std::string>& configOut)
+int CDMController::loadCDMConfiguration()
 {
-    bool conf = LoadCDMConfiguration(configOut);
+    bool conf = LoadCDMConfiguration(m_config);
     return conf ? 0 : -1;
 }
 

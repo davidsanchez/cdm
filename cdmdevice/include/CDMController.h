@@ -124,12 +124,11 @@ public:
     // --- Recherche datapoint ---
     std::string searchDatapoint(const std::string& element);
 
-    // =============================================
-    // Config / configuration
-    // =============================================
-    Config* getCDMConfig() const { return m_cdmConfig; }
+    std::map<std::string, std::string>  getCDMConfig(){ return m_config; }
+    int loadCDMConfiguration();
+    void setupCameraFromConfig();
 
-private:
+    private:
     // === Config OPC-UA ===
     Config *m_cdmConfig;   // "PLC_CDM.xml"
     Config *m_dbConfig;    // DataBroker config (si applicable)
@@ -154,9 +153,7 @@ private:
     DatapointMonitor *m_dpMonitorDataBroker;
     int m_connectionResultDataBroker;
 
-    // === Méthodes privées ===
-    int loadCDMConfiguration(std::map<std::string, std::string>& configOut);
-    void setupCameraFromConfig();
+
 
     // --- Commandes sur les threads caméra ---
     void startCameraThread();
