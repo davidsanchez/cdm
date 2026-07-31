@@ -309,7 +309,7 @@ void CDMController::enableHeartbeat()
 void CDMController::set_FSM_in_transition (bool transition)
 {
 	LOG_TRACE << "[CDM] Set FSM to in transition " << transition << std::endl;
-	int transition_state = (transition) ? 1 : 0;
+	int32_t transition_state = (transition) ? 1 : 0;
 	getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("FSM_transition", transition_state);
 	return;
 }
