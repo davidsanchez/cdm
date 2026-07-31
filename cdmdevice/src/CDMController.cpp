@@ -78,11 +78,11 @@ CDMController::CDMController(int *status_Client_Connection, PluginsBase *plugin)
     m_connectionResultDataBroker = -1;
 
     // Récupère la config déjà chargée en interne par Controller::init()
-    //m_cdmConfig = getConfiguration(CDM_CONFIGURATION_NAME);
+    m_cdmConfig = getConfiguration(CDM_CONFIGURATION_NAME);
     m_dbConfig  = getConfiguration(DATABROKER_CONFIGURATION_NAME);
 
 
-    /*if(m_cdmConfig != NULL)
+    if(m_cdmConfig != NULL)
     {
         std::string configName = m_cdmConfig->getFileName();
         // Créer et enregistrer le callback pour ce serveur si nécessaire
@@ -92,7 +92,7 @@ CDMController::CDMController(int *status_Client_Connection, PluginsBase *plugin)
     else
     {
         LOG_ERROR << "Configuration " << CDM_CONFIGURATION_NAME << " has not been found in the config.ini file" << endl;
-    }*/
+    }
 
     if(m_dbConfig != NULL)
     {
@@ -299,8 +299,7 @@ void CDMController::setState(int state)
     COND_LOG_DEBUG<<"Set State to "<<state<<std::endl;
         std::string datapointName = ""; // à récupérer depuis la config
         int nameSpace = 2;
-        std::cout<<CDM_CONFIGURATION_NAME<<std::endl;
-        getDataPointFinderRef(CDM_CONFIGURATION_NAME);//->searchDatapointL2("state", datapointName, nameSpace);
+        getDataPointFinderRef(CDM_CONFIGURATION_NAME)->searchDatapointL2("state", datapointName, nameSpace);
         std::cout<<datapointName<<endl;
 
     getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("state", state);
@@ -340,7 +339,7 @@ void CDMController::startMeteoThread()
 {
     if (m_ThreadMeteo != NULL)
     {
-        COND_LOG_DEBUG<<"CDMController::startMetheThread()"<<std::endl;
+        COND_LOG_DEBUG<<"CDMController::startMeteoThread()"<<std::endl;
         m_ThreadMeteo->startRun();
         m_ThreadMeteo->cmdStartMeteo();
     }

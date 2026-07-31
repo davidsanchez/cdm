@@ -245,10 +245,11 @@ int PluginCDM::cmd(const std::string& parameters,
             fConfigurePixelFormat = arglist[5];
             if (fConfigurePixelFormat == "IS_CM_MONO8")
             {
-                // handled in Controller
+                m_cdmController->setbitsPerPixel(8);
             }
             else
             {
+                m_cdmController->setbitsPerPixel(16);
                 fConfigurePixelFormat = "IS_CM_SENSOR_RAW16";
             }
         }
