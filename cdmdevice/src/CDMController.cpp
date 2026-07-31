@@ -146,6 +146,7 @@ CDMController::~CDMController()
 int CDMController::loadCDMConfiguration()
 {
     bool conf = LoadCDMConfiguration(m_config);
+    COND_LOG_DEBUG<<"CDMController::loadCDMConfiguration:"<<conf;
     return conf ? 0 : -1;
 }
 
