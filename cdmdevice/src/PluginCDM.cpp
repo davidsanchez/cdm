@@ -53,6 +53,8 @@ PluginCDM::PluginCDM()
     fGoToReadyFlag = false;
     fConfigureFlag = false;
     fSubscribeDataBrokerFlag = false;
+    fThreadRunning = false;
+    //TODO check all variable and use
 
     fConfigurePixelClock = 216;
     fConfigureExposure = 95000.0;
@@ -143,6 +145,7 @@ int PluginCDM::cmd(const std::string& parameters,
                 fConfigureGain,
                 fConfigurePixelFormat);*/
             //m_cdmController->set_FSM_in_transition(0);
+            //getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
         }
     }
 
@@ -195,6 +198,7 @@ int PluginCDM::cmd(const std::string& parameters,
     // ================================================
     // COMMANDES ASYNCHRONES (flag + thread)
     // ================================================
+    if (fThreadRunning){return -1;}
 
     // --- GetMultipleImages ---
     if (parameters.find("GetMultipleImages") == 0)
@@ -353,8 +357,7 @@ int PluginCDM::afterStart()
     int ret = 0;
     ret = PluginsBase::afterStart();
     m_cdmController = new CDMController(&ret, this);
-    COND_LOG_DEBUG << "PluginCDM::afterStart(): SetDPQuality ";
-    std::cout<<getDataAccessClientOPCUARef()<<std::endl;
+
     m_cdmController->setCameraThread(getDataAccessClientOPCUARef());
     m_cdmController->setMeteoThread(getDataAccessClientOPCUARef());
     m_cdmController->setLogThread(getDataAccessClientOPCUARef());
@@ -370,6 +373,7 @@ int PluginCDM::afterStart()
 
     
     // TODO fix DP quality workarround
+    COND_LOG_DEBUG << "PluginCDM::afterStart(): SetDPQuality ";
     std::string resultCall;
     int quality = 0; // (0= Good, 1=Uncertain, 2 = Bad)
     std::string methodToCall = "Unit_CDM.AuxControl.SetDPQuality";
@@ -424,6 +428,8 @@ int PluginCDM::set(const std::string& chain,
 // run — consommateur de flags dans le thread
 void *PluginCDM::run(void *params) 
 {
+    	/// Mark the thread as running to block concurrent normal commands
+	fThreadRunning = true;
     // === Acquisition ===
     if (fGetMultipleImagesFlag == true)
     {
@@ -551,6 +557,13 @@ void *PluginCDM::run(void *params)
             m_cdmController->SubscribeDataBroker();
         }
     }
+
+    	// Thread finished => set to false
+	fThreadRunning = false;
+
+
+	std::cout << "Plugin action end" << std::endl;
+	return NULL;
 }
 
 //****************************************************

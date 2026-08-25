@@ -86,6 +86,8 @@ private:
     bool fStartCDMFlag;
     bool fStopCDMFlag;
 
+    bool fThreadRunning;
+
     bool fGoToTpointFlag;
     bool fGoToReadyFlag;
 

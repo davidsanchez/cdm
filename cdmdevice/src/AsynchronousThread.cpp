@@ -131,12 +131,12 @@ int AsynchronousThread::cmdStartStream(std::string datapointName, int nameSpace)
     return ret;
 }
 
-int AsynchronousThread::cmdConfigure(std::string datapointName, int nameSpace, int nPixelClock, double exposure, double fps, int gain, std::string pixel_format)
+int AsynchronousThread::cmdConfigure(int nameSpace, int nPixelClock, double exposure, double fps, int gain, std::string pixel_format)
 {
     LOG_INFO<<"AsynchronousThread::cmdConfigure()"<<std::endl;
     int ret = 0;
     m_cmdConfigure = true;
-    m_datapointName = datapointName;
+
     m_nameSpace = nameSpace;
     AsynchronousThread::nPixelClock = nPixelClock;
     AsynchronousThread::exposure = exposure;

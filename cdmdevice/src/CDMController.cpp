@@ -217,7 +217,7 @@ void CDMController::ConfigureThreadCamera(int nPixelClock, double exposure, doub
 
         COND_LOG_DEBUG<<"CDMController::ConfigureThreadCamera: datapoint: "<<datapointName<<std::endl;
         
-        m_Thread->cmdConfigure(datapointName, nameSpace, nPixelClock, exposure, fps, gain, pixel_format);
+        m_Thread->cmdConfigure(nameSpace, nPixelClock, exposure, fps, gain, pixel_format);
     }
 }
 
@@ -311,7 +311,8 @@ void CDMController::set_FSM_in_transition (bool transition)
 {
 	LOG_TRACE << "[CDM] Set FSM to in transition " << transition << std::endl;
 	int32_t transition_state = (transition) ? 1 : 0;
-	getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("FSM_transition", transition_state);
+	getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("FSM_transition", 0);
+    
 	return;
 }
 
@@ -323,10 +324,6 @@ void CDMController::set_FSM_in_transition (bool transition)
 void CDMController::set_FSM (int state)
 {
 	LOG_TRACE << "[CDM] Set FSM to " << state << std::endl;
-	// Case if we do not force state change and the FSM is in error
-
-
-std::this_thread::sleep_for(std::chrono::milliseconds(500)); // 500 ms
 	getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("FSM_state", state);
 	return;
 

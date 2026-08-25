@@ -2028,7 +2028,7 @@ void Camera::setPixelFormatAndReport(std::string pixel_format, std::vector<boost
     {
         LOG_ERROR << "Camera::setPixelFormatAndReport(): failed to configure pixel format '"
                    << pixel_format << "'" << std::endl;
-        throw std::runtime_error("Camera::Configure(): unsupported pixel format: " + pixel_format);
+        throw std::runtime_error("Camera::setPixelFormatAndReport(): unsupported pixel format: " + pixel_format);
     }
 
     std::string actualGenICamFormat =
@@ -2061,19 +2061,24 @@ std::vector<boost::any> Camera::Configure(int nPixelClock, double exposure, doub
     try
     {
         // --- Pixel clock ---
-        setPixelClock(nPixelClock, return_values);
+        //COND_LOG_DEBUG << "Camera::Configure(): setPixelClock " <<nPixelClock<< endl;
+        //setPixelClock(nPixelClock, return_values);
 
         // --- Exposure ---
+        COND_LOG_DEBUG << "Camera::Configure(): setExposure" << endl;
         setExposure(exposure, return_values);
 
         // --- Trigger / acquisition mode + FPS ---
+        COND_LOG_DEBUG << "Camera::Configure():  Trigger / acquisition mode + FPS" << endl;
         setAcquisitionMode();
         setFrameRate(fps, return_values);
 
         // --- Gain ---
+        COND_LOG_DEBUG << "Camera::Configure():  setGain" << endl;
         setGain(gain, return_values);
 
         // --- Pixel format ---
+        COND_LOG_DEBUG << "Camera::Configure():  setPixelFormatAndReport" << endl;
         setPixelFormatAndReport(pixel_format, return_values);
     }
     catch (const std::exception &e)
