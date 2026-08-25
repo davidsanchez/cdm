@@ -364,7 +364,7 @@ int PluginCDM::afterStart()
     m_cdmController->set_FSM(0);
     
     bool conf = m_cdmController->loadCDMConfiguration();
-    COND_LOG_DEBUG<<"Loading CDM txt config "<<conf<<endl;
+    COND_LOG_DEBUG<<"Loading CDM txt config: "<<conf<<endl;
     if (conf) {m_cdmController->setupCameraFromConfig();}
 
     //TODO add heartBeat

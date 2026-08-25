@@ -213,7 +213,7 @@ void CDMController::ConfigureThreadCamera(int nPixelClock, double exposure, doub
 
         std::string datapointName = ""; // à récupérer depuis la config
         int nameSpace = 2;
-        getDataPointFinderRef(CDM_CONFIGURATION_NAME)->searchDatapointL2("Configure", datapointName, nameSpace);
+        //getDataPointFinderRef(CDM_CONFIGURATION_NAME)->searchDatapointL2("Configure", datapointName, nameSpace);
 
         COND_LOG_DEBUG<<"CDMController::ConfigureThreadCamera: datapoint: "<<datapointName<<std::endl;
         
