@@ -137,14 +137,10 @@ int PluginCDM::cmd(const std::string& parameters,
         }
         if (m_cdmController != NULL)
         {
-            m_cdmController->ConnectCamera();
-            /*m_cdmController->ConfigureThreadCamera(
-                fConfigurePixelClock,
-                fConfigureExposure,
-                fConfigureFps,
-                fConfigureGain,
-                fConfigurePixelFormat);*/
-            m_cdmController->set_FSM_in_transition(0);
+            std::thread([this]() {
+                m_cdmController->ConnectCamera();
+                m_cdmController->set_FSM_in_transition(0);
+            }).detach();
             //getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
         }
     }
