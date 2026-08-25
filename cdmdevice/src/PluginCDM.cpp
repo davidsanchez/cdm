@@ -151,8 +151,10 @@ int PluginCDM::cmd(const std::string& parameters,
         cout << "PluginCDM => Disconnect" << endl;
         if (m_cdmController != NULL)
         {
-            m_cdmController->DisconnectCamera();
-            m_cdmController->set_FSM_in_transition(0);
+            std::thread([this]() {
+                m_cdmController->DisconnectCamera();
+                m_cdmController->set_FSM_in_transition(0);
+            }).detach();
         }
     }
 
