@@ -12,6 +12,11 @@
  * dans ce Controller via startRun() / cmd*().
  */
 
+    #include <thread>
+#include <chrono>
+
+
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -22,10 +27,10 @@
 #include "CDMController.h"
 #include "Camera.h"
 #include "Helper.h"
-#include "Logging.h"
+
 #include "ConfigCDM.h"   // LoadCDMConfiguration()
-#include "Config.h"
-#include "pluginsBase.h"
+
+#define FILENAME "config.ini" //TODO useless
 
 using namespace std;
 
@@ -33,16 +38,16 @@ using namespace std;
 // Variables globales camera et helper (conservées du code original)
 // TODO: à remplacer par des membres du Controller si possible
 // ============================================================
-extern Camera camera;
-extern Helper helper;
+Camera camera;
+Helper helper;
 
 // ============================================================
 // Constructeur sans PluginsBase
 // ============================================================
+// Constructeur simple (juste le statut de connexion, pas de plugin ni config nommée)
 CDMController::CDMController(int *status_Client_Connection) 
-    : Controller(CDM_CONFIGURATION_NAME)  // appelle Controller(const string&)
+    : Controller(status_Client_Connection)
 {
-    // Initialisation des membres
     m_cdmConfig = NULL;
     m_dbConfig = NULL;
     m_camera = &camera;
@@ -54,31 +59,17 @@ CDMController::CDMController(int *status_Client_Connection)
     m_dpMonitorDataBroker = NULL;
     m_connectionResultDataBroker = -1;
 
-    // Chargement de la config CDM depuis PLC_CDM.xml
-    m_cdmConfig = new Config(CDM_CONFIGURATION_NAME, "");
+    /*m_cdmConfig = new Config(CDM_CONFIGURATION_NAME, "");
+    m_dbConfig = new Config(DATABROKER_CONFIGURATION_NAME, "");
+
     std::string configName = m_cdmConfig->getFileName();
-    std::string configPath = m_cdmConfig->getPath();
-
-    // NOTE: Pas de addDataProcessingCallback car le code original CDM
-    //       n'utilise pas de callback de traitement de données OPC-UA.
-    //       Les threads (m_Thread, m_ThreadMeteo, m_ThreadLogRestart) 
-    //       sont des threads de travail, pas des callbacks datapoint.
-
-    // NOTE: Les AsynchronousThread (m_Thread, m_ThreadMeteo, m_ThreadLogRestart)
-    //       sont créés dans loadCDMConfiguration() ou dans afterStart() du Plugin.
-    //       Ici on initialise juste les pointeurs à NULL.
-    //       Le vrai démarrage des threads se fait dans startCameraThread() etc.
+    std::string configdgName = m_dbConfig->getFileName();*/
 }
 
-// ============================================================
-// Constructeur avec PluginsBase (pattern standard)
-//
-// CHOIX D'INTERPRÉTATION : PluginsBase* fourni pour compatibilité avec
-// le pattern de référence, mais non utilisé directement dans ce Controller
-// (la config OPC-UA est gérée via le Config*).
-// ============================================================
-CDMController::CDMController(int *status_Client_Connection, PluginsBase *config)
-    : Controller(CDM_CONFIGURATION_NAME)
+// Constructeur standard (pattern de référence, comme AuxiliaryController)
+CDMController::CDMController(int *status_Client_Connection, PluginsBase *plugin)
+    : Controller(status_Client_Connection, plugin, "Unit_CDM.AuxControl")
+
 {
     m_cdmConfig = NULL;
     m_dbConfig = NULL;
@@ -91,12 +82,34 @@ CDMController::CDMController(int *status_Client_Connection, PluginsBase *config)
     m_dpMonitorDataBroker = NULL;
     m_connectionResultDataBroker = -1;
 
-    if (config != NULL)
+    // Récupère la config déjà chargée en interne par Controller::init()
+    m_cdmConfig = getConfiguration(CDM_CONFIGURATION_NAME);
+    m_dbConfig  = getConfiguration(DATABROKER_CONFIGURATION_NAME);
+
+
+    if(m_cdmConfig != NULL)
     {
-        m_cdmConfig = new Config(CDM_CONFIGURATION_NAME, "");
+        std::string configName = m_cdmConfig->getFileName();
+        // Créer et enregistrer le callback pour ce serveur si nécessaire
+        // CB *m_CBcdm = new CB_cdm(this, m_cdmConfig);
+        // addDataProcessingCallback(configName, m_CBcdm);
+    }
+    else
+    {
+        LOG_ERROR << "Configuration " << CDM_CONFIGURATION_NAME << " has not been found in the config.ini file" << endl;
     }
 
-    // NOTE: Pas de addDataProcessingCallback dans le code original CDM.
+    if(m_dbConfig != NULL)
+    {
+        std::string dbConfigName = m_dbConfig->getFileName();
+        // Idem pour le databroker
+        //CB *m_CBdb = new CB_DataBroker(this, m_dbConfig);
+        //addDataProcessingCallback(dbConfigName, m_CBdb);
+    }
+    else
+    {
+        LOG_ERROR << "Configuration " << DATABROKER_CONFIGURATION_NAME << " has not been found in the config.ini file" << endl;
+    }
 }
 
 // ============================================================
@@ -107,15 +120,15 @@ CDMController::~CDMController()
     // Cleanup des threads si encore actifs
     if (m_Thread != NULL)
     {
-        // m_Thread->stop();
+        m_Thread->stop();
     }
     if (m_ThreadMeteo != NULL)
     {
-        // m_ThreadMeteo->stop();
+        m_ThreadMeteo->stop();
     }
     if (m_ThreadLogRestart != NULL)
     {
-        // m_ThreadLogRestart->stop();
+        m_ThreadLogRestart->stop();
     }
 
     // Cleanup du datapoint monitor
@@ -130,10 +143,11 @@ CDMController::~CDMController()
 // loadCDMConfiguration — charge la config depuis le fichier
 // CHOIX: extraite de afterStart() original
 // ============================================================
-int CDMController::loadCDMConfiguration(std::map<std::string, std::string>& configOut)
+bool CDMController::loadCDMConfiguration()
 {
-    bool conf = LoadCDMConfiguration(configOut);
-    return conf ? 0 : -1;
+    bool conf = LoadCDMConfiguration(m_config);
+    COND_LOG_DEBUG<<"CDMController::loadCDMConfiguration:"<<conf;
+    return conf;
 }
 
 // ============================================================
@@ -185,31 +199,25 @@ void CDMController::DisconnectCamera()
     m_camera->Disconnect();
 }
 
-void CDMController::ConfigureCamera(int nPixelClock, double exposure, double fps,
-                                    double gain, const std::string& pixel_format)
-{
-    if (pixel_format == "IS_CM_MONO8")
-    {
-        m_bitsPerPixel = 8;
-    }
-    else
-    {
-        m_bitsPerPixel = 16;
-    }
-    m_camera->iBitsPerPixel = m_bitsPerPixel;
 
-    // Apply configuration via helper/getDataAccessClientOPCUARef()
-    // L'ancien code appelait m_Thread->cmdConfigure() pour cela
-}
 
 void CDMController::ConfigureThreadCamera(int nPixelClock, double exposure, double fps,
                                           double gain, const std::string& pixel_format)
 {
     if (m_Thread != NULL)
     {
-        // std::string datapointName = ""; // à récupérer depuis la config
-        // int nameSpace = 2;
-        // m_Thread->cmdConfigure(datapointName, nameSpace, nPixelClock, exposure, fps, gain, pixel_format);
+        if (pixel_format == "IS_CM_MONO8"){m_bitsPerPixel = 8;}
+        else{m_bitsPerPixel = 16;}
+        m_camera->iBitsPerPixel = m_bitsPerPixel;
+
+
+        std::string datapointName = ""; // à récupérer depuis la config
+        int nameSpace = 2;
+        getDataPointFinderRef(CDM_CONFIGURATION_NAME)->searchDatapointL2("Configure", datapointName, nameSpace);
+
+        COND_LOG_DEBUG<<"CDMController::ConfigureThreadCamera: datapoint: "<<datapointName<<std::endl;
+        
+        m_Thread->cmdConfigure(nameSpace, nPixelClock, exposure, fps, gain, pixel_format);
     }
 }
 
@@ -251,7 +259,8 @@ void CDMController::StopContinuousAcquisition()
 
 void CDMController::StartStream()
 {
-    m_camera->StartStream();
+//TODO
+ //   m_camera->StartStream();
 }
 
 void CDMController::StopStream()
@@ -283,6 +292,52 @@ void CDMController::StopCDM()
     m_camera->StopCDM();
 }
 
+void CDMController::enableHeartbeat()
+{
+    COND_LOG_DEBUG<<"enable Heartbeat"<<std::endl;
+    // TODO fix hard coded values
+    getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("_Enable_Heart_Beat", true);
+    getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("_Error_Heart_Beat", false);
+}
+
+
+
+
+/**
+ * @brief Sets the FSM state to in transition.
+ * @param transition The transition state.
+ */
+void CDMController::set_FSM_in_transition (bool transition)
+{
+	LOG_TRACE << "[CDM] Set FSM to in transition " << transition << std::endl;
+	int32_t transition_state = (transition) ? 1 : 0;
+	getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("FSM_transition", 0);
+    
+	return;
+}
+
+
+/**
+ * @brief Sets the FSM state.
+ * @param state The FSM state.
+ */
+void CDMController::set_FSM (int state)
+{
+	LOG_TRACE << "[CDM] Set FSM to " << state << std::endl;
+	getDataPointFinderRef(CDM_CONFIGURATION_NAME)->setDatapointL2("FSM_state", state);
+	return;
+
+}
+
+
+
+
+
+void CDMController::setDPQuality()
+{
+
+}
+
 // ============================================================
 // AddComment — ajoute un commentaire via le helper
 // ============================================================
@@ -299,6 +354,7 @@ void CDMController::startCameraThread()
 {
     if (m_Thread != NULL)
     {
+        COND_LOG_DEBUG<<"CDMController::startCameraThread()"<<std::endl;
         m_Thread->startRun();
     }
 }
@@ -310,6 +366,7 @@ void CDMController::startMeteoThread()
 {
     if (m_ThreadMeteo != NULL)
     {
+        COND_LOG_DEBUG<<"CDMController::startMeteoThread()"<<std::endl;
         m_ThreadMeteo->startRun();
         m_ThreadMeteo->cmdStartMeteo();
     }
@@ -322,6 +379,7 @@ void CDMController::startLogRestartThread()
 {
     if (m_ThreadLogRestart != NULL)
     {
+        COND_LOG_DEBUG<<"CDMController::startLogRestartThread()"<<std::endl;
         m_ThreadLogRestart->startRun();
         m_ThreadLogRestart->cmdLogRestart();
     }
@@ -456,4 +514,36 @@ int CDMController::UpdateAuxDMWestTopValue(bool newvalue)
 {
     m_helper->SetAuxDMWestTop(newvalue);
     return 0;
+}
+
+void CDMController::applyServerConnectionLossReaction()
+{
+    *getDeviceLogger()->getLogger() << MSG_WARNING 
+        << "[CDM] Apply Safety Action triggered by HeartBeat with client => Nothing specific\n";
+        //TODO
+}
+
+void CDMController::applyClientConnectionLossReaction(Config* config)
+{
+    *getDeviceLogger()->getLogger() << MSG_WARNING 
+        << "[CDM] Apply Safety Action triggered by loss of communication with the server associated to " 
+        << config->getFileName().c_str() << "\n";
+        //TODO
+}
+
+
+void CDMController::startThread()
+{
+    if (m_Thread != NULL)
+    {
+        startCameraThread();
+    }
+    if (m_ThreadMeteo != NULL)
+    {
+         startMeteoThread();
+    }
+    if (m_ThreadLogRestart != NULL)
+    {
+        startLogRestartThread();
+    }
 }

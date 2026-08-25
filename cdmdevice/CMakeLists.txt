@@ -25,31 +25,37 @@ find_package(ids_peak 1.10.0 REQUIRED)
 include_directories(${LIBXML2_INCLUDE_DIR})
 include_directories(/usr/include/CCfits)
 
-include_directories($ENV{MOS_LIB_PATH}/../include/MOS_Plugin)
+include_directories($ENV{MOS_PATH}/../include/MOS_Plugin)
 include_directories($ENV{YOCTO_PATH}/Sources)
 include_directories(../cdmdevice/src)
 include_directories(../cdmdevice/include)
+include_directories(/home/cdmmgr/LSTDeviceController/include/)
 
 
 link_directories($ENV{MOS_LIB_PATH})
 link_directories($ENV{YOCTO_PATH}/Binaries/linux/64bits)
 
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/share)
+    include_directories(/usr/include/libxml2)
+    include_directories(/usr/local/lib/)
+    include_directories(/usr/include/CCfits)
+    include_directories(/home/cdmmgr/cdm/cdmdevice/include)
+    include_directories(/home/cdmmgr/cdm/cdmdevice/src)
 
-#MESSAGE( STATUS "" )
-#
-#MESSAGE( STATUS "==============================================" )
-#MESSAGE( STATUS "Now configuring server_OPCUA CMakeLists.txt" )
-#MESSAGE( STATUS "==============================================" )
+    include_directories(Source)
 
-#    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-#    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/share)
-#
-#    link_directories(${MOS_LIB_PATH})
-#    link_directories(${CMAKE_CURRENT_SOURCE_DIR})
-#    link_directories(/usr/lib)
-#    link_directories(/usr/local/lib)
-#    link_directories(/usr/lib64)
-#    link_directories(/home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits)
+    include_directories(/home/cdmmgr/YoctoMeteo_cpp/Sources)
+    include_directories(/home/cdmmgr/YoctoMeteo_cpp/Sources/yapi)
+
+    link_directories(${MOS_PATH}/../lib)
+    link_directories(${CMAKE_CURRENT_SOURCE_DIR})
+    link_directories(/usr/lib)
+    link_directories(/usr/local/lib)
+    link_directories(/usr/lib64)
+    link_directories(/home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits)
+    link_directories(/home/cdmmgr/LSTDeviceController/lib)
+
 
 IF (UNIX)
     INCLUDE_DIRECTORIES()
@@ -75,9 +81,8 @@ add_library(
          ${PROJECT_NAME}
         SHARED
         #/usr/include/ueye.h
-        #../cdmdevice/src/CDM.cpp
-        ../cdmdevice/src/CDMControlle.cpp
-        ../cdmdevince/src/PluginCDM.cpp
+        ../cdmdevice/src/CDMController.cpp
+        ../cdmdevice/src/PluginCDM.cpp
         ../cdmdevice/src/AsynchronousThread.cpp
         ../cdmdevice/src/Camera.cpp
         ../cdmdevice/src/Helper.cpp
@@ -94,7 +99,7 @@ add_library(
       )
 
 target_link_libraries(${PROJECT_NAME} m pthread stdc++)
-target_link_libraries(${PROJECT_NAME} PluginBase) # MOS
+#target_link_libraries(${PROJECT_NAME} PluginBase) # MOS
 target_link_libraries(${PROJECT_NAME}  configXML ) #MOS
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
 target_link_libraries(${PROJECT_NAME} ${LibXml2_LIBS})
@@ -102,6 +107,12 @@ target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} )
 target_link_libraries(${PROJECT_NAME}  usb-1.0 yocto ) #YOCTO METEO
 target_link_libraries(${PROJECT_NAME}  CCfits cfitsio ) # FITS files library
 target_link_libraries(${PROJECT_NAME}  ids_peak ) # FITS files library
+
+target_link_libraries(
+	${PROJECT_NAME}
+	PluginBase
+	DeviceController
+)
 
 
 # configure output path

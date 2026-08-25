@@ -1,16 +1,19 @@
+version: '3.3'
 services:
   dev-cdm:
+    privileged: true
     hostname: dev-cdm
-    container_name: "MOS-CDM-LOCAL"
+    container_name: "MOS-CDM-DEV"
     image: "cdm:local"
     # restart: unless-stopped
-    cap_add:
-      - SYS_PTRACE
+    stdin_open: true 
+    tty: true
     ports:
        - "48011:48011"
     ipc: host
     volumes:
-      - /home/lst-drive/cdm/log:/home/cdmmgr/log
-      - /home/lst-drive/cdm/cdm/cdmdevice:/home/cdmmgr/cdm/cdmdevice
-      - /dev:/dev
-      - /var/run:/var/run
+      - /Users/david/CDM/newCode/log:/home/cdmmgr/log
+      - /Users/david/CDM/newCode/cdm:/home/cdmmgr/cdm
+      #- /dev:/dev
+      #- /var/run:/var/run
+      - /Users/david/CDM/newCode/cdm/output:/home/cdmmgr/output

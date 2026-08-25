@@ -43,7 +43,7 @@ void ControllerCB_changeStatus::message(int serverStatus)
         message = "Connection status changed to Connected";
         LOG_WARNING << message;
 
-        this->cdm->subscribe_DataBroker();
+        //this->cdm->subscribe_DataBroker();
 
         if (m_pluginRefServer != NULL)
         {
@@ -53,7 +53,7 @@ void ControllerCB_changeStatus::message(int serverStatus)
         //m_controller->setCommunicationLossStatus(false);
         //if (subscriptionNeeded)
         //m_controller->doSubscription(m_config);
-        //break;
+        break;
     case ConnectionWarningWatchdogTimeout:
         message = "Connection status changed to ConnectionWarningWatchdogTimeout";
         LOG_WARNING << message;

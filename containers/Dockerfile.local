@@ -1,68 +1,54 @@
-#FROM centos:7
-
-#FROM lst/common-mos:v12
-FROM lst/mos:v12.4.3
-
+FROM  --platform=linux/x86_64 lst-safetybroker/mos-a9:V12.4.13a9 
+ARG MOS_VERSION=MOS_X86_13.1.4a9
 
 USER root
-# legacy mirror for centOS
-RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/CentOS-*.repo
-RUN sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/CentOS-*.repo
-RUN sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/CentOS-*.repo
 
-# Creating a cdmmgr user
+# setup MOS location for compilation
+ENV MOS_LIB_PATH=/home/mosmgr/MOS/${MOS_VERSION}/lib 
+ENV MOS_PATH=/home/mosmgr/MOS/${MOS_VERSION}/bin
 
-RUN groupadd -g 1003 cdmmgr && \
-    useradd -g 1002 -u 1003 -d /home/cdmmgr -m -s /bin/bash cdmmgr
- 
-RUN yum clean all && yum update -y 
-RUN yum install -y cronie && yum install -y sudo && rm -rf /etc/cron.*/*
+RUN dnf update -y \
+    --setopt=fastestmirror=1 \
+    --setopt=max_parallel_downloads=10 \
+    --nodocs
+RUN dnf install -y cronie && yum install -y sudo && rm -rf /etc/cron.*/*
 
-RUN yum install -y git
 # Installing the development software
-RUN yum install -y \
-     openssh-server \
-     xauth \
+RUN dnf install -y git
+RUN dnf install -y procps
+
+RUN dnf install -y \
+    openssh-server \
+    qt5 \
+    libatomic \    
+    xauth \
     gcc-c++ \
     gdb \
     git \
-    subversion \
     autoconf \
-    epel-release \
     make \
     cmake  \ 
     patch \
     wget \
-    curl \
     mc \
     libusbx-devel \
-    curl-devel \
     libxml2-devel \
     gdb-gdbserver \
-    CCfits-devel \
-    #boost-devel \
-    #boost169-devel \
+    boost-devel \
     gedit \
     libatomic \
     vim \
-    screen \
-    python-devel \
+    python-devel 
+ 
+RUN sudo dnf install epel-release -y
+RUN sudo dnf config-manager --set-enabled crb
+RUN dnf install -y \
     opencv  \
-    opencv-devel  \
-    opencv-python
-
-RUN yum install -y  CCfits-devel
-
-RUN yum install -y  boost169-devel
-RUN ln -s /usr/lib64/libboost_log.so.1.69.0 /usr/lib64/libboost_log.so
-RUN ln -s /usr/lib64/libboost_log_setup.so.1.69.0 /usr/lib64/libboost_log_setup.so
-
-
-USER cdmmgr
-WORKDIR /home/cdmmgr
-
-
-RUN mkdir -m 700 -p .ssh/
+     opencv-devel
+  #   opencv-python
+ 
+RUN dnf install -y CCfits\
+    	CCfits-devel
 
 USER root
 RUN mkdir  -p /root
@@ -74,69 +60,81 @@ RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_ed25519_key -t ed25519 -N ""
 RUN ssh-keygen -b 521 -f  /etc/ssh/ssh_host_ecdsa_key -t ecdsa -N ""
 RUN ssh-keygen -b 4096 -f /etc/ssh/ssh_host_rsa_key -t rsa -N ""
 
+# install IDS peak
+COPY payload/ids-peak_2.19.0.0-260_amd64.tgz /opt
+WORKDIR /opt
+RUN tar xfz ids-peak_2.19.0.0-260_amd64.tgz
+RUN ids-peak_2.19.0.0-260_amd64/share/ids-peak/scripts/ids_install_udev_rule.sh
+
+# Creating a cdmmgr user
+RUN groupadd -g 1003 cdmmgr && \
+    useradd -g 1002 -u 1003 -d /home/cdmmgr -m -s /bin/bash cdmmgr
+
+USER cdmmgr
+WORKDIR /home/cdmmgr
+RUN mkdir -m 700 -p .ssh/
 
 COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
-COPY payload/configurations/RunCDM.sh /home/cdmmgr/RunCDM.sh
-COPY cdmdevice/bin/PLC_CDM.xml /home/cdmmgr/PLC_CDM.xml
-COPY cdmdevice/bin/PLC_DATABROKER.xml /home/cdmmgr/PLC_DATABROKER.xml
-COPY cdmdevice/bin/Unit_CDM_Model.xml /home/cdmmgr/Unit_CDM_Model.xml
-COPY cdmdevice/bin/FSM_CDM.xml /home/cdmmgr/FSM_CDM.xml
-#COPY cdm_mount/ /home/cdmmgr/
-
-#RUN git clone  -b mos12 https://gitlab-ci-token:zvXByVdyyoLTMbrW-n_u@gitlab.cta-observatory.org//cta-array-elements/lst/subsystems/aux/cdm.git /home/cdmmgr/cdm/
 
 # DL and build Yocto meteo
-#RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
-#WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/
-#RUN make
-#WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
-#RUN ln -s libyocto.so.1.0.1 libyocto.so
-
-
-#WORKDIR /home/cdmmgr/
-RUN mkdir ./output
-RUN mkdir ./output/images
-RUN mkdir ./output/fits
-
-#RUN git  clone  --branch  mos12_jl  https://gitlgab-ci-token:KCWu6cK-iZpswiotx3VF@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/aux/cdm.git
-#RUN mkdir -p cdm/cdmdevice/build
-
-#COPY  payload/CMakeLists.txt ./cdm/build
-COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
-
-COPY payload/uEye-Linux-4.90.06-64 ./
-RUN yes | ./ueyesdk-setup-4.90.06-usb-amd64.gz.run
-
-COPY payload/ueye.h /usr/include/ueye.h
-#RUN mkdir ./boost
-#COPY payload/boost_1_79_0 ./boost
-
-#WORKDIR /home/cdmmgr/boost
-#RUN ./bootstrap.sh --with-python=python2.7
-#RUN  ./b2 install  --with=all
-
-
-# DL and build Yocto meteo
-RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp
+RUN git clone -b v1.10.57762  https://github.com/yoctopuce/yoctolib_cpp.git /home/cdmmgr/YoctoMeteo_cpp --depth 1
 WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/
 RUN make
 WORKDIR /home/cdmmgr/YoctoMeteo_cpp/Binaries/linux/64bits
 RUN ln -s libyocto.so.1.0.1 libyocto.so
-RUN cp libyocto.so.1.0.1 /lib64/
-#WORKDIR /home/cdmmgr/cdm/cdmdevice/build
-#COPY  payload/CMakeLists.txt .
-#RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH=/home/mosmgr/MOS/MOS_X86_12.4.3/
+# 
+
+# install CDM
+WORKDIR /home/cdmmgr/
+RUN git clone --branch DeviceControler https://gitlgab-ci-token:yABEkVcH-fS-3D7zoov3Um86MQp1OjE1cAk.01.0z1h3jvja@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/aux/cdm.git --depth 1 
+RUN git clone --branch al9 https://gitlgab-ci-token:s08z76ls5exw8coWjkTP3W86MQp1OjE1cQk.01.0z0vz0if2@gitlab.cta-observatory.org/cta-array-elements/lst/subsystems/drive/devicecontroller.git /home/cdmmgr/LSTDeviceController
+
+RUN mkdir ./cdm/build
+
+WORKDIR ./LSTDeviceController/build
+run rm -rf *
+RUN cmake -DCMAKE_INSTALL_PREFIX=.. -DMOS_PATH="/home/mosmgr/MOS/${MOS_VERSION}/" ..
+RUN make
+
+
+# setup Yocto location for compilation
+ENV YOCTO_PATH=/home/cdmmgr/YoctoMeteo_cpp
+WORKDIR /home/cdmmgr/cdm/build
+RUN cmake -DCMAKE_PREFIX_PATH="/opt/ids-peak_2.19.0.0-260_amd64/lib/x86_64-linux-gnu/cmake/ids_peak;/opt/ids-peak_2.19.0.0-260_amd64/lib/cmake/ids_peak_common" -DCMAKE_INSTALL_PREFIX=.. /home/cdmmgr/cdm/cdmdevice 
 #RUN make
 #RUN make install
 
-#USER root
+
+WORKDIR /home/cdmmgr/
+RUN mkdir ./output
+WORKDIR /home/cdmmgr/output
+RUN mkdir ./images
+RUN mkdir ./fits
+WORKDIR /home/cdmmgr/
+
+
+
+COPY payload/configurations/MOSStart.sh /home/cdmmgr/MOSStart.sh
+COPY payload/configurations/RunCDM.sh /home/cdmmgr/RunCDM.sh
+
+COPY cdmdevice/bin/PLC_CDM.xml /home/cdmmgr/PLC_CDM.xml
+COPY cdmdevice/bin/PLC_DATABROKER.xml /home/cdmmgr/PLC_DATABROKER.xml
+COPY cdmdevice/bin/Unit_CDM_Model.xml /home/cdmmgr/Unit_CDM_Model.xml
+COPY cdmdevice/bin/FSM_CDM.xml /home/cdmmgr/FSM_CDM.xml
+
+COPY payload/configurations/Run_cron_CDM.sh /home/cdmmgr/
+
+USER root
 WORKDIR /root
 COPY payload/configurations/.bashrc .bashrc
 
-#temporay fix for MOS permission
-COPY payload/permission.txt /home/mosmgr/MOS/MOS_X86_12.4.3/properties/
+#MOS permission and authentification
+COPY payload/permission.txt /home/mosmgr/MOS/${MOS_VERSION}/properties/
+COPY payload/password.txt /home/mosmgr/MOS/${MOS_VERSION}/properties/
+COPY payload/ServerConfig.xml /home/mosmgr/MOS/${MOS_VERSION}/properties/
+COPY payload/pluginPasswd.txt /home/mosmgr/MOS/${MOS_VERSION}/properties/
+
 
 #final stuff
 WORKDIR /home/cdmmgr
-CMD tail -f /dev/null
-#ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]
+ENTRYPOINT ["/home/cdmmgr/MOSStart.sh"]

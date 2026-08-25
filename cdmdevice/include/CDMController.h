@@ -34,14 +34,14 @@
 #include <map>
 
 #include <boost/any.hpp>
-
 #include "Controller.h"
-#include "Config.h"
+
 #include "AsynchronousThread.h"
 #include "DatapointMonitor.h"
 
 // Configuration XML pour les datapoints OPC-UA du CDM
 #define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
+#define DATABROKER_CONFIGURATION_NAME "Mapping_Aux_DB.xml"
 
 class Helper; // Forward declaration (Helper.h à inclure dans le .cpp)
 
@@ -61,8 +61,6 @@ public:
     // --- Caméra ---
     void ConnectCamera();
     void DisconnectCamera();
-    void ConfigureCamera(int nPixelClock, double exposure, double fps, 
-                         double gain, const std::string& pixel_format);
     void ConfigureThreadCamera(int nPixelClock, double exposure, double fps, 
                                double gain, const std::string& pixel_format);
     void GetImage();
@@ -78,33 +76,47 @@ public:
     void StartCDM();
     void StopCDM();
 
+    void setCameraThread(DataAccessClientOPCUA *dataAccessClientOPCUA) {m_Thread = new AsynchronousThread(dataAccessClientOPCUA);}
+    void setMeteoThread(DataAccessClientOPCUA *dataAccessClientOPCUA) {m_ThreadMeteo = new AsynchronousThread(dataAccessClientOPCUA);}
+    void setLogThread(DataAccessClientOPCUA *dataAccessClientOPCUA) {m_ThreadLogRestart = new AsynchronousThread(dataAccessClientOPCUA);}
+
+    void set_FSM(int state);
+    void set_FSM_in_transition(bool transition);
+
+    void setbitsPerPixel(int input){m_bitsPerPixel=input;}
+    int getbitsPerPixel(){return m_bitsPerPixel;
+    }
+    void enableHeartbeat();
+    void setDPQuality();
+
+    void startThread();
     // --- Commentaire ---
     void AddComment(const std::string& comment);
 
     // --- Drive (RA, Dec, Az, Zd, offsets, source, etc.) ---
-    void UpdateRaValue(double newvalue);
-    void UpdateDecValue(double newvalue);
-    void UpdateAzValue(double newvalue);
-    void UpdateZdValue(double newvalue);
-    void UpdateAzOffsetValue(double newvalue);
-    void UpdateZdOffsetValue(double newvalue);
-    void UpdateSourceValue(const std::string& newvalue);
-    void UpdateOARLValue(bool newvalue);
-    void UpdateLEDsValue(bool newvalue);
-    void UpdateShutterValue(int newvalue);
-    void UpdateSISValue(int newvalue);
+    int UpdateRaValue(double newvalue);
+    int UpdateDecValue(double newvalue);
+    int UpdateAzValue(double newvalue);
+    int UpdateZdValue(double newvalue);
+    int UpdateAzOffsetValue(double newvalue);
+    int UpdateZdOffsetValue(double newvalue);
+    int UpdateSourceValue(const std::string& newvalue);
+    int UpdateOARLValue(bool newvalue);
+    int UpdateLEDsValue(bool newvalue);
+    int UpdateShutterValue(int newvalue);
+    int UpdateSISValue(int newvalue);
 
-    void UpdateDriveInMotionValue(bool newvalue);
-    void UpdateDriveInParkingPosValue(bool newvalue);
-    void UpdateDriveParkedValue(bool newvalue);
-    void UpdateDriveTrackingValue(bool newvalue);
-    void UpdateDriveRaTargetValue(double newvalue);
-    void UpdateDriveDecTargetValue(double newvalue);
+    int UpdateDriveInMotionValue(bool newvalue);
+    int UpdateDriveInParkingPosValue(bool newvalue);
+    int UpdateDriveParkedValue(bool newvalue);
+    int UpdateDriveTrackingValue(bool newvalue);
+    int UpdateDriveRaTargetValue(double newvalue);
+    int UpdateDriveDecTargetValue(double newvalue);
 
-    void UpdateAuxDMEastBottomValue(bool newvalue);
-    void UpdateAuxDMEastTopValue(bool newvalue);
-    void UpdateAuxDMWestBottomValue(bool newvalue);
-    void UpdateAuxDMWestTopValue(bool newvalue);
+    int UpdateAuxDMEastBottomValue(bool newvalue);
+    int UpdateAuxDMEastTopValue(bool newvalue);
+    int UpdateAuxDMWestBottomValue(bool newvalue);
+    int UpdateAuxDMWestTopValue(bool newvalue);
 
     // --- DataBroker / subscription ---
     void SubscribeDataBroker();
@@ -112,12 +124,11 @@ public:
     // --- Recherche datapoint ---
     std::string searchDatapoint(const std::string& element);
 
-    // =============================================
-    // Config / configuration
-    // =============================================
-    Config* getCDMConfig() const { return m_cdmConfig; }
+    std::map<std::string, std::string>  getCDMConfig(){ return m_config; }
+    bool loadCDMConfiguration();
+    void setupCameraFromConfig();
 
-private:
+    private:
     // === Config OPC-UA ===
     Config *m_cdmConfig;   // "PLC_CDM.xml"
     Config *m_dbConfig;    // DataBroker config (si applicable)
@@ -142,14 +153,17 @@ private:
     DatapointMonitor *m_dpMonitorDataBroker;
     int m_connectionResultDataBroker;
 
-    // === Méthodes privées ===
-    int loadCDMConfiguration(std::map<std::string, std::string>& configOut);
-    void setupCameraFromConfig();
+
 
     // --- Commandes sur les threads caméra ---
     void startCameraThread();
     void startMeteoThread();
     void startLogRestartThread();
+
+
+        // --- Réactions aux pertes de connexion (obligatoires, Controller pures virtuelles) ---
+    void applyServerConnectionLossReaction() override;
+    void applyClientConnectionLossReaction(Config*) override;
 };
 
 #endif // CDMCONTROLLER_H_

@@ -32,10 +32,9 @@
 
 // Forward declaration
 class CDMController;
+class Config;
 
-#define CDM_CONFIGURATION_NAME "PLC_CDM.xml"
-
-class PluginCDM
+class PluginCDM : public PluginsBase, public LAPPThread
 {
 public:
     PluginCDM();
@@ -86,6 +85,8 @@ private:
 
     bool fStartCDMFlag;
     bool fStopCDMFlag;
+
+    bool fThreadRunning;
 
     bool fGoToTpointFlag;
     bool fGoToReadyFlag;

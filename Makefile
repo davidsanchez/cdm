@@ -5,22 +5,15 @@ all:
 
 image:
 	@echo 'Creating main Docker image for CDM...'
-	#wget -N https://boostorg.jfrog.io/artifactory/main/release/1.79.0/source/boost_1_79_0.tar.gz
-	#cp boost_1_79_0.tar.gz boost.tar.gz 
-	#gunzip boost.tar.gz
-	#tar -xvf boost.tar 
-	#rm -r payload/boost_1_79_0
-	#mv boost_1_79_0 payload/
-	#rm boost.tar
-	docker build  -f containers/Dockerfile . --tag cdm:latest
+	docker build --no-cache  -f containers/Dockerfile . --tag cdm:latest 
 
 image-dev:
 	@echo 'Creating development Docker image for CDM...'
-	docker build  -f containers/Dockerfile.dev . --tag cdm:dev
+	docker build --no-cache  -f containers/Dockerfile.almalinux . --tag cdm:dev
 
-local-image:
+image-local:
 	@echo 'Creating local Docker image for CDM...'
-	docker build  -f containers/Dockerfile.local . --tag cdm:local
+	docker build --platform linux/x86_64  -f containers/Dockerfile.local  --tag cdm:local   . 
 
 
 clean:
@@ -35,5 +28,5 @@ clean-local:
 
 clean-dev:
 	@echo 'Cleaning all Docker images'
-	docker rmi cdm:dev2
+	docker rmi cdm:dev
 	docker builder prune

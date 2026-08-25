@@ -20,13 +20,12 @@ export GENICAM_GENTL64_PATH=$IDSPEAK_BASE_PATH/lib/x86_64-linux-gnu/ids-peak/cti
 
 # ADD MOS setup
 source /home/mosmgr/MOS.conf
-export CDMPATH='/home/cdmmgr'
+export CDMPATH='/home/sgmgr'
 alias ti='ls -lrth'
 
 # Yocto setup
-export YOCTO_PATH=/home/cdmmgr/YoctoMeteo_cpp
+export YOCTO_PATH=/home/sgmgr/YoctoMeteo_cpp
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$YOCTO_PATH/Binaries/linux/64bits
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/cdmmgr/LSTDeviceController/lib
 
 #crond
 #crontab CDMCrontab

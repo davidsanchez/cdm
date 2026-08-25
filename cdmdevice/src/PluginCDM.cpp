@@ -27,6 +27,7 @@
 #include <sstream>
 #include <iostream>
 
+#include "Logging.h"
 #include "PluginCDM.h"
 #include "CDMController.h"
 #include "Config.h"
@@ -52,12 +53,14 @@ PluginCDM::PluginCDM()
     fGoToReadyFlag = false;
     fConfigureFlag = false;
     fSubscribeDataBrokerFlag = false;
+    fThreadRunning = false;
+    //TODO check all variable and use
 
     fConfigurePixelClock = 216;
-    fConfigureExposure = 2000.0;
+    fConfigureExposure = 95000.0;
     fConfigureFps = 10.0;
-    fConfigureGain = 1.0;
-    fConfigurePixelFormat = "IS_CM_MONO8";
+    fConfigureGain = 5.0;
+    fConfigurePixelFormat = "IS_CM_SENSOR_RAW16";
 }
 
 //****************************************************
@@ -69,6 +72,8 @@ PluginCDM::PluginCDM()
 */
 int PluginCDM::init(const std::string& parameters) 
 {
+    LOG_TRACE<<"PluginCDM::init() : initialisation of the CDM with parameters "<<parameters<<endl;
+
     int ret = 0;
     ret = PluginsBase::init(parameters);
     return ret;
@@ -80,11 +85,16 @@ int PluginCDM::close()
 {
     int ret = 0;
     // Délégué au Controller via disconnect propre
+    LOG_TRACE << "PluginCDMController::close called" << std::endl;
     if (m_cdmController != NULL) 
     {
-        // Le Controller se charge du cleanup via ses propres ressources
-    }
+    
+        m_cdmController->close();
+        delete m_cdmController;
+        m_cdmController = NULL;
+    
     return ret;
+    }
 }
 
 //****************************************************
@@ -93,7 +103,7 @@ int PluginCDM::cmd(const std::string& parameters,
                    int commandStringAck,
                    std::string& result) 
 {
-    std::cout << std::endl;
+    LOG_INFO<<"PluginCDM::cmd: received command with the instruction: "<<parameters.c_str()<<std::endl;
     int ret = 0;
 
     if (parameters.length() == 0)
@@ -128,12 +138,14 @@ int PluginCDM::cmd(const std::string& parameters,
         if (m_cdmController != NULL)
         {
             m_cdmController->ConnectCamera();
-            m_cdmController->ConfigureThreadCamera(
+            /*m_cdmController->ConfigureThreadCamera(
                 fConfigurePixelClock,
                 fConfigureExposure,
                 fConfigureFps,
                 fConfigureGain,
-                fConfigurePixelFormat);
+                fConfigurePixelFormat);*/
+            //m_cdmController->set_FSM_in_transition(0);
+            //getDataAccessClientOPCUARef()->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 0);
         }
     }
 
@@ -144,6 +156,7 @@ int PluginCDM::cmd(const std::string& parameters,
         if (m_cdmController != NULL)
         {
             m_cdmController->DisconnectCamera();
+            m_cdmController->set_FSM_in_transition(0);
         }
     }
 
@@ -185,6 +198,7 @@ int PluginCDM::cmd(const std::string& parameters,
     // ================================================
     // COMMANDES ASYNCHRONES (flag + thread)
     // ================================================
+    if (fThreadRunning){return -1;}
 
     // --- GetMultipleImages ---
     if (parameters.find("GetMultipleImages") == 0)
@@ -237,10 +251,11 @@ int PluginCDM::cmd(const std::string& parameters,
             fConfigurePixelFormat = arglist[5];
             if (fConfigurePixelFormat == "IS_CM_MONO8")
             {
-                // handled in Controller
+                m_cdmController->setbitsPerPixel(8);
             }
             else
             {
+                m_cdmController->setbitsPerPixel(16);
                 fConfigurePixelFormat = "IS_CM_SENSOR_RAW16";
             }
         }
@@ -338,8 +353,42 @@ int PluginCDM::cmd(const std::string& parameters,
 //****************************************************
 int PluginCDM::afterStart() 
 {
+    LOG_TRACE << "PluginCDM::afterStart(): start of the function";
     int ret = 0;
     ret = PluginsBase::afterStart();
+    m_cdmController = new CDMController(&ret, this);
+
+    m_cdmController->setCameraThread(getDataAccessClientOPCUARef());
+    m_cdmController->setMeteoThread(getDataAccessClientOPCUARef());
+    m_cdmController->setLogThread(getDataAccessClientOPCUARef());
+    m_cdmController->startThread();
+    //TODO
+    m_cdmController->set_FSM(0);
+    
+    bool conf = m_cdmController->loadCDMConfiguration();
+    COND_LOG_DEBUG<<"Loading CDM txt config "<<conf<<endl;
+    if (conf) {m_cdmController->setupCameraFromConfig();}
+
+    //TODO add heartBeat
+
+    
+    // TODO fix DP quality workarround
+    COND_LOG_DEBUG << "PluginCDM::afterStart(): SetDPQuality ";
+    std::string resultCall;
+    int quality = 0; // (0= Good, 1=Uncertain, 2 = Bad)
+    std::string methodToCall = "Unit_CDM.AuxControl.SetDPQuality";
+    std::string completeNodeName = "";
+
+    boost::any completeNodeNameAny = completeNodeName;
+            
+    std::vector<boost::any> callRequest;
+    callRequest.push_back(completeNodeNameAny);
+    callRequest.push_back(quality);
+    int res = getDataAccessClientOPCUARef()->callMethod(methodToCall, 4, callRequest, resultCall);
+    COND_LOG_DEBUG << methodToCall << "  method call result = " << res << endl;
+
+    //TODO what should be ret?
+
     return ret;
 }
 
@@ -379,6 +428,8 @@ int PluginCDM::set(const std::string& chain,
 // run — consommateur de flags dans le thread
 void *PluginCDM::run(void *params) 
 {
+    	/// Mark the thread as running to block concurrent normal commands
+	fThreadRunning = true;
     // === Acquisition ===
     if (fGetMultipleImagesFlag == true)
     {
@@ -489,7 +540,7 @@ void *PluginCDM::run(void *params)
         fConfigureFlag = false;
         if (m_cdmController != NULL)
         {
-            m_cdmController->ConfigureCamera(
+            m_cdmController->ConfigureThreadCamera(
                 fConfigurePixelClock,
                 fConfigureExposure,
                 fConfigureFps,
@@ -506,6 +557,13 @@ void *PluginCDM::run(void *params)
             m_cdmController->SubscribeDataBroker();
         }
     }
+
+    	// Thread finished => set to false
+	fThreadRunning = false;
+
+
+	std::cout << "Plugin action end" << std::endl;
+	return NULL;
 }
 
 //****************************************************

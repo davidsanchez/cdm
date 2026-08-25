@@ -131,12 +131,12 @@ int AsynchronousThread::cmdStartStream(std::string datapointName, int nameSpace)
     return ret;
 }
 
-int AsynchronousThread::cmdConfigure(std::string datapointName, int nameSpace, int nPixelClock, double exposure, double fps, int gain, std::string pixel_format)
+int AsynchronousThread::cmdConfigure(int nameSpace, int nPixelClock, double exposure, double fps, int gain, std::string pixel_format)
 {
     LOG_INFO<<"AsynchronousThread::cmdConfigure()"<<std::endl;
     int ret = 0;
     m_cmdConfigure = true;
-    m_datapointName = datapointName;
+
     m_nameSpace = nameSpace;
     AsynchronousThread::nPixelClock = nPixelClock;
     AsynchronousThread::exposure = exposure;
@@ -395,8 +395,10 @@ void *AsynchronousThread::run(void *params)
             {
                 // Checks the current FSM state so we can return to that state after Configure is done.
                 int FSM_state=-1;
+                m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
+
                 //m_dataAccessClientOPCUA->getDatapoint("Unit_CDM.AuxControl.FSM.state", 2, FSM_state);
-                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, FSM_state);
+                //m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("CDM_FSM_state",cdm_config), 2, FSM_state);
 
                 // Puts the FSM.transition to 1
                 m_dataAccessClientOPCUA->setDatapoint("Unit_CDM.AuxControl.FSM.transition", 2, 1);

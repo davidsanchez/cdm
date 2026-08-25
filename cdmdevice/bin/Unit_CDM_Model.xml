@@ -38,7 +38,7 @@
                 <Plugins>
                         <Location>cdm/plugins/libCDM.so</Location>
 
-                        <Name>CDM_plugin</Name>
+                        <Name>ptr_Plugin</Name>
                 </Plugins>
 
                 <Instruction_set>
@@ -97,20 +97,10 @@
                         <Instruction>
                                 <Name>GetMultipleImages_Instruction</Name>
                                 <Cmd>GetMultipleImages %1</Cmd>
-				<Asynchronous>
-                                  <Enable>true</Enable>
-                                  <TimeOut>2</TimeOut>
-                                  <EndInstruction></EndInstruction>
-                                </Asynchronous>
                         </Instruction>
                         <Instruction>
                                 <Name>GetMultipleImagesStacked_Instruction</Name>
                                 <Cmd>GetMultipleImagesStacked %1</Cmd>
-				<Asynchronous>
-                                  <Enable>true</Enable>
-                                  <TimeOut>2</TimeOut>
-                                  <EndInstruction></EndInstruction>
-                                </Asynchronous>
                         </Instruction>
                         <Instruction>
                                 <Name>StopGetMultipleImages_Instruction</Name>
@@ -282,8 +272,8 @@
                                 <Type>double</Type>
                                 <Access>Input</Access>
                                 <Range>
-                                        <Min>0.01</Min>
-                                        <Max>1000</Max>
+                                        <Min>20</Min>
+                                        <Max>2000000</Max>
                                 </Range>
                         </Argument>
                         <Argument>
@@ -291,8 +281,8 @@
                                 <Type>double</Type>
                                 <Access>Input</Access>
                                 <Range>
-                                        <Min>1</Min>
-                                        <Max>20</Max>
+                                        <Min>0.5</Min>
+                                        <Max>26</Max>
                                 </Range>
                         </Argument>
                         <Argument>
@@ -300,8 +290,8 @@
                                 <Type>int32</Type>
                                 <Access>Input</Access>
                                 <Range>
-                                        <Min>0</Min>
-                                        <Max>100</Max>
+                                        <Min>1</Min>
+                                        <Max>15.8</Max>
                                 </Range>
                         </Argument>
                         <Argument>
