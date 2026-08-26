@@ -203,7 +203,7 @@ int PluginCDM::cmd(const std::string& parameters,
     {
         cout << "PluginCDM => GetMultipleImages" << endl;
         COND_LOG_DEBUG<<"PluginCDM argnum: "<<argnum<<endl;
-        COND_LOG_DEBUG<<"PluginCDM argnum: "<<arglist<<endl;
+
         fGetMultipleImagesCount = 1;
         fGetMultipleImagesArgs = "";
         if (argnum > 1)
@@ -211,6 +211,7 @@ int PluginCDM::cmd(const std::string& parameters,
             fGetMultipleImagesCount = atoi(arglist[1].c_str());
         }
         fGetMultipleImagesFlag = true;
+        COND_LOG_DEBUG<<"PluginCDM fGetMultipleImagesCount: "<<fGetMultipleImagesCount<<endl;
         start(NULL);
     }
 
