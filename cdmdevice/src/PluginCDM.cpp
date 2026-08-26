@@ -327,7 +327,11 @@ int PluginCDM::cmd(const std::string& parameters,
         // TODO: dans le code original cette commande était vide
         fGoToReadyFlag = true;
 
-        m_cdmController->set_FSM_in_transition(0);
+                    
+        std::thread([this]() {
+        
+                m_cdmController->set_FSM_in_transition(0);
+            }).detach();
 
         start(NULL);
     }
