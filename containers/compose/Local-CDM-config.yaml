@@ -13,7 +13,7 @@ services:
     ipc: host
     volumes:
       - /Users/david/CDM/newCode/log:/home/cdmmgr/log
-      - /Users/david/CDM/newCode/cdm:/home/cdmmgr/cdm
+      - /Users/david/CDM/newCode/github/cdm:/home/cdmmgr/cdm
       #- /dev:/dev
       #- /var/run:/var/run
       - /Users/david/CDM/newCode/cdm/output:/home/cdmmgr/output
