@@ -402,7 +402,6 @@ int PluginCDM::afterStart()
     COND_LOG_DEBUG << methodToCall << "  method call result = " << res << endl;
 
     //TODO what should be ret?
-
     return ret;
 }
 
