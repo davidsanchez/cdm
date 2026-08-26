@@ -165,6 +165,7 @@ void *AsynchronousThread::run(void *params)
 
             if (m_cmdGetMultipleImages == 1)
             {
+                COND_LOG_DEBUG<<"AsynchronousThread::run() m_cmdGetMultipleImages";
                 int FSM_state;
 
                 // Puts the FSM.state to 4
