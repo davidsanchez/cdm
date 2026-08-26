@@ -154,6 +154,10 @@ int CDM::afterStart()
 
 
 
+        double Az_deg=0;
+    getDataPointFinderRef(DATABROKER_CONFIGURATION_NAME)->getDatapointL1("azimuth_position", Az_deg);
+    COND_LOG_DEBUG <<"CDMController::ConnectCamera: read DB AZ "<<Az_deg;
+
   return ret;
 }
 
@@ -459,11 +463,8 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
 int CDM::UpdateRaValue(double newvalue)
 {
-  
-  double Az_deg=0;
-  getDataPointFinderRef(DATABROKER_CONFIGURATION_NAME)->getDatapointL1("azimuth_position", Az_deg);
-  COND_LOG_DEBUG <<" CDM::UpdateRaValue read DB AZ "<<Az_deg;
-  helper.SetRaDrive(Az_deg);
+    
+  helper.SetRaDrive(newvalue);
   return 0;
 }
 
