@@ -404,6 +404,8 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 
 	  if (subChaine1.compare("GetMultipleImagesStacked") == 0)
             {
+
+         
 	      std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
 	      int nameSpace = 2;
             
@@ -413,13 +415,19 @@ int CDM::cmd(const std::string &command, int commandStringAck, std::string &resu
 	      //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str()));
             }
 
-            if (subChaine1.compare("GetMultipleImages") == 0) {
+      if (subChaine1.compare("GetMultipleImages") == 0) {
+
+	      LOG_INFO<<"CDM::cmd: GetMultipleImages"<<std::endl;
+
 	      std::string datapointName = helper.searchDatapoint("Configure",cdm_config);
 	      int nameSpace = 2;              
 
 	      boost::trim_right(subChaine2);
-	      m_Thread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
 
+        COND_LOG_DEBUG<<"CDM::cmd: subChaine2: "<<subChaine2<<std::endl;
+
+	      m_Thread->cmdGetMultipleImages(datapointName, nameSpace, atoi(subChaine2.c_str()));
+        LOG_INFO<<"CDM::cmd: GetMultipleImages: End"<<std::endl;
 	      //SetDatapointThread *m_SetDatapointThread_nImagesGet = new SetDatapointThread(getDataAccessClientOPCUARef(), "Unit_CDM.AuxControl.CDM.nImagesGet.nImagesGet_v", 2, std::atoi(subChaine2.c_str()));
             }
             
