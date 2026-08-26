@@ -413,7 +413,7 @@ void *AsynchronousThread::run(void *params)
 
                 //Configure(int nPixelClock=216, double exposure=50, double fps=10, int gain=0, std::string pixel_format="IS_CM_MONO8");
 
-		LOG_INFO<<"AsynchronousThread in cmdConfigure: fps "<<fps<<std::endl;
+		        LOG_INFO<<"AsynchronousThread in cmdConfigure: fps "<<fps<<std::endl;
                 std::vector<boost::any> configure_settings = camera.Configure(nPixelClock, exposure, fps, gain, pixel_format);
 
 
@@ -426,11 +426,11 @@ void *AsynchronousThread::run(void *params)
 
 		
 
-                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("pixelClock",cdm_config), 2, boost::any_cast<int>(configure_settings[0]));
-                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("FPS",cdm_config), 2, boost::any_cast<double>(configure_settings[1]));
-                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("exposure",cdm_config), 2, boost::any_cast<double>(configure_settings[2]));
-                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("gain",cdm_config), 2, boost::any_cast<int>((configure_settings[3])));
-                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("pixelFormat",cdm_config), 2, boost::any_cast<string>(configure_settings[4]));
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("pixelClock",cdm_config), 2, boost::any_cast<int>(-1));
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("FPS",cdm_config), 2, boost::any_cast<double>(configure_settings[0]));
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("exposure",cdm_config), 2, boost::any_cast<double>(configure_settings[1]));
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("gain",cdm_config), 2, boost::any_cast<int>((configure_settings[2])));
+                m_dataAccessClientOPCUA->setDatapoint(helper.searchDatapoint("pixelFormat",cdm_config), 2, boost::any_cast<string>(configure_settings[3]));
 
                 // you can put the outputs arguments in this place to inform the server
                 // temString = m_datapointName + "._OutputArguments._Val_Retour";
