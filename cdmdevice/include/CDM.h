@@ -27,7 +27,7 @@
 //#include <boost/assign.hpp>
 
 //#include "Controller.h"
-
+#define DATABROKER_CONFIGURATION_NAME "Mapping_Aux_DB.xml"
 //class CDM : public Controller
 class CDM : public PluginsBase
 {

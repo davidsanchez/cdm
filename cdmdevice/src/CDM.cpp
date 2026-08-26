@@ -152,6 +152,12 @@ int CDM::afterStart()
   COND_LOG_DEBUG << methodToCall << "  method call result = " << res << endl;
   //getDataAccessClientOPCUARef()->setDPQuality("CDM", 1);
 
+
+
+        double Az_deg=0;
+    getDataPointFinderRef(DATABROKER_CONFIGURATION_NAME)->getDatapointL1("azimuth_position", Az_deg);
+    COND_LOG_DEBUG <<"CDMController::ConnectCamera: read DB AZ "<<Az_deg;
+
   return ret;
 }
 
