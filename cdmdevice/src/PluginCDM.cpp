@@ -444,9 +444,12 @@ void *PluginCDM::run(void *params)
 {
     	/// Mark the thread as running to block concurrent normal commands
 	fThreadRunning = true;
+    COND_LOG_DEBUG << "PluginCDM::run(): Start";
+    COND_LOG_DEBUG<< "PluginCDM::Run: fGetMultipleImagesFlag: "<<fGetMultipleImagesFlag;
     // === Acquisition ===
     if (fGetMultipleImagesFlag == true)
     {
+
         fGetMultipleImagesFlag = false;
         if (m_cdmController != NULL)
         {
