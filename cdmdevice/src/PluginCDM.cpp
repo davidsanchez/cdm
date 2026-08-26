@@ -315,6 +315,8 @@ int PluginCDM::cmd(const std::string& parameters,
         cout << "PluginCDM => GoToTpoint" << endl;
         // TODO: dans le code original cette commande était vide
         fGoToTpointFlag = true;
+
+        m_cdmController->set_FSM_in_transition(0);
         start(NULL);
     }
 
