@@ -218,6 +218,10 @@ void CDMController::ConfigureThreadCamera(int nPixelClock, double exposure, doub
         COND_LOG_DEBUG<<"CDMController::ConfigureThreadCamera: datapoint: "<<datapointName<<std::endl;
         
         m_Thread->cmdConfigure(nameSpace, nPixelClock, exposure, fps, gain, pixel_format);
+                
+        
+        COND_LOG_DEBUG<<"CDMController::ConfigureThreadCamera: End "<<std::endl;
+
     }
 }
 
