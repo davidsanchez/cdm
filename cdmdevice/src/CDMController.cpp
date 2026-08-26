@@ -234,7 +234,7 @@ void CDMController::GetMultipleImages(int count, const std::string& args)
 {
     // Appel au thread caméra pour acquisition multiple
     // NOTE: dans le code original, GetMultipleImages lançait un thread asynchrone
-    // m_Thread->cmdGetMultipleImages(count, args);
+    m_Thread->cmdGetMultipleImages(count, args);
 }
 
 void CDMController::StopGetMultipleImages()
