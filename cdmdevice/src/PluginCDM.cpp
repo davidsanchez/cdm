@@ -202,6 +202,8 @@ int PluginCDM::cmd(const std::string& parameters,
     if (parameters.find("GetMultipleImages") == 0)
     {
         cout << "PluginCDM => GetMultipleImages" << endl;
+        COND_LOG_DEBUG<<"PluginCDM argnum: "<<argnum<<endl;
+        COND_LOG_DEBUG<<"PluginCDM argnum: "<<arglist<<endl;
         fGetMultipleImagesCount = 1;
         fGetMultipleImagesArgs = "";
         if (argnum > 1)
