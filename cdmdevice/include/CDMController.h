@@ -64,7 +64,7 @@ public:
     void ConfigureThreadCamera(int nPixelClock, double exposure, double fps, 
                                double gain, const std::string& pixel_format);
     void GetImage();
-    void GetMultipleImages(int count, const std::string& args);
+    void GetMultipleImages(int count, DataAccessClientOPCUA *dataAccessClientOPCUA);
     void StopGetMultipleImages();
     void SingleAcquisition();
     void StartContinuousAcquisition();

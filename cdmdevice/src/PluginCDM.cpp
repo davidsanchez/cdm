@@ -455,7 +455,7 @@ void *PluginCDM::run(void *params)
         fGetMultipleImagesFlag = false;
         if (m_cdmController != NULL)
         {
-            m_cdmController->GetMultipleImages(fGetMultipleImagesCount, fGetMultipleImagesArgs);
+            m_cdmController->GetMultipleImages(fGetMultipleImagesCount, getDataAccessClientOPCUARef());
         }
     }
 
