@@ -239,7 +239,8 @@ void CDMController::GetMultipleImages(int count, DataAccessClientOPCUA *dataAcce
 {
     // Appel au thread caméra pour acquisition multiple
     // NOTE: dans le code original, GetMultipleImages lançait un thread asynchrone
-    m_camera->GetMultipleImages(count, dataAccessClientOPCUA);
+
+    m_camera->GetMultipleImages(count, dataAccessClientOPCUA,getDataPointFinderRef(DATABROKER_CONFIGURATION_NAME));
 }
 
 void CDMController::StopGetMultipleImages()

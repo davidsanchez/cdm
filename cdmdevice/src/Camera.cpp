@@ -22,6 +22,7 @@ using namespace CCfits;
 using namespace std;
 using namespace cv;
 
+
 const std::map<std::string, std::string> Camera::pixelFormatMap = {
     {"IS_CM_SENSOR_RAW16", "Mono12"},
     {"IS_CM_MONO8", "Mono8"},
@@ -1437,8 +1438,9 @@ int Camera::StartStream(DataAccessClientOPCUA *myclient)
      LOG_TRACE << "Camera::StartStream(): End"<< endl;
      return 0;
 }
+  
 
-vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCUA *myclient)
+vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCUA *myclient,DataPointFinder* finder)
 {
     LOG_TRACE << "Camera::GetMultipleImages(): Start"<<endl;
     LOG_TRACE << "Camera::GetMultipleImages(): Number of images to be taken "<<n_images<<endl;
@@ -1448,7 +1450,11 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
       LOG_ERROR<<"Camera::GetMultipleImages camera is not connected"<<std::endl;
       return {};
     }
-    LOG_WARNING<< "Camera::GetMultipleImages(): Zenith = "<<helper.get_Zenith()<<std::endl;
+
+    double Az_deg=0;
+    finder->getDatapointL1("azimuth_position", Az_deg);
+
+    LOG_WARNING<< "Camera::GetMultipleImages(): Zenith = "<<Az_deg<<std::endl;
     LOG_WARNING<< "Camera::GetMultipleImages(): Azimuth = "<<helper.get_Azimuth()<<std::endl;
     b_keep_taking = 1;
 

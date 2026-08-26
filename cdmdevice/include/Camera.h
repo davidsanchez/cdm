@@ -4,6 +4,7 @@
 
 #include "pluginsBase.h"
 #include "lappThread.h" // needed for MOS
+#include "Controller.h"
 #include "Helper.h"
 
 #include <iostream>
@@ -59,7 +60,9 @@ public:
   //std::vector<unsigned char> GetImage();
   void GetImage(DataAccessClientOPCUA* myclient);
   //std::vector<std::string> GetMultipleImages(int n_images);
-  std::vector<std::string> GetMultipleImages(int n_images, DataAccessClientOPCUA* myclient);
+  
+  std::vector<std::string> GetMultipleImages(int n_images, DataAccessClientOPCUA* myclient,DataPointFinder* finder);
+
   std::vector<std::string> GetMultipleImagesStacked(int n_images, DataAccessClientOPCUA* myclient);
   void StopGetMultipleImages();
   int StartCDM(DataAccessClientOPCUA* myclient);
