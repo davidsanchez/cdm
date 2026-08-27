@@ -93,31 +93,6 @@ public:
     // --- Commentaire ---
     void AddComment(const std::string& comment);
 
-    // --- Drive (RA, Dec, Az, Zd, offsets, source, etc.) ---
-    int UpdateRaValue(double newvalue);
-    int UpdateDecValue(double newvalue);
-    int UpdateAzValue(double newvalue);
-    int UpdateZdValue(double newvalue);
-    int UpdateAzOffsetValue(double newvalue);
-    int UpdateZdOffsetValue(double newvalue);
-    int UpdateSourceValue(const std::string& newvalue);
-    int UpdateOARLValue(bool newvalue);
-    int UpdateLEDsValue(bool newvalue);
-    int UpdateShutterValue(int newvalue);
-    int UpdateSISValue(int newvalue);
-
-    int UpdateDriveInMotionValue(bool newvalue);
-    int UpdateDriveInParkingPosValue(bool newvalue);
-    int UpdateDriveParkedValue(bool newvalue);
-    int UpdateDriveTrackingValue(bool newvalue);
-    int UpdateDriveRaTargetValue(double newvalue);
-    int UpdateDriveDecTargetValue(double newvalue);
-
-    int UpdateAuxDMEastBottomValue(bool newvalue);
-    int UpdateAuxDMEastTopValue(bool newvalue);
-    int UpdateAuxDMWestBottomValue(bool newvalue);
-    int UpdateAuxDMWestTopValue(bool newvalue);
-
     // --- DataBroker / subscription ---
     void SubscribeDataBroker();
 

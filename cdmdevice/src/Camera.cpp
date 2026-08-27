@@ -34,7 +34,7 @@ static const std::unordered_map<std::string, PixelFormatInfo> pixelFormatByGenIC
     {"Mono8",  {"Mono8",  "IS_CM_MONO8",        8}},
 };
 std::string currentDateTime()
-{
+{//TODO move to helper?
     using namespace boost::posix_time;
     ptime current_time = boost::posix_time::microsec_clock::universal_time();
     time_facet *facet = new time_facet("%Y-%m-%d %H:%M:%S");
@@ -45,7 +45,7 @@ std::string currentDateTime()
 }
 
 std::string currentDateTimeMs()
-{
+{//TODO move to helper?
     using namespace boost::posix_time;
     ptime current_time = boost::posix_time::microsec_clock::universal_time();
     time_facet *facet = new time_facet("%Y-%m-%d %H:%M:%s");
@@ -56,7 +56,7 @@ std::string currentDateTimeMs()
 }
 
 std::string currentDateTimeMsFilename()
-{
+{//TODO move to helper?
     using namespace boost::posix_time;
     ptime current_time = boost::posix_time::microsec_clock::universal_time();
     time_facet *facet = new time_facet("%Y%m%d_%H%M%s");
@@ -67,7 +67,7 @@ std::string currentDateTimeMsFilename()
 }
 
 std::string currentEpochTime()
-{
+{//TODO move to helper?
     unsigned long int now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
     unsigned long int part1 = now / 1000;
@@ -78,7 +78,7 @@ std::string currentEpochTime()
 }
 
 string UTC_date_short()
-{
+{//TODO move to helper?
     char buffer[80];
     // current date/time based on current system
     time_t now = time(0);
@@ -90,18 +90,6 @@ string UTC_date_short()
     return buffer;
 }
 
-string UTC_time_short()
-{
-    char buffer[80];
-    // current date/time based on current system
-    time_t now = time(0);
-    // convert now to tm struct for UTC
-    tm *gmtm = gmtime(&now);
-    strftime(buffer, 80, "%H%M%S", gmtm);
-    //puts(buffer);
-
-    return buffer;
-}
 
 vector<vector<double>> transpose(vector<vector<double>> &A)
 {
@@ -179,7 +167,7 @@ bool Camera::setPixelFormat(const std::string &pixel_format)
     }
 }
 
-std::string Camera::writeFITSImage(Mat image, int n_stack)
+std::string Camera::writeFITSImage(Mat image, int n_stack,DataPointFinder* finder)
 {
   LOG_INFO << "Camera::writeFITSImage()"<<std::endl;
 
@@ -206,6 +194,28 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
   stream_fitsPath << std::fixed << std::setprecision(4) << helper.get_fitsPath();
   stream_remoteImagePath << std::fixed << std::setprecision(4) << helper.get_remoteImagePathPrefix();
 
+  double Az_deg=0,Alt_deg=0,RA_target=0,Dec_target=0,RA_telescope=0,Dec_telescope=0,Az_off=0,Alt_off=0;
+  bool LEDs_state=0,OARL_state=0,parking_position=0,parked=0,in_Motion=0,tracking_In_Progress=0;
+  
+  if (finder != NULL){
+    finder->getDatapointL1("azimuth_position", Az_deg);
+    finder->getDatapointL1("zenithangle_position", Alt_deg);
+    finder->getDatapointL1("RA_Target", RA_target);
+    finder->getDatapointL1("Dec_Target", Dec_target);
+    finder->getDatapointL1("RA_Telescope", RA_telescope);
+    finder->getDatapointL1("Dec_Telescope", Dec_telescope);
+
+    finder->getDatapointL1("Azimuth_Offset", Az_off);
+    finder->getDatapointL1("ZenithAngle_Offset", Alt_off);
+
+    finder->getDatapointL1("LEDPositions", LEDs_state);
+    finder->getDatapointL1("OARLRelay_Status", OARL_state);
+    finder->getDatapointL1("Status_In_Parking_Position", parking_position);
+    finder->getDatapointL1("Status_Parked", parked);
+    finder->getDatapointL1("Status_In_Motion", in_Motion);
+    finder->getDatapointL1("Status_Tracking_In_Progress", tracking_In_Progress);
+  }
+
   streamObj << std::fixed;
   streamObj << std::setprecision(4);
   streamObj << helper.unix_timestamp();
@@ -219,26 +229,21 @@ std::string Camera::writeFITSImage(Mat image, int n_stack)
   streamObj << "-GAIN=";
   streamObj << Camera::get_master_gain();
   streamObj << "-ZD=";
-  streamObj << helper.get_Zenith();
+  streamObj << Az_deg;
   streamObj << "-AZ=";
-  streamObj << helper.get_Azimuth();
+  streamObj << 90-Alt_deg;
   streamObj << "-LED=";
-  streamObj << helper.get_LEDs_state();
+  streamObj << LEDs_state;
   streamObj << "-OARL=";
-  streamObj << helper.get_OARL_state();
+  streamObj << OARL_state;
   streamObj << "-parked=";
-  streamObj << helper.get_Drive_status_parked();
+  streamObj << parked;
   streamObj << "-parkingPos=";
-  streamObj << helper.get_Drive_status_in_parking_position();
+  streamObj << parking_position;
   streamObj << "-inMotion=";
-  streamObj << helper.get_Drive_status_in_motion();
+  streamObj << in_Motion;
   streamObj << "-tracking=";
-  streamObj << helper.get_Drive_status_tracking_in_progress();
-  streamObj << "-DM=";
-  streamObj << helper.get_Aux_status_DM_East_Bottom();
-  streamObj << helper.get_Aux_status_DM_East_Top();
-  streamObj << helper.get_Aux_status_DM_West_Bottom();
-  streamObj << helper.get_Aux_status_DM_West_Top();
+  streamObj << tracking_In_Progress;
   
 
 
@@ -346,10 +351,11 @@ LOG_INFO << "Camera::writeFITSImage(): pixel min=" << minVal
   else
     LOG_ERROR << "Check pixel format" << endl;
   
-  pFits->pHDU().addKey("RA_LST", helper.get_Ra_drive(), "Drive Right Ascension");
-  pFits->pHDU().addKey("DEC_LST", helper.get_Dec_drive(), "Drive Declination");
-  pFits->pHDU().addKey("RA_TRGT", helper.get_Ra_target(), "Target Right Ascension");
-  pFits->pHDU().addKey("DEC_TRGT", helper.get_Dec_target(), "Target Declination");
+
+  pFits->pHDU().addKey("RA_LST", RA_telescope, "Drive Right Ascension");
+  pFits->pHDU().addKey("DEC_LST", Dec_telescope, "Drive Declination");
+  pFits->pHDU().addKey("RA_TRGT", RA_target, "Target Right Ascension");
+  pFits->pHDU().addKey("DEC_TRGT", Dec_target, "Target Declination");
   pFits->pHDU().addKey("EPOCH", "2000.0", "Epoch");
   pFits->pHDU().addKey("EQUINOX", "2000.0", "Equinox");
   //pFits->pHDU().addKey("SECPIX_SG", 18.56, "Arcsec per pixel"); TODO: Add this information for CDM
@@ -360,21 +366,21 @@ LOG_INFO << "Camera::writeFITSImage(): pixel min=" << minVal
   
   pFits->pHDU().addKey("LAT", 28.7573, "Latitude: Location:ORM");
   pFits->pHDU().addKey("LONG", 17.8850, "Longitude: Location:ORM");
-  pFits->pHDU().addKey("ZENITH", helper.get_Zenith(), "Zenith, in degrees");
-  pFits->pHDU().addKey("AZIMUTH", helper.get_Azimuth(), "Azimuth, in degrees");
+  pFits->pHDU().addKey("ZENITH", 90-Alt_deg, "Zenith, in degrees");
+  pFits->pHDU().addKey("AZIMUTH", Az_deg, "Azimuth, in degrees");
   
-  pFits->pHDU().addKey("OFFZEN", helper.get_OffsetZenith(), "Offset of Zenith, in degrees");
-  pFits->pHDU().addKey("OFFAZ", helper.get_OffsetAzimuth(), "Offset of Azimuth, in degrees");
+  pFits->pHDU().addKey("OFFZEN", Alt_off, "Offset of Zenith, in degrees");
+  pFits->pHDU().addKey("OFFAZ", Az_off, "Offset of Azimuth, in degrees");
   pFits->pHDU().addKey("OBJECT", helper.get_StarName(), "Star name");
-  pFits->pHDU().addKey("LEDS", helper.get_LEDs_state(), "LEDs state");
+  pFits->pHDU().addKey("LEDS", LEDs_state, "LEDs state");
   //pFits->pHDU().addKey("LED01", helper.get_LED01_intensity(), "LED01 intensity");
-  pFits->pHDU().addKey("OARL", helper.get_OARL_state(), "OARL status");
-  pFits->pHDU().addKey("SHUTTER", helper.get_Shutter_state(), "Shutter status");
-  pFits->pHDU().addKey("SIS", helper.get_SIS_state(), "SIS status");
-  pFits->pHDU().addKey("INMOTION", helper.get_Drive_status_in_motion(), "Drive status - In Motion");
-  pFits->pHDU().addKey("PARKED", helper.get_Drive_status_parked(), "Drive status - Parked");
-  pFits->pHDU().addKey("PARKINGP", helper.get_Drive_status_in_parking_position(), "Drive status - In Parking Position");
-  pFits->pHDU().addKey("TRACKING", helper.get_Drive_status_tracking_in_progress(), "Drive status - Tracking In Progress");
+  pFits->pHDU().addKey("OARL", OARL_state, "OARL status");
+//  pFits->pHDU().addKey("SHUTTER", helper.get_Shutter_state(), "Shutter status");
+//  pFits->pHDU().addKey("SIS", helper.get_SIS_state(), "SIS status");
+  pFits->pHDU().addKey("INMOTION", in_Motion, "Drive status - In Motion");
+  pFits->pHDU().addKey("PARKED", parked, "Drive status - Parked");
+  pFits->pHDU().addKey("PARKINGP", parking_position, "Drive status - In Parking Position");
+  pFits->pHDU().addKey("TRACKING", tracking_In_Progress, "Drive status - Tracking In Progress");
   
   //     pFits->pHDU().addKey("GAMMA", gamma_value, "Gamma");
   pFits->pHDU().addKey("GAIN", Camera::get_master_gain(), "Gain");
@@ -383,10 +389,10 @@ LOG_INFO << "Camera::writeFITSImage(): pixel min=" << minVal
   pFits->pHDU().addKey("CAMTSTAT", Camera::get_temperature_status(), "Camera temperature status");
   pFits->pHDU().addKey("STACK", n_stack, "Number of stacked images");
   
-  pFits->pHDU().addKey("DM_E_bot", helper.get_Aux_status_DM_East_Bottom(), "DM East Bottom");
-  pFits->pHDU().addKey("DM_E_top", helper.get_Aux_status_DM_East_Top(), "DM East Top");
-  pFits->pHDU().addKey("DM_W_bot", helper.get_Aux_status_DM_West_Bottom(), "DM West Bottom");
-  pFits->pHDU().addKey("DM_W_top", helper.get_Aux_status_DM_West_Top(), "DM West Top");
+  //pFits->pHDU().addKey("DM_E_bot", helper.get_Aux_status_DM_East_Bottom(), "DM East Bottom");
+  //pFits->pHDU().addKey("DM_E_top", helper.get_Aux_status_DM_East_Top(), "DM East Top");
+  //pFits->pHDU().addKey("DM_W_bot", helper.get_Aux_status_DM_West_Bottom(), "DM West Bottom");
+  //pFits->pHDU().addKey("DM_W_top", helper.get_Aux_status_DM_West_Top(), "DM West Top");
   
   //LOG_DEBUG << pFits->pHDU() << std::endl;
   LOG_INFO << "End of Camera::writeFITSImage() wrote "<<fileName<<std::endl;
@@ -507,7 +513,7 @@ int Camera::Disconnect()
 
 // TODO: merge GetMultipleImages, GetMultipleImagesStacked and StartCDM into one function?
 
-int Camera::StartCDM(DataAccessClientOPCUA *myclient)
+int Camera::StartCDM(DataAccessClientOPCUA *myclient, DataPointFinder* finder)
 {
     LOG_TRACE << "Camera::StartCDM(): Start"<<endl;
 
@@ -706,13 +712,15 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
             //is_UnlockSeqBuf(hCam, nMemoryId, pBuffer);
 	i_images_taken++;
 	
-	// TODO: Optimize this?
+
+  double Alt_deg=0,Az_deg=0;
+  // TODO: Optimize this?
 	LOG_DATA
 	  //cout
 
-	  << setprecision(10)
-	  << helper.get_Zenith() << " "
-	  << helper.get_Azimuth() << " "
+	  << setprecision(10) //TODO same as in getmultipleimage
+	  << 90-Alt_deg << " "
+	  << Az_deg << " "
 	  << circle_results[0] * px2arcsec << " "
 	  << circle_results[1] * px2arcsec << " "
 	  << circle_results[2] * px2arcsec << " "
@@ -841,32 +849,12 @@ int Camera::StartCDM(DataAccessClientOPCUA *myclient)
 	    LOG_IMAGE << "Camera::StartCDM(): Time difference [Publishing results] = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_publish - begin_publish).count() << "[ms]" << std::endl;
 	    
 	    // Write settings information to log file.
-	    LOG_SETTINGS
-	      << helper.get_Zenith() << " "
-	      << helper.get_Azimuth() << " "
-	      << helper.get_LEDs_state() << " "
-	      << helper.get_OARL_state() << " "
-	      << helper.get_Shutter_state() << " "
-	      << helper.get_SIS_state() << " "
-	      << helper.get_Drive_status_in_motion() << " "
-	      << helper.get_Drive_status_parked() << " "
-	      << helper.get_Drive_status_in_parking_position() << " "
-	      << helper.get_Drive_status_tracking_in_progress() << " "
-	      << helper.get_StarName() << " "
-	      
+	    LOG_SETTINGS	      
 	      << Camera::get_exposure() << " "
 	      << Camera::get_master_gain() << " "
 	      << Camera::get_temperature_value() << " "
 	      << Camera::get_temperature_status() << " "
-	      // Add FPS, Pixel format etc. here
-	      
-	      << helper.get_Aux_status_DM_East_Bottom() << " "
-	      << helper.get_Aux_status_DM_East_Top() << " "
-	      << helper.get_Aux_status_DM_West_Bottom() << " "
-	      << helper.get_Aux_status_DM_West_Top() << " "
-	      
-	      //<< helper.get_Comment() << " "
-	      
+        //TODO add more information
 	      << endl
 	      << endl; //
 	  } //if i_images_taken % array_size...
@@ -1451,11 +1439,12 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
       return {};
     }
 
-    double Az_deg=0;
+    double Az_deg=0,Alt_deg=0;
     finder->getDatapointL1("azimuth_position", Az_deg);
+    finder->getDatapointL1("zenithangle_position", Alt_deg);
 
     LOG_WARNING<< "Camera::GetMultipleImages(): Zenith = "<<Az_deg<<std::endl;
-    LOG_WARNING<< "Camera::GetMultipleImages(): Azimuth = "<<helper.get_Azimuth()<<std::endl;
+    LOG_WARNING<< "Camera::GetMultipleImages(): Azimuth = "<<Alt_deg<<std::endl;
     b_keep_taking = 1;
 
     vector<std::string> v_image_paths;
@@ -1575,7 +1564,7 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
 	
 	SetDatapointThread *m_SetDatapointThread_nImages = new SetDatapointThread(myclient,datapointName_nImagesGet, 2, i_images_taken + 1); //Updates the number of images taken
 
-	std::string imageName = writeFITSImage(src);
+	std::string imageName = writeFITSImage(src,1,finder);
 
 	v_image_paths.push_back(imageName);
 	SetDatapointThread *m_SetDatapointThread_imageName = new SetDatapointThread(myclient,datapointName_imageName, 2, imageName.c_str()); //Updates the imageName

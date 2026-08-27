@@ -61,11 +61,11 @@ public:
   void GetImage(DataAccessClientOPCUA* myclient);
   //std::vector<std::string> GetMultipleImages(int n_images);
   
-  std::vector<std::string> GetMultipleImages(int n_images, DataAccessClientOPCUA* myclient,DataPointFinder* finder);
+  std::vector<std::string> GetMultipleImages(int n_images, DataAccessClientOPCUA* myclient, DataPointFinder* finder);
 
   std::vector<std::string> GetMultipleImagesStacked(int n_images, DataAccessClientOPCUA* myclient);
   void StopGetMultipleImages();
-  int StartCDM(DataAccessClientOPCUA* myclient);
+  int StartCDM(DataAccessClientOPCUA* myclient,DataPointFinder* finder = NULL);  
   int StopCDM();
   int StartSG(DataAccessClientOPCUA* myclient);
   int StopSG();  
@@ -76,7 +76,7 @@ public:
 
   double get_exposure() {return Camera::exposure_setting;}
   int get_master_gain() {return Camera::master_gain_setting;}
-  std::string writeFITSImage(cv::Mat image, int n_stack = 1);  
+  std::string writeFITSImage(cv::Mat image, int n_stack = 1,DataPointFinder* finder = NULL);  
 
   double get_temperature_value();
   std::string get_temperature_status();

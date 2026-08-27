@@ -217,29 +217,6 @@ public:
 
     //void set_OPCUAref(DataAccessClientOPCUA*);
 
-    // declare a  new method
-
-    double get_Ra_drive() { return Helper::Ra_drive; }
-    double get_Dec_drive() { return Helper::Dec_drive; }
-    double get_Ra_target() { return Helper::Ra_target; }
-    double get_Dec_target() { return Helper::Dec_target; }
-    double get_Azimuth() { return Helper::azimuth; }
-    double get_Zenith() { return Helper::zenith; }
-    //double get_exposure() { return Helper::exposure; }
-    double get_OffsetAzimuth() { return Helper::offset_azimuth; }
-    double get_OffsetZenith() { return Helper::offset_zenith; }
-    int get_LEDs_state() { return Helper::LEDs_state; }
-    bool get_OARL_state() { return Helper::OARL_state; }
-    int get_Shutter_state() { return Helper::shutter_state; }
-    int get_SIS_state() { return Helper::SIS_state; }
-    bool get_Drive_status_in_motion() { return Helper::drive_status_in_motion; }
-    bool get_Drive_status_in_parking_position() { return Helper::drive_status_in_parking_position; }
-    bool get_Drive_status_parked() { return Helper::drive_status_parked; }
-    bool get_Drive_status_tracking_in_progress() { return Helper::drive_status_tracking_in_progress; }
-    bool get_Aux_status_DM_East_Bottom() { return Helper::aux_status_DM_East_Bottom; }
-    bool get_Aux_status_DM_East_Top() { return Helper::aux_status_DM_East_Top; }
-    bool get_Aux_status_DM_West_Bottom() { return Helper::aux_status_DM_West_Bottom; }
-    bool get_Aux_status_DM_West_Top() { return Helper::aux_status_DM_West_Top; }
 
     int get_nImagesGet() { return Helper::nImagesGet; }
     void set_nImagesGet(int nImagesGet) { Helper::nImagesGet = nImagesGet; }
@@ -260,113 +237,6 @@ public:
 
     DataAccessClientOPCUA *get_client_DataBroker() { return m_clientOpcUaRef_DataBroker; }
 
-    int SetRaDrive(double newvalue)
-    {
-        Ra_drive = newvalue;
-        return 0;
-    }
-    int SetDecDrive(double newvalue)
-    {
-        Dec_drive = newvalue;
-        return 0;
-    }
-    int SetRaTarget(double newvalue)
-    {
-        Ra_target = newvalue;
-        return 0;
-    }
-    int SetDecTarget(double newvalue)
-    {
-        Dec_target = newvalue;
-        return 0;
-    }
-    int SetAz(double newvalue)
-    {
-        azimuth = newvalue;
-        return 0;
-    }
-    int SetZd(double newvalue)
-    {
-        zenith = newvalue;
-        return 0;
-    }
-    int SetAzOffset(double newvalue)
-    {
-        offset_azimuth = newvalue;
-        return 0;
-    }
-    int SetZdOffset(double newvalue)
-    {
-        offset_zenith = newvalue;
-        return 0;
-    }
-    int SetSource(std::string newvalue)
-    {
-        StarName = newvalue;
-        return 0;
-    }
-    int SetOARL(bool newvalue)
-    {
-        OARL_state = newvalue;
-        return 0;
-    }
-    int SetLEDs(bool newvalue)
-    {
-        LEDs_state = newvalue;
-        return 0;
-    }
-    int SetShutter(int newvalue)
-    {
-        shutter_state = newvalue;
-        return 0;
-    }
-    int SetSIS(int newvalue)
-    {
-        SIS_state = newvalue;
-        return 0;
-    }
-    int SetDriveInMotion(bool newvalue)
-    {
-        drive_status_in_motion = newvalue;
-        return 0;
-    }
-    int SetDriveInParkingPos(bool newvalue)
-    {
-        drive_status_in_parking_position = newvalue;
-        return 0;
-    }
-    int SetDriveParked(bool newvalue)
-    {
-        drive_status_parked = newvalue;
-        return 0;
-    }    
-    int SetDriveTracking(bool newvalue)
-    {
-        drive_status_tracking_in_progress = newvalue;
-        return 0;
-    }
-
-    int SetAuxDMEastBottom(bool newvalue)
-    {
-        aux_status_DM_East_Bottom = newvalue;
-        return 0;
-    }
-        int SetAuxDMEastTop(bool newvalue)
-    {
-        aux_status_DM_East_Top = newvalue;
-        return 0;
-    }
-    int SetAuxDMWestBottom(bool newvalue)
-    {
-        aux_status_DM_West_Bottom = newvalue;
-        return 0;
-    }
-        int SetAuxDMWestTop(bool newvalue)
-    {
-        aux_status_DM_West_Top = newvalue;
-        return 0;
-    }
-
 
     long int unix_timestamp();
     std::string UTC_time();
@@ -379,26 +249,6 @@ private:
 
     //DataAccessClientOPCUA* m_clientOpcUaRef_this=NULL;
 
-    bool OARL_state = 0;
-    bool LEDs_state = 0;
-    int shutter_state = 0;
-    int SIS_state = 0;
-    double zenith = -999;
-    double azimuth = -999;
-    double offset_azimuth = 0;
-    double offset_zenith = 0;
-    double Ra_drive = -999;
-    double Dec_drive = -999;
-    double Ra_target = -999;
-    double Dec_target = -999;
-    bool drive_status_in_motion = 0;
-    bool drive_status_in_parking_position = 0;
-    bool drive_status_parked = 0;
-    bool drive_status_tracking_in_progress = 0;
-    bool aux_status_DM_East_Bottom = 0;
-    bool aux_status_DM_East_Top = 0;
-    bool aux_status_DM_West_Bottom = 0;
-    bool aux_status_DM_West_Top = 0;
     int nImagesGet = 1;
 
     std::string StarName = "";
