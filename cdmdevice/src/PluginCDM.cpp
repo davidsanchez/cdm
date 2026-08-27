@@ -212,6 +212,8 @@ int PluginCDM::cmd(const std::string& parameters,
         }
         fGetMultipleImagesFlag = true;
         COND_LOG_DEBUG<<"PluginCDM fGetMultipleImagesCount: "<<fGetMultipleImagesCount<<endl;
+        
+
         start(NULL);
     }
 
@@ -321,9 +323,9 @@ int PluginCDM::cmd(const std::string& parameters,
 
                     
         std::thread([this]() {
-        
                 m_cdmController->set_FSM_in_transition(0);
-            }).detach();
+        }).detach();
+
         start(NULL);
     }
 
@@ -455,6 +457,9 @@ void *PluginCDM::run(void *params)
         if (m_cdmController != NULL)
         {
             m_cdmController->GetMultipleImages(fGetMultipleImagesCount, getDataAccessClientOPCUARef());
+            std::thread([this]() {
+                m_cdmController->set_FSM_in_transition(0);
+            }).detach();
         }
     }
 

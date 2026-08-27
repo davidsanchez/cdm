@@ -229,9 +229,9 @@ std::string Camera::writeFITSImage(Mat image, int n_stack,DataPointFinder* finde
   streamObj << "-GAIN=";
   streamObj << Camera::get_master_gain();
   streamObj << "-ZD=";
-  streamObj << Az_deg;
-  streamObj << "-AZ=";
   streamObj << 90-Alt_deg;
+  streamObj << "-AZ=";
+  streamObj << Az_deg;
   streamObj << "-LED=";
   streamObj << LEDs_state;
   streamObj << "-OARL=";
@@ -1443,8 +1443,8 @@ vector<std::string> Camera::GetMultipleImages(int n_images, DataAccessClientOPCU
     finder->getDatapointL1("azimuth_position", Az_deg);
     finder->getDatapointL1("zenithangle_position", Alt_deg);
 
-    LOG_WARNING<< "Camera::GetMultipleImages(): Zenith = "<<Az_deg<<std::endl;
-    LOG_WARNING<< "Camera::GetMultipleImages(): Azimuth = "<<Alt_deg<<std::endl;
+    LOG_WARNING<< "Camera::GetMultipleImages(): Azimuth = "<<Az_deg<<std::endl;
+    LOG_WARNING<< "Camera::GetMultipleImages(): Zenith = "<<Alt_deg<<std::endl;
     b_keep_taking = 1;
 
     vector<std::string> v_image_paths;
