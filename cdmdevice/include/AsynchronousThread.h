@@ -15,6 +15,7 @@
 
 #include "string"
 #include "lappThread.h"
+#include "Controller.h"
 #include "Camera.h"
 #include "Meteo.h"
 
@@ -35,9 +36,9 @@ public:
     int startRun();
     int cmdStartMeteo();
     int cmdLogRestart();
-    int cmdGetMultipleImages(std::string datapointName, int nameSpace, int n_images);
-    int cmdGetMultipleImagesStacked(std::string datapointName, int nameSpace, int n_images);
-    int cmdStartCDM(std::string datapointName, int nameSpace);
+    //int cmdGetMultipleImages(std::string datapointName, int nameSpace, int n_images);
+    //int cmdGetMultipleImagesStacked(std::string datapointName, int nameSpace, int n_images);
+    int cmdStartCDM(DataPointFinder* finder);
     int cmdStartSG(std::string datapointName, int nameSpace);    
     int cmdStartStream(std::string datapointName, int nameSpace);
     int cmdConfigure(int nameSpace, int nPixelClock, double exposure, double fps, int gain, std::string pixel_format);
@@ -57,6 +58,9 @@ private:
 	int m_cmdMeteo;
     int m_cmdLogRestart;
     int m_nameSpace;
+
+    DataPointFinder* m_finder;
+
     std::string m_datapointName;
     DataAccessClientOPCUA *m_dataAccessClientOPCUA;
 	Meteo meteo;

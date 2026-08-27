@@ -49,8 +49,8 @@ PluginCDM::PluginCDM()
     fStopSGFlag = false;
     fStartCDMFlag = false;
     fStopCDMFlag = false;
-    fGoToTpointFlag = false;
-    fGoToReadyFlag = false;
+    //fGoToTpointFlag = false;
+    //fGoToReadyFlag = false;
     fConfigureFlag = false;
     fSubscribeDataBrokerFlag = false;
     fThreadRunning = false;
@@ -319,8 +319,7 @@ int PluginCDM::cmd(const std::string& parameters,
     {
         cout << "PluginCDM => GoToTpoint" << endl;
         // TODO: dans le code original cette commande était vide
-        fGoToTpointFlag = true;
-
+        //fGoToTpointFlag = true;
                     
         std::thread([this]() {
                 m_cdmController->set_FSM_in_transition(0);
@@ -334,11 +333,9 @@ int PluginCDM::cmd(const std::string& parameters,
     {
         cout << "PluginCDM => GoToReady" << endl;
         // TODO: dans le code original cette commande était vide
-        fGoToReadyFlag = true;
+        //fGoToReadyFlag = true;
 
-                    
         std::thread([this]() {
-        
                 m_cdmController->set_FSM_in_transition(0);
             }).detach();
 
@@ -539,10 +536,13 @@ void *PluginCDM::run(void *params)
         if (m_cdmController != NULL)
         {
             m_cdmController->StopCDM();
+            std::thread([this]() {
+                m_cdmController->set_FSM_in_transition(0);
+            }).detach();
         }
     }
 
-    if (fGoToTpointFlag == true)
+   /* if (fGoToTpointFlag == true)
     {
         fGoToTpointFlag = false;
         if (m_cdmController != NULL)
@@ -560,7 +560,7 @@ void *PluginCDM::run(void *params)
             // TODO: à implémenter dans CDMController
             // m_cdmController->GoToReady();
         }
-    }
+    }*/
 
     if (fConfigureFlag == true)
     {

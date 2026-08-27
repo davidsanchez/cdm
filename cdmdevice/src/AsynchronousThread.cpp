@@ -34,6 +34,7 @@ AsynchronousThread::AsynchronousThread(DataAccessClientOPCUA *dataAccessClientOP
     m_cmdStartSG = 0;    
     m_cmdStartStream = 0;
     m_cmdMeteo = 0;
+    m_finder = NULL;
     m_dataAccessClientOPCUA = dataAccessClientOPCUA;
     cdm_config = new Config(CDM_CONFIGURATION_NAME,"");
 }
@@ -79,7 +80,7 @@ int AsynchronousThread::cmdLogRestart()
     return ret;
 }
 
-int AsynchronousThread::cmdGetMultipleImages(std::string datapointName, int nameSpace, int n_images)
+/*int AsynchronousThread::cmdGetMultipleImages(std::string datapointName, int nameSpace, int n_images)
 {
   LOG_INFO<<"AsynchronousThread::cmdGetMultipleImages()"<<std::endl;
   int ret = 0;
@@ -99,15 +100,16 @@ int AsynchronousThread::cmdGetMultipleImagesStacked(std::string datapointName, i
     m_nameSpace = nameSpace;
     AsynchronousThread::n_images = n_images;
     return ret;
-}
+}*/
 
-int AsynchronousThread::cmdStartCDM(std::string datapointName, int nameSpace)
+int AsynchronousThread::cmdStartCDM(DataPointFinder* finder)
 {
     LOG_INFO<<"AsynchronousThread::cmdStartCDM()"<<std::endl;
     int ret = 0;
     m_cmdStartCDM = true;
-    m_datapointName = datapointName;
-    m_nameSpace = nameSpace;
+    m_finder = finder;
+    //m_datapointName = datapointName;
+    //m_nameSpace = nameSpace;
     return ret;
 }
 
