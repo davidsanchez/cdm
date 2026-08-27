@@ -527,6 +527,10 @@ void *PluginCDM::run(void *params)
         if (m_cdmController != NULL)
         {
             m_cdmController->StartCDM();
+            td::thread([this]() {
+                m_cdmController->set_FSM_in_transition(0);
+            }).detach();
+        }
         }
     }
 
