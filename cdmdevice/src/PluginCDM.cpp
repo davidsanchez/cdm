@@ -459,6 +459,7 @@ void *PluginCDM::run(void *params)
             m_cdmController->GetMultipleImages(fGetMultipleImagesCount, getDataAccessClientOPCUARef());
             std::thread([this]() {
                 m_cdmController->set_FSM_in_transition(0);
+                m_cdmController->set_FSM(3);
             }).detach();
         }
     }
